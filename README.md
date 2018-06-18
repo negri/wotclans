@@ -25,7 +25,7 @@ that I would love to have some help:
 
 ## FAQ
 
-1) Can I copy your project, database, and open up my version of it with beer, hooks and ads?
+1) Can I copy your project, database, and open up my version of it with beer, hookers and ads?
 
    Sure! By all means! It's MIT licensed.
 
@@ -35,7 +35,8 @@ that I would love to have some help:
 
 3) Your code sucks! Will you improve it?
 
-   Nah! It has a purpose, a reason, and works very fine giving the constraints of cost in running and maintening the site. But of course I will inprove it.
+   Nah! It has a purpose, a reason, and works very fine giving the constraints of cost in running and maintening the site. But of course I will inprove it, and suggestions
+   on how to inprove, refactor and so on are wellcome.
 
 4) I love you! Thanks! Can I use snippets of your code?
 
