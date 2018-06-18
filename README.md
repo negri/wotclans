@@ -1,10 +1,10 @@
 # wotclans
-The source code for the (World of Tanks for Console Clans Site)[https://wotclans.com.br/] and (Discord Bot)[https://wotclans.com.br/DiscordBot]
+The source code for the [World of Tanks for Console Clans Site](https://wotclans.com.br/) and [Discord Bot](https://wotclans.com.br/DiscordBot)
 
 ## What is this?
 
-It's the full source code of the site (and related tools) (WotClans)[https://wotclans.com.br/]. It tracks the performance of clan players on the
-(World of Tanks)[https://console.worldoftanks.com/] (for consoles) game, by Wargaming.
+It's the full source code of the site (and related tools) [WotClans](https://wotclans.com.br/). It tracks the performance of clan players on the
+[World of Tanks](https://console.worldoftanks.com/) (for consoles) game, by Wargaming.
 
 ## Architeture
 
