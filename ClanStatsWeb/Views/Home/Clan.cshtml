@@ -1,0 +1,1064 @@
+﻿@using System.Globalization
+@using Negri.Wot
+@using Negri.Wot.Models
+@using Negri.Wot.Properties
+@model ClanPage
+
+@{
+    ViewBag.Title = Model.Clan.ClanTag;
+}
+
+@section extraHeaders {
+    <link href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css " rel="stylesheet" type="text/css" />
+    <meta name="description" content="@string.Format(Resources.ClanMetaDescription, @Model.Clan.ClanTag)">
+    <style>
+        #acesTable_paginate {
+            text-align: left;
+        }
+    </style>
+}
+
+@section lead {
+    <section class="jumbotron top-banner">
+        <h1>@Model.Clan.ClanTag</h1>
+        @if ((!string.IsNullOrWhiteSpace(Model.Clan.Name)) && (Model.Clan.Name != Model.Clan.ClanTag))
+        {
+            <h2>@Model.Clan.Name</h2>
+        }
+        <p>
+            @Resources.ClanDetail <a href="http://console.worldoftanks.com/clans/@GlobalHelper.PlataformTag/@Model.Clan.ClanTag/">@Model.Clan.ClanTag</a>
+            @if (!string.IsNullOrWhiteSpace(Model.Clan.Country))
+            {
+                <img src="~/Images/Flags/@(Model.Clan.Country).png" alt="@Model.Clan.Country" title="@Model.Clan.Country.ToUpperInvariant()" />
+            }
+            @Resources.CalculatedAt <span id="last-update-time">@Model.Clan.Moment.ToString("O")</span>.
+        </p>
+    </section>
+}
+
+<section id="Resume" class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <h2>@Resources.Summary</h2>
+        <table class="data table-striped" id="resume-table">
+            <thead>
+                <tr>
+                    <th colspan="2" rowspan="2">@Resources.Metric</th>
+                    <th rowspan="2">@Resources.Value</th>
+                    <th colspan="3" title="@Resources.DeltaExplanation">@Resources.Delta</th>
+                </tr>
+                <tr>
+                    <th title="@Resources.Day">
+                        <span>@Resources.DayAbbr</span>
+                    </th>
+                    <th title="@Resources.Week">
+                        <span>@Resources.WeekAbbr</span>
+                    </th>
+                    <th title="@Resources.Month">
+                        <span>@Resources.MonthAbbr</span>
+                    </th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <tr>
+                    <td rowspan="9" style="transform: rotate(-90deg); border-bottom: 1px solid black;">@Resources.Recent</td>
+                    <td title="@Resources.ActivesExplanation"><a href="#tankers">@Resources.Actives</a></td>
+                    <td class="number-integer" title="@string.Format(Resources.PlayersUpdatedEvery, Model.Clan.ActivePlayersDelayHours)">@Model.Clan.Active</td>
+                    <td class="number-integer">@(Model.Clan.DeltaDayActive?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaWeekActive?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaMonthActive?.ToString("N0"))</td>
+                </tr>
+                <tr>
+                    <td style="white-space: nowrap;" title="@Resources.ActivityExplanation">@Resources.Activity %</td>
+                    <td class="number-integer">@(((Model.Clan.ActivePercent) * 100.0).ToString("N0"))</td>
+                    <td class="number-integer">@((Model.Clan.DeltaDayActivePercent * 100.0)?.ToString("N0"))</td>
+                    <td class="number-integer">@((Model.Clan.DeltaWeekActivePercent * 100.0)?.ToString("N0"))</td>
+                    <td class="number-integer">@((Model.Clan.DeltaMonthActivePercent * 100.0)?.ToString("N0"))</td>
+                </tr>
+                <tr>
+                    <td title="@Resources.BattlesExplanation">@Resources.Battles</td>
+                    <td class="number-integer">@Model.Clan.ActiveBattles.ToString("N0")</td>
+                    <td class="number-integer">@(Model.Clan.DeltaDayActiveBattles?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaWeekActiveBattles?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaMonthActiveBattles?.ToString("N0"))</td>
+                </tr>
+                <tr>
+                    <td style="white-space: nowrap;" title="@Resources.WinRateExplanation">@Resources.WinRate %</td>
+                    <td class="number">@(((Model.Clan.ActiveWinRate) * 100.0).ToString("N1"))</td>
+                    <td class="number">@((Model.Clan.DeltaDayActiveWinRate * 100.0)?.ToString("N1"))</td>
+                    <td class="number">@((Model.Clan.DeltaWeekActiveWinRate * 100.0)?.ToString("N1"))</td>
+                    <td class="number">@((Model.Clan.DeltaMonthActiveWinRate * 100.0)?.ToString("N1"))</td>
+                </tr>
+                <tr>
+                    <td style="white-space: nowrap;" title="@Resources.AvgTierExplanation">@Resources.AvgTierTop15</td>
+                    <td class="number">@Model.Clan.Top15AvgTier.ToString("N1")</td>
+                    <td class="number">@(Model.Clan.DeltaDayTop15AvgTier?.ToString("N1"))</td>
+                    <td class="number">@(Model.Clan.DeltaWeekTop15AvgTier?.ToString("N1"))</td>
+                    <td class="number">@(Model.Clan.DeltaMonthTop15AvgTier?.ToString("N1"))</td>
+                </tr>
+                <tr>
+                    <td style="white-space: nowrap;" title="@Resources.AvgTierExplanation">@Resources.AvgTierActives</td>
+                    <td class="number">@Model.Clan.ActiveAvgTier.ToString("N1")</td>
+                    <td class="number">@(Model.Clan.DeltaDayActiveAvgTier?.ToString("N1"))</td>
+                    <td class="number">@(Model.Clan.DeltaWeekActiveAvgTier?.ToString("N1"))</td>
+                    <td class="number">@(Model.Clan.DeltaMonthActiveAvgTier?.ToString("N1"))</td>
+                </tr>
+                <tr>
+                    <td class="@Model.Clan.ActiveWn8.ToLabelClass()" style="background-color: @Model.Clan.ActiveWn8.ToWebColor();">
+                        <abbr title="@Resources.Wn8aExplanation">WN8a</abbr>
+                    </td>
+                    <td class="number-integer @Model.Clan.ActiveWn8.ToLabelClass()" style="background-color: @Model.Clan.ActiveWn8.ToWebColor();" title="@Model.Clan.ActiveWn8.ToRatingString()">
+                        @Model.Clan.ActiveWn8.ToString("N0")
+                    </td>
+                    <td class="number-integer">@(Model.Clan.DeltaDayActiveWn8?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaWeekActiveWn8?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaMonthActiveWn8?.ToString("N0"))</td>
+                </tr>
+                <tr>
+                    <td class="@Model.Clan.Top15Wn8.ToLabelClass()" style="background-color: @Model.Clan.Top15Wn8.ToWebColor();">
+                        <abbr title="@Resources.Wn8t15Explanation">WN8t15</abbr>
+                    </td>
+                    <td class="number-integer @Model.Clan.Top15Wn8.ToLabelClass()" style="background-color: @Model.Clan.Top15Wn8.ToWebColor();" title="@Model.Clan.Top15Wn8.ToRatingString()">
+                        @Model.Clan.Top15Wn8.ToString("N0")
+                    </td>
+                    <td class="number-integer">@(Model.Clan.DeltaDayTop15Wn8?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaWeekTop15Wn8?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaMonthTop15Wn8?.ToString("N0"))</td>
+                </tr>
+                <tr>
+                    <td class="@Model.Clan.Top7Wn8.ToLabelClass()" style="background-color: @Model.Clan.Top7Wn8.ToWebColor();">
+                        <abbr title="@Resources.Wn8T7Explanation">WN8t7</abbr>
+                    </td>
+                    <td class="number-integer @Model.Clan.Top7Wn8.ToLabelClass()" style="background-color: @Model.Clan.Top7Wn8.ToWebColor();" title="@Model.Clan.Top7Wn8.ToRatingString()">
+                        @Model.Clan.Top7Wn8.ToString("N0")
+                    </td>
+                    <td class="number-integer">@(Model.Clan.DeltaDayTop7Wn8?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaWeekTop7Wn8?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaMonthTop7Wn8?.ToString("N0"))</td>
+                </tr>
+
+                <tr>
+                    <td rowspan="5" style="transform: rotate(-90deg);">@Resources.Overall</td>
+                    <td title="@Resources.MembersExplanation"><a href="#tankers">@Resources.Members</a></td>
+                    <td class="number-integer" title="@string.Format(Resources.PlayersUpdatedEvery, Model.Clan.AllPlayersDelayHours)">@Model.Clan.Count</td>
+                    <td class="number-integer">@(Model.Clan.DeltaDayCount?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaWeekCount?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaMonthCount?.ToString("N0"))</td>
+                </tr>
+                <tr>
+                    <td title="@Resources.OverallBattlesExplanation">@Resources.Battles</td>
+                    <td class="number-integer">@Model.Clan.TotalBattles.ToString("N0")</td>
+                    <td class="number-integer">@(Model.Clan.DeltaDayTotalBattles?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaWeekTotalBattles?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaMonthTotalBattles?.ToString("N0"))</td>
+                </tr>
+                <tr>
+                    <td style="white-space: nowrap;" title="@Resources.OverallWinRateExplanation">@Resources.WinRate %</td>
+                    <td class="number">@(((Model.Clan.TotalWinRate) * 100.0).ToString("N1"))</td>
+                    <td class="number">@((Model.Clan.DeltaDayTotalWinRate * 100.0)?.ToString("N1"))</td>
+                    <td class="number">@((Model.Clan.DeltaWeekTotalWinRate * 100.0)?.ToString("N1"))</td>
+                    <td class="number">@((Model.Clan.DeltaMonthTotalWinRate * 100.0)?.ToString("N1"))</td>
+                </tr>
+                <tr>
+                    <td style="white-space: nowrap;" title="@Resources.AvgTierExplanation">@Resources.AvgTier</td>
+                    <td class="number">@Model.Clan.TotalAvgTier.ToString("N1")</td>
+                    <td class="number">@(Model.Clan.DeltaDayTotalAvgTier?.ToString("N1"))</td>
+                    <td class="number">@(Model.Clan.DeltaWeekTotalAvgTier?.ToString("N1"))</td>
+                    <td class="number">@(Model.Clan.DeltaMonthTotalAvgTier?.ToString("N1"))</td>
+                </tr>
+                <tr>
+                    <td class="@Model.Clan.TotalWn8.ToLabelClass()" style="background-color: @Model.Clan.TotalWn8.ToWebColor();">
+                        <abbr title="@Resources.OverallWn8Explanation">WN8</abbr>
+                    </td>
+                    <td class="number-integer @Model.Clan.TotalWn8.ToLabelClass()" style="background-color: @Model.Clan.TotalWn8.ToWebColor();" title="@Model.Clan.TotalWn8.ToRatingString()">
+                        @Model.Clan.TotalWn8.ToString("N0")
+                    </td>
+                    <td class="number-integer">@(Model.Clan.DeltaDayTotalWn8?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaWeekTotalWn8?.ToString("N0"))</td>
+                    <td class="number-integer">@(Model.Clan.DeltaMonthTotalWn8?.ToString("N0"))</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+    <div class="col-md-4"></div>
+</section>
+
+@if (Model.Clan.IsPatched)
+{
+    <section id="suspectedDataCall" class="row" style="padding-top: 1em;">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 alert alert-info">
+
+            @if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "pt")
+            {
+                <p>
+                    Existem <a href="#tankers"> tanqueiros </a> com <a href="~/About#suspectData">dados suspeitos</a>.
+                </p>
+            }
+            else
+            {
+                <p>
+                    There are <a href="#tankers"> tankers </a> with <a href="~/About#suspectData">suspect data</a>.
+                </p>
+            }
+        </div>
+
+        <div class="col-md-4"></div>
+    </section>
+}
+
+<section class="row" id="historicGraph">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <h2>@Resources.Evolution</h2>
+        <div id="historicContainer" style="width: 100%; height: 400px;" data-axis-title="@Resources.EvolutionAxisTitle" data-band-names="@Resources.Wn8VeryBad;@Resources.Wn8Bad;@Resources.Wn8BelowAverage;@Resources.Wn8Average;@Resources.Wn8AboveAverage;@Resources.Wn8Good;@Resources.Wn8VeryGood;@Resources.Wn8Great;@Resources.Wn8Unicum;@Resources.Wn8SuperUnicum">
+
+        </div>
+    </div>
+    <div class="col-md-1"></div>
+</section>
+
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">
+        <h2>@Resources.RatingDistribuction</h2>
+    </div>
+</div>
+
+<section class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-3">
+        <table class="data table-striped" id="RatingDistibuctionTable">
+            <thead>
+                <tr>
+                    <th rowspan="2" title="@Resources.RatingExplanation">@Resources.Rating</th>
+                    <th colspan="2" title="@Resources.RatingActiveExplanation"><a id="ratingDistribuctionByPlayer" data-axis-label="@Resources.FrequencyAxisActives" href="#">@Resources.Commanders</a></th>
+                    <th colspan="2" title="@Resources.RatingBattleExplanation"><a id="ratingDistribuctionByBattle" data-axis-label="@Resources.FrequencyAxisBattles" href="#">@Resources.Battles</a></th>
+                </tr>
+                <tr>
+                    <th title="@Resources.RatingActiveNumberExplanation">#</th>
+                    <th title="@Resources.RatingPercentActiveExplanation">%</th>
+                    <th title="@Resources.RatingBattleNumberExplanation">#</th>
+                    <th title="@Resources.RatingPercentBattlesExplanation">%</th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                @foreach (var point in Model.RatingDistribution)
+                {
+                    <tr>
+                        <td class="@point.Wn8Rating.ToLabelClass()" style="white-space: nowrap;">@point.Wn8Rating.ToRatingString()</td>
+                        <td class="@point.Wn8Rating.ToLabelClass() number">@point.Count.ToString()</td>
+                        <td class="@point.Wn8Rating.ToLabelClass() number" style="white-space: nowrap;">@point.Percent.ToString("P1")</td>
+                        <td class="@point.Wn8Rating.ToLabelClass() number">@point.BattlesCount.ToString("N0")</td>
+                        <td class="@point.Wn8Rating.ToLabelClass() number" style="white-space: nowrap;">@point.BattlesPercent.ToString("P1")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-8">
+        <div id="ratingDistribuctionContainer" style="width: 100%; height: 220px;"></div>
+    </div>
+</section>
+
+<div class="clearfix"></div>
+
+<section id="tankers">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <h2 title="@Resources.ActiveCommandersExplanation">@Resources.Commanders</h2>
+
+        <table class="data table-striped" id="membersTable">
+            <thead>
+                <tr>
+                    <th title="@Resources.CommanderRankingExplanation" rowspan="2" class="sort-key">#</th>
+                    <th rowspan="2">@Resources.Commander</th>
+                    <th colspan="5" style="border-right: 1px solid black;" title="@Resources.OnLastMonth">@Resources.Recent</th>
+                    <th colspan="4">@Resources.Overall</th>
+                </tr>
+                <tr>
+                    <th>@Resources.Battles</th>
+                    <th title="@Resources.WeightExplanation">@Resources.Weight</th>
+                    <th style="white-space: nowrap;">@Resources.WinRate</th>
+                    <th style="white-space: nowrap;">@Resources.Tier</th>
+                    <th style="border-right: 1px solid black;" class="sort-key">WN8</th>
+                    <th>@Resources.Battles</th>
+                    <th style="white-space: nowrap;">@Resources.WinRate</th>
+                    <th style="white-space: nowrap;">@Resources.Tier</th>
+                    <th>WN8</th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                @{
+                    foreach (var player in Model.Players)
+                    {
+                        <tr>
+                            <td class="number">@player.Item1.ToString()</td>
+                            <td style="white-space: nowrap;">
+                                <a class="@(player.Item2.IsPatched ? "suspectData" : null)" href="http://console.worldoftanks.com/stats/players/@player.Item2.Id/" title="Statistics on the Wargaming site" rel="nofollow" @GlobalHelper.ExternalTarget>
+                                    <img src="~/Images/Ranks/@((int)player.Item2.Rank).svg" height="12" width="12" alt="@player.Item2.Rank" title="@player.Item2.Rank" />
+                                    @player.Item2.Name
+                                </a>
+                            </td>
+                            <td class="number title-moment" title="@string.Format(Resources.DataRetrievedAtNextAt, player.Item2.Moment, player.Item2.NextMoment)">@player.Item2.MonthBattles.ToString("N0")</td>
+                            <td class="number">@((@player.Item1 > 15 ? 0.0 : (player.Item2.MonthBattles) / ((double)Model.Clan.Top15Battles)).ToString("P1"))</td>
+                            <td class="number">@player.Item2.MonthWinRate.ToString("P1")</td>
+                            <td class="number rightPadding" style="padding-right: 0.2em;">@player.Item2.MonthTier.ToString("N1")</td>
+                            <td class="number @player.Item2.MonthWn8.ToLabelClass()" style="border-right: 1px solid black; background-color: @player.Item2.MonthWn8.ToWebColor();">
+                                <a title="@player.Item2.MonthWn8.ToRatingString()" href="@GlobalHelper.GetPlayerUrl(player.Item2, true)" rel="nofollow" @GlobalHelper.ExternalTarget>@player.Item2.MonthWn8.ToString("N0")</a>
+                            </td>
+                            <td class="number">@player.Item2.TotalBattles.ToString("N0")</td>
+                            <td class="number">@player.Item2.TotalWinRate.ToString("P1")</td>
+                            <td class="number rightPadding">@player.Item2.TotalTier.ToString("N1")</td>
+                            <td class="number @player.Item2.TotalWn8.ToLabelClass()" style="background-color: @player.Item2.TotalWn8.ToWebColor();">
+                                <a title="@player.Item2.TotalWn8.ToRatingString()" href="@GlobalHelper.GetPlayerUrl(player.Item2)" rel="nofollow" @GlobalHelper.ExternalTarget>@player.Item2.TotalWn8.ToString("N0")</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        @switch (Model.ShowPlayersMode)
+        {
+            case ShowPlayersMode.AllActive:
+                <a class="btn btn-info btn-xs" href="@Url.Current(new {showPlayersMode = ShowPlayersMode.All})#tankers">@Resources.ShowMore</a>
+                break;
+            case ShowPlayersMode.All:
+                <a class="btn btn-info btn-xs" href="~/Clan/@Model.Clan.ClanTag#tankers">@Resources.ShowLess</a>
+                break;
+        }
+
+    </div>
+    <div class="col-md-1"></div>
+</section>
+
+
+
+<div class="clearfix"></div>
+
+@if (Model.HasBadPlayersOnTop15)
+{
+    <div style="padding-top: 1em;" class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8 alert alert-dismissible alert-info">
+            @if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "pt")
+            {
+                <div lang="pt">
+                    <h4>Relaxe!</h4>
+                    <p>
+                        Se você está aparecendo com um ranking baixo, numa classificação WN8 abaixo da média, <b>calma</b>!
+                        <ol>
+                            <li>Isso é <b>apenas um jogo</b>. É suposto que seja <b>divertido</b>, antes de mais nada, jogar.</li>
+                            <li>
+                                Ninguém começa nesse jogo indo bem. Levam-se realmente <em>milhares de batalhas</em> para
+                                aprender os tanques, os mapas, pontos fracos e afins.
+                            </li>
+                            <li>
+                                O ranking é baseado numa média móvel mensal. Se no último mês você está iniciando uma linha nova,
+                                apredendo um estilo de jogo diferente do habitual, é normal que o WN8 diminua.
+                            </li>
+                            <li>
+                                WN8 é apenas uma métrica, dentre dezenas mais ou menos objetivas de medir o desempenho.
+                                Mas não é a única, não é perfeita, e não é um diagnóstivo completo sobre um jogador de clã, que não pode se resumir a um único número.
+                            </li>
+                            <li>
+                                Tudo na vida se aprende. <strong>Tudo</strong>! Procure mais informações sobre como jogar, há muitos recursos interessantes, tais como
+                                os vídeos do <a href="https://www.youtube.com/channel/UCN8m40gaXZoT7ZAyZPji9iA">Dantknd</a>,
+                                e da propria <a href="https://www.youtube.com/channel/UCmSQH1HV0exJTN6XhOjSjpg">Wargming</a>.
+                            </li>
+                        </ol>
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div lang="en">
+                    <h4>Relax!</h4>
+                    <p>
+                        If you are appearing with a low ranking, with a WN8 number bellow average, <b>take it easy</b>!
+                        <ol>
+                            <li>
+                                This is <b>just a game</b>. It's supposed, first and foremost, to be <b>fun</b> playing;
+                            </li>
+                            <li>
+                                Nobody starts ths game doing well. It really takes <em>many thousands of battles</em>
+                                to learn tanks, maps, tactics, game mechanics etc;
+                            </li>
+                            <li>
+                                The ranking is based on a rolling monthly average. If on the last month you are starting a new tank line,
+                                grinding a stock tank or learning a new playing style it's expected that the WN8 decreases;
+                            </li>
+                            <li>
+                                WN8 is just a measure, among dozens of others, to gauge performance. But it's not perfect,
+                                and a clan's player can not be summarized to just one number;
+                            </li>
+                            <li>
+                                Everything in life can be learned. <strong>Everything!</strong> Search more information
+                                about <i>how to play WoT</i> on the Web: there are a lot of resources.
+                            </li>
+                        </ol>
+                    </p>
+                </div>
+            }
+
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+}
+
+@if (Model.HasLeaders)
+{
+    <section class="row" id="leaders">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+
+            @if (GlobalHelper.Language == "pt")
+            {
+                <h2 lang="pt">Tanqueiros no <a href="~/Leaderboard/All">Placar de Líderes</a></h2>
+                <p lang="pt">Tanqueiros do clã que são top 25 nos tanques, entre todos os jogadores rastreados nesse site, classificados por dano combinado.</p>
+            }
+            else if (GlobalHelper.Language == "fr")
+            {
+                <h2 lang="fr">Les commandants du <a href="~/Leaderboard/All">Classement</a></h2>
+                <p lang="fr">Les commandants du clan qui sont l'un des 25 meilleurs de chaque char, sur tous les joueurs de ce site, classés par des dommages combinés.</p>
+            }
+            else
+            {
+                <h2 lang="en">Commanders on the <a href="~/Leaderboard/All">Leaderboard</a></h2>
+                <p lang="en">Commanders on the clan that are in the top 25 of each tank, over all players in this site, ranked by combined damage.</p>
+            }
+            <table class="data table-striped" id="acesTable">
+                <thead>
+                    <tr>
+                        <th colspan="4">@Resources.Tank</th>
+                        @*extend*@
+                        @*extend*@
+                        @*extend*@
+                        <th rowspan="2">@Resources.Commander</th>
+                        <th rowspan="2">@Resources.Rank</th>
+                        <th rowspan="2">
+                            <img alt="@Resources.Battles" title="@Resources.Battles" height="18" src="~/Images/battles-fought.png" />
+                        </th>
+                        <th colspan="3" class="sort-key">@Resources.Damage</th>
+                        @*extend*@
+                        @*extend*@
+                        <th colspan="2">@Resources.Kills</th>
+                        @*extend*@
+                    </tr>
+                    <tr>
+                        <th><img alt="@Resources.Nation" title="@Resources.Nation" height="18" src="~/Images/Nations/Globe_icon.svg" /></th>
+                        <th><img alt="@Resources.Type" title="@Resources.Type" height="18" src="~/Images/Types/types.png" /></th>
+                        <th><span style="white-space: nowrap;" title="@Resources.Tier">V-X</span></th>
+                        <th>@Resources.Name</th>
+                        @*extend*@
+                        @*extend*@
+                        @*extend*@
+                        <th>@Resources.Direct</th>
+                        <th>@Resources.Assisted</th>
+                        <th class="sort-key">@Resources.Combined</th>
+                        <th>@Resources.Avg</th>
+                        <th>@Resources.Max</th>
+                    </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    @foreach (var t in Model.Leaders)
+                    {
+                        <tr id="tank-id-@t.TankId.ToString()-@t.PlayerId.ToString()">
+                            <td class="text-center" data-sort="@t.Nation" data-filter="@t.Nation">
+                                <img height="18" title="@Resources.ResourceManager.GetString(t.Nation.ToString())" alt="@Resources.ResourceManager.GetString(t.Nation.ToString())" src="~/Images/Nations/@((int) t.Nation).png" />
+                            </td>
+                            <td class="text-center" data-sort="@t.Type" data-filter="@t.Type@(t.IsPremium ? " Premium" : " Regular")">
+                                <img height="18" title="@Resources.ResourceManager.GetString(t.Type.ToString())" alt="@Resources.ResourceManager.GetString(t.Type.ToString())" src="~/Images/Types/@((int) t.Type).svg" />
+                            </td>
+                            <td class="text-center" data-sort="@t.Tier" data-filter="@t.Tier">@t.Tier.ToRomanNumeral()</td>
+                            <td style="white-space: nowrap;" data-sort="@t.Name.RemoveDiacritics().ToLowerInvariant()" data-filter="@t.Name.RemoveDiacritics().ToLowerInvariant() @t.FullName.RemoveDiacritics().ToLowerInvariant()">
+                                <a href="~/Tanks/@t.TankId"><span class="@t.PremiumClass" title="@t.FullName">@t.Name</span></a>
+                            </td>
+                            <td style="white-space: nowrap;">
+                                <a href="@GlobalHelper.GetPlayerUrl(Model.Clan.ClanTag, t.PlayerId)" rel="nofollow" @GlobalHelper.ExternalTarget>
+                                    @t.GamerTag
+                                </a>
+                            </td>
+                            <td class="number-integer">@t.Order.ToString("N0")</td>
+                            <td class="number-integer">@t.Battles.ToString("N0")</td>
+                            <td class="number-integer">@t.DirectDamage.ToString("N0")</td>
+                            <td class="number-integer">@t.DamageAssisted.ToString("N0")</td>
+                            <td class="number-integer">@t.TotalDamage.ToString("N0")</td>
+                            <td class="number">@t.Kills.ToString("N2")</td>
+                            <td class="number-integer">@t.MaxKills.ToString("N0")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (GlobalHelper.Language == "pt")
+            {
+                <p lang="pt">Veja todos os <a href="~/Tanks/Aces"><b>ases dos tanques</b></a>!</p>
+            }
+            else if (GlobalHelper.Language == "fr")
+            {
+                <p lang="fr">Voir tous les <a href="~/Tanks/Aces"><b>chars maîtrise</b></a>!</p>
+            }
+            else
+            {
+            <p lang="en">See all the <a href="~/Tanks/Aces"><b>tank aces</b></a>!</p>
+            }
+
+        </div>
+        <div class="col-md-1"></div>
+    </section>
+}
+
+<section class="row" id="HistoricData">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <h2 title="@Resources.HistoricExplanation">@Resources.Historic</h2>
+        <table class="data table-striped" id="historicTable">
+            <thead>
+                <tr>
+                    <th rowspan="2">@Resources.Date</th>
+                    <th colspan="7" title="@Resources.OnLastMonth" style="padding-bottom: 4px;">@Resources.Recent</th>
+                    <th colspan="4" style="padding-bottom: 4px; border-left: 1px solid black;">@Resources.Overall</th>
+                </tr>
+                <tr>
+                    <th title="@Resources.ActivesExplanation">@Resources.Actives</th>
+                    <th title="@Resources.ActivityExplanation">@Resources.Activity</th>
+                    <th title="@Resources.BattlesExplanation">@Resources.Battles</th>
+                    <th style="white-space: nowrap;" title="@Resources.WinRateExplanation">@Resources.WinRate</th>
+                    <th><abbr title="@Resources.Wn8aExplanation">WN8a</abbr></th>
+                    <th><abbr title="@Resources.Wn8t15Explanation">WN8t15</abbr></th>
+                    <th><abbr title="@Resources.Wn8T7Explanation">WN8t7</abbr></th>
+                    <th style="border-left: 1px solid black;" title="@Resources.MembersExplanation">@Resources.Members</th>
+                    <th title="@Resources.OverallBattlesExplanation">@Resources.Battles</th>
+                    <th style="white-space: nowrap;" title="@Resources.OverallWinRateExplanation">@Resources.WinRate</th>
+                    <th><abbr title="@Resources.OverallWn8Explanation">WN8</abbr></th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                @foreach (var point in Model.History)
+                {
+                    <tr>
+                        <td style="white-space: nowrap;">
+                            @point.Date.ToString("yyyy-MM-dd")
+                        </td>
+                        <td class="number">@point.Active.ToString("N0")</td>
+                        <td class="number">@point.ActivityPercent.ToString("P0")</td>
+                        <td class="number title-moment" title="@Resources.UpdatedAt @point.Moment.ToString("O")">@point.ActiveBattles.ToString("N0")</td>
+                        <td class="number">@point.ActiveWinRate.ToString("P1")</td>
+                        <td class="number @point.ActiveWn8.ToLabelClass()" style="background-color: @point.ActiveWn8.ToWebColor();" title="@point.ActiveWn8.ToRatingString()">
+                            @point.ActiveWn8.ToString("N0")
+                        </td>
+                        <td class="number @point.Top15Wn8.ToLabelClass()" style="background-color: @point.Top15Wn8.ToWebColor();" title="@point.Top15Wn8.ToRatingString()">
+                            @point.Top15Wn8.ToString("N0")
+                        </td>
+                        <td class="number @point.Top7Wn8.ToLabelClass()" style="background-color: @point.Top7Wn8.ToWebColor();" title="@point.Top7Wn8.ToRatingString()">
+                            @point.Top7Wn8.ToString("N0")
+                        </td>
+                        <td class="number" style="border-left: 1px solid black;">
+                            @point.Count.ToString("N0")
+                        </td>
+                        <td class="number">@point.TotalBattles.ToString("N0")</td>
+                        <td class="number">@point.TotalWinRate.ToString("P1")</td>
+                        <td class="number @point.TotalWn8.ToLabelClass()" style="background-color: @point.TotalWn8.ToWebColor();" title="@point.TotalWn8.ToRatingString()">
+                            @point.TotalWn8.ToString("N0")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+    <div class="col-md-1"></div>
+</section>
+
+@section scripts {
+
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js  "></script>
+    <script type="text/javascript" src="https://code.highcharts.com/highcharts.js"></script>
+    <script type="text/javascript" src="https://code.highcharts.com/modules/data.js"></script>
+    <script type="text/javascript" src="~/Scripts/hightcharts-dark-unica.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
+    <script type="text/javascript">
+
+        var ratingColors = ["#930D0D", "#CD3333", "#CC7A00", "#CCB800", "#839A24", "#4C7226", "#4098BE", "#376DBD", "#793DB6", "#401070"];
+
+        // Faz o histograma de distribuição por Rating
+        // graphType pode ser "player" ou "battle"
+        function doRatingGraph(graphType) {
+
+            var decimalSeparator = $("body").data("requestDecimalSeparator");
+            var groupingSeparator = $("body").data("requestGroupingSeparator");
+
+            var frequencyColumn = 2;
+            var axisTitle = $("#ratingDistribuctionByPlayer").data("axisLabel");
+            if (graphType === "battle") {
+                frequencyColumn = 4;
+                axisTitle = $("#ratingDistribuctionByBattle").data("axisLabel");;
+            }
+
+            // Extrai da tabela de Rating os dados
+            var ratings = $("#RatingDistibuctionTable tbody tr td:nth-child(1)").map(function () {
+                var a = $(this).text();
+                return a;
+            }).get();
+
+            var selector = "#RatingDistibuctionTable tbody tr td:nth-child(" + frequencyColumn + ")";
+            var frequencies = $(selector).map(function () {
+                var a = $(this).text();
+                a = a.replace(groupingSeparator, "");
+                a = a.replace(decimalSeparator, ".");
+                var d = parseFloat(a);
+                return d;
+            }).get();
+
+            var ratingFrequencies = [];
+            var i;
+            for (i = 0; i < ratings.length; i++) {
+                ratingFrequencies.push([ratings[i], frequencies[i]]);
+            }
+
+            $("#ratingDistribuctionContainer").highcharts({
+                chart: {
+                    type: "column"
+                },
+                title: {
+                    text: null
+                },
+                xAxis: {
+                    type: "category"
+                },
+                yAxis: {
+                    title: {
+                        text: axisTitle
+                    },
+                    allowDecimals: false
+                },
+                series: [
+                    {
+                        name: axisTitle,
+                        data: ratingFrequencies
+                    }
+                ],
+                plotOptions: {
+                    column: {
+                        pointPadding: 0,
+                        borderWidth: 0,
+                        groupPadding: 0,
+                        shadow: true,
+                        colorByPoint: true,
+                        colors: ratingColors
+                    }
+                },
+                legend: {
+                    enabled: false
+                }
+            });
+
+        }
+
+        // Converte hora UTC para hora local no formato do request
+        function convertToLocalTime(utcString) {
+            var moment = window.moment.utc(utcString);
+            var localOffset = window.moment().utcOffset();
+            moment.add("minutes", localOffset);
+
+            var format = $("body").data("requestDateFormat") + " " + $("body").data("requestTimeFormat");
+
+            // normalização para o formato do moment
+            format = format.replace(/d/g, "D").replace(/y/g, "Y").replace("tt", "a").replace("TT", "A");
+
+            var s = moment.format(format);
+            return s;
+        }
+
+        $(document).ready(function () {
+
+            // Troca a hora UTC de atualização para a hora correspondente no cliente
+            $("#last-update-time").text(convertToLocalTime($("#last-update-time").text()));
+
+            // Troca a hora UTC nos titulos
+            $(".title-moment").each(function () {
+                var item = $(this);
+
+                var re = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)*Z/g;
+
+                function replacer(match) {
+                    return convertToLocalTime(match);
+                }
+
+                var currentTitle = item.attr("title");
+                var newTitle = currentTitle.replace(re, replacer);
+                item.attr("title", newTitle);
+
+            });
+
+            var decimalSeparator = $("body").data("requestDecimalSeparator");
+            var groupingSeparator = $("body").data("requestGroupingSeparator");
+
+            // Função de ordenção numerica do lado do cliente
+            jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+                "numeric-flex-pre": function (a) {
+                    if (a === "") {
+                        return 0.0;
+                    }
+                    if (a === "-") {
+                        return 0.0;
+                    }
+
+                    if (a.substring(0, 3) === "<a ") {
+                        a = a.match(/<a [^>]+>([^<]+)<\/a>/)[1];
+                    }
+
+                    a = a.replace(groupingSeparator, "");
+                    a = a.replace("%", "");
+                    a = a.replace(decimalSeparator, ".");
+
+                    return parseFloat(a);
+                },
+
+                "numeric-flex-asc": function (a, b) {
+                    return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+                },
+
+                "numeric-flex-desc": function (a, b) {
+                    return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+                }
+            });
+
+            jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+                "date-iso-pre": function (a) {
+
+                    if (a.substring(0, 3) === "<a ") {
+                        a = a.match(/<a [^>]+>([^<]+)<\/a>/)[1];
+                    }
+
+                    var brDate = a.split("-");
+                    return (brDate[0] + brDate[1] + brDate[2]) * 1;
+                },
+
+                "date-iso-asc": function (a, b) {
+                    return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+                },
+
+                "date-iso-desc": function (a, b) {
+                    return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+                }
+            });
+
+            $("#membersTable").DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "pageLength": 15,
+                "pagingType": "numbers",
+                "info": false,
+                "searching": false,
+                "columnDefs": [
+                    { "type": "numeric-flex", targets: [2, 3, 4, 5, 6, 7, 8, 9, 10] }
+                ],
+                "order": [[0, "asc"]]
+            });
+
+            $("#historicTable").DataTable({
+                "paging": false,
+                "info": false,
+                "searching": false,
+                "columnDefs": [
+                    { "type": "numeric-flex", targets: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+                    { "type": "date-iso", targets: [0] },
+                    { "orderable": false, targets: [] }
+                ],
+                "order": [[0, "desc"]]
+            });
+
+            var oAcesTable = $("#acesTable").DataTable({
+                paging: true,
+                lengthChange: false,
+                pageLength: 25,
+                pagingType: "numbers",
+                info: false,
+                searching: false,
+                columnDefs: [
+                    { type: "numeric-flex", targets: [5, 6, 7, 8, 9, 10, 11] },
+                    { orderable: false, targets: [] },
+                    { searchable: false, targets: [5, 6, 7, 8, 9, 10, 11] }
+                ],
+                order: [[5, "asc"]],
+                dom: "tp",
+                language: {
+                    paginate: {
+                        previous: "@Resources.Previous",
+                        next: "@Resources.Next"
+                    }
+                }
+            });
+
+            doRatingGraph("player");
+
+            $("#ratingDistribuctionByPlayer").click(function () {
+                doRatingGraph("player");
+                return false;
+            });
+
+            $("#ratingDistribuctionByBattle").click(function () {
+                doRatingGraph("battle");
+                return false;
+            });
+
+            $("#historicGraph").hide();
+
+            // extrai da tabela de historico os dados para o grafico
+
+            var dates = $("#historicTable tbody tr td:nth-child(1)").map(function () {
+                var a = $(this).text();
+                if (a.substring(0, 3) === "<a ") {
+                    a = a.match(/<a [^>]+>([^<]+)<\/a>/)[1];
+                }
+                var brDate = a.split("-");
+                var dt = Date.UTC(brDate[0] * 1, brDate[1] * 1 - 1, brDate[2] * 1);
+                return dt;
+            }).get();
+
+            var wn8As = $("#historicTable tbody tr td:nth-child(6)").map(function () {
+                var a = $(this).text();
+                a = a.replace(groupingSeparator, "");
+                a = a.replace(decimalSeparator, ".");
+                var d = parseFloat(a);
+                return d;
+            }).get();
+
+            var wn8T15S = $("#historicTable tbody tr td:nth-child(7)").map(function () {
+                var a = $(this).text();
+                a = a.replace(groupingSeparator, "");
+                a = a.replace(decimalSeparator, ".");
+                var d = parseFloat(a);
+                return d;
+            }).get();
+
+            var wn8T7S = $("#historicTable tbody tr td:nth-child(8)").map(function () {
+                var a = $(this).text();
+                a = a.replace(groupingSeparator, "");
+                a = a.replace(decimalSeparator, ".");
+                var d = parseFloat(a);
+                return d;
+            }).get();
+
+            var wn8S = $("#historicTable tbody tr td:nth-child(12)").map(function () {
+                var a = $(this).text();
+                a = a.replace(groupingSeparator, "");
+                a = a.replace(decimalSeparator, ".");
+                var d = parseFloat(a);
+                return d;
+            }).get();
+
+            var dateWn8As = [];
+            var dateWn8T15S = [];
+            var dateWn8T7S = [];
+            var dateWn8S = [];
+            for (var i = 0; i < dates.length; i++) {
+                dateWn8As.push([dates[i], wn8As[i]]);
+                dateWn8T15S.push([dates[i], wn8T15S[i]]);
+                dateWn8T7S.push([dates[i], wn8T7S[i]]);
+                dateWn8S.push([dates[i], wn8S[i]]);
+            }
+
+            dateWn8As.reverse();
+            dateWn8T15S.reverse();
+            dateWn8T7S.reverse();
+            dateWn8S.reverse();
+
+            var bandNames = $("#historicContainer").data("bandNames").split(";");
+            var axisTitle = $("#historicContainer").data("axisTitle");
+
+            if (dateWn8As.length > 1) {
+                $("#historicGraph").show();
+
+
+                // faz o grafico de historico
+                $("#historicContainer").highcharts({
+                    chart: {
+                        type: "spline"
+                    },
+                    title: {
+                        text: null
+                    },
+                    xAxis: {
+                        type: "datetime",
+                        labels: {
+                            overflow: "justify",
+                            format: "{value:%m-%d}"
+                        }
+                    },
+                    yAxis: {
+                        title: {
+                            text: axisTitle
+                        },
+                        minorGridLineWidth: 0,
+                        gridLineWidth: 0,
+                        alternateGridColor: null,
+                        plotBands: [
+                            {
+                                // very bad
+                                from: 0.0,
+                                to: 300.0,
+                                color: ratingColors[0],
+                                label: {
+                                    text: bandNames[0],
+                                    style: {
+                                        color: "#A0A0A0"
+                                    }
+                                }
+                            }, {
+                                // Ruim
+                                from: 300.0,
+                                to: 450.0,
+                                color: ratingColors[1],
+                                label: {
+                                    text: bandNames[1],
+                                    style: {
+                                        color: "#A0A0A0"
+                                    }
+                                }
+                            }, {
+                                // Abaixo da Media
+                                from: 450.0,
+                                to: 650.0,
+                                color: ratingColors[2],
+                                label: {
+                                    text: bandNames[2],
+                                    style: {
+                                        color: "#A0A0A0"
+                                    }
+                                }
+                            }, {
+                                // Médio
+                                from: 650.0,
+                                to: 900.0,
+                                color: ratingColors[3],
+                                label: {
+                                    text: bandNames[3],
+                                    style: {
+                                        color: "#A0A0A0"
+                                    }
+                                }
+                            }, {
+                                // Acima da Media
+                                from: 900.0,
+                                to: 1200.0,
+                                color: ratingColors[4],
+                                label: {
+                                    text: bandNames[4],
+                                    style: {
+                                        color: "#B0B0B0"
+                                    }
+                                }
+                            }, {
+                                // Bom
+                                from: 1200.0,
+                                to: 1600.0,
+                                color: ratingColors[5],
+                                label: {
+                                    text: bandNames[5],
+                                    style: {
+                                        color: "#A0A0A0"
+                                    }
+                                }
+                            }, {
+                                // Muito Bom
+                                from: 1600.0,
+                                to: 2000.0,
+                                color: ratingColors[6],
+                                label: {
+                                    text: bandNames[6],
+                                    style: {
+                                        color: "#A0A0A0"
+                                    }
+                                }
+                            }, {
+                                // Excelente
+                                from: 2000.0,
+                                to: 2450.0,
+                                color: ratingColors[7],
+                                label: {
+                                    text: bandNames[7],
+                                    style: {
+                                        color: "#A0A0A0"
+                                    }
+                                }
+                            }, {
+                                // Unicum
+                                from: 2450.0,
+                                to: 2900.0,
+                                color: ratingColors[8],
+                                label: {
+                                    text: bandNames[8],
+                                    style: {
+                                        color: "#A0A0A0"
+                                    }
+                                }
+                            }, {
+                                // Super Unicum
+                                from: 2900.0,
+                                to: 8000.0,
+                                color: ratingColors[9],
+                                label: {
+                                    text: bandNames[9],
+                                    style: {
+                                        color: "#A0A0A0"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    plotOptions: {
+                        spline: {
+                            lineWidth: 2,
+                            states: {
+                                hover: {
+                                    lineWidth: 5
+                                }
+                            },
+                            marker: {
+                                enabled: false
+                            }
+                        }
+                    },
+                    series: [
+                        {
+                            name: "WN8a",
+                            data: dateWn8As
+
+                        },
+                        {
+                            name: "WN8t15",
+                            data: dateWn8T15S
+                        },
+                        {
+                            name: "WN8t7",
+                            data: dateWn8T7S
+                        },
+                        {
+                            name: "WN8",
+                            data: dateWn8S
+                        }
+                    ],
+                    navigation: {
+                        menuItemStyle: {
+                            fontSize: "10px"
+                        }
+                    }
+                });
+            }
+
+
+
+        });
+    </script>
+
+
+}

@@ -1,0 +1,184 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+/* Top Banner */
+.top-banner {
+    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.60)), url(../Images/Art/su-152_1440x900_wall.jpg);
+    background-size: auto auto;
+    background-repeat: no-repeat;
+    background-position: center center;
+    border-width: 0;
+}
+
+
+/* Cores dos WN8 */
+
+.label-verybad {
+    background-color: rgb(147, 13, 13)
+}
+
+.label-bad {
+    background-color: rgb(205, 51, 51)
+}
+
+.label-belowaverage {
+    color: black;
+    background-color: rgb(204, 122, 0)
+}
+
+.label-average {
+    color: black;
+    background-color: rgb(204, 184, 0)
+}
+
+.label-aboveaverage {
+    color: black;
+    background-color: rgb(132, 155, 36)
+}
+
+.label-good {
+    color: black;
+    background-color: rgb(77, 115, 38)
+}
+
+.label-verygood {
+    color: black;
+    background-color: rgb(64, 153, 191)
+}
+
+.label-great {
+    background-color: rgb(57, 114, 198)
+}
+
+.label-unicum {
+    background-color: rgb(121, 61, 182)
+}
+
+.label-superunicum {
+    background-color: rgb(64, 16, 112)
+}
+
+/* Tabelas de Dados */
+
+table.data caption {
+    text-align: center;
+}
+
+table.data th {
+    text-align: center;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+table.data .number {
+    text-align: right;
+}
+
+table.data .rightPadding {
+    padding-right: 0.2em;
+}
+
+/* Numero recuado */
+table.data .number-integer {
+    text-align: right;
+    padding-right: 0.9em;
+}
+
+
+table.data tbody td {
+    padding-left: 0.5em;
+}
+
+/* Cores de Destaque */
+.sort-key {
+    color: goldenrod;
+}
+
+.is-premium-tank {
+    color: darkgoldenrod;
+}
+
+.old-data {
+    color: rgb(242, 209, 209);
+}
+
+.suspectData {
+    color: rgb(212, 163, 163);
+}
+
+/* Paginação da Datatable na esquerda */
+#clanTable_paginate {
+    text-align: left;
+}
+
+#membersTable_paginate {
+    text-align: left;
+}
+
+.filter-button-selected {
+    filter: brightness(2);
+}
+
+
+/* Alinhamento em colunas de tabelas
+    Veja em https://stackoverflow.com/questions/4458131/is-there-a-way-to-set-the-text-alignment-of-entire-column-in-a-table
+*/
+.tr1 td:nth-child(1), .tr1 th:nth-child(1),
+.tr2 td:nth-child(2), .tr2 th:nth-child(2),
+.tr3 td:nth-child(3), .tr3 th:nth-child(3),
+.tr4 td:nth-child(4), .tr4 th:nth-child(4),
+.tr5 td:nth-child(5), .tr5 th:nth-child(5),
+.tr6 td:nth-child(6), .tr6 th:nth-child(6),
+.tr7 td:nth-child(7), .tr7 th:nth-child(7),
+.tr8 td:nth-child(8), .tr8 th:nth-child(8),
+.tr9 td:nth-child(9), .tr9 th:nth-child(9),
+.tr10 td:nth-child(10), .tr10 th:nth-child(10),
+.tr11 td:nth-child(11), .tr11 th:nth-child(11),
+.tr12 td:nth-child(12), .tr12 th:nth-child(12),
+.tr13 td:nth-child(13), .tr13 th:nth-child(13),
+.tr14 td:nth-child(14), .tr14 th:nth-child(14),
+.tr15 td:nth-child(15), .tr15 th:nth-child(15),
+.tr16 td:nth-child(16), .tr16 th:nth-child(16) {
+    text-align: right
+}
+
+.tc1 td:nth-child(1), .tc1 th:nth-child(1),
+.tc2 td:nth-child(2), .tc2 th:nth-child(2),
+.tc3 td:nth-child(3), .tc3 th:nth-child(3),
+.tc4 td:nth-child(4), .tc4 th:nth-child(4),
+.tc5 td:nth-child(5), .tc5 th:nth-child(5),
+.tc6 td:nth-child(6), .tc6 th:nth-child(6),
+.tc7 td:nth-child(7), .tc7 th:nth-child(7),
+.tc8 td:nth-child(8), .tc8 th:nth-child(8),
+.tc9 td:nth-child(9), .tc9 th:nth-child(9),
+.tc10 td:nth-child(10), .tc10 th:nth-child(10),
+.tc11 td:nth-child(11), .tc11 th:nth-child(11),
+.tc12 td:nth-child(12), .tc12 th:nth-child(12),
+.tc13 td:nth-child(13), .tc13 th:nth-child(13),
+.tc14 td:nth-child(14), .tc14 th:nth-child(14),
+.tc15 td:nth-child(15), .tc15 th:nth-child(15),
+.tc16 td:nth-child(16), .tc16 th:nth-child(16) {
+    text-align: center
+}

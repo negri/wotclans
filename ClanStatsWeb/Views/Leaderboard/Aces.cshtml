@@ -1,0 +1,332 @@
+﻿@using System.Globalization
+@using Negri.Wot
+@using Negri.Wot.Properties
+@using Negri.Wot.Tanks
+@model Negri.Wot.Models.TankLeaders
+@{
+    ViewBag.Title = "Tank Aces";
+}
+
+@section extraHeaders {
+    <link href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css " rel="stylesheet" type="text/css" />
+    <meta name="description" content="Tank Aces! The very best players on WoT">    
+    <style>
+        #mainTable_filter {
+            text-align: left;
+        }
+
+        #mainTable_paginate {
+            text-align: left;
+        }
+    </style>
+}
+
+@section lead {
+    <section class="jumbotron top-banner">
+        @if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "pt")
+        {
+            <h1 lang="pt">Ases dos Tanques</h1>
+            <h2 lang="pt">Somente os melhores!</h2>
+        }
+        else
+        {
+            <h1>Tank Aces</h1>
+            <h2>Only the very best!</h2>
+        }
+        <p>
+            @string.Format(Resources.BestTankersAt, Model.Date)
+        </p>
+    </section>
+}
+
+<section id="main" class="row">
+    <div class="col-md-12">
+
+        <div id="filters" class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <input type="text" id="searchBox" class="form-control" placeholder="Search">
+                    </div>
+                    <div class="col-md-3" id="nationButtons">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Usa"><img src="~/Images/Nations/1.png" height="18" alt="USA" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Germany"><img src="~/Images/Nations/7.png" height="18" alt="Germany" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Ussr"><img src="~/Images/Nations/3.png" height="18" alt="USSR" /></button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Uk"><img src="~/Images/Nations/5.png" height="18" alt="UK" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="France"><img src="~/Images/Nations/2.png" height="18" alt="France" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Japan"><img src="~/Images/Nations/6.png" height="18" alt="Japan" /></button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="China"><img src="~/Images/Nations/4.png" height="18" alt="China" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Czechoslovakia"><img src="~/Images/Nations/8.png" height="18" alt="Czeckoslovakia" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Sweden"><img src="~/Images/Nations/9.png" height="18" alt="Sweden" /></button>
+                        </div>
+                    </div>
+                    <div class="col-md-2" id="typesButtons">
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Light"><img src="~/Images/Types/4.svg" width="18" height="18" alt="Light" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Medium"><img src="~/Images/Types/3.svg" width="18" height="18" alt="Medium" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Heavy"><img src="~/Images/Types/1.svg" width="18" height="18" alt="Heavy" /></button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="TankDestroyer"><img src="~/Images/Types/2.svg" width="18" height="18" alt="Tank Destroyer" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Artillery"><img src="~/Images/Types/5.svg" width="18" height="18" alt="Arty" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Premium"><img src="~/Images/Types/premium.svg" width="18" height="18" alt="Premium" /></button>
+                        </div>
+
+                    </div>
+                    <div class="col-md-4" id="tiersButtons">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-tier" data-tier="5" aria-label="5">V</button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="6" aria-label="6">VI</button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="7" aria-label="7">VII</button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="8" aria-label="8">VIII</button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="9" aria-label="9">IX</button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="10" aria-label="10">X</button>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-warning" aria-label="Reset" id="resetFilters">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="data table-striped" id="mainTable">
+            <thead>
+                <tr>
+                    <th rowspan="2"><img alt="@Resources.Nation" title="@Resources.Nation" height="18" src="~/Images/Nations/Globe_icon.svg" /></th>
+                    <th rowspan="2"><img alt="@Resources.Type" title="@Resources.Type" height="18" src="~/Images/Types/types.png" /></th>
+                    <th rowspan="2"><span style="white-space: nowrap;" title="@Resources.Tier">V-X</span></th>
+                    <th rowspan="2">@Resources.Tank</th>
+                    <th rowspan="2">@Resources.Clan</th>
+                    <th rowspan="2">@Resources.Commander</th>
+                    <th rowspan="2">
+                        <img alt="@Resources.Battles" title="@Resources.Battles" height="18" src="~/Images/battles-fought.png" />
+                    </th>
+                    <th colspan="3" class="sort-key">@Resources.Damage</th>
+                    @*extend*@
+                    @*extend*@
+                    <th colspan="2">@Resources.Kills</th>
+                    @*extend*@
+                </tr>
+                <tr>
+                    @*extend*@
+                    @*extend*@
+                    @*extend*@
+                    @*extend*@
+                    @*extend*@
+                    @*extend*@
+                    @*extend*@
+                    <th>@Resources.Direct</th>
+                    <th>@Resources.Assisted</th>
+                    <th class="sort-key">@Resources.Combined</th>
+                    <th>@Resources.Avg</th>
+                    <th>@Resources.Max</th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                @{
+                    foreach (var t in Model.Leaders)
+                    {
+                        <tr id="tank-id-@t.TankId.ToString()">
+                            <td class="text-center" data-sort="@t.Nation" data-filter="@t.Nation">
+                                <img height="18" title="@Resources.ResourceManager.GetString(t.Nation.ToString())" alt="@Resources.ResourceManager.GetString(t.Nation.ToString())" src="~/Images/Nations/@((int) t.Nation).png" />
+                            </td>
+                            <td class="text-center" data-sort="@t.Type" data-filter="@t.Type@(t.IsPremium ? " Premium" : " Regular")">
+                                <img height="18" title="@Resources.ResourceManager.GetString(t.Type.ToString())" alt="@Resources.ResourceManager.GetString(t.Type.ToString())" src="~/Images/Types/@((int) t.Type).svg" />
+                            </td>
+                            <td class="text-center" data-sort="@t.Tier" data-filter="@t.Tier">@t.Tier.ToRomanNumeral()</td>
+                            <td style="white-space: nowrap;" data-sort="@t.Name.RemoveDiacritics().ToLowerInvariant()" data-filter="@t.Name.RemoveDiacritics().ToLowerInvariant() @t.FullName.RemoveDiacritics().ToLowerInvariant()">
+                                <a href="~/Tanks/@t.TankId"><span class="@t.PremiumClass" title="@t.FullName">@t.Name</span></a>
+                            </td>
+                            <td style="white-space: nowrap;" data-sort="@t.ClanTag.Replace("-", "").Replace("_", "")">
+                                <a href="~/Clan/@t.ClanTag#leaders">@t.ClanTag</a>
+                                @if (!string.IsNullOrWhiteSpace(t.ClanFlag))
+                                {
+                                    <img src="~/Images/Flags/@(t.ClanFlag).png" alt="@t.ClanFlag" title="@t.ClanFlag.ToUpperInvariant()" />
+                                }
+                            </td>
+                            <td style="white-space: nowrap;">
+                                <a href="@GlobalHelper.GetPlayerUrl(t.ClanTag, t.PlayerId)" rel="nofollow" @GlobalHelper.ExternalTarget>
+                                    @t.GamerTag
+                                </a>
+                            </td>
+                            <td class="number-integer">@t.Battles.ToString("N0")</td>
+                            <td class="number-integer">@t.DirectDamage.ToString("N0")</td>
+                            <td class="number-integer">@t.DamageAssisted.ToString("N0")</td>
+                            <td class="number-integer">@t.TotalDamage.ToString("N0")</td>
+                            <td class="number">@t.Kills.ToString("N2")</td>
+                            <td class="number-integer">@t.MaxKills.ToString("N0")</td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
+<section id="acesInfo" class="row" style="padding-top: 1em;">
+    <div class="col-md-2"></div>
+    <div class="col-md-8 info alert-info">
+    @if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "pt")
+    {
+        <h3 class="text-center" style="margin-top: 5px; margin-bottom: 5px;">Informações</h3>
+        <ol>
+            <li>Estes são os melhores jogadores de <b>clãs</b>, por <b>dano combinado</b> histórico médio.</li>
+            <li>Dano Combinado é a soma de dano por assistência (Rádio e Tracking) e dano direto.</li>
+            <li>Está página não tem nada a ver com <i>maestria</i> nos tanques. É tão somente o <b>melhor</b> jogador (por dano combinado) de cada tanque.</li>
+            <li>Estes dados são atualizados automaticamente ~07:00 (UTC) de toda Terça-Feira.</li>
+            <li>Para aparecer na lista é preciso ter jogado pelo menos Tier x 10 partidas (então um jogador de Tiger I tem ter feito pelo menos 70 partidas nele), e ter feito ao menos uma partida com o tanque nos últimos 3 meses, e ter feito pelo menos 1.000 partidas no jogo.</li>
+            <li>Se um tanque não aparece na lista é porque há menos de 100 jogadores nele que atendem aos requisitos. Não faz sentido criar um Ás dentre somente 50...</li>
+            <li>Eu não gosto de <i title="A não ser que eu esteja desesperado para completar alguma operação que me dê algum tanque premium! ٩◔̯◔۶">massacrar foquinhas</i>, então não há tanques de tier IV e abaixo, nem me peça.</li>
+        </ol>
+    }
+    else
+    {
+        <h3 class="text-center" style="margin-top: 5px; margin-bottom: 5px;">Information</h3>
+        <ol>
+            <li>These are the best <b>clan</b> players, by overall average <b>Combined Damage</b>.</li>
+            <li>Combined Damage is the sum of Radio Assisted Damage, Tracking Assisted Damage and Direct Damage.</li>
+            <li>This page is not related to <i>maestry badges</i> on tanks. It's just the <b>best</b> player (by combined damage) on each tank.</li>
+            <li>This data is automatically updated at ~07:00 (UTC) of every Tuesday.</li>
+            <li>To appear on the list one must have played at least tier x 10 battles on the tank (so a Tiger I player must have at least 70 battles in it), and had at least one battle with the tank on the last 3 months, and have at least 1,000 battles in the game.</li>
+            <li>If a tank doesn't appear on the list it's because there are less than 100 players on it with the requirements. There's no sense in being an Ace among only 50...</li>
+            <li>I don't like <i title="Unless I'm desperate to complete some operation that gives me some premium tank! ٩◔̯◔۶">seal clubbing</i>, so there are no tanks on tier 4 and bellow, don't even ask.</li>
+        </ol>   
+    }        
+    </div>
+    <div class="col-md-2"></div>
+</section>
+
+
+@section scripts {
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js  "></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var decimalSeparator = $("body").data("requestDecimalSeparator");
+            var groupingSeparator = $("body").data("requestGroupingSeparator");
+
+            // Função de ordenção numerica do lado do cliente
+            jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+                "numeric-flex-pre": function (a) {
+                    if (a === "") {
+                        return 0.0;
+                    }
+                    if (a === "-") {
+                        return 0.0;
+                    }
+
+                    if (a.substring(0, 7) === "<a href") {
+                        a = a.match(/<a [^>]+>([^<]+)<\/a>/)[1];
+                    }
+
+                    a = a.replace(groupingSeparator, "");
+                    a = a.replace(groupingSeparator, "");
+                    a = a.replace(groupingSeparator, "");
+
+                    a = a.replace("%", "");
+                    a = a.replace(decimalSeparator, ".");
+
+                    return parseFloat(a);
+                },
+
+                "numeric-flex-asc": function (a, b) {
+                    return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+                },
+
+                "numeric-flex-desc": function (a, b) {
+                    return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+                }
+            });
+
+
+
+            var oTable = $("#mainTable").DataTable({
+                paging: true,
+                lengthChange: false,
+                pageLength: 25,
+                pagingType: "numbers",
+                info: false,
+                searching: true,
+                columnDefs: [
+                    { type: "numeric-flex", targets: [6, 7, 8, 9, 10, 11] },
+                    { orderable: false, targets: [] },
+                    { searchable: false, targets: [6, 7, 8, 9, 10, 11] }
+                ],
+                order: [[2, "desc"]],
+                dom: "tp",
+                language: {
+                    paginate: {
+                        previous: "@Resources.Previous",
+                        next: "@Resources.Next"
+                    },
+                    search: "@Resources.MoEFilter"
+                }
+            });
+
+            // reset
+            $("#resetFilters").click(function () {
+                $("#searchBox").val("");
+                $("#nationButtons .btn-nation").removeClass("filter-button-selected");
+                $("#typesButtons .btn-type").removeClass("filter-button-selected");
+                $("#tiersButtons .btn-tier").removeClass("filter-button-selected");
+
+                oTable.columns(0).search("");
+                oTable.columns(1).search("");
+                oTable.columns(2).search("");
+                oTable.search("").draw();
+            });
+
+            // Caixa de Buscas
+            $("#searchBox").keyup(function () {
+                oTable.search($(this).val()).draw();
+            });
+
+            // Por nação
+            $(".btn-nation").click(function () {
+                var btn = $(this);
+                var nation = btn.data("nation");
+                oTable.columns(0).search(nation).draw();
+                $("#nationButtons .btn-nation").removeClass("filter-button-selected");
+                btn.addClass("filter-button-selected");
+            });
+
+            // Por tipo
+            $(".btn-type").click(function () {
+                var btn = $(this);
+                var type = btn.data("type");
+                oTable.columns(1).search(type).draw();
+                $("#typesButtons .btn-type").removeClass("filter-button-selected");
+                btn.addClass("filter-button-selected");
+            });
+
+            // Por Tier
+            $(".btn-tier").click(function () {
+                var btn = $(this);
+                var type = btn.data("tier");
+                oTable.columns(2).search(type).draw();
+                $("#tiersButtons .btn-tier").removeClass("filter-button-selected");
+                btn.addClass("filter-button-selected");
+            });
+
+
+        });
+
+    </script>
+
+
+}

@@ -1,0 +1,681 @@
+﻿@using System.Resources
+@using Negri.Wot
+@using Negri.Wot.Properties
+@using Negri.Wot.Tanks
+@model TankReference
+@{
+    ViewBag.Title = string.Format(Resources.StatsTitle, Model.Name);
+}
+
+@section extraHeaders {
+    <link href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css " rel="stylesheet" type="text/css" />
+    <meta name="description" content="@string.Format(Resources.StatsDesc, Model.Name, GlobalHelper.ForPlataform)">
+    <style>
+        #resume-table td:nth-child(1) {
+            white-space: nowrap;
+        }
+
+        #resume-table td:nth-child(4) {
+            white-space: nowrap;
+        }
+
+        #resume-table td:nth-child(5) {
+            white-space: nowrap;
+        }
+
+        .top-banner {
+            background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.80), rgba(0, 0, 0, 0.45)), url(https://wxpcdn.gcdn.co/dcont/tankopedia/@Model.Nation.ToStringUrl()/@(Model.Tag).png);
+            background-position: right center;
+            background-size: auto 100%;
+            background-repeat: no-repeat;
+        }
+
+    </style>
+}
+
+@section lead {
+    <section class="jumbotron top-banner">
+        <h1>@Model.Name</h1>
+        @if (Model.Name != Model.FullName)
+        {
+            <h2>@Model.FullName</h2>
+        }
+        <p>
+            @Html.Raw(string.Format(Resources.StatsBanner1, Model.Name, Model.IsPremium ? "Premium " : "", Model.Tier.ToRomanNumeral(), Resources.ResourceManager.GetString(Model.TypeName), Resources.ResourceManager.GetString(Model.NatioName), Model.Date, Model.Nation.ToStringUrl(), Model.Tag))
+        </p>
+        <p style="font-size: small;">
+            @Resources.StatsBanner2
+        </p>
+    </section>
+}
+
+
+<section id="Data" class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <h2>@Resources.Statistics</h2>
+        <table class="data table-striped" id="resume-table">
+            <thead>
+                <tr>
+                    <th colspan="2" rowspan="2">@Resources.Metric</th>
+                    <th colspan="2">@Resources.Value</th>
+                    <th rowspan="2">@Resources.Unit</th>
+                    <th rowspan="2">@Resources.Explanation</th>
+                </tr>
+                <tr>
+                    <th>@Resources.Recent</th>
+                    <th>@Resources.Overall</th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <tr>
+                    <td rowspan="9" style="transform: rotate(-90deg);">@Resources.General</td>
+                    <td>@Resources.Battles</td>
+                    <td class="number-integer">@Model.LastMonth.TotalBattles.ToString("N0")</td>
+                    <td class="number-integer">@Model.TotalBattles.ToString("N0")</td>
+                    <td></td>
+                    <td>@Resources.BattlesStatsExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.Time</td>
+                    <td class="number-integer">@Model.LastMonth.TotalTime.TotalDays.ToString("N0")</td>
+                    <td class="number-integer">@Model.TotalTime.TotalDays.ToString("N0")</td>
+                    <td>@Resources.Days</td>
+                    <td>@Resources.DaysStatsExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.Commanders</td>
+                    <td class="number-integer">@Model.LastMonth.TotalPlayers.ToString("N0")</td>
+                    <td class="number-integer">@Model.TotalPlayers.ToString("N0")</td>
+                    <td></td>
+                    <td>@Resources.CommandersStatsExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.TimePerPlayer</td>
+                    <td class="number-integer">@string.Format("{0:D2}:{1:D2}", Model.LastMonth.TimePerPlayer.Hours, Model.LastMonth.TimePerPlayer.Minutes)</td>
+                    <td class="number-integer">@string.Format("{0:D2}:{1:D2}", Model.TimePerPlayer.Hours, Model.TimePerPlayer.Minutes)</td>
+                    <td>@Resources.Hours</td>
+                    <td>@Resources.TimePerPlayerExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.TimePerBattle</td>
+                    <td class="number-integer">@string.Format("{0:D2}:{1:D2}", Model.LastMonth.TimePerBattle.Minutes, Model.LastMonth.TimePerBattle.Seconds)</td>
+                    <td class="number-integer">@string.Format("{0:D2}:{1:D2}", Model.TimePerBattle.Minutes, Model.TimePerBattle.Seconds)</td>
+                    <td>@Resources.Minutes</td>
+                    <td>@Resources.TimePerBattleExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.WinRate</td>
+                    <td class="number">@((Model.LastMonth.WinRatio * 100.0).ToString("N1"))</td>
+                    <td class="number">@((Model.WinRatio * 100.0).ToString("N1"))</td>
+                    <td>%</td>
+                    <td>@Resources.WinRateStatsExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.WN8</td>
+                    <td class="number-integer" title="@Model.LastMonth.AverageWn8.ToRatingString()" style="background-color: @Model.LastMonth.AverageWn8.ToWebColor();">@Model.LastMonth.AverageWn8.ToString("N0")</td>
+                    <td class="number-integer" title="@Model.AverageWn8.ToRatingString()" style="background-color: @Model.AverageWn8.ToWebColor();">@Model.AverageWn8.ToString("N0")</td>
+                    <td></td>
+                    <td>@Resources.Wn8StatsAverage</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.Mastery</td>
+                    <td class="number">@Model.LastMonth.MarkOfMastery.ToString("N1")</td>
+                    <td class="number">@Model.MarkOfMastery.ToString("N1")</td>
+                    <td></td>
+                    <td>@Resources.MasteryExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.TreesCut</td>
+                    <td class="number">@Model.LastMonth.TreesCut.ToString("N1")</td>
+                    <td class="number">@Model.TreesCut.ToString("N1")</td>
+                    <td>@Resources.TreesCutUnit</td>
+                    <td>@Resources.TreesCutJoke</td>
+                </tr>
+
+                <tr>
+                    <td rowspan="19" style="transform: rotate(-90deg);">@Resources.Atack</td>
+                    <td>@Resources.Damage</td>
+                    <td class="number-integer">@Model.LastMonth.DamageDealt.ToString("N0")</td>
+                    <td class="number-integer">@Model.DamageDealt.ToString("N0")</td>
+                    <td>@Resources.HP</td>
+                    <td>@Resources.DamageExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.TrackDamage</td>
+                    <td class="number-integer">@Model.LastMonth.DamageAssistedTrack.ToString("N0")</td>
+                    <td class="number-integer">@Model.DamageAssistedTrack.ToString("N0")</td>
+                    <td>@Resources.HP</td>
+                    <td>@Resources.TrackDamageExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.SpotDamage</td>
+                    <td class="number-integer">@Model.LastMonth.DamageAssistedRadio.ToString("N0")</td>
+                    <td class="number-integer">@Model.DamageAssistedRadio.ToString("N0")</td>
+                    <td>@Resources.HP</td>
+                    <td>@Resources.SpotDamageExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.AssistedDamage</td>
+                    <td class="number-integer">@Model.LastMonth.DamageAssisted.ToString("N0")</td>
+                    <td class="number-integer">@Model.DamageAssisted.ToString("N0")</td>
+                    <td>@Resources.HP</td>
+                    <td>@Resources.AssistedDamageExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.CombinedDamage</td>
+                    <td class="number-integer">@Model.LastMonth.TotalDamage.ToString("N0")</td>
+                    <td class="number-integer">@Model.TotalDamage.ToString("N0")</td>
+                    <td>@Resources.HP</td>
+                    <td>@Resources.CombinedDamageExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.Kills</td>
+                    <td class="number">@Model.LastMonth.Kills.ToString("N1")</td>
+                    <td class="number">@Model.Kills.ToString("N1")</td>
+                    <td></td>
+                    <td>@Resources.KillsExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.MaxKills</td>
+                    <td class="number">@Model.LastMonth.MaxKills.ToString("N1")</td>
+                    <td class="number">@Model.MaxKills.ToString("N1")</td>
+                    <td></td>
+                    <td>@Resources.MaxKillsExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.Spotted</td>
+                    <td class="number">@Model.LastMonth.Spotted.ToString("N1")</td>
+                    <td class="number">@Model.Spotted.ToString("N1")</td>
+                    <td></td>
+                    <td>@Resources.SpottedExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.Capture</td>
+                    <td class="number">@Model.LastMonth.CapturePoints.ToString("N1")</td>
+                    <td class="number">@Model.CapturePoints.ToString("N1")</td>
+                    <td>@Resources.Points</td>
+                    <td>@Resources.CaptureExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.Shots</td>
+                    <td class="number">@Model.LastMonth.Shots.ToString("N1")</td>
+                    <td class="number">@Model.Shots.ToString("N1")</td>
+                    <td></td>
+                    <td>@Resources.ShotsExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.Hits</td>
+                    <td class="number">@Model.LastMonth.Hits.ToString("N1")</td>
+                    <td class="number">@Model.Hits.ToString("N1")</td>
+                    <td></td>
+                    <td>@Resources.HitsExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.HitRatio</td>
+                    <td class="number">@((Model.LastMonth.HitRatio * 100.0).ToString("N1"))</td>
+                    <td class="number">@((Model.HitRatio * 100.0).ToString("N1"))</td>
+                    <td>%</td>
+                    <td>@Resources.HitRatioExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.Piercings</td>
+                    <td class="number">@Model.LastMonth.Piercings.ToString("N1")</td>
+                    <td class="number">@Model.Piercings.ToString("N1")</td>
+                    <td></td>
+                    <td>@Resources.PiercingsExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.PiercingRatio</td>
+                    <td class="number">@((Model.LastMonth.PiercingRatio * 100.0).ToString("N1"))</td>
+                    <td class="number">@((Model.PiercingRatio * 100.0).ToString("N1"))</td>
+                    <td>%</td>
+                    <td>@Resources.PiercingRatioExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.PiercingShotRatio</td>
+                    <td class="number">@((Model.LastMonth.PiercingsToShotsRatio * 100.0).ToString("N1"))</td>
+                    <td class="number">@((Model.PiercingsToShotsRatio * 100.0).ToString("N1"))</td>
+                    <td>%</td>
+                    <td>@Resources.PiercingShotRatioExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.ExplosionHits</td>
+                    <td class="number">@Model.LastMonth.ExplosionHits.ToString("N1")</td>
+                    <td class="number">@Model.ExplosionHits.ToString("N1")</td>
+                    <td></td>
+                    <td>@Resources.ExplosionHitsExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.DamagePiercing</td>
+                    <td class="number-integer">@Model.LastMonth.DamagePerEffectiveHit.ToString("N0")</td>
+                    <td class="number-integer">@Model.DamagePerEffectiveHit.ToString("N0")</td>
+                    <td>@Resources.HP</td>
+                    <td>@Resources.DamagePiercingExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.DPM</td>
+                    <td class="number-integer">@Model.LastMonth.DamageDealtPerMinute.ToString("N0")</td>
+                    <td class="number-integer">@Model.DamageDealtPerMinute.ToString("N0")</td>
+                    <td>@Resources.DPMUnit</td>
+                    <td>@Resources.DPMExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.CombinedDPM</td>
+                    <td class="number-integer">@Model.LastMonth.TotalDamagePerMinute.ToString("N0")</td>
+                    <td class="number-integer">@Model.TotalDamagePerMinute.ToString("N0")</td>
+                    <td>@Resources.DPMUnit</td>
+                    <td>@Resources.CombinedDPMExplanation</td>
+                </tr>
+
+                <tr>
+                    <td rowspan="9" style="transform: rotate(-90deg);">@Resources.Defense</td>
+                    <td>@Resources.SurvivalRate</td>
+                    <td class="number">@((Model.LastMonth.SurvivalRate * 100.0).ToString("N1"))</td>
+                    <td class="number">@((Model.SurvivalRate * 100.0).ToString("N1"))</td>
+                    <td>%</td>
+                    <td>@Resources.SurvivalRateExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.KillDeath</td>
+                    <td class="number">@Model.LastMonth.KillDeathRatio.ToString("N1")</td>
+                    <td class="number">@Model.KillDeathRatio.ToString("N1")</td>
+                    <td></td>
+                    <td>@Resources.KillDeathExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.DamageReceived</td>
+                    <td class="number-integer">@Model.LastMonth.DamageReceived.ToString("N0")</td>
+                    <td class="number-integer">@Model.DamageReceived.ToString("N0")</td>
+                    <td>HP</td>
+                    <td>@Resources.DamageReceivedExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.DamageRatio</td>
+                    <td class="number">@Model.LastMonth.DamageRatio.ToString("N1")</td>
+                    <td class="number">@Model.DamageRatio.ToString("N1")</td>
+                    <td></td>
+                    <td>@Resources.DamageRatioExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.HitsReceived</td>
+                    <td class="number">@Model.LastMonth.DirectHitsReceived.ToString("N1")</td>
+                    <td class="number">@Model.DirectHitsReceived.ToString("N1")</td>
+                    <td></td>
+                    <td>@Resources.HitsReceivedExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.ExplosionHitsReceived</td>
+                    <td class="number">@Model.LastMonth.ExplosionHitsReceived.ToString("N1")</td>
+                    <td class="number">@Model.ExplosionHitsReceived.ToString("N1")</td>
+                    <td></td>
+                    <td>@Resources.ExplosionHitsReceivedExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.PiercingsReceived</td>
+                    <td class="number">@Model.LastMonth.PiercingReceived.ToString("N1")</td>
+                    <td class="number">@Model.PiercingReceived.ToString("N1")</td>
+                    <td></td>
+                    <td>@Resources.PiercingsReceivedExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.Blocked</td>
+                    <td class="number">@((Model.LastMonth.BlockedRatio * 100.0).ToString("N1"))</td>
+                    <td class="number">@((Model.BlockedRatio * 100.0).ToString("N1"))</td>
+                    <td>%</td>
+                    <td>@Resources.BlockedExplanation</td>
+                </tr>
+                <tr>
+                    @*<td></td>*@
+                    <td>@Resources.DroppedCapture</td>
+                    <td class="number">@Model.LastMonth.DroppedCapturePoints.ToString("N1")</td>
+                    <td class="number">@Model.DroppedCapturePoints.ToString("N1")</td>
+                    <td>@Resources.Points</td>
+                    <td>@Resources.DroppedCaptureExplanation</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-1"></div>
+</section>
+
+<div class="clearfix"></div>
+
+<section id="TargetDamage">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <h2>@Resources.TargetDamage</h2>
+
+        @if (GlobalHelper.Language == "pt")
+        {
+            <p>
+                Esta tabela mostra quanto dano você deve fazer, em média, por batalha, para obter a classificação WN8 que está na esquerda.
+                <b>Dano Direto</b> é cerca de 60% da formula do WN8, esta tabela assume que você, para todos os outros valores, faça examente o mesmo que os <a href="~/Tanks/WN8">valores esperados</a>.
+                O número de penetrações e disparos para obter tal dano são estimados usando os valores <a href="#Data">recentes</a>.
+            </p>
+        }
+        else
+        {
+            <p>
+                This table shows how much damage you should do, on average, per battle, to achieve the WN8 rating on the left.
+                <b>Direct Damage</b> accounts for about 60% of the WN8 formulae, this table assumes you do, for the other values, the exact same <a href="~/Tanks/WN8">expected values</a>.
+                The number of piercings and shots to achieve such damage are estimated using the recent <a href="#Data">data</a>.
+            </p>
+        }
+
+        <table class="data table-striped" id="TargetDamageTable">
+            <thead>
+                <tr>
+                    <th>@Resources.Rating</th>
+                    <th>@Resources.WN8</th>
+                    <th>@Resources.Damage</th>
+                    <th>@Resources.Piercings</th>
+                    <th>@Resources.Shots</th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <tr class="@(((double)Wn8Rating.Average).ToLabelClass())" style="background-color: @(((double)Wn8Rating.Average).ToWebColor());">
+                    <td>@Resources.ResourceManager.GetString($"Wn8{Wn8Rating.Average}")</td>
+                    <td class="number-integer">@((int)Wn8Rating.Average)</td>
+                    <td class="number-integer">@Model.TargetDamageAverage.ToString("N0")</td>
+                    <td class="number-integer">@Model.TargetDamageAveragePiercings.ToString("N0")</td>
+                    <td class="number-integer">@Model.TargetDamageAverageShots.ToString("N0")</td>
+                </tr>
+                <tr class="@(((double)Wn8Rating.Good).ToLabelClass())" style="background-color: @(((double)Wn8Rating.Good).ToWebColor());">
+                    <td>@Resources.ResourceManager.GetString($"Wn8{Wn8Rating.Good}")</td>
+                    <td class="number-integer">@((int)Wn8Rating.Good)</td>
+                    <td class="number-integer">@Model.TargetDamageGood.ToString("N0")</td>
+                    <td class="number-integer">@Model.TargetDamageGoodPiercings.ToString("N0")</td>
+                    <td class="number-integer">@Model.TargetDamageGoodShots.ToString("N0")</td>
+                </tr>
+                <tr class="@(((double)Wn8Rating.Great).ToLabelClass())" style="background-color: @(((double)Wn8Rating.Great).ToWebColor());">
+                    <td>@Resources.ResourceManager.GetString($"Wn8{Wn8Rating.Great}")</td>
+                    <td class="number-integer">@((int)Wn8Rating.Great)</td>
+                    <td class="number-integer">@Model.TargetDamageGreat.ToString("N0")</td>
+                    <td class="number-integer">@Model.TargetDamageGreatPiercings.ToString("N0")</td>
+                    <td class="number-integer">@Model.TargetDamageGreatShots.ToString("N0")</td>
+                </tr>
+                <tr class="@(((double)Wn8Rating.Unicum).ToLabelClass())" style="background-color: @(((double)Wn8Rating.Unicum).ToWebColor());">
+                    <td>@Resources.ResourceManager.GetString($"Wn8{Wn8Rating.Unicum}")</td>
+                    <td class="number-integer">@((int)Wn8Rating.Unicum)</td>
+                    <td class="number-integer">@Model.TargetDamageUnicum.ToString("N0")</td>
+                    <td class="number-integer">@Model.TargetDamageUnicumPiercings.ToString("N0")</td>
+                    <td class="number-integer">@Model.TargetDamageUnicumShots.ToString("N0")</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-3"></div>
+</section>
+
+<div class="clearfix"></div>
+
+<section id="ExpectedWn8">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <h2>@Resources.WN8SubTitle</h2>
+
+        <table id="ExpectedWn9Table" class="data table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Resources.Metric
+                    </th>
+                    <th>
+                        @Resources.Value
+                    </th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <tr>
+                    <td>@Resources.Damage</td>
+                    <td class="number-integer">@Model.Wn8Values.Damage.ToString("N0")</td>
+                </tr>
+                <tr>
+                    <td>@Resources.WinRate %</td>
+                    <td class="number">@((Model.Wn8Values.WinRate * 100.0).ToString("N1"))</td>
+                </tr>
+                <tr>
+                    <td>@Resources.Kills</td>
+                    <td class="number">@Model.Wn8Values.Frag.ToString("N1")</td>
+                </tr>
+                <tr>
+                    <td>@Resources.Spotted</td>
+                    <td class="number">@Model.Wn8Values.Spot.ToString("N1")</td>
+                </tr>
+                <tr>
+                    <td>@Resources.DroppedCapture</td>
+                    <td class="number">@Model.Wn8Values.Def.ToString("N1")</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-3"></div>
+</section>
+
+<div class="clearfix"></div>
+
+@if (Model.HasLeaders)
+{
+    <section id="Leaders" class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <h2>@Resources.Leaderboard</h2>
+            <table class="data table-striped" id="acesTable">
+                <thead>
+                    <tr>
+                        <th rowspan="2">@Resources.Clan</th>
+                        <th rowspan="2">@Resources.Commander</th>
+                        <th rowspan="2">@Resources.Rank</th>
+                        <th rowspan="2">
+                            <img alt="@Resources.Battles" title="@Resources.Battles" height="18" src="~/Images/battles-fought.png" />
+                        </th>
+                        <th colspan="3" class="sort-key">@Resources.Damage</th>
+                        @*extend*@
+                        @*extend*@
+                        <th colspan="2">@Resources.Kills</th>
+                        @*extend*@
+                    </tr>
+                    <tr>
+                        @*extend*@
+                        @*extend*@
+                        @*extend*@
+                        @*extend*@
+                        <th>@Resources.Direct</th>
+                        <th>@Resources.Assisted</th>
+                        <th class="sort-key">@Resources.Combined</th>
+                        <th>@Resources.Avg</th>
+                        <th>@Resources.Max</th>
+                    </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    @foreach (var t in Model.Leaders)
+                    {
+                        <tr id="tank-id-@t.PlayerId.ToString()">
+                            <td class="text-nowrap">
+                                <a href="~/Clan/@t.ClanTag">@t.ClanTag</a>
+                                @if (!string.IsNullOrWhiteSpace(t.ClanFlag))
+                                {
+                                    <img src="~/Images/Flags/@(t.ClanFlag).png" alt="@t.ClanFlag" title="@t.ClanFlag.ToUpperInvariant()" />
+                                }
+                            </td>
+                            <td style="white-space: nowrap;">
+                                <a href="@GlobalHelper.GetPlayerUrl(t.ClanTag, t.PlayerId)" rel="nofollow" @GlobalHelper.ExternalTarget>
+                                    @t.GamerTag
+                                </a>
+                            </td>
+                            <td class="number-integer">@t.Order.ToString("N0")</td>
+                            <td class="number-integer">@t.Battles.ToString("N0")</td>
+                            <td class="number-integer">@t.DirectDamage.ToString("N0")</td>
+                            <td class="number-integer">@t.DamageAssisted.ToString("N0")</td>
+                            <td class="number-integer">@t.TotalDamage.ToString("N0")</td>
+                            <td class="number">@t.Kills.ToString("N2")</td>
+                            <td class="number-integer">@t.MaxKills.ToString("N0")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-2"></div>
+
+    </section>
+
+
+    <div class="clearfix"></div>
+
+    <section id="MoE" class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <h2>@Resources.MoE</h2>
+            <p>@Html.Raw(Resources.MoEExplanation)</p>
+            <table class="data table-striped" id="MoETable">
+                <thead>
+                    <tr>
+                        <th>@Resources.Mark</th>
+                        <th>%</th>
+                        <th>@Resources.CombinedDamage</th>
+                    </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    <tr>
+                        <td class="number-integer">1</td>
+                        <td class="number-integer">65</td>
+                        <td class="number-integer">@Model.MoE1Mark.ToString("N0")</td>
+                    </tr>
+                    <tr>
+                        <td class="number-integer">2</td>
+                        <td class="number-integer">85</td>
+                        <td class="number-integer">@Model.MoE2Mark.ToString("N0")</td>
+                    </tr>
+                    <tr>
+                        <td class="number-integer">3</td>
+                        <td class="number-integer">95</td>
+                        <td class="number-integer">@Model.MoE3Mark.ToString("N0")</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4"></div>
+    </section>
+}
+
+@section scripts {
+
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js  "></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            var decimalSeparator = $("body").data("requestDecimalSeparator");
+            var groupingSeparator = $("body").data("requestGroupingSeparator");
+
+            // Função de ordenção numerica do lado do cliente
+            jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+                "numeric-flex-pre": function (a) {
+                    if (a === "") {
+                        return 0.0;
+                    }
+                    if (a === "-") {
+                        return 0.0;
+                    }
+
+                    if (a.substring(0, 3) === "<a ") {
+                        a = a.match(/<a [^>]+>([^<]+)<\/a>/)[1];
+                    }
+
+                    a = a.replace(groupingSeparator, "");
+                    a = a.replace("%", "");
+                    a = a.replace(decimalSeparator, ".");
+
+                    return parseFloat(a);
+                },
+
+                "numeric-flex-asc": function (a, b) {
+                    return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+                },
+
+                "numeric-flex-desc": function (a, b) {
+                    return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+                }
+            });
+
+            jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+                "date-iso-pre": function (a) {
+
+                    if (a.substring(0, 3) === "<a ") {
+                        a = a.match(/<a [^>]+>([^<]+)<\/a>/)[1];
+                    }
+
+                    var brDate = a.split("-");
+                    return (brDate[0] + brDate[1] + brDate[2]) * 1;
+                },
+
+                "date-iso-asc": function (a, b) {
+                    return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+                },
+
+                "date-iso-desc": function (a, b) {
+                    return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+                }
+            });
+
+            var oAcesTable = $("#acesTable").DataTable({
+                paging: false,
+                info: false,
+                searching: false,
+                columnDefs: [
+                    { type: "numeric-flex", targets: [2, 3, 4, 5, 6, 7, 8] },
+                    { orderable: false, targets: [] },
+                    { searchable: false, targets: [2, 3, 4, 5, 6, 7, 8] }
+                ],
+                order: [[2, "asc"]],
+                dom: "t",
+                language: {
+                    paginate: {
+                        previous: "@Resources.Previous",
+                        next: "@Resources.Next"
+                    }
+                }
+            });
+        });
+    </script>
+}

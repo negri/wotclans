@@ -1,0 +1,204 @@
+﻿@using Negri.Wot.Properties
+
+@{
+    ViewBag.Title = "Donate!";
+}
+
+@section extraHeaders {
+    <meta name="description" content="Donate to keep this site up and running withou ads!">    
+}
+
+@section lead {
+    <section class="jumbotron top-banner">
+        <h1>@Resources.Donate</h1>
+        <p>
+            @Resources.DonateExplain
+        </p>
+    </section>
+}
+
+
+<section class="row">
+
+    <div class="col-md-3"></div>
+    <div class="col-md-6 alert alert-success">
+
+        @if (GlobalHelper.Language == "pt")
+        {
+            <h4>Obrigado!</h4>
+            <p>
+                Graças a generosidade de 6 jogadores incríveis <span style="font-size: xx-small">(nenhum brasileiro...)</span> os servidores estão completamente pagos por 2018! Viva!
+            </p>
+        }
+        else
+        {
+            <h4>Thanks!</h4>
+            <p>
+                Due to the generosity of 6 awesome players the servers are fully paid for 2018! Yay!
+            </p>
+        }
+    </div>
+    <div class="col-md-3"></div>
+</section>
+
+<section class="row">
+    <div class="col-md-12">
+        @if (GlobalHelper.Language == "pt")
+        {
+            <h3>Sua ajuda é muito apreciada!</h3>
+            <p>
+                Eu comecei esse site em Fevereito de 2016 como um hobby, para verificar facilmente minhas estatísticas e as do meu clã. Inicialmente apenas em português, e com bem poucos outros clãs.
+                Eu nem mesmo usava um banco de dados, somente um monte de arquivos texto, pois havia pouca informação.
+            </p>
+            <p>
+                Então mais pessoas no Brasil começaram a usar o site, e pedirem para incluir seus clãs. Logo alguns ao redor do mundo também me pediam para colocar seus clãs,
+                então em fiz uma versão em Inglês. Agora, nos últimos dias de 2017, eu estou rastreando 1.282 clãs ativos e quase 28.500 jogadores.
+                Estou usando uma banco de dados com 11GB e servindo mais mais de 100.000 páginas por mês!
+            </p>
+            <p>
+                Mas o melhor de tudo: eu me tornei parte de uma comunidade maior de jogadores. Eu ainda estou <a href="http://wotinfo.net/en/recent?playerid=1763298&server=xbox">longe de ser Unicum</a>,
+                mas algumas vezes as pessoas mandam-me mensagens no começo de partidas. É recompensador.
+            </p>
+            <p>
+                Em 2017 eu criei as páginas de <a href="~/Tanks/MoE">MoE</a>, <a href="~/Leaderboard/All">Líderes</a> e <a href="~/Leaderboard/All">Ases</a>.
+                Espero ter tempo em 2018 para programar uma tradução decente para espanhol, página de estatísticas por tanques,
+                expandir o banco de dados para rastrear todo clã com pelo menos 7 membros e colocar detalhes por tanque na página de clãs.
+            </p>
+            <p>
+                Mas existe via real, fora do World of Tanks, e eu tenho de pagar pelo servidor que hospeda esse site. Não é muito, eu uso <a href="http://www.smarterasp.net/">SmarterASP.NET</a>
+                e eles provem um serviço estelar e acessível, mas não é de graça. Para o próximo ano, mantendo tudo onde está, acabou de me custar <b>US$165,40</b>, o equivalente a ~R$547,47.
+            </p>
+            <p style="text-decoration: line-through">
+                Eu retirarei a mensagem pedindo doações do topo das páginas tão logo consiga receber os custos de hospedagem. Hoje, em 2017-12-11, após 4 doações, ainda faltam US$131,57, o equivalente a ~R$432,88.
+            </p>
+            <p>
+                <b>
+                    Graças a generosidade de 6 invejáveis jogadores os servidores estão totalmente pagos por 2018!
+                </b>
+            </p>
+            <p>
+                <b>Eu estou pedindo sua ajuda. Eu não quero estragar o layout colocando propaganda. Então, qualquer quantidade será aprecisada.</b>
+            </p>
+        }
+        else
+        {
+            <h3>Your help is pretty much apreciated!</h3>
+            <p>
+                I started this site in February 2016 as a hobby, to easily check my statistics and those of my clan. At first only in Portuguese, and very few clans.
+                I didn't even used a database, only a bunch of text files, as there was so few data.
+            </p>
+            <p>
+                Then, more people in Brazil estarted to use the site, and ask to include their clans. And soom some people around the world asked to include their clans,
+                and I delivered an English version. Right now, at the last days of 2017, I'm tracking 1,282 active clans and almost 28,500 players.
+                I'm using a 11GB database and serving more than 100,000 pages per month!
+            </p>
+            <p>
+                But the best of it all: I became part of a large community of players. I'm still <a href="http://wotinfo.net/en/recent?playerid=1763298&server=xbox">far from Unicum</a>,
+                but sometimes people send me messages at the start of matches. It's rewarding.
+            </p>
+            <p>
+                In 2017 I introduced the <a href="~/Tanks/MoE">MoE</a>, <a href="~/Leaderboard/All">Leaderboard</a> and <a href="~/Leaderboard/All">Ace</a> pages.
+                I hope to have time em 2018 to program a propper translation to Spanish, pages for statistics by tank,
+                expand the database to track every clan with at least 7 members and to put per tank details on the clans page.
+            </p>
+            <p>
+                But there is real life, ouside of World of Tanks, and I need to pay for the server that hosts this site. It's not much, I use <a href="http://www.smarterasp.net/">SmarterASP.NET</a>
+                and they provide a stellar and affordable service, but it's not free. For the next year, keeping everything where it is, it just cost me <b>US$165.40</b>.
+            </p>
+            <p style="text-decoration: line-through">
+                I will take off the message asking for donations from the pages' top as soon as I can recover these hosting costs. Today, 2017-12-11, after 4 donations, I'm still missing US$131.57.
+            </p>
+            <p>
+                <b>
+                    Thanks for the generosity of 6 awesome players the servers are fully paid for 2018!
+                </b>
+            </p>
+            <p>
+                <b>I'm asking you to help me. I don't want to ruin the layout puting ads. So, any ammout would be apreciated.</b>
+            </p>
+        }
+        <section class="row alert alert-info" id="donateSection">
+            <div class="col-md-6">
+                <p><strong>@Resources.DonatePayPal</strong></p>
+                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                    <input type="hidden" name="cmd" value="_s-xclick">
+                    <input type="hidden" name="hosted_button_id" value="WMJHL526KCSZE">
+                    <input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online!">
+                    <img alt="" border="0" src="https://www.paypalobjects.com/pt_BR/i/scr/pixel.gif" width="1" height="1">
+                </form>
+                <p></p>
+                @if (GlobalHelper.Language == "pt")
+                {
+                    <p><strong>Doe com PicPay</strong></p>
+                    <p>
+                        Envie qualquer quantia para @@negrijp
+                    </p>
+                }
+            </div>
+            <div class="col-md-6">
+                <p>@Resources.DonateCrypto</p>
+                <p>
+                    <a class="btn btn-warning" style="width: 8em;" title="Donate using Bitcoin by sending to adress 1GkCiKF812KqU7GyFsZ4faUaRTewKn8rFF" href="bitcoin:1GkCiKF812KqU7GyFsZ4faUaRTewKn8rFF?label=WotClans">Bitcoin</a>
+                    <span>
+                        <strong style="font-family: monospace;">1GkCiKF812KqU7GyFsZ4faUaRTewKn8rFF</strong>
+                    </span>
+                </p>
+                <p>
+                    <a class="btn btn-warning" style="width: 8em;" title="Donate using Ethereum by sending to adress 0x5547483275723a8d7b057deb2f177831ace72cda" href="ethereum:0x5547483275723a8d7b057deb2f177831ace72cda?label=WotClans">Ethereum</a>
+                    <span>
+                        <strong style="font-family: monospace;">0x5547483275723a8d7b057deb2f177831ace72cda</strong>
+                    </span>
+                </p>
+                <p>
+                    <a class="btn btn-warning" style="width: 8em;" title="Donate using Litecoin by sending to adress LeRsS7PhYbfSssmrRs9sKPhPLBkcZxxb3N" href="litecoin:LeRsS7PhYbfSssmrRs9sKPhPLBkcZxxb3N?label=WotClans">Litecoin</a>
+                    <span>
+                        <strong style="font-family: monospace;">LeRsS7PhYbfSssmrRs9sKPhPLBkcZxxb3N</strong>
+                    </span>
+                </p>
+                <p>
+                    <a class="btn btn-warning" style="width: 8em;" title="Donate using Dash by sending to adress XiRRPtNUgBcxApMcce3iDB17YjqNxPj8Nw" href="dash:XiRRPtNUgBcxApMcce3iDB17YjqNxPj8Nw?label=WotClans">Dash</a>
+                    <span>
+                        <strong style="font-family: monospace;">XiRRPtNUgBcxApMcce3iDB17YjqNxPj8Nw</strong>
+                    </span>
+                </p>
+                <p>
+                    <a class="btn btn-warning" style="width: 8em;" title="Donate using Bitcoin Cash by sending to adress 1BfHhhuow8DXeBZC1UgtMJ9evnKp1vZWqo" href="bch:XiRRPtNUgBcxApMcce3iDB17YjqNxPj8Nw?label=WotClans">Bitcoin Cash</a>
+                    <span>
+                        <strong style="font-family: monospace;">1BfHhhuow8DXeBZC1UgtMJ9evnKp1vZWqo</strong>
+                    </span>
+                </p>
+            </div>
+        </section>
+        <section id="thanks">
+            @if (GlobalHelper.Language == "pt")
+            {
+                <p>
+                    Muito obrigado por usar meu site, ler essa página, e contribuir!
+                </p>
+                <p>
+                    Boas Batlhas!
+                </p>
+                <p>
+                    cordialmente, <i>JP Negri</i>
+                </p>
+            }
+            else
+            {
+                <p>
+                    Thank you very much for using my site, reading this page, and contributing!
+                </p>
+                <p>
+                    Good Battles!
+                </p>
+                <p>
+                    yours, <i>JP Negri</i>
+                </p>
+            }
+
+        </section>
+
+    </div>
+</section>
+
+
+

@@ -1,0 +1,348 @@
+﻿@using System.Globalization
+@using Negri.Wot.Properties
+@model Negri.Wot.Models.TankLeaders
+@{
+    ViewBag.Title = "Leaderboard";
+}
+
+@section extraHeaders {
+    <link href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css " rel="stylesheet" type="text/css" />
+    <meta name="description" content="Leaderboard - The leaders on each tank on WoT">    
+    <style>
+        #mainTable_filter {
+            text-align: left;
+        }
+
+        #mainTable_paginate {
+            text-align: left;
+        }
+
+
+
+    </style>
+}
+
+@section lead {
+    <section class="jumbotron top-banner">
+        @if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "pt")
+        {
+            <h1 lang="pt">Placar de Líderes</h1>
+            <h2 lang="pt">Os 25 melhores jogadores de clãs em cada tanque.</h2>
+        }
+        else
+        {
+            <h1>Leaderboard</h1>
+            <h2>The top 25 best clan players on each tank.</h2>
+        }
+        <p>
+            @string.Format("Calculated at {0:d}.", Model.Date)
+        </p>
+    </section>
+}
+
+<section id="main" class="row">
+    <div class="col-md-12">
+
+        <div id="filters" class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <input type="text" id="searchBox" class="form-control" placeholder="Search">
+                    </div>
+                    <div class="col-md-3" id="nationButtons">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Usa"><img src="~/Images/Nations/1.png" height="18" alt="USA" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Germany"><img src="~/Images/Nations/7.png" height="18" alt="Germany" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Ussr"><img src="~/Images/Nations/3.png" height="18" alt="USSR" /></button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Uk"><img src="~/Images/Nations/5.png" height="18" alt="UK" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="France"><img src="~/Images/Nations/2.png" height="18" alt="France" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Japan"><img src="~/Images/Nations/6.png" height="18" alt="Japan" /></button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="China"><img src="~/Images/Nations/4.png" height="18" alt="China" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Czechoslovakia"><img src="~/Images/Nations/8.png" height="18" alt="Czeckoslovakia" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Sweden"><img src="~/Images/Nations/9.png" height="18" alt="Sweden" /></button>
+                        </div>
+                    </div>
+                    <div class="col-md-2" id="typesButtons">
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Light"><img src="~/Images/Types/4.svg" width="18" height="18" alt="Light" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Medium"><img src="~/Images/Types/3.svg" width="18" height="18" alt="Medium" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Heavy"><img src="~/Images/Types/1.svg" width="18" height="18" alt="Heavy" /></button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="TankDestroyer"><img src="~/Images/Types/2.svg" width="18" height="18" alt="Tank Destroyer" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Artillery"><img src="~/Images/Types/5.svg" width="18" height="18" alt="Arty" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Premium"><img src="~/Images/Types/premium.svg" width="18" height="18" alt="Premium" /></button>
+                        </div>
+
+                    </div>
+                    <div class="col-md-4" id="tiersButtons">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-tier" data-tier="5" aria-label="5">V</button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="6" aria-label="6">VI</button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="7" aria-label="7">VII</button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="8" aria-label="8">VIII</button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="9" aria-label="9">IX</button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="10" aria-label="10">X</button>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-warning" aria-label="Reset" id="resetFilters">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="data table-striped tc1 tc2 tc3 tr7 tr8 tr9 tr10 tr11 tr12 tr13" id="mainTable" 
+               data-total-leaders="@Model.TotalLeaders" data-api-url="@Href("~/Leaderboard/Grid")">
+            <thead>
+                <tr>
+                    <th rowspan="2"><img alt="@Resources.Nation" title="@Resources.Nation" height="18" src="~/Images/Nations/Globe_icon.svg" /></th>
+                    <th rowspan="2"><img alt="@Resources.Type" title="@Resources.Type" height="18" src="~/Images/Types/types.png" /></th>
+                    <th rowspan="2"><span style="white-space: nowrap;" title="@Resources.Tier">V-X</span></th>
+                    <th rowspan="2">@Resources.Tank</th>
+                    <th rowspan="2">@Resources.Clan</th>
+                    <th rowspan="2">@Resources.Commander</th>
+                    <th rowspan="2">@Resources.Rank</th>
+                    <th rowspan="2">
+                        <img alt="@Resources.Battles" title="@Resources.Battles" height="18" src="~/Images/battles-fought.png" />
+                    </th>
+                    <th colspan="3" class="sort-key">@Resources.Damage</th>
+                    @*extend*@
+                    @*extend*@
+                    <th colspan="2">@Resources.Kills</th>
+                    @*extend*@
+                </tr>
+                <tr>
+                    @*extend*@
+                    @*extend*@
+                    @*extend*@
+                    @*extend*@
+                    @*extend*@
+                    @*extend*@
+                    @*extend*@
+                    <th>@Resources.Direct</th>
+                    <th>@Resources.Assisted</th>
+                    <th class="sort-key">@Resources.Combined</th>
+                    <th>@Resources.Avg</th>
+                    <th>@Resources.Max</th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
+<section id="acesInfo" class="row" style="padding-top: 1em;">
+    <div class="col-md-2"></div>
+    <div class="col-md-8 info alert-info">
+        @if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "pt")
+        {
+            <h3 class="text-center" style="margin-top: 5px; margin-bottom: 5px;">Informações</h3>
+            <ol>
+                <li>Estes são os melhores 25 jogadores de <b>clãs</b>, por <b>dano combinado</b> histórico médio.</li>
+                <li>Dano Combinado é a soma de dano por assistência (Rádio e Tracking) e dano direto.</li>
+                <li>Está página não tem nada a ver com <i>maestria</i> nos tanques.</li>
+                <li>Estes dados são atualizados automaticamente nas primeiras horas (UTC) de toda Terça-Feira.</li>
+                <li>Para aparecer na lista é preciso ter jogado pelo menos Tier x 10 partidas (então um jogador de Tiger I tem ter feito pelo menos 70 partidas nele), e ter feito ao menos uma partida com o tanque nos últimos 3 meses, e ter feito pelo menos 1.000 partidas no jogo.</li>
+                <li>Se um tanque não aparece na lista é porque há menos de 100 jogadores nele que atendem aos requisitos. Não faz sentido criar um top 25 dentre somente 50...</li>
+                <li>Eu não gosto de <i>massacrar foquinhas</i>, então não há tanques de tier IV e abaixo, nem me peça.</li>            
+            </ol>
+        }
+        else
+        {
+            <h3 class="text-center" style="margin-top: 5px; margin-bottom: 5px;">Information</h3>
+            <ol>
+                <li>These are the best top 25 <b>clan</b> players, by overall average <b>Combined Damage</b>.</li>
+                <li>Combined Damage is the sum of Radio Assisted Damage, Tracking Assisted Damage and Direct Damage.</li>
+                <li>This page is not related to <i>maestry badges</i> on tanks.</li>
+                <li>This data is automatically updated on the first hours (UTC) of every Tuesday.</li>
+                <li>To appear on the list one must have played at least tier x 10 battles on the tank (so a Tiger I player must have at least 70 battles in it), and had at least one battle with the tank on the last 3 months, and have at least 1,000 battles in the game.</li>
+                <li>If a tank doesn't appear on the list it's because there are less than 100 players on it with the requirements. There's no sense in creating a top 25 among only 50...</li>
+                <li>I don't like <i>seal clubbing</i>, so there are no tanks on tier 4 and bellow, don't even ask.</li>
+            </ol>
+        }
+    </div>
+    <div class="col-md-2"></div>
+</section>
+
+
+@section scripts {
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js  "></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var apiUrl = $("#mainTable").data("apiUrl");
+            var plataform = $("body").data("plataformTag");
+            var isMobile = $("body").data("isMobile") === "1";
+            var rootUrl = $("body").data("rootUrl");
+
+            var oTable = $("#mainTable").DataTable({
+                paging: true,
+                lengthChange: false,
+                pageLength: 25,
+                pagingType: "numbers",
+                info: false,
+                searching: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: apiUrl,
+                    type : "POST"
+                },                
+                columnDefs: [                    
+                    { searchable: false, targets: [6, 7, 8, 9, 10, 11, 12] }
+                ],
+                columns: [
+                    {
+                        data: "Nation",
+                        render: function(data, type, full, meta) {
+                            var a = data.split("|");
+                            return '<img height="18" title="' + a[1] + '" alt="' + a[1] + '" src="../Images/Nations/' + a[0] + '.png" />';
+                        },
+                        className: "text-center"
+                    },
+                    {
+                        data: "Type",
+                        render: function (data, type, full, meta) {
+                            var a = data.split("|");
+                            return '<img height="18" title="' + a[1] + '" alt="' + a[1] + '" src="../Images/Types/' + a[0] + '.svg" />';
+                        },
+                        className: "text-center"
+                    },
+                    { data: "Tier" },
+                    {
+                        data: "Tank",
+                        render: function (data, type, full, meta) {
+                            var a = data.split("|");
+                            var s = '<a href="' + rootUrl + 'Tanks/' +a[5] + '">';
+                            s = s + '<span class="' + a[3] + '" title="' + a[2] + '">';
+                            s = s + a[0] + '</span></a>';
+                            return s;
+                        },
+                        className: "text-center"
+                    },
+                    {
+                        data: "ClanTag",
+                        render: function (data, type, full, meta) {
+                            var a = data.split("|");
+                            var s = '<a href="../Clan/' + a[0] + '#leaders">';
+                            s = s + a[0];
+                            if (a[1] !== "") {
+                                s = s + '<img src="../Images/Flags/' + a[1] + '.png" alt="' + a[1] + '" title="' + a[1].toUpperCase() + '" />';
+                            }
+                            s = s + '</a>';
+                            return s;
+                        }
+                    },
+                    {
+                        data: "Commander",
+                        render: function (data, type, full, meta) {
+                            var a = data.split("|");
+                            var s = '<a href="' + rootUrl + 'Clan/'  + a[2] + '/Commanders/' + a[1] + '/All" rel="nofollow"'+ (isMobile ? 'target="_blank"' : '') +'>' + a[0] + '</a>';
+                            return s;
+                        }
+                    },
+                    {
+                        data: "Rank",
+                        className: "text-right"
+                    },
+                    {
+                        data: "Battles",
+                        className: "text-right"
+                    },
+                    {
+                        data: "DirectDamage",
+                        className: "text-right"
+                    },
+                    {
+                        data: "DamageAssisted",
+                        className: "text-right"
+                    },
+                    {
+                        data: "TotalDamage",
+                        className: "text-right"
+                    },
+                    {
+                        data: "Kills",
+                        className: "text-right"
+                    },
+                    {
+                        data: "MaxKills",
+                        className: "text-right"
+                    }
+                ],
+                dom: "tp",
+                language: {
+                    paginate: {
+                        previous: "@Resources.Previous",
+                        next: "@Resources.Next"
+                    },
+                    search: "@Resources.MoEFilter"
+                }
+            });
+
+            // reset
+            $("#resetFilters").click(function () {
+                $("#searchBox").val("");
+                $("#nationButtons .btn-nation").removeClass("filter-button-selected");
+                $("#typesButtons .btn-type").removeClass("filter-button-selected");
+                $("#tiersButtons .btn-tier").removeClass("filter-button-selected");
+
+                oTable.columns(0).search("");
+                oTable.columns(1).search("");
+                oTable.columns(2).search("");
+                oTable.search("").draw();
+            });
+
+            // Caixa de Buscas
+            $("#searchBox").keyup(function () {
+                oTable.search($(this).val()).draw();
+            });
+
+            // Por nação
+            $(".btn-nation").click(function () {
+                var btn = $(this);
+                var nation = btn.data("nation");
+                oTable.columns(0).search(nation).draw();
+                $("#nationButtons .btn-nation").removeClass("filter-button-selected");
+                btn.addClass("filter-button-selected");
+            });
+
+            // Por tipo
+            $(".btn-type").click(function () {
+                var btn = $(this);
+                var type = btn.data("type");
+                oTable.columns(1).search(type).draw();
+                $("#typesButtons .btn-type").removeClass("filter-button-selected");
+                btn.addClass("filter-button-selected");
+            });
+
+            // Por Tier
+            $(".btn-tier").click(function () {
+                var btn = $(this);
+                var type = btn.data("tier");
+                oTable.columns(2).search(type).draw();
+                $("#tiersButtons .btn-tier").removeClass("filter-button-selected");
+                btn.addClass("filter-button-selected");
+            });
+
+
+        });
+
+    </script>
+
+
+}

@@ -1,0 +1,21 @@
+﻿@{
+    ViewBag.Title = "Flags";
+}
+@model Negri.Wot.Models.FlagsPage
+
+<h2>Available Flags</h2>
+
+<section id="flags" >
+
+    <p>
+        @foreach (string code in Model.Codes)
+        {
+            <div style="padding-left: 0.5em; display: inline;">
+                @code.ToUpperInvariant()<img src="~/Images/Flags/@(code).png" alt="@code" title="@code" />
+            </div>
+
+        }
+    </p>        
+
+</section>
+

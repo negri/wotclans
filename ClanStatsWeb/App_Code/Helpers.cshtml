@@ -1,0 +1,73 @@
+﻿@using System.Web.UI.WebControls
+@using Negri.Wot
+@using Negri.Wot.Tanks
+
+@* A TD with a WN8 value *@
+@helper WN8Td(double wn8)
+{
+    if (wn8 <= 0.0)
+    {
+        <td></td>
+    }
+    else
+    {
+        <td class="number-integer @wn8.ToLabelClass()" style="background-color: @wn8.ToWebColor();" title="@wn8.ToRatingString()">
+            @wn8.ToString("N0")
+        </td>
+    }
+}
+
+@* A link to a tank *@
+@helper TankLink(Tank t)
+{
+    <a href="~/Tanks/@t.TankId"><span class="@t.PremiumClass" title="@t.FullName">@t.Name</span></a>
+}
+
+@* A table row on the player *@
+@helper PlayerPerformanceRow(Player player, int minTier = 1, int maxTier = 10, bool? isPremium = null)
+{
+    string title;
+    if (minTier == maxTier)
+    {
+        title = minTier.ToRomanNumeral();
+    }
+    else
+    {
+        title = minTier.ToRomanNumeral() + " - " + maxTier.ToRomanNumeral();
+    }
+    if (isPremium.HasValue && isPremium.Value)
+    {
+        title = title + " Premium";
+    }
+    else if (isPremium.HasValue)
+    {
+        title = title + " Regular";
+    }
+
+    if (player.Performance.GetBattles(ReferencePeriod.All, minTier, maxTier, isPremium) > 0)
+    {
+        <tr>
+            <td class="text-nowrap@(isPremium.HasValue && isPremium.Value ? " is-premium-tank" : "")">@title</td>
+            <td class="number-integer">@player.Performance.GetBattles(ReferencePeriod.All, minTier, maxTier, isPremium).ToString("N0")</td>
+            <td class="number">@((player.Performance.GetWinRate(ReferencePeriod.All, minTier, maxTier, isPremium) * 100.0).ToString("N1"))</td>
+            <td class="number">@player.Performance.GetTier(ReferencePeriod.All, minTier, maxTier, isPremium).ToString("N1")</td>
+            @WN8Td(player.Performance.GetWn8(ReferencePeriod.All, minTier, maxTier, isPremium))
+            @if (player.Performance.GetBattles(ReferencePeriod.Month, minTier, maxTier, isPremium) > 0)
+            {
+                <td class="number-integer">@player.Performance.GetBattles(ReferencePeriod.Month, minTier, maxTier, isPremium).ToString("N0")</td>
+                <td class="number-integer">@((player.Performance.GetTime(ReferencePeriod.Month, minTier, maxTier, isPremium).TotalHours).ToString("N0"))</td>
+                <td class="number">@((player.Performance.GetWinRate(ReferencePeriod.Month, minTier, maxTier, isPremium) * 100.0).ToString("N1"))</td>
+                <td class="number">@player.Performance.GetTier(ReferencePeriod.Month, minTier, maxTier, isPremium).ToString("N1")</td>
+                @WN8Td(player.Performance.GetWn8(ReferencePeriod.Month, minTier, maxTier, isPremium))
+            }
+            else
+            {
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            }
+        </tr>
+    }
+}

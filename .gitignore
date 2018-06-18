@@ -12,6 +12,17 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# Secrets, cache etc
+Results/
+ResultsPS/
+Cache/
+WCLUtility/AppId.txt
+*.secrets.config
+*.secrets.md
+secrets.md
+*.secrets.txt
+secrets.txt
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

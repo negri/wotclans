@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" title="Executive Officer" enable-background="new 0 0 16 16" viewBox="0 0 16 16" >
+  <path stroke="#FFD700" d="m 8 12.8 l -8 -3 v 3.2 l 8 3 l 8 -3 v -3.2 l -8 3"/>
+  <path stroke="#FFD700" d="m 8 3.3 l 0.3 0.9 l 0.2 0.7 h 0.7 h 0.9 l -0.7 0.5 l -0.6 0.4 l 0.2 0.7 l 0.3 0.9 l -0.7 -0.6 l -0.6 -0.4 l -0.6 0.4 l -0.7 0.6 l 0.3 -0.9 l 0.2 -0.7 l -0.6 -0.4 l -0.8 -0.6 h 0.9 h 0.7 l 0.2 -0.7 l 0.4 -0.8 m 0 -3.3 l -1.2 3.8 h -4 l 3.2 2.4 l -1.2 3.8 l 3.2 -2.4 l 3.2 2.4 l -1.2 -3.8 l 3.3 -2.4 h -4 c 0 0 -1.3 -3.8 -1.3 -3.8 Z"/>
+  <rect style="fill:transparent !important;" x="0" y="0" width="100%" height="100%">
+    <title>Executive Officer</title>
+  </rect>
+</svg>

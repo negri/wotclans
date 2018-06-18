@@ -1,0 +1,328 @@
+﻿@using Negri.Wot
+@using Negri.Wot.Properties
+@using Negri.Wot.Tanks
+@model Negri.Wot.Models.TanksWn8
+@{
+    ViewBag.Title = Resources.WN8Title;
+}
+
+@section extraHeaders {
+    <link href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css " rel="stylesheet" type="text/css" />
+    <meta name="description" content="WN8 Expected Values for WoT Console">
+    <style>
+        #moeTable_filter {
+            text-align: left;
+        }
+
+        #moeTable_paginate {
+            text-align: left;
+        }
+    </style>
+}
+
+@section lead {
+    <section class="jumbotron top-banner">
+        <h1>@Resources.WN8Title</h1>
+        <h2>@Resources.WN8SubTitle</h2>
+        <p>
+            @string.Format(Resources.WN8DataInfo, Model.Tanks.Length, Model.Source, Model.Version, Model.Date)
+        </p>
+    </section>
+}
+
+<section id="moe" class="row">
+    <div class="col-md-12">
+
+        <div id="filters" class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <input type="text" id="searchBox" class="form-control" placeholder="Search by Tank">
+                    </div>
+                    <div class="col-md-3" id="nationButtons">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Usa"><img src="~/Images/Nations/1.png" height="18" alt="USA" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Germany"><img src="~/Images/Nations/7.png" height="18" alt="Germany" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Ussr"><img src="~/Images/Nations/3.png" height="18" alt="USSR" /></button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Uk"><img src="~/Images/Nations/5.png" height="18" alt="UK" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="France"><img src="~/Images/Nations/2.png" height="18" alt="France" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Japan"><img src="~/Images/Nations/6.png" height="18" alt="Japan" /></button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="China"><img src="~/Images/Nations/4.png" height="18" alt="China" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Czechoslovakia"><img src="~/Images/Nations/8.png" height="18" alt="Czeckoslovakia" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Sweden"><img src="~/Images/Nations/9.png" height="18" alt="Sweden" /></button>
+                        </div>
+                    </div>
+                    <div class="col-md-2" id="typesButtons">
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Light"><img src="~/Images/Types/4.svg" width="18" height="18" alt="Light" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Medium"><img src="~/Images/Types/3.svg" width="18" height="18" alt="Medium" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Heavy"><img src="~/Images/Types/1.svg" width="18" height="18" alt="Heavy" /></button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="TankDestroyer"><img src="~/Images/Types/2.svg" width="18" height="18" alt="Tank Destroyer" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Artillery"><img src="~/Images/Types/5.svg" width="18" height="18" alt="Arty" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Premium"><img src="~/Images/Types/premium.svg" width="18" height="18" alt="Premium" /></button>
+                        </div>
+
+                    </div>
+                    <div class="col-md-4" id="tiersButtons">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-tier" data-tier="01" aria-label="1"><div style="width: 1.2em;">I</div></button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="02" aria-label="2"><div style="width: 1.2em;">II</div></button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="03" aria-label="3"><div style="width: 1.2em;">III</div></button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="04" aria-label="4"><div style="width: 1.2em;">IV</div></button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="05" aria-label="5"><div style="width: 1.2em;">V</div></button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-tier" data-tier="06" aria-label="6"><div style="width: 1.2em;">VI</div></button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="07" aria-label="7"><div style="width: 1.2em;">VII</div></button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="08" aria-label="8"><div style="width: 1.2em;">VIII</div></button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="09" aria-label="9"><div style="width: 1.2em;">IX</div></button>
+                            <button type="button" class="btn btn-default btn-tier" data-tier="10" aria-label="10"><div style="width: 1.2em;">X</div></button>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-warning" aria-label="Reset" id="resetFilters">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="data table-striped" id="moeTable">
+            <thead>
+                <tr>
+                    <th rowspan="2">
+                        <img alt="@Resources.Nation" title="@Resources.Nation" height="18" src="~/Images/Nations/Globe_icon.svg" />
+                    </th>
+                    <th rowspan="2">
+                        <img alt="@Resources.Type" title="@Resources.Type" height="18" src="~/Images/Types/types.png" />
+                    </th>
+                    <th rowspan="2">
+                        <span title="@Resources.Tier">I-X</span>
+                    </th>
+                    <th rowspan="2">@Resources.Tank</th>
+                    <th colspan="5">@Resources.ExpectedValues</th>
+                    <th rowspan="2">@Resources.Origin</th>
+                </tr>
+                <tr>
+                    @*<th></th>*@
+                    @*<th></th>*@
+                    @*<th></th>*@
+                    @*<th></th>*@
+                    <th>@Resources.Damage</th>
+                    <th>@Resources.WinRate</th>
+                    <th>@Resources.Kills</th>
+                    <th>@Resources.Spoted</th>
+                    <th>@Resources.Defense</th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                @{
+                    foreach (var t in Model.Tanks)
+                    {
+                        <tr id="tank-id-@t.TankId.ToString()">
+                            <td class="text-center" data-sort="@t.Nation" data-filter="@t.Nation">
+                                <img height="18" title="@Resources.ResourceManager.GetString(t.Nation.ToString())" alt="@Resources.ResourceManager.GetString(t.Nation.ToString())" src="~/Images/Nations/@((int) t.Nation).png" />
+                            </td>
+                            <td class="text-center" data-sort="@t.Type" data-filter="@t.Type@(t.IsPremium ? " Premium" : " Regular")">
+                                <img height="18" title="@Resources.ResourceManager.GetString(t.Type.ToString())" alt="@Resources.ResourceManager.GetString(t.Type.ToString())" src="~/Images/Types/@((int) t.Type).svg" />
+                            </td>
+                            <td class="text-center" data-sort="@t.Tier" data-filter="@t.Tier.ToString("00"))">@t.Tier.ToRomanNumeral()</td>
+                            <td style="white-space: nowrap;" data-sort="@t.Name.RemoveDiacritics().ToLowerInvariant()" data-filter="@t.Name.RemoveDiacritics().ToLowerInvariant() @t.FullName.RemoveDiacritics().ToLowerInvariant()">
+                                <a href="~/Tanks/@t.TankId"><span class="@t.PremiumClass" title="@t.FullName">@t.Name</span></a>
+                            </td>
+                            <td class="number-integer">@t.Damage.ToString("N0")</td>
+                            <td class="number">@t.WinRate.ToString("P1")</td>
+                            <td class="number">@t.Frag.ToString("N1")</td>
+                            <td class="number">@t.Spot.ToString("N1")</td>
+                            <td class="number">@(t.Def.ToString("N1"))</td>
+                            <td>@Resources.ResourceManager.GetString("Origin" + t.Origin)</td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
+<section id="wn8Warnings" class="row" style="padding-top: 1em;">
+    <div class="col-md-2"></div>
+    <div class="col-md-8 alert alert-info">
+        @if (GlobalHelper.Language == "pt")
+        {
+            <h3 class="text-center" style="margin-top: 5px; margin-bottom: 5px;">Informação</h3>
+            <ol>
+                <li>Estes são os valores esperados para se calcular o WN8.</li>
+                <li>Se você, dentro todas suas batalhas, mantiver <b>os seus</b> valores médios por batalha iguais aos desta tabela, em cada tanque que jogue, seu WN8 será de 1.565.</li>
+                <li>A fonte principal é o <a href="https://modxvm.com/en/wn8-expected-values/">XVM</a>, que computa esses valores diariamente, <b>a partir da comunidade PC</b>. Estes valores levam a um WN8 calculado que é bastante próximo do que você vê no <a href="http://wotinfo.net/">WoTInfo</a> e no <a href="https://wotstatsconsole.de/">WoTStatConsole</a>.</li>
+                <li>Aqui <b>Dano</b> é apenas <b>Dano Direto</b>. Este é o principal fator (~60%) no cálculo do WN8. Tente maximizar isso (o dano direto) para aumentar o seu WN8.</li>
+                <li>
+                    A coluna <b>Origem</b> denota as adaptações que tive de fazer para lidar com tanques que existem no Console mas não no PC:
+                             <ul>
+                                 <li>Fonte: Usei os mesmos valores do PC.</li>
+                                 <li>Surrogado: Usei os valores de outro tanque, similar. Por exemplo: O <i>Glory IS-5</i> usa os valores do PC <i>IS-5</i> normal. Veja a tabela completa dos <a href="https://1drv.ms/x/s!AltYRJ8o7zfvnMt-adGuNKiD_74GNg">tanques surrogados</a>;</li>
+                                 <li>2 Surrogados: Usei os valores de outros 2 tanques, similares. Por exemplo: O <i>Knight</i> usa valores que são média entre o <i>Cromwell</i> e o <i>Cromwell B.</i></li>
+                                 <li>Extrapolação: Usando a relação entre os valores para o mesmo tier e tipo de tanque entre os valores XVM e os médios computados por mim eu extrapolo os meus valores para chegar nos valores esperados de WN8 equivalentes.</li>
+                                 <li>Tier/Tipo: Usando os valores médios do que é esperado para o mesmo tier e tipo de tanque. É o padrão quando um novo tanque é adicionado ao jogo e eu ainda não configurei um mapeamento, ou um mapeamento não é possível e há menos de 1.000 jogadores qualificados no tanque.</li>
+                             </ul>
+                </li>
+                <li>Você pode obter esses valores usando uma <a rel="nofollow" href="~/api/tanks/wn8">API</a>, ou fazendo o download de uma <a rel="nofollow" href="~/Tanks/WN8/Excel">Planilha Excel</a>, e então fazer seus próprios cálculos de WN8.</li>
+                <li>Eu logo&trade; usarei esses valores para <i>novas e interessantes funcionalidades</i>... fique ligado!</li>
+            </ol>
+        }
+        else
+        {
+            <h3 class="text-center" style="margin-top: 5px; margin-bottom: 5px;">Information</h3>
+            <ol>
+                <li>These are the expected values that should be used on computing the WN8.</li>
+                <li>If you, amomg all your battles, keep <b>your</b> average values per battle the same as the ones on this table, for each tank tank that you play, your WN8 will be 1,565.</li>
+                <li>The main source is <a href="https://modxvm.com/en/wn8-expected-values/">XVM</a>, that compiles these values daily, <b>from the PC</b> community. These values leads to a WN8 that are very close to what you see on <a href="http://wotinfo.net/">WoTInfo</a> and <a href="https://wotstatsconsole.de/">WoTStatConsole</a>.</li>
+                <li>Here <b>Damage</b> is only <b>Direct Damage</b>. This is the main (~60%) factor on the WN8 computation. Try to maximize this on order to increase your WN8 values.</li>
+                <li>
+                    The column <b>Origin</b> denotes adaptations that I made to provide values for tanks that does not exists on the PC:
+                    <ul>
+                        <li>Source: I used the exact values from the PC;</li>
+                        <li>Surrogate: I used the values from another, similar, tank. For instance: The <i>Glory IS-5</i> uses the values of PC <i>IS-5</i>. Check out the complete <a href="https://1drv.ms/x/s!AltYRJ8o7zfvnMt-adGuNKiD_74GNg">surrogates table</a>;</li>
+                        <li>2 Surrogates: I used the values of 2 others, similar, tanks. For instance: The <i>Knight</i> uses values that are the average between the <i>Cromwell</i> and the <i>Cromwell B;</i></li>
+                        <li>Extrapolation: Using the relation between the same tier and class values from XVM and my values I extrapolated my average values to reach a WN8 Expected. I use it for tanks that does not have a good equivalent on the PC plataform;</li>
+                        <li>Tier/Type: Using the average of the expected values for the same tier and tank type. It's the default when a new tank is added and I haven't yet configured a mapping, or a mapping is not possible and there are less than 1,000 qualified players on the tank.</li>
+                    </ul>
+                </li>
+                <li>You can grab these values using an <a rel="nofollow" href="~/api/tanks/wn8">API</a>, or downloading an <a rel="nofollow" href="~/Tanks/WN8/Excel">Excel File</a>, and do your own WN8 computation.</li>
+                <li>I will soon&trade; be using these values for <i>new interesting features</i>... stay tunned!</li>
+            </ol>
+        }
+    </div>
+    <div class="col-md-2"></div>
+</section>
+
+
+@section scripts {
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js  "></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var decimalSeparator = $("body").data("requestDecimalSeparator");
+            var groupingSeparator = $("body").data("requestGroupingSeparator");
+
+            // Função de ordenção numerica do lado do cliente
+            jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+                "numeric-flex-pre": function (a) {
+                    if (a === "") {
+                        return 0.0;
+                    }
+                    if (a === "-") {
+                        return 0.0;
+                    }
+
+                    if (a.substring(0, 7) === "<a href") {
+                        a = a.match(/<a [^>]+>([^<]+)<\/a>/)[1];
+                    }
+
+                    a = a.replace(groupingSeparator, "");
+                    a = a.replace(groupingSeparator, "");
+                    a = a.replace(groupingSeparator, "");
+
+                    a = a.replace("%", "");
+                    a = a.replace(decimalSeparator, ".");
+
+                    return parseFloat(a);
+                },
+
+                "numeric-flex-asc": function (a, b) {
+                    return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+                },
+
+                "numeric-flex-desc": function (a, b) {
+                    return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+                }
+            });
+
+            var oTable = $("#moeTable").DataTable({
+                paging: true,
+                lengthChange: false,
+                pageLength: 25,
+                pagingType: "numbers",
+                info: false,
+                searching: true,
+                columnDefs: [
+                    { type: "numeric-flex", targets: [4, 5, 6, 7, 8] },
+                    { orderable: false, targets: [] },
+                    { searchable: false, targets: [4, 5, 6, 7, 8] }
+                ],
+                order: [[2, "desc"]],
+                dom: "tp",
+                language: {
+                    paginate: {
+                        previous: "@Resources.Previous",
+                        next: "@Resources.Next"
+                    },
+                    search: "@Resources.MoEFilter"
+                }
+            });
+
+            // reset
+            $("#resetFilters").click(function () {
+                $("#searchBox").val("");
+                $("#nationButtons .btn-nation").removeClass("filter-button-selected");
+                $("#typesButtons .btn-type").removeClass("filter-button-selected");
+                $("#tiersButtons .btn-tier").removeClass("filter-button-selected");
+
+                oTable.columns(0).search("");
+                oTable.columns(1).search("");
+                oTable.columns(2).search("");
+                oTable.search("").draw();
+            });
+
+            // Caixa de Buscas
+            $("#searchBox").keyup(function () {
+                oTable.search($(this).val()).draw();
+            });
+
+            // Por nação
+            $(".btn-nation").click(function () {
+                var btn = $(this);
+                var nation = btn.data("nation");
+                oTable.columns(0).search(nation).draw();
+                $("#nationButtons .btn-nation").removeClass("filter-button-selected");
+                btn.addClass("filter-button-selected");
+            });
+
+            // Por tipo
+            $(".btn-type").click(function () {
+                var btn = $(this);
+                var type = btn.data("type");
+                oTable.columns(1).search(type).draw();
+                $("#typesButtons .btn-type").removeClass("filter-button-selected");
+                btn.addClass("filter-button-selected");
+            });
+
+            // Por Tier
+            $(".btn-tier").click(function () {
+                var btn = $(this);
+                var type = btn.data("tier");
+                oTable.columns(2).search(type).draw();
+                $("#tiersButtons .btn-tier").removeClass("filter-button-selected");
+                btn.addClass("filter-button-selected");
+            });
+
+
+        });
+
+    </script>
+
+
+}

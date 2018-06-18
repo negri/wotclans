@@ -1,0 +1,219 @@
+﻿@using Negri.Wot
+@{
+    ViewBag.Title = "Discord Bot";
+}
+
+@section extraHeaders {
+    <meta name="description" content="How to use and configure the Discord WoT Clans Bot.">
+}
+
+@section lead {
+    <section class="jumbotron top-banner">
+        <h1>WoT Clans Bot</h1>
+        <h2>for Discord</h2>
+        <p>
+            If you manage a Discord server focused on the World of Tanks @GlobalHelper.ForPlataform, I may have a bot suitable for you.
+        </p>
+    </section>
+}
+
+<section class="row">
+    <div class="col-md-12">
+        <h3>What is the WoT Clans Bot?</h3>
+
+        <p>
+            A Discord Bot is like a normal user on a server, it can read the messages on the channels that it has access, and respond on the channels where they can write.
+            Thus, if you address the bot by mention (Direct Messages also works!) or by using a prefix (<kbd>!w</kbd> for this bot) it will <i>talk back</i> to you.
+        </p>
+        <p>
+            The <b>WoT Clans Bot</b>, in particular, can talk about the World of Tanks for Console game, mostly using data from the <a href="~/">WoT Clans Site</a>,
+            as it has direct access to the database that powers the site.
+        </p>
+    </div>
+</section>
+
+<section class="row">
+    <div class="col-md-12">
+        <h3>How to Use</h3>
+        <p>
+            <b>If</b> the Server Admins <a href="#HowToConfigure">had configured the bot on the server</a>, and you can issue commands to it on some channels (DMs also works),
+            you starts by typing the prefix, <kbd>!w</kbd>, a space and then issue a command and it's parameters.
+        </p>
+        <p>
+            The bot can explain itself with the command <kbd>!w help</kbd>, that lists all commands, and detail a command parameter with, for example, <kbd>!w help moe</kbd>,
+            that will detail the parameters.
+        </p>
+        <p>
+            If the parameter that you want the bot to undestand contains spaces, then you must enclose the parameter in double quotes.
+            For example, to query the leaderboad of the <i>E 50</i> for the tanker <i>Some Weird GT</i> you type <kbd>!w leader "E 50" "Some Weird GT"</kbd>.
+        </p>
+        <p>
+            Commands are grouped in <b>features</b>, as the list bellow inplies.
+        </p>
+        <ul>
+            <li>
+                General
+                <ul>
+                    <li><kbd>!w hi</kbd> to be saluted;</li>
+                    <li><kbd>!w site</kbd> to receive a link to a great site;</li>
+                </ul>
+            </li>
+            <li>
+                Games: to help on scrimages
+                <ul>
+                    <li><kbd>!w coin</kbd> flips a coin;</li>
+                    <li><kbd>!w dice</kbd> rolls a dice;</li>
+                    <li><kbd>!w random</kbd> gets a random number;</li>
+                    <li><kbd>!w timer</kbd> starts a timer, to pick tanks, for example;</li>
+                    <li><kbd>!w kill</kbd> kills a timer that you started.</li>
+                </ul>
+            </li>
+            <li>
+                Tanks
+                <ul>
+                    <li><kbd>!w moe</kbd> show Marks of Excelence data;</li>
+                    <li><kbd>!w leader</kbd> show the current leaderboard;</li>
+                    <li><kbd>!w leaderByFlag</kbd> show the current leaderboard filtering by the clan <a href="~/Flags">flags</a>;</li>
+                    <li><kbd>!w damage</kbd> show the <i>Target Damage</i>;</li>
+                    <li>More to come... I just started the bot!</li>
+                </ul>
+            </li>
+            <li>
+                Clans
+                <ul>
+                    <li><kbd>!w clan</kbd> basic information about a clan;</li>
+                    <li>More to come... I accept suggestions.</li>
+                </ul>
+            </li>
+            <li>
+                Players
+                <ul>
+                    <li><kbd>!w tanker</kbd> shows information about a tanker, any tanker including those not on clans;</li>
+                    <li><kbd>!w tankerTank</kbd> shows the history of tank as played by a tanker (only for tracked players, as the WG API doesn't return history);</li>
+                    <li><kbd>!w tankerTop</kbd> shows the top 25 tanks (by WN8) of a player;</li>
+                    <li><kbd>!w SetWhoIAm</kbd> associates your Discord User to your @GlobalHelper.Plataform.TagName(), so you can use the key word <kbd>me</kbd> instead of your full @GlobalHelper.Plataform.TagName() on commands that accepts it as a parameter;</li>
+                    <li><kbd>!w ForgetWhoIAm</kbd> removes the association between your Discord User and your @GlobalHelper.Plataform.TagName();</li>
+                    <li><kbd>!w WhoIAm</kbd> in case you just hit your head...</li>
+                    <li>What else?</li>
+                </ul>
+            </li>
+        </ul>
+        <p>
+            Remember that the bot is always improving, and <b>this</b> page may not be up-to-date.
+            The <kbd>!w help</kbd> command is the ultimate source of what and how the bot operates.
+        </p>
+        <p>
+            The bot, when installed by the server administrator, is either configured to XBOX ou PS4 plataforms. This configuration is the default when retrieving information
+            from the database. But you can override this default by prefixing <kbd>p.</kbd> or <kbd>x.</kbd> before the name of tanks, clans or gamer tags. For example
+            <kbd>!w damage x.t57</kbd> to retrieve information from the XBOX and <kbd>!w damage p.t57</kbd> to retrieve information about the T57 Heavy as played by the PlayStation people.
+        </p>
+    </div>
+</section>
+
+<section id="HowToConfigure">
+    <div class="col-md-12">
+        <h3>How to Configure</h3>
+        <p>
+            The bot is added to a server the way any Discord bot is: you
+            follow <a rel="nofollow" href="https://discordapp.com/oauth2/authorize?client_id=442008019207847946&scope=bot&permissions=52224">this link</a>,
+            choose the server on witch it will be run, and it's done... almost. Keep reading.
+        </p>
+        <p>
+            A bot is like a user. It may be put on other roles (besides his own role), and restrictions on that roles will be applied to the bot, as weel. Just vanilla stuff.
+            Just don't forget that the bot needs the Discord permission <i>Embed Links</i>, otherwize you may not see the replies that contains links.
+        </p>
+        <p>
+            By default the bot will answer to anyone who calls it on a channel that it listens.
+            But the defaults can be changed by setting permissions on Features of the bot (groups of commands) to specific channels and roles.
+        </p>
+        <p>
+            To understand how permissions are evalueated when a user issues a command it's important do understand the sequence of the checks:
+        </p>
+        <ol>
+            <li>
+                If there are a explicit permission (allow or deny) on a feature for any of the roles (tested in alphabetical order) of the user <b>and</b> the channel (where the command was called), then this is the permission to be applied;
+                otherwise, to the next check...
+            </li>
+            <li>
+                If there are a explicit permission (allow or deny) on a feature for any of the roles (tested in alphabetical order) of the user, then this is the permission to be applied;
+                otherwise, to the next check...
+            </li>
+            <li>
+                If there are a explicit permission (allow or deny) on a feature for the channel (where the command was called), then this is the permission to be applied;
+                otherwise, to the next check...
+            </li>
+            <li>
+                If there are a explicit permission (allow or deny) on a feature, then this is the permission to be applied;
+                otherwise...
+            </li>
+            <li>
+                The default <b>Global Permission</b> (allow or deny) is issued.
+            </li>
+        </ol>
+        <p>
+            Remenber that the when a bot is just added to a server the default <b>Global Permission</b> is set to <i>true</i>, to <i>allow</i>, the execution of commands,
+            and there are no explict permissions configured.
+        </p>
+        <p>
+            The permissions, and other settings, are configured using administrative commands.
+        </p>
+        <h4>Administrative commands</h4>
+        <p>
+            These commands can only be issued to the bot from users with the <i>Administrator</i> permission.
+            They are also <b>case sensitive</b>, so a role <i>Moderator</i> and a role<i>moderator</i> are not the same.
+        </p>
+        <ul>
+            <li><kbd>!w admin SetPlataform (<i>XBOX</i> | <i>PS</i>)</kbd>: sets the default plataform, to retrieve information, to XBOX or PlayStation. The default is XBOX.</li>
+            <li><kbd>!w admin uptime</kbd>: See information about the bot version, where it's running etc.</li>
+            <li><kbd>!w admin ListFeatures</kbd>: Lists all the features that can have permissions.</li>
+            <li><kbd>!w admin ListPermissions</kbd>: Lists all the explicit permissions that are configured.</li>
+            <li><kbd>!w admin SetDefaultPermission (<i>true</i> | <i>false</i>)</kbd>: Sets the <i>global permission</i> to allow (true) or deny (false). The default is <i>true</i>.</li>
+            <li><kbd>!w admin SetFeaturePermission <i>feature</i> (<i>true</i> | <i>false</i>)</kbd>: Set a explicit permission for a <i>feature</i>.</li>
+            <li>
+                <kbd>!w admin SetFeaturePermissionForChannel <i>feature</i> <i>channel</i> (<i>true</i> | <i>false</i>)</kbd>: Set a explicit permission for a <i>feature</i> on a <i>channel</i>.
+                Don't use the <kbd>#</kbd> before the channel name.
+            </li>
+            <li>
+                <kbd>!w admin SetFeaturePermissionForRole <i>feature</i> <i>role</i> (<i>true</i> | <i>false</i>)</kbd>: Set a explicit permission for a <i>feature</i> on a <i>role</i>.
+                If the <i>role</i> has spaces on it's name, enclose it on double quotes.
+            </li>
+            <li>
+                <kbd>!w admin SetFeaturePermissionForRoleAndChannel <i>feature</i> <i>role</i> <i>channel</i>(<i>true</i> | <i>false</i>)</kbd>: Set a explicit permission for a <i>feature</i> on a <i>role</i> and <i>channel</i>.
+                If the <i>role</i> has spaces on it's name, enclose it on double quotes. Don't use the <kbd>#</kbd> before the channel name.
+            </li>
+            <li><kbd>!w admin ClearFeaturePermissions <i>feature</i></kbd>: Clears all explicit permission for a <i>feature</i>.</li>
+            <li><kbd>!w admin ResetPermissions</kbd>: Reset all the permissions to it's default state, that is, to allow everyone every feature everywhere.</li>
+            <li>
+                <kbd>!w admin TestPermissions <i>feature</i> <i>role</i> <i>channel</i></kbd>: Testes the permission for a <i>feature</i> on a <i>role</i> and <i>channel</i>.
+                If the <i>role</i> has spaces on it's name, enclose it on double quotes. Don't use the <kbd>#</kbd> before the channel name.
+            </li>
+            <li><kbd>!w admin SetSilentDeny (<i>true</i> | <i>false</i>)</kbd>: If <i>true</i> there will be no feedback to the user when a command is denied by some permission. The default is <i>false</i>.</li>
+        </ul>
+        <h4>Examples</h4>
+        <h5>Allow <b>only</b> the <i>Games</i> feature to a specific channel and role</h5>
+        <ol>
+            <li><kbd>!w admin SetDefaultPermission false</kbd> will disallow all features on every channel to every role.</li>
+            <li>
+                <kbd>!w admin SetFeaturePermissionForRoleAndChannel Games moderator east-g true</kbd> will allow,
+                only on the <i>east-g</i> channel that people with the <i>moderator</i> role issues commands like <kbd>timer</kbd> or <kbd>dice</kbd>.
+            </li>
+        </ol>
+        <h5>Deny <i>Games</i> features everywhere, except for people with the <i>moderator</i> role</h5>
+        <ol>
+            <li><kbd>!w admin SetFeaturePermission Games false</kbd> will deny all <i>Games</i> commands on every channel to every role.</li>
+            <li><kbd>!w admin SetFeaturePermissionForRole Games moderator true</kbd> will a allow <i>Games</i> commands on every channel to the role <i>moderator</i>.</li>
+        </ol>
+        <h5>Ban a role from using the bot</h5>
+        <ol>
+            <li>Create a role on the server, something like <i>Banned from Bot Usage</i>.</li>
+            <li>Put abusers on it.</li>
+            <li><kbd>!w admin ListFeatures</kbd> to see witch <i>features</i> the bot have. It's unlikely this list will expand.</li>
+            <li><kbd>!w admin SetFeaturePermissionForRole Games "Banned from Bot Usage" false</kbd></li>
+            <li><kbd>!w admin SetFeaturePermissionForRole Clans "Banned from Bot Usage" false</kbd></li>
+            <li><kbd>!w admin SetFeaturePermissionForRole Players "Banned from Bot Usage" false</kbd></li>
+            <li><kbd>!w admin SetFeaturePermissionForRole Tanks "Banned from Bot Usage" false</kbd></li>
+            <li><kbd>!w admin SetFeaturePermissionForRole General "Banned from Bot Usage" false</kbd></li>
+        </ol>
+    </div>
+</section>
+

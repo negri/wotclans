@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" title="Commander" enable-background="new 0 0 16 16" viewBox="0 0 16 16" >
+  <path stroke="#FFD700" d="M 8 0 l 1.2 3.8 h 4.1 L 10 6.2 l 1.2 3.8 L 8 7.6 L 4.8 10 L 6 6.2 L 2.7 3.8 h 4.1 L 8 0 Z"/>
+  <path stroke="#FFD700" d="m 8 12.8 l -8 -3 v 3.2 l 8 3 l 8 -3 v -3.2 l -8 3"/>
+  <rect style="fill:transparent !important;" x="0" y="0" width="100%" height="100%">
+    <title>Commander</title>
+  </rect>
+</svg>

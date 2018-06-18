@@ -1,0 +1,945 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AboutTextLink" xml:space="preserve">
+    <value>Sobre</value>
+  </data>
+  <data name="Actives" xml:space="preserve">
+    <value>Ativos</value>
+  </data>
+  <data name="ActivesExplanation" xml:space="preserve">
+    <value>Número de jogadores que fizeram pelo menos 21 partidas no último mês.</value>
+  </data>
+  <data name="Activity" xml:space="preserve">
+    <value>Atividade</value>
+  </data>
+  <data name="ActivityExplanation" xml:space="preserve">
+    <value>% dos membros ativos no último mês.</value>
+  </data>
+  <data name="Battles" xml:space="preserve">
+    <value>Batalhas</value>
+  </data>
+  <data name="BattlesExplanation" xml:space="preserve">
+    <value>Número de batalhas que os jogadores ativos fizeram no último mês.</value>
+  </data>
+  <data name="Clan" xml:space="preserve">
+    <value>Clã</value>
+  </data>
+  <data name="ClanRankingExplanation" xml:space="preserve">
+    <value>Ranking do clã (dentro da filtragem), segundo WN8t15</value>
+  </data>
+  <data name="DataPermission" xml:space="preserve">
+    <value>Dados obtidos sob a gentil permissão de</value>
+  </data>
+  <data name="FilterAll" xml:space="preserve">
+    <value>Mostrar Todos</value>
+  </data>
+  <data name="FilterAllExplanation" xml:space="preserve">
+    <value>Todos os clãs ativos</value>
+  </data>
+  <data name="FilterBig" xml:space="preserve">
+    <value>Grandes</value>
+  </data>
+  <data name="FilterBigExplanation" xml:space="preserve">
+    <value>Clãs com pelo menos 15 jogadores ativos</value>
+  </data>
+  <data name="FilterByCountry" xml:space="preserve">
+    <value>Por país</value>
+  </data>
+  <data name="FilterByCountryExplanation" xml:space="preserve">
+    <value>Filtrar por "país"</value>
+  </data>
+  <data name="FilterDefault" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="FilterDefaultExplanation" xml:space="preserve">
+    <value>A visão padrão da grade (Reset).</value>
+  </data>
+  <data name="FilterSmall" xml:space="preserve">
+    <value>Pequenos</value>
+  </data>
+  <data name="FilterSmallExplanation" xml:space="preserve">
+    <value>Clãs com menos de 15 jogadores ativos</value>
+  </data>
+  <data name="ForXbox" xml:space="preserve">
+    <value>para XBOX</value>
+  </data>
+  <data name="MainSiteTitle" xml:space="preserve">
+    <value>Clãs do World of Tanks</value>
+  </data>
+  <data name="Members" xml:space="preserve">
+    <value>Membros</value>
+  </data>
+  <data name="MembersExplanation" xml:space="preserve">
+    <value>Número de jogadores no clã.</value>
+  </data>
+  <data name="MetaDescription" xml:space="preserve">
+    <value>WoT Clans permite acompanhar o estado e a evolução dos clãs no jogo World of Tanks {0}.</value>
+  </data>
+  <data name="OnLastMonth" xml:space="preserve">
+    <value>No último mês</value>
+  </data>
+  <data name="Overall" xml:space="preserve">
+    <value>Totais</value>
+  </data>
+  <data name="OverallBattlesExplanation" xml:space="preserve">
+    <value>Total de batalhas feitas por todos os membros do clã.</value>
+  </data>
+  <data name="OverallWinRateExplanation" xml:space="preserve">
+    <value>Porcentagem de vitórias, em média ponderada, obtidas por todos os membros do clã.</value>
+  </data>
+  <data name="OverallWn8Explanation" xml:space="preserve">
+    <value>WN8, em média ponderada, obtido por todos os membros do clã.</value>
+  </data>
+  <data name="Recent" xml:space="preserve">
+    <value>Recentes</value>
+  </data>
+  <data name="Tracking" xml:space="preserve">
+    <value>Rastreando {0:N0} tanqueiros em {1:N0} clãs.</value>
+  </data>
+  <data name="UpdatedAt" xml:space="preserve">
+    <value>Atualizado em</value>
+  </data>
+  <data name="WinRate" xml:space="preserve">
+    <value>Vitórias</value>
+  </data>
+  <data name="WinRateExplanation" xml:space="preserve">
+    <value>Porcentagem de vitórias, em média ponderada, que os jogadores ativos obtiveram no último mês.</value>
+  </data>
+  <data name="Wn8aExplanation" xml:space="preserve">
+    <value>WN8, em média ponderada, que os jogadores ativos obtiveram no último mês.</value>
+  </data>
+  <data name="Wn8Average" xml:space="preserve">
+    <value>Médio</value>
+  </data>
+  <data name="Wn8Bad" xml:space="preserve">
+    <value>Ruim</value>
+  </data>
+  <data name="Wn8BelowAverage" xml:space="preserve">
+    <value>Abaixo da Média</value>
+  </data>
+  <data name="Wn8Good" xml:space="preserve">
+    <value>Bom</value>
+  </data>
+  <data name="Wn8Great" xml:space="preserve">
+    <value>Excelente</value>
+  </data>
+  <data name="Wn8SuperUnicum" xml:space="preserve">
+    <value>Super Unicum</value>
+  </data>
+  <data name="Wn8t15Explanation" xml:space="preserve">
+    <value>WN8, em média ponderada, que os 15 melhores jogadores ativos obtiveram no último mês.</value>
+  </data>
+  <data name="Wn8T7Explanation" xml:space="preserve">
+    <value>WN8, em média ponderada, que os 7 melhores jogadores ativos obtiveram no último mês.</value>
+  </data>
+  <data name="Wn8Unicum" xml:space="preserve">
+    <value>Unicum</value>
+  </data>
+  <data name="Wn8VeryBad" xml:space="preserve">
+    <value>Muito Ruim</value>
+  </data>
+  <data name="Wn8VeryGood" xml:space="preserve">
+    <value>Muito Bom</value>
+  </data>
+  <data name="ActiveCommandersExplanation" xml:space="preserve">
+    <value>Tanqueiros ativos no clã</value>
+  </data>
+  <data name="CalculatedAt" xml:space="preserve">
+    <value>calculados</value>
+  </data>
+  <data name="ClanDetail" xml:space="preserve">
+    <value>Detalhes do clã</value>
+  </data>
+  <data name="ClanMetaDescription" xml:space="preserve">
+    <value>Situação e evolução do clã {0} no jogo World of Tanks.</value>
+  </data>
+  <data name="Commander" xml:space="preserve">
+    <value>Tanqueiro</value>
+  </data>
+  <data name="CommanderRankingExplanation" xml:space="preserve">
+    <value>Ranking do tanqueiro dentro do clã de acordo com o WN8 recente.</value>
+  </data>
+  <data name="Commanders" xml:space="preserve">
+    <value>Tanqueiros</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="Day" xml:space="preserve">
+    <value>Dados do dia anterior.</value>
+  </data>
+  <data name="DayAbbr" xml:space="preserve">
+    <value>D</value>
+  </data>
+  <data name="Delta" xml:space="preserve">
+    <value>Variação</value>
+  </data>
+  <data name="DeltaExplanation" xml:space="preserve">
+    <value>Variação do valor.</value>
+  </data>
+  <data name="Evolution" xml:space="preserve">
+    <value>Evolução</value>
+  </data>
+  <data name="EvolutionAxisTitle" xml:space="preserve">
+    <value>Valor do WN8</value>
+  </data>
+  <data name="FrequencyAxisActives" xml:space="preserve">
+    <value># de Jogadores Ativos</value>
+  </data>
+  <data name="FrequencyAxisBattles" xml:space="preserve">
+    <value># de Batalhas</value>
+  </data>
+  <data name="Historic" xml:space="preserve">
+    <value>Histórico</value>
+  </data>
+  <data name="HistoricExplanation" xml:space="preserve">
+    <value>Os últimos 2 meses.</value>
+  </data>
+  <data name="Metric" xml:space="preserve">
+    <value>Métrica</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>Dados do mês anterior.</value>
+  </data>
+  <data name="MonthAbbr" xml:space="preserve">
+    <value>M</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>Rating</value>
+  </data>
+  <data name="RatingActiveExplanation" xml:space="preserve">
+    <value>Jogadores Ativos no Rating.</value>
+  </data>
+  <data name="RatingActiveNumberExplanation" xml:space="preserve">
+    <value>Número de jogadores ativos nesse rating.</value>
+  </data>
+  <data name="RatingBattleExplanation" xml:space="preserve">
+    <value>Batalhas feitas por jogadores no rating.</value>
+  </data>
+  <data name="RatingBattleNumberExplanation" xml:space="preserve">
+    <value>Número de batalhas feitas por jogadores ativos nesse rating.</value>
+  </data>
+  <data name="RatingDistribuction" xml:space="preserve">
+    <value>Distribuição do Rating</value>
+  </data>
+  <data name="RatingExplanation" xml:space="preserve">
+    <value>Rating do WN8a.</value>
+  </data>
+  <data name="RatingPercentActiveExplanation" xml:space="preserve">
+    <value>Porcentagem de jogadores ativos nesse rating.</value>
+  </data>
+  <data name="RatingPercentBattlesExplanation" xml:space="preserve">
+    <value>Porcentagem de batalhas feitas por jogadores ativos nesse rating.</value>
+  </data>
+  <data name="ShowAll" xml:space="preserve">
+    <value>Todos</value>
+  </data>
+  <data name="ShowLess" xml:space="preserve">
+    <value>Mostrar Menos</value>
+  </data>
+  <data name="ShowMore" xml:space="preserve">
+    <value>Mostrar Mais</value>
+  </data>
+  <data name="ShowTop15" xml:space="preserve">
+    <value>Mostrar Top 15</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>Resumo</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>Valor</value>
+  </data>
+  <data name="Week" xml:space="preserve">
+    <value>Dados da semana anterior.</value>
+  </data>
+  <data name="WeekAbbr" xml:space="preserve">
+    <value>S</value>
+  </data>
+  <data name="Weight" xml:space="preserve">
+    <value>Peso</value>
+  </data>
+  <data name="WeightExplanation" xml:space="preserve">
+    <value>Peso percentual do jogador no WN8t15 do clã.</value>
+  </data>
+  <data name="WarningsCall" xml:space="preserve">
+    <value>Existe uma mensagem que você deveria ler...</value>
+  </data>
+  <data name="Wn8AboveAverage" xml:space="preserve">
+    <value>Acima da Média</value>
+  </data>
+  <data name="AboutLink" xml:space="preserve">
+    <value>Sobre</value>
+  </data>
+  <data name="AboutTournamentsTextLink" xml:space="preserve">
+    <value>Informações sobre Torneios</value>
+  </data>
+  <data name="Tournaments" xml:space="preserve">
+    <value>Torneios</value>
+  </data>
+  <data name="AboutTournament" xml:space="preserve">
+    <value>Sobre esse torneio</value>
+  </data>
+  <data name="Brackets" xml:space="preserve">
+    <value>Chaves</value>
+  </data>
+  <data name="Clans" xml:space="preserve">
+    <value>clãs</value>
+  </data>
+  <data name="Discussion" xml:space="preserve">
+    <value>Discussão</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>De</value>
+  </data>
+  <data name="Until" xml:space="preserve">
+    <value>até</value>
+  </data>
+  <data name="Video" xml:space="preserve">
+    <value>Vídeo</value>
+  </data>
+  <data name="Warnings" xml:space="preserve">
+    <value>Avisos</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Buscar</value>
+  </data>
+  <data name="ForPs" xml:space="preserve">
+    <value>para PlayStation</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Seguinte</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Anterior</value>
+  </data>
+  <data name="Artillery" xml:space="preserve">
+    <value>Artilharia</value>
+  </data>
+  <data name="China" xml:space="preserve">
+    <value>China</value>
+  </data>
+  <data name="Czechoslovakia" xml:space="preserve">
+    <value>Checoslováquia</value>
+  </data>
+  <data name="France" xml:space="preserve">
+    <value>França</value>
+  </data>
+  <data name="Germany" xml:space="preserve">
+    <value>Alemanha</value>
+  </data>
+  <data name="Heavy" xml:space="preserve">
+    <value>Pesado</value>
+  </data>
+  <data name="Japan" xml:space="preserve">
+    <value>Japão</value>
+  </data>
+  <data name="Light" xml:space="preserve">
+    <value>Leve</value>
+  </data>
+  <data name="Medium" xml:space="preserve">
+    <value>Médio</value>
+  </data>
+  <data name="TankDestroyer" xml:space="preserve">
+    <value>Caça</value>
+  </data>
+  <data name="Uk" xml:space="preserve">
+    <value>Reino Unido</value>
+  </data>
+  <data name="Usa" xml:space="preserve">
+    <value>E.U.A.</value>
+  </data>
+  <data name="Ussr" xml:space="preserve">
+    <value>U.R.S.S.</value>
+  </data>
+  <data name="CombinedDamage" xml:space="preserve">
+    <value>Dano Combinado</value>
+  </data>
+  <data name="MoE" xml:space="preserve">
+    <value>Marcas de Canhão</value>
+  </data>
+  <data name="MoE1Mark" xml:space="preserve">
+    <value>1 Marca</value>
+  </data>
+  <data name="MoE2Mark" xml:space="preserve">
+    <value>2 Marcas</value>
+  </data>
+  <data name="MoE3Mark" xml:space="preserve">
+    <value>3 Marcas</value>
+  </data>
+  <data name="MoEData" xml:space="preserve">
+    <value>Dados para {0:N0} tanques calculados em {1:d}.</value>
+  </data>
+  <data name="MoEDescriptions" xml:space="preserve">
+    <value>Marcas de Excelência para World of Tanks {0}</value>
+  </data>
+  <data name="MoEFilter" xml:space="preserve">
+    <value>Filtrar por Tanque, Tipo ou Nação:</value>
+  </data>
+  <data name="MoESubTitle" xml:space="preserve">
+    <value>Dano Médio estimado para obter Marcas de Canhão (MoE)</value>
+  </data>
+  <data name="Nation" xml:space="preserve">
+    <value>Nação</value>
+  </data>
+  <data name="Tank" xml:space="preserve">
+    <value>Tanque</value>
+  </data>
+  <data name="Tier" xml:space="preserve">
+    <value>Nível</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="Assisted" xml:space="preserve">
+    <value>Assistido</value>
+  </data>
+  <data name="Avg" xml:space="preserve">
+    <value>Média</value>
+  </data>
+  <data name="BestTankersAt" xml:space="preserve">
+    <value>Os melhores tanqueiros em cada veículo, calculado em {0:d}.</value>
+  </data>
+  <data name="Combined" xml:space="preserve">
+    <value>Combinado</value>
+  </data>
+  <data name="Damage" xml:space="preserve">
+    <value>Dano</value>
+  </data>
+  <data name="Direct" xml:space="preserve">
+    <value>Direto</value>
+  </data>
+  <data name="Kills" xml:space="preserve">
+    <value>Destruídos</value>
+  </data>
+  <data name="Leaders" xml:space="preserve">
+    <value>Líderes</value>
+  </data>
+  <data name="Max" xml:space="preserve">
+    <value>Máximo</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="Rank" xml:space="preserve">
+    <value>Classificação</value>
+  </data>
+  <data name="Aces" xml:space="preserve">
+    <value>Ases</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Todos</value>
+  </data>
+  <data name="Leaderboard" xml:space="preserve">
+    <value>Placar de Líderes</value>
+  </data>
+  <data name="Rules" xml:space="preserve">
+    <value>Regras</value>
+  </data>
+  <data name="Donate" xml:space="preserve">
+    <value>Doe!</value>
+  </data>
+  <data name="DonateCrypto" xml:space="preserve">
+    <value>Doe com Criptomoedas</value>
+  </data>
+  <data name="DonateExplain" xml:space="preserve">
+    <value>Me ajude a manter esse site sem propagandas!</value>
+  </data>
+  <data name="DonatePayPal" xml:space="preserve">
+    <value>Doe com PayPal</value>
+  </data>
+  <data name="Tanks" xml:space="preserve">
+    <value>Tanques</value>
+  </data>
+  <data name="Defense" xml:space="preserve">
+    <value>Defesa da Base</value>
+  </data>
+  <data name="ExpectedValues" xml:space="preserve">
+    <value>Valores Esperados Médios por Batalha</value>
+  </data>
+  <data name="Origin" xml:space="preserve">
+    <value>Origem</value>
+  </data>
+  <data name="OriginExtrapolated" xml:space="preserve">
+    <value>Extrapolação</value>
+  </data>
+  <data name="OriginSource" xml:space="preserve">
+    <value>Fonte</value>
+  </data>
+  <data name="OriginSurrogate" xml:space="preserve">
+    <value>Surrogado</value>
+  </data>
+  <data name="Spoted" xml:space="preserve">
+    <value>Detectados</value>
+  </data>
+  <data name="WN8DataInfo" xml:space="preserve">
+    <value>dados para {0:N0} tanques obtidos do {1}, versão {2}, lidos em {3:d}.</value>
+  </data>
+  <data name="WN8SubTitle" xml:space="preserve">
+    <value>Valores Esperados para Calcular o WN8</value>
+  </data>
+  <data name="WN8Title" xml:space="preserve">
+    <value>Valores do WN8</value>
+  </data>
+  <data name="OriginSurrogateTwo" xml:space="preserve">
+    <value>2 Surrogados</value>
+  </data>
+  <data name="AssistedDamage" xml:space="preserve">
+    <value>Dano Assistido</value>
+  </data>
+  <data name="BattlesStatsExplanation" xml:space="preserve">
+    <value>Número de batalhas</value>
+  </data>
+  <data name="CommandersStatsExplanation" xml:space="preserve">
+    <value>Número de comandantes</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>dias</value>
+  </data>
+  <data name="DaysStatsExplanation" xml:space="preserve">
+    <value>Tempo que o tanque foi jogado</value>
+  </data>
+  <data name="Explanation" xml:space="preserve">
+    <value>Explicação</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>Geral</value>
+  </data>
+  <data name="Hours" xml:space="preserve">
+    <value>horas</value>
+  </data>
+  <data name="HP" xml:space="preserve">
+    <value>HP</value>
+  </data>
+  <data name="Mark" xml:space="preserve">
+    <value>Marca</value>
+  </data>
+  <data name="Mastery" xml:space="preserve">
+    <value>Maestria</value>
+  </data>
+  <data name="MasteryExplanation" xml:space="preserve">
+    <value>Maestria médias dos comandantes. 4 é Ace.</value>
+  </data>
+  <data name="Minutes" xml:space="preserve">
+    <value>minutos</value>
+  </data>
+  <data name="MoEExplanation" xml:space="preserve">
+    <value>O &lt;b&gt;Dano Combinado&lt;/b&gt; (a soma de dano direto e dano assistido) estimado que você deve ter, em média, para obter &lt;b&gt;Marcas de Excelência&lt;/b&gt; no canhão de sua arma.</value>
+  </data>
+  <data name="Piercings" xml:space="preserve">
+    <value>Penetrações</value>
+  </data>
+  <data name="Shots" xml:space="preserve">
+    <value>Disparos</value>
+  </data>
+  <data name="Statistics" xml:space="preserve">
+    <value>Estatísticas</value>
+  </data>
+  <data name="StatsBanner1" xml:space="preserve">
+    <value>Estatísticas para o &lt;a href="https://console.worldoftanks.com/encyclopedia/vehicles/{6}/{7}"&gt;{0}&lt;/a&gt;, {1}Tier {2}, {3}, {4}, calculadas em {5:d}</value>
+  </data>
+  <data name="StatsBanner2" xml:space="preserve">
+    <value>Dados são computados toda semana, usando as batalhas dos membros de clãs que esse site rastreia. Este não é um retrato completo da comunidade WoT.</value>
+  </data>
+  <data name="StatsDesc" xml:space="preserve">
+    <value>Estatísticas para o {0} - WoT {1}</value>
+  </data>
+  <data name="StatsTitle" xml:space="preserve">
+    <value>Estatísticas para o {0}</value>
+  </data>
+  <data name="TargetDamage" xml:space="preserve">
+    <value>Dano Objetivo</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Tempo</value>
+  </data>
+  <data name="TimePerBattle" xml:space="preserve">
+    <value>Tempo por Batalha</value>
+  </data>
+  <data name="TimePerBattleExplanation" xml:space="preserve">
+    <value>Tempo de cada batalha</value>
+  </data>
+  <data name="TimePerPlayer" xml:space="preserve">
+    <value>Tempo por Comandante</value>
+  </data>
+  <data name="TimePerPlayerExplanation" xml:space="preserve">
+    <value>Tempo que cada comandante passou jogando esse tanque</value>
+  </data>
+  <data name="TreesCut" xml:space="preserve">
+    <value>Árvore Cortadas</value>
+  </data>
+  <data name="TreesCutJoke" xml:space="preserve">
+    <value>Não beba e dirija!</value>
+  </data>
+  <data name="TreesCutUnit" xml:space="preserve">
+    <value>Árvores/Batalha</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Unidade</value>
+  </data>
+  <data name="WinRateStatsExplanation" xml:space="preserve">
+    <value>Porcentagem de Vitórias</value>
+  </data>
+  <data name="WN8" xml:space="preserve">
+    <value>WN8</value>
+  </data>
+  <data name="Wn8StatsAverage" xml:space="preserve">
+    <value>WN8 Médio</value>
+  </data>
+  <data name="AssistedDamageExplanation" xml:space="preserve">
+    <value>Dano Assistido por Batalha</value>
+  </data>
+  <data name="Atack" xml:space="preserve">
+    <value>Ataque</value>
+  </data>
+  <data name="Capture" xml:space="preserve">
+    <value>Captura</value>
+  </data>
+  <data name="CaptureExplanation" xml:space="preserve">
+    <value>Pontos de Captura da Base por Batalha</value>
+  </data>
+  <data name="CombinedDamageExplanation" xml:space="preserve">
+    <value>A Soma de Dano Direto, Imobilização e Avistamento por Batalha</value>
+  </data>
+  <data name="CombinedDPM" xml:space="preserve">
+    <value>DPM Combinado</value>
+  </data>
+  <data name="CombinedDPMExplanation" xml:space="preserve">
+    <value>Dano Combinado por Minuto</value>
+  </data>
+  <data name="DamageExplanation" xml:space="preserve">
+    <value>Dano Direto por Batalha</value>
+  </data>
+  <data name="DamagePiercing" xml:space="preserve">
+    <value>Dano por Penetração</value>
+  </data>
+  <data name="DamagePiercingExplanation" xml:space="preserve">
+    <value>Dano Médio por Penetração</value>
+  </data>
+  <data name="DPM" xml:space="preserve">
+    <value>DPM</value>
+  </data>
+  <data name="DPMExplanation" xml:space="preserve">
+    <value>Dano Direto por Minuto</value>
+  </data>
+  <data name="DPMUnit" xml:space="preserve">
+    <value>HP/min</value>
+  </data>
+  <data name="ExplosionHits" xml:space="preserve">
+    <value>Acertos Explosivos</value>
+  </data>
+  <data name="ExplosionHitsExplanation" xml:space="preserve">
+    <value>Acertos Explosivos por Batalha</value>
+  </data>
+  <data name="HitRatio" xml:space="preserve">
+    <value>Taxa de Acertos</value>
+  </data>
+  <data name="HitRatioExplanation" xml:space="preserve">
+    <value>% dos Disparos que Acertam o Alvo</value>
+  </data>
+  <data name="Hits" xml:space="preserve">
+    <value>Acertos</value>
+  </data>
+  <data name="HitsExplanation" xml:space="preserve">
+    <value>Acertos por Batalha</value>
+  </data>
+  <data name="KillsExplanation" xml:space="preserve">
+    <value>Detruídos por Batalha</value>
+  </data>
+  <data name="MaxKills" xml:space="preserve">
+    <value>Max Destruídos</value>
+  </data>
+  <data name="MaxKillsExplanation" xml:space="preserve">
+    <value>Média do Max Destruídos por Comandante</value>
+  </data>
+  <data name="PiercingRatio" xml:space="preserve">
+    <value>Taxa de Penetração</value>
+  </data>
+  <data name="PiercingRatioExplanation" xml:space="preserve">
+    <value>% dos Acertos que Penetram o Alvo</value>
+  </data>
+  <data name="PiercingsExplanation" xml:space="preserve">
+    <value>Penetrações por Batalha</value>
+  </data>
+  <data name="PiercingShotRatio" xml:space="preserve">
+    <value>Razão Penetração/Disparos</value>
+  </data>
+  <data name="PiercingShotRatioExplanation" xml:space="preserve">
+    <value>% dos Disparos que Penetram o Alvo</value>
+  </data>
+  <data name="Points" xml:space="preserve">
+    <value>pontos</value>
+  </data>
+  <data name="ShotsExplanation" xml:space="preserve">
+    <value>Disparos por Batalha</value>
+  </data>
+  <data name="SpotDamage" xml:space="preserve">
+    <value>Dano por Avistamento</value>
+  </data>
+  <data name="SpotDamageExplanation" xml:space="preserve">
+    <value>Dano por Avistamento por Batalha</value>
+  </data>
+  <data name="Spotted" xml:space="preserve">
+    <value>Avistados</value>
+  </data>
+  <data name="SpottedExplanation" xml:space="preserve">
+    <value>Tanques Avistados por Batalha</value>
+  </data>
+  <data name="TrackDamage" xml:space="preserve">
+    <value>Dano por Imobilização</value>
+  </data>
+  <data name="TrackDamageExplanation" xml:space="preserve">
+    <value>Dano por Imobilização por Batalha</value>
+  </data>
+  <data name="Blocked" xml:space="preserve">
+    <value>Bloqueado</value>
+  </data>
+  <data name="BlockedExplanation" xml:space="preserve">
+    <value>A % dos Acertos Recebidos que foram Blindados</value>
+  </data>
+  <data name="DamageRatio" xml:space="preserve">
+    <value>Provocado/Recebido</value>
+  </data>
+  <data name="DamageRatioExplanation" xml:space="preserve">
+    <value>O Dano Direto Causado pelo Dano Recebido</value>
+  </data>
+  <data name="DamageReceived" xml:space="preserve">
+    <value>Dano Recebido</value>
+  </data>
+  <data name="DamageReceivedExplanation" xml:space="preserve">
+    <value>Dano Recebido por Batalha</value>
+  </data>
+  <data name="DroppedCapture" xml:space="preserve">
+    <value>Defesa da Base</value>
+  </data>
+  <data name="DroppedCaptureExplanation" xml:space="preserve">
+    <value>Pontos de Defesa da Base por Batalha</value>
+  </data>
+  <data name="ExplosionHitsReceived" xml:space="preserve">
+    <value>Acertos Explosivos Recebidos</value>
+  </data>
+  <data name="ExplosionHitsReceivedExplanation" xml:space="preserve">
+    <value>Acertos Explosivos Recebidos por Batalha</value>
+  </data>
+  <data name="HitsReceived" xml:space="preserve">
+    <value>Acertos Recebidos</value>
+  </data>
+  <data name="HitsReceivedExplanation" xml:space="preserve">
+    <value>Acertos Recebidos por Batalha</value>
+  </data>
+  <data name="KillDeath" xml:space="preserve">
+    <value>Destruídos/Mortes</value>
+  </data>
+  <data name="KillDeathExplanation" xml:space="preserve">
+    <value>Tanques Destruídos para cada Morte</value>
+  </data>
+  <data name="PiercingsReceived" xml:space="preserve">
+    <value>Penetrações Recebidas</value>
+  </data>
+  <data name="PiercingsReceivedExplanation" xml:space="preserve">
+    <value>Penetrações Recebidas por Batalha</value>
+  </data>
+  <data name="SurvivalRate" xml:space="preserve">
+    <value>Taxa de Sobrevivência</value>
+  </data>
+  <data name="SurvivalRateExplanation" xml:space="preserve">
+    <value>% das Batalhas que o Tanque Sobrevive</value>
+  </data>
+  <data name="DataRetrievedAt" xml:space="preserve">
+    <value>Dados obtidos em {0:O}.</value>
+  </data>
+  <data name="DataRetrievedAtNextAt" xml:space="preserve">
+    <value>Dados obtidos em {0:O}, próxima atualização ~{1:O}.</value>
+  </data>
+  <data name="PlayersUpdatedEvery" xml:space="preserve">
+    <value>Jogadores atualizados a cada ~{0:N0}h em média.</value>
+  </data>
+  <data name="AvgTier" xml:space="preserve">
+    <value>Tier Médio</value>
+  </data>
+  <data name="AvgTierActives" xml:space="preserve">
+    <value>Tier Médio Ativos</value>
+  </data>
+  <data name="AvgTierExplanation" xml:space="preserve">
+    <value>O tier médio que foi jogado.</value>
+  </data>
+  <data name="AvgTierTop15" xml:space="preserve">
+    <value>Tier Médio Top 15</value>
+  </data>
+  <data name="OverallStatsForPlayer" xml:space="preserve">
+    <value>Estatísticas Gerais para {0} [{1}]</value>
+  </data>
+  <data name="OverallStatsForPlayerMoment" xml:space="preserve">
+    <value>&lt;p&gt;Dados &lt;b&gt;gerais&lt;/b&gt; obtidos em &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="RecentStatsForPlayer" xml:space="preserve">
+    <value>Estatísticas Recentes para {0} [{1}]</value>
+  </data>
+  <data name="RecentStatsForPlayerMoment" xml:space="preserve">
+    <value>&lt;p&gt;Dados &lt;b&gt;recentes&lt;/b&gt; obtidos em &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="DaysAgo" xml:space="preserve">
+    <value>Dias Atrás</value>
+  </data>
+  <data name="LeaderIfFewMoreDamage" xml:space="preserve">
+    <value>Um pouco mais de dano para o Placar de Líderes</value>
+  </data>
+  <data name="LeaderIfFewMoreDamageExplanation" xml:space="preserve">
+    <value>&lt;p&gt;Faça mais &lt;b&gt;dano&lt;/b&gt; (aumento de cerca de 5%) nos tanques abaixo, antes de &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;, para ter a chance de aparecer no Placar de Líderes:&lt;/p&gt;</value>
+  </data>
+  <data name="LeaderIfFewMoreGames" xml:space="preserve">
+    <value>Umas poucas batallhas a mais para o Placar de Líderes</value>
+  </data>
+  <data name="LeaderIfFewMoreGamesExplanation" xml:space="preserve">
+    <value>&lt;p&gt;Lute &lt;b&gt;poucas&lt;/b&gt; (até 10) &lt;i&gt;boas&lt;/i&gt; batalhas nos tanques abaixo, antes de &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;, para ter a chance de aparecer no Placar de Líderes:&lt;/p&gt;</value>
+  </data>
+  <data name="LeaderIfPlayABattle" xml:space="preserve">
+    <value>Volte ao Placar de Líderes!</value>
+  </data>
+  <data name="LeaderIfPlayABattleExplanation" xml:space="preserve">
+    <value>&lt;p&gt;Lute pelo menos &lt;b&gt;uma&lt;/b&gt; &lt;i&gt;boa&lt;/i&gt; batalha nos tanques abaixo, antes de &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;, para ter a chance de aparecer &lt;b&gt;novamente&lt;/b&gt; no Placar de Líderes:&lt;/p&gt;</value>
+  </data>
+  <data name="LeaderOnNextUpdate" xml:space="preserve">
+    <value>Bem vindo ao Placar de Líderes!</value>
+  </data>
+  <data name="LeaderOnNextUpdateExplanation" xml:space="preserve">
+    <value>&lt;p&gt;É bastante provável (mas não há garantias) que no próximo recálculo do Placar de Líderes, em &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;, estes tanquer apareçam nele:&lt;/p&gt;</value>
+  </data>
+  <data name="Comparisons" xml:space="preserve">
+    <value>Comparações</value>
+  </data>
+  <data name="Equipment" xml:space="preserve">
+    <value>Equipamento</value>
+  </data>
+  <data name="History" xml:space="preserve">
+    <value>Histórico</value>
+  </data>
+  <data name="LastMonth" xml:space="preserve">
+    <value>Último Mês</value>
+  </data>
+  <data name="LastMonthExplanation" xml:space="preserve">
+    <value>Na verdade são os últimos 28 dias, 4 semanas.</value>
+  </data>
+  <data name="LastWeek" xml:space="preserve">
+    <value>Última Semana</value>
+  </data>
+  <data name="News" xml:space="preserve">
+    <value>Notícias</value>
+  </data>
+</root>

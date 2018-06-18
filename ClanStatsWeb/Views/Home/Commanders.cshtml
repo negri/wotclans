@@ -1,0 +1,206 @@
+﻿@using System.Globalization
+@using Negri.Wot
+@using Negri.Wot.Models
+@using Negri.Wot.Properties
+@model ClanPage
+
+@{
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<html lang="@GlobalHelper.Language">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commanders on @Model.Clan.ClanTag</title>
+    <link href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css " rel="stylesheet" type="text/css" />
+    <link href="~/favicon.ico" rel="shortcut icon" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <style type="text/css">
+        body{
+            padding: 0;
+        }
+    </style>
+</head>
+<body data-render-moment="@DateTime.UtcNow.ToString("o")"
+      data-request-culture="@CultureInfo.CurrentCulture.Name" data-request-ui-culture="@CultureInfo.CurrentUICulture.Name"
+      data-request-ui-language="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName"
+      data-request-decimal-separator="@CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator"
+      data-request-grouping-separator="@CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator"
+      data-request-date-format="@CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern"
+      data-request-time-format="@CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern"
+      data-plataform="@GlobalHelper.Plataform" data-plataform-tag="@GlobalHelper.PlataformTag"
+      data-is-mobile="@GlobalHelper.IsMobile() ? 1 : 0)">
+
+    <section id="tankers">
+
+        <div class="col-md-12">
+            <table class="data table-striped" id="membersTable">
+                <thead>
+                    <tr>
+                        <th title="@Resources.CommanderRankingExplanation" rowspan="2" class="sort-key">#</th>
+                        <th rowspan="2">@Resources.Commander</th>
+                        <th colspan="4" style="border-right: 1px solid black;" title="@Resources.OnLastMonth">@Resources.Recent</th>
+                        <th colspan="3">@Resources.Overall</th>
+                    </tr>
+                    <tr>
+                        <th>@Resources.Battles</th>
+                        <th title="@Resources.WeightExplanation">@Resources.Weight</th>
+                        <th style="white-space: nowrap;">@Resources.WinRate</th>
+                        <th style="border-right: 1px solid black;" class="sort-key">WN8</th>
+                        <th>@Resources.Battles</th>
+                        <th style="white-space: nowrap;">@Resources.WinRate</th>
+                        <th>WN8</th>                        
+                    </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    @{
+                        foreach (Tuple
+                        <int, Player>
+                        player in Model.Players)
+                        {
+                            <tr>
+                                <td class="number">@player.Item1.ToString()</td>
+                                <td style="white-space: nowrap;">
+                                    <a class="@(player.Item2.IsPatched ? "suspectData" : null)" href="http://console.worldoftanks.com/stats/players/@player.Item2.Id/" rel="nofollow" @GlobalHelper.ExternalTarget>
+                                        <img src="~/Images/Ranks/@((int)player.Item2.Rank).svg" height="12" width="12" alt="@player.Item2.Rank" title="@player.Item2.Rank" />
+                                        @player.Item2.Name
+                                    </a>
+                                </td>
+                                <td class="number title-moment" title="Dados obtidos em @player.Item2.Moment.ToString("O")">@player.Item2.MonthBattles.ToString("N0")</td>
+                                <td class="number">@((player.Item1 > 15 ? 0.0 : (player.Item2.MonthBattles) / ((double)Model.Clan.Top15Battles)).ToString("P1"))</td>
+                                <td class="number">@player.Item2.MonthWinRate.ToString("P1")</td>
+                                <td class="number @player.Item2.MonthWn8.ToLabelClass()" style="border-right: 1px solid black; background-color: @player.Item2.MonthWn8.ToWebColor();">
+                                    <a title="@player.Item2.MonthWn8.ToRatingString()" href="@GlobalHelper.GetPlayerUrl(player.Item2, true)" rel="nofollow" @GlobalHelper.ExternalTarget>@player.Item2.MonthWn8.ToString("N0")</a>
+                                </td>
+                                <td class="number title-moment" title="Dados obtidos em @player.Item2.Moment.ToString("O")">@player.Item2.TotalBattles.ToString("N0")</td>
+                                <td class="number">@player.Item2.TotalWinRate.ToString("P1")</td>
+                                <td class="number @player.Item2.TotalWn8.ToLabelClass()" style="background-color: @player.Item2.TotalWn8.ToWebColor();">
+                                    <a title="@player.Item2.TotalWn8.ToRatingString()" href="@GlobalHelper.GetPlayerUrl(player.Item2)" rel="nofollow" @GlobalHelper.ExternalTarget>@player.Item2.TotalWn8.ToString("N0")</a>
+                                </td>                                
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+
+    </section>
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js  "></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
+    <script type="text/javascript">
+
+        var ratingColors = ["#930D0D", "#CD3333", "#CC7A00", "#CCB800", "#839A24", "#4C7226", "#4098BE", "#376DBD", "#793DB6", "#401070"];
+
+
+        // Converte hora UTC para hora local no formato do request
+        function convertToLocalTime(utcString) {
+            var moment = window.moment.utc(utcString);
+            var localOffset = window.moment().utcOffset();
+            moment.add("minutes", localOffset);
+
+            var format = $("body").data("requestDateFormat") + " " + $("body").data("requestTimeFormat");
+
+            // normalização para o formato do moment
+            format = format.replace(/d/g, "D").replace(/y/g, "Y").replace("tt", "a").replace("TT", "A");
+
+            var s = moment.format(format);
+            return s;
+        }
+
+        $(document).ready(function () {
+
+            var decimalSeparator = $("body").data("requestDecimalSeparator");
+            var groupingSeparator = $("body").data("requestGroupingSeparator");
+
+            // Função de ordenção numerica do lado do cliente
+            jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+                "numeric-flex-pre": function (a) {
+                    if (a === "") {
+                        return 0.0;
+                    }
+                    if (a === "-") {
+                        return 0.0;
+                    }
+
+                    if (a.substring(0, 3) === "<a ") {
+                        a = a.match(/<a [^>]+>([^<]+)<\/a>/)[1];
+                    }
+
+                    a = a.replace(groupingSeparator, "");
+                    a = a.replace("%", "");
+                    a = a.replace(decimalSeparator, ".");
+
+                    return parseFloat(a);
+                },
+
+                "numeric-flex-asc": function (a, b) {
+                    return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+                },
+
+                "numeric-flex-desc": function (a, b) {
+                    return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+                }
+            });
+
+            $("#membersTable").DataTable({
+                "paging": false,
+                "info": false,
+                "searching": false,
+                "columnDefs": [
+                    { "type": "numeric-flex", targets: [2, 3, 4, 5, 6, 7, 8] }                    
+                ],
+                "order": [[0, "asc"]]
+            });
+
+            // Troca a hora UTC de atualização para a hora correspondente no cliente
+            $("#last-update-time").text(convertToLocalTime($("#last-update-time").text()));
+
+            // Troca a hora UTC nos titulos
+            $(".title-moment").each(function () {
+                var item = $(this);
+
+                var re = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)*Z/g;
+
+                function replacer(match) {
+                    return convertToLocalTime(match);
+                }
+
+                var currentTitle = item.attr("title");
+                var newTitle = currentTitle.replace(re, replacer);
+                item.attr("title", newTitle);
+
+            });
+
+        });
+    </script>
+
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments);
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m);
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-73929504-1', 'auto');
+        ga('send', 'pageview');
+
+    </script>
+
+</body>
+</html>
