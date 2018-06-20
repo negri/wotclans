@@ -86,7 +86,7 @@ namespace Negri.Wot.Bot
                 }
             }
 
-            Log.Error("5 minutes without a heart beat. He is dead, Jin!");
+            Log.Fatal("5 minutes without a heart beat. He is dead, Jin!");
             return 1;
         }
 
