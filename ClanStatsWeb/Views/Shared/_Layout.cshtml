@@ -74,7 +74,7 @@
                         </ul>
                     </li>
 
-                    @if (GlobalHelper.Plataform == Plataform.XBOX)
+                    @*@if (GlobalHelper.Plataform == Plataform.XBOX)
                         {
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: gold;">
@@ -92,7 +92,7 @@
                                     <li><a href="~/Tournament/WCL-3-Wait" title="Clans on the Wait List">Wait List</a></li>
                                 </ul>
                             </li>
-                        }
+                        }*@
 
                     @*<li>
                               @Html.ActionLink(Resources.Donate, "Donate", "Home", new { area = "" }, new { style = "color: gold;", title = Resources.DonateExplain })
@@ -173,7 +173,9 @@
                     <a href="~/About#addClan">Solicite a adição de seu clã</a> |
                     <a href="https://discord.gg/MTCMq3Q" hreflang="en" title="Converse comigo no Discord (em Inglês)">
                         <img alt="Discord" src="~/Images/discord.svg" height="32" />
-                    </a>
+                    </a> |
+                    <a hreflang="en" href="~/DiscordBot">Discord Bot</a> |
+                    <a hreflang="en" href="https://github.com/negri/wotclans">Código Fonte</a>
                 </p>
             }
             else
@@ -201,7 +203,8 @@
                     <a href="https://discord.gg/MTCMq3Q" hreflang="en" title="Talk to me on Discord (in English)">
                         <img alt="Discord" src="~/Images/discord.svg" height="32" />
                     </a> |
-                    <a hreflang="en" href="~/DiscordBot">Discord Bot</a>
+                    <a hreflang="en" href="~/DiscordBot">Discord Bot</a> |
+                    <a hreflang="en" href="https://github.com/negri/wotclans">Source Code</a>
                 </p>
             }
         </footer>
