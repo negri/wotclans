@@ -92,6 +92,9 @@ namespace Negri.Wot.Bot
                 }
 
                 var player = provider.GetPlayer(playerId.Value, true);
+
+                var wn8Expected = provider.GetWn8ExpectedValues(player.Plataform);
+
                 if ((player == null) && (apiPlayer != null))
                 {
                     // Not on my database, but on the API Let's work with overall data!
@@ -108,9 +111,7 @@ namespace Negri.Wot.Bot
                     apiPlayer.Performance = new Tanks.TankPlayerPeriods()
                     {
                         All = tanks.ToDictionary(t => t.TankId, t => t.All)
-                    };
-
-                    var wn8Expected = provider.GetWn8ExpectedValues(apiPlayer.Plataform);
+                    };                    
 
                     apiPlayer.Calculate(wn8Expected);
 
@@ -133,8 +134,7 @@ namespace Negri.Wot.Bot
                     recorder.Set(validTanks);
 
                     var played = provider.GetWn8RawStatsForPlayer(player.Plataform, player.Id);
-                    player.Performance = played;
-                    var wn8Expected = provider.GetWn8ExpectedValues(player.Plataform);
+                    player.Performance = played;                    
                     player.Calculate(wn8Expected);
                     player.Moment = DateTime.UtcNow;
                     player.Origin = PlayerDataOrigin.Self;
@@ -163,8 +163,7 @@ namespace Negri.Wot.Bot
                     }
                 }
                 else
-                {
-                    var wn8Expected = provider.GetWn8ExpectedValues(player.Plataform);
+                {                    
                     player.Calculate(wn8Expected);
                 }
 
@@ -530,6 +529,96 @@ namespace Negri.Wot.Bot
             catch (Exception ex)
             {
                 Log.Error($"{nameof(WhoIAm)}()", ex);
+                await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
+                return;
+            }
+        }
+
+        [Command("TankerXP")]
+        [Description("The top XP earners of a player")]
+        public async Task TankerXP(CommandContext ctx,
+           [Description("The *gamer tag* or *PSN Name*")] string gamerTag,
+           [Description("Minimum Battles")] int minBattles = 50,
+           [Description("Minimum tier")] int minTier = 5,
+           [Description("Maximum tier")] int maxTier = 10,
+           [Description("Show only premiums tanks. Use *true* or *false*.")] bool onlyPremium = false)
+        {
+            if (!await CanExecute(ctx, Features.Players))
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(gamerTag))
+            {
+                await ctx.RespondAsync($"Plase specify the *Gamer Tag*, {ctx.User.Mention}. Something like `!w tanker {ctx.User.Username.RemoveDiacritics()}`, for example.");
+                return;
+            }
+
+            Log.Debug($"Requesting {nameof(TankerXP)}({gamerTag}, {minBattles}, {minTier}, {maxTier}, {onlyPremium})...");
+
+            try
+            {
+                var player = await GetPlayer(ctx, gamerTag);
+                if (player == null)
+                {
+                    Log.Debug($"Not found player '{gamerTag}'.");
+                    return;
+                }
+
+                bool? isPremium = onlyPremium ? true : (bool?)null;
+                var tanks = player.Performance.GetTanks(Tanks.ReferencePeriod.All, minTier, maxTier, isPremium, null, minBattles).OrderByDescending(t => t.XPPerHour).Take(25).ToArray();
+                if (!tanks.Any())
+                {
+                    await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. There are not enough tanks with the specified filters.");
+                }
+
+                var sb = new StringBuilder();
+                if (string.IsNullOrWhiteSpace(player.ClanTag))
+                {
+                    sb.AppendLine($"*{player.Name}* Top XP Earners, {ctx.User.Mention}:");
+                }
+                else
+                {
+                    sb.AppendLine($"*{player.Name}* [{Formatter.MaskedUrl(player.ClanTag, new Uri(player.ClanUrl))}] " +
+                    $"Top XP Earners, {ctx.User.Mention}:");
+                }
+                sb.AppendLine();
+                sb.AppendLine("```");
+                sb.AppendLine("Tank            Battles     XP    XP/h");
+                foreach (var t in tanks)
+                {
+                    sb.AppendLine($"{t.Name.PadRight(15)} {t.Battles.ToString("N0").PadLeft(7)} {t.XPPerBattle.ToString("N0").PadLeft(6)}  {t.XPPerHour.ToString("N0").PadLeft(6)}");
+                }
+                sb.AppendLine("```");
+                sb.AppendLine();
+                sb.AppendLine("**Caution!** The Wargaming API accumulates the XP on every tank including the Premium Time, so these values are only reliable " +
+                    "if you *always* plays with Premium, or *always* plays *without* Premium. If you mix, take these number with great reserve.");
+
+                var color = tanks.First().Wn8.ToColor();
+                var plataformPrefix = player.Plataform == Plataform.PS ? "ps." : string.Empty;
+
+                var embed = new DiscordEmbedBuilder
+                {
+                    Title = player.Name,
+                    Description = sb.ToString(),
+                    Color = new DiscordColor(color.R, color.G, color.B),
+                    Url = player.PlayerOverallUrl,
+                    Author = new DiscordEmbedBuilder.EmbedAuthor
+                    {
+                        Name = "WoTClans",
+                        Url = $"https://{plataformPrefix}wotclans.com.br"
+                    },
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = $"Calculatet at {player.Moment:yyyy-MM-dd HH:mm} UTC."
+                    }
+                };
+
+                await ctx.RespondAsync("", embed: embed);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"{nameof(TankerTop)}({gamerTag}, {minTier}, {maxTier}, {onlyPremium})", ex);
                 await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
                 return;
             }

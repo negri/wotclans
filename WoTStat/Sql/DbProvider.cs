@@ -1235,7 +1235,7 @@ namespace Negri.Wot.Sql
             const string allSql = "select TankId, Battles, Damage, Win, Frag, Spot, Def, " +
                                   "DamageAssistedTrack, DamageAssistedRadio, Shots, Hits, Piercings, ExplosionHits, CapturePoints, Losses, " +
                                   "DamageReceived, SurvivedBattles, NoDamageDirectHitsReceived, DirectHitsReceived, ExplosionHitsReceived, PiercingsReceived, " +
-                                  "LastBattle, TreesCut, MaxFrags, MarkOfMastery, BattleLifeTimeSeconds " +
+                                  "LastBattle, TreesCut, MaxFrags, MarkOfMastery, BattleLifeTimeSeconds, XP " +
                                   "from Performance.GetTanksStatsForWn8(@plataformId, @playerId, @date);";
             using (var cmd = new SqlCommand(allSql, t.Connection, t))
             {
@@ -1279,6 +1279,7 @@ namespace Negri.Wot.Sql
                                 MaxFrags = reader.GetNonNullValue<long>(23),
                                 MarkOfMastery = reader.GetNonNullValue<long>(24),
                                 BattleLifeTimeSeconds = reader.GetNonNullValue<long>(25),
+                                XP = reader.GetNonNullValue<long>(26)
                             });
                     }
                 }

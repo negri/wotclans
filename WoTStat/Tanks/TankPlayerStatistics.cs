@@ -193,5 +193,21 @@ namespace Negri.Wot.Tanks
 
         [JsonIgnore]
         public double WinRate => 1.0 * Wins / Battles;
+
+        /// <summary>
+        /// XP per Battle
+        /// </summary>
+        /// <remarks>
+        /// As of 2018-06-21 the WG API accumulattes the base XP including the Premium Time multiplier. 
+        /// So, this number is only reliable to people that only plays with Premium or only plays withot Premium.
+        /// </remarks>
+        [JsonIgnore]
+        public double XPPerBattle => 1.0 * XP / Battles;
+
+        /// <summary>
+        /// XP/h
+        /// </summary>
+        [JsonIgnore]
+        public double XPPerHour => 1.0 * XP / BattleLifeTime.TotalHours;
     }
 }

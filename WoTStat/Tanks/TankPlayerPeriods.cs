@@ -95,7 +95,7 @@ namespace Negri.Wot.Tanks
             return tanks.Sum(t => t.Tier * 1.0 * t.Battles) / tanks.Sum(t => t.Battles);
         }
 
-        private IEnumerable<TankPlayerStatistics> GetTanks(ReferencePeriod period = ReferencePeriod.All, int minTier = 1, int maxTier = 10, bool? isPremium = null, TankType? type = null)
+        public IEnumerable<TankPlayerStatistics> GetTanks(ReferencePeriod period = ReferencePeriod.All, int minTier = 1, int maxTier = 10, bool? isPremium = null, TankType? type = null, int? minBattles = null)
         {
             Dictionary<long, TankPlayerStatistics> dic;
             switch (period)
@@ -113,15 +113,20 @@ namespace Negri.Wot.Tanks
                     throw new ArgumentOutOfRangeException(nameof(period), period, null);
             }
 
-            var tanks = dic.Values.Where(t => (minTier <= t.Tier) && (t.Tier <= maxTier));
+            var tanks = dic.Values.Where(t => (minTier <= t.Tier) && (t.Tier <= maxTier)).ToArray();
             if (isPremium.HasValue)
             {
-                tanks = tanks.Where(t => t.IsPremium = isPremium.Value);
+                tanks = tanks.Where(t => t.IsPremium == isPremium.Value).ToArray();
             }
 
             if (type.HasValue)
             {
-                tanks = tanks.Where(t => t.Type == type.Value);
+                tanks = tanks.Where(t => t.Type == type.Value).ToArray();
+            }
+
+            if (minBattles.HasValue)
+            {
+                tanks = tanks.Where(t => t.Battles >= minBattles.Value).ToArray();
             }
 
             return tanks;
@@ -182,6 +187,17 @@ namespace Negri.Wot.Tanks
 
             top = all.Where(t => t.Battles >= 5 && (!t.IsPremium || includePremiums)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
             if (top.Length >= minNumberOfTanks)
+            {
+                return top;
+            }
+
+            top = all.Where(t => t.Battles >= 1 && (!t.IsPremium || includePremiums)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
+            if (top.Length >= minNumberOfTanks)
+            {
+                return top;
+            }
+
+            if (top.Any())
             {
                 return top;
             }
