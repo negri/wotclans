@@ -90,7 +90,7 @@ namespace Negri.Wot
         public SiteDiagnostic GetSiteDiagnostic(string apiUrl, string apiKey)
         {
             Log.Debug("Obtendo o diagnostico do site remoto");
-            var content = GetContent($"SiteDiagnostic.{DateTime.UtcNow:yyyy-MM-dd.HHmmss}.json", apiUrl, WebCacheAge,
+            var content = GetContent($"SiteDiagnostic.{DateTime.UtcNow:yyyy-MM-dd.HHmmss}.json", $"{apiUrl}?apiAdminKey={apiKey}", WebCacheAge,
                 false, Encoding.UTF8).Result;
             var json = content.Content;
             var siteDiagnostic = JsonConvert.DeserializeObject<SiteDiagnostic>(json);
