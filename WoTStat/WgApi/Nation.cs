@@ -12,7 +12,8 @@
         Germany = 7,
         Czechoslovakia = 8,
         Sweden = 9,
-        Poland = 10
+        Poland = 10,
+        Mercenaries = 11
     }
 
 }

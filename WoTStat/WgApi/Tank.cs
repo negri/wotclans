@@ -56,6 +56,7 @@ namespace Negri.Wot.WgApi
                     case "czech": return Nation.Czechoslovakia;
                     case "sweden": return Nation.Sweden;
                     case "poland": return Nation.Poland;
+                    case "merc": return Nation.Mercenaries;
                     default:
                         return Nation.Unknown;
                 }

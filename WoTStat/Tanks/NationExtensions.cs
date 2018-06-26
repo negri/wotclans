@@ -10,6 +10,10 @@ namespace Negri.Wot.Tanks
             {
                 return "czech";
             }
+            if (nation == Nation.Mercenaries)
+            {
+                return "merc";
+            }
             return nation.ToString().ToLowerInvariant();
         }
     }
