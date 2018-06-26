@@ -1,4 +1,4 @@
-# wotclans
+# WoTClans
 The source code for the [World of Tanks for Console Clans Site](https://wotclans.com.br/) and [Discord Bot](https://wotclans.com.br/DiscordBot)
 
 ## What is this?
