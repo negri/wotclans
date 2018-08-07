@@ -232,12 +232,12 @@ namespace Negri.Wot.Mail
             sb.AppendLine();
 
             sb.AppendFormat("Membership na fila: {0:N0} ({1:P1})", dd.MembershipQueueLenght, dd.MembershipQueueLenght*1.0/dd.TotalEnabledClans);
-            if (dd.MembershipQueueLenght > 60 * 3 * 2)
+            if (dd.MembershipQueueLenght > 100 * 4 * 2)
             {
                 sb.AppendLine(" !!!");
                 mailPriority = Max(mailPriority, MailPriority.High);
             }
-            else if (dd.MembershipQueueLenght > 60 * 3)
+            else if (dd.MembershipQueueLenght > 100 * 4)
             {
                 sb.AppendLine(" !");
                 mailPriority = Max(mailPriority, MailPriority.Normal);
