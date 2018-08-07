@@ -32,7 +32,7 @@ namespace UtilityProgram
         {
             try
             {
-                ListClans(8);
+                GetXvmWn8();
             }
             catch (Exception ex)
             {
@@ -390,6 +390,8 @@ namespace UtilityProgram
                 WebFetchInterval = TimeSpan.FromSeconds(1),
                 ApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
+
+            var data = provider.EnumTanks(Plataform.XBOX).ToArray();
         }
 
         #endregion
