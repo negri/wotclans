@@ -948,4 +948,7 @@
   <data name="News" xml:space="preserve">
     <value>News</value>
   </data>
+  <data name="Mercenaries" xml:space="preserve">
+    <value>Mercenaries</value>
+  </data>
 </root>

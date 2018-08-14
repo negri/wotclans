@@ -129,6 +129,9 @@
   <data name="Medium" xml:space="preserve">
     <value>Средние</value>
   </data>
+  <data name="Mercenaries" xml:space="preserve">
+    <value>Наемников</value>
+  </data>
   <data name="Search" xml:space="preserve">
     <value>Поиск</value>
   </data>

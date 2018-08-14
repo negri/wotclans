@@ -156,6 +156,9 @@
   <data name="Members" xml:space="preserve">
     <value>Miembros</value>
   </data>
+  <data name="Mercenaries" xml:space="preserve">
+    <value>Mercenarios</value>
+  </data>
   <data name="Overall" xml:space="preserve">
     <value>Generales</value>
   </data>

@@ -885,4 +885,7 @@
   <data name="Wn8VeryGood" xml:space="preserve">
     <value>Très Bon</value>
   </data>
+  <data name="Mercenaries" xml:space="preserve">
+    <value>Mercenaires</value>
+  </data>
 </root>

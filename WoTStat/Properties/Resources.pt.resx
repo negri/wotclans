@@ -942,4 +942,7 @@
   <data name="News" xml:space="preserve">
     <value>Notícias</value>
   </data>
+  <data name="Mercenaries" xml:space="preserve">
+    <value>Mercenários</value>
+  </data>
 </root>
