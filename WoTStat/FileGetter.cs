@@ -315,6 +315,7 @@ namespace Negri.Wot
                 var di = new DirectoryInfo(dir);
 
                 var dates = di.EnumerateFiles("????-??-??.WN8.json")
+                    .Where(fi => fi.Length >= 100 * 1024)
                     .Select(fi => DateTime.ParseExact(fi.Name.Substring(0, 10), "yyyy-MM-dd",
                         CultureInfo.InvariantCulture))
                     .OrderByDescending(d => d).ToArray();
