@@ -321,7 +321,7 @@ namespace Negri.Wot.Sql
                 }
             }
 
-            // Obtem os moes na data
+            // Obtém os MoEs na data
             var moes = includeMoe ? GetMoe(plataform, date, tankId, t).ToDictionary(m => m.TankId) : new Dictionary<long, TankMoe>();
 
             // WN8, Histograms and Leaders
