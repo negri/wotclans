@@ -13,7 +13,8 @@
         Czechoslovakia = 8,
         Sweden = 9,
         Poland = 10,
-        Mercenaries = 11
+        Mercenaries = 11,
+        Italy = 12
     }
 
 }
