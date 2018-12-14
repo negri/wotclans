@@ -146,7 +146,7 @@ namespace Negri.Wot
                 double integral = 0.0;
                 double previousError = 0.0, sumErrorSq = 0.0;
                 DateTime previousTime = DateTime.UtcNow;                
-                int count = 0, controledLoops = 0;
+                int count = 0, controlledLoops = 0;
 
                 try
                 {
@@ -205,7 +205,7 @@ namespace Negri.Wot
                                 var output = (error * kp) + (integral * ki) + (derivative * kd);
                                 threadInterval += output;
 
-                                controledLoops++;
+                                controlledLoops++;
                                 sumErrorSq += error * error;
 
                                 if (threadInterval < 0.1)
@@ -240,12 +240,12 @@ namespace Negri.Wot
                 catch (OperationCanceledException)
                 {
                     Log.WarnFormat("Tempo esgotado antes de concluir a fila no {0} de {1}. Erro de Controle: {2:N4}",
-                        count, players.Length, sumErrorSq / controledLoops);
+                        count, players.Length, sumErrorSq / controlledLoops);
                     return 2;
                 }
 
                 Log.InfoFormat("FetchPlayers terminando normalmente em {0}. Feitos {1}. Erro de Controle: {2:N4}", 
-                    sw.Elapsed, players.Length, sumErrorSq/controledLoops);
+                    sw.Elapsed, players.Length, sumErrorSq/controlledLoops);
                 return 0;
             }
             catch (Exception ex)
