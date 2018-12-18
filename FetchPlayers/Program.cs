@@ -82,13 +82,17 @@ namespace Negri.Wot
                 }
                 var externalCallRandom = new Random(69);
 
-                double averageAgeHours = players.Select(p => p.AdjustedAgeHours).Where(a => a < 6000).Take(originalMaxPlayers).Average();
-                decimal modeAgeHours = players.Select(p => p.AdjustedAgeHours).Where(a => a < 6000)
-                    .Take(originalMaxPlayers).Select(a => (decimal) (Math.Floor(a * 100.0) / 100.0)).GroupBy(a => a)
-                    .OrderByDescending(g => g.Count()).ThenBy(g => g.Key).Select(g => g.Key).FirstOrDefault();
-
-                Log.Info($"Idade média dos dados: {averageAgeHours:N2}");
-                Log.Info($"Idade moda  dos dados: {modeAgeHours:N2}");
+                var recentlyUpdatedPlayers = players.Select(p => p.AdjustedAgeHours).Where(a => a < 6000).ToArray();
+                if (recentlyUpdatedPlayers.Any())
+                {
+                    var averageAgeHours = recentlyUpdatedPlayers.Take(originalMaxPlayers).Average();
+                    var modeAgeHours = recentlyUpdatedPlayers
+                        .Take(originalMaxPlayers).Select(a => (decimal)(Math.Floor(a * 100.0) / 100.0)).GroupBy(a => a)
+                        .OrderByDescending(g => g.Count()).ThenBy(g => g.Key).Select(g => g.Key).FirstOrDefault();
+                    Log.Info($"Idade média dos dados: {averageAgeHours:N2}");
+                    Log.Info($"Idade moda  dos dados: {modeAgeHours:N2}");
+                }                
+                
                 Log.Info($"Delay últimas 48h: {dbInfo.Last48HDelay:N2}");
                 if (dbInfo.Last48HDelay <= ageHours)
                 {
