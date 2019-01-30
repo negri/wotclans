@@ -5,14 +5,8 @@ using DSharpPlus.Entities;
 
 namespace Negri.Wot.Bot
 {
-
     public class GeneralCommands : CommandsBase
     {
-        public GeneralCommands()
-        {
-
-        }
-        
         [Description("Check if I'm alive.")]
         [Command("hi")]
         public async Task Hi(CommandContext ctx)
@@ -26,7 +20,7 @@ namespace Negri.Wot.Bot
         }
 
         [Command("site")]
-        [Description("Gets the URL to a realy good site.")]
+        [Description("Gets the URL to a really good site.")]
         public async Task Site(CommandContext ctx)
         {
             if (!await CanExecute(ctx, Features.General))
@@ -44,8 +38,7 @@ namespace Negri.Wot.Bot
                 Url = $"https://{(config.Plataform == Plataform.PS ? "ps." : "")}wotclans.com.br"
             };
 
-            await ctx.RespondAsync("", embed: embed);            
+            await ctx.RespondAsync("", embed: embed);
         }
-
     }
 }

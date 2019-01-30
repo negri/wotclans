@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,23 +14,21 @@ using Negri.Wot.Diagnostics;
 
 namespace Negri.Wot.Bot
 {
-
-
     [Group("admin")]
     [Description("Administrative commands.")]
     [Hidden]
     [RequireUserPermissions(Permissions.Administrator)]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class AdminCommands
     {
-
         [Command("uptime")]
         [Aliases("version", "info")]
-        [Description("Shows the ammount of time this bot is running.")]
+        [Description("Shows the amount of time this bot is running.")]
         public async Task Uptime(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
 
-            var memmory = CpuUsage.GetProcessMemoryInformation();
+            var memory = CpuUsage.GetProcessMemoryInformation();
             var cpu = CpuUsage.GetProcessTotalTime();
 
             var up = DateTime.UtcNow - cpu.StartTime;
@@ -38,13 +36,14 @@ namespace Negri.Wot.Bot
                                    $"That's {up.TotalDays:N0}.{up.Hours:00}:{up.Minutes:00} ago. " +
                                    $"I was compiled at {RetrieveLinkerTimestamp():yyyy-MM-dd HH:mm}, " +
                                    $"and I'm currently running on a machine called {Environment.MachineName}, " +
-                                   $"using {cpu.SinceStartedLoad:P2} of the CPUs and {memmory.WorkingSetMB}MB of RAM.");
+                                   $"using {cpu.SinceStartedLoad:P2} of the CPUs and {memory.WorkingSetMB}MB of RAM.");
         }
 
         [Command("SetDefaultPermission")]
         [Description("Set the default permission to every feature on every channel and role.")]
         public async Task SetDefaultPermission(CommandContext ctx,
-            [Description("The default permission")] bool permission)
+            [Description("The default permission")]
+            bool permission)
         {
             await ctx.TriggerTypingAsync();
 
@@ -52,13 +51,15 @@ namespace Negri.Wot.Bot
             configuration.PermissionDefault = permission;
             configuration.Save();
 
-            await ctx.RespondAsync($"The default permission to every feature on every channel and role is now `{permission}`.");
+            await ctx.RespondAsync(
+                $"The default permission to every feature on every channel and role is now `{permission}`.");
         }
 
         [Command("SetSilentDeny")]
         [Description("Configure that denied commands don't send any feedback to the user.")]
         public async Task SetSilentDeny(CommandContext ctx,
-            [Description("If `true` the denies will be silent.")] bool useSilentDeny)
+            [Description("If `true` the denies will be silent.")]
+            bool useSilentDeny)
         {
             await ctx.TriggerTypingAsync();
 
@@ -66,14 +67,16 @@ namespace Negri.Wot.Bot
             configuration.SilentDeny = useSilentDeny;
             configuration.Save();
 
-            await ctx.RespondAsync($"The Silend Deny is now `{useSilentDeny}`.");
+            await ctx.RespondAsync($"The Silent Deny is now `{useSilentDeny}`.");
         }
 
         [Command("SetFeaturePermission")]
         [Description("Set the default permission to a feature.")]
         public async Task SetFeaturePermission(CommandContext ctx,
-            [Description("The feature to configure")] string feature,
-            [Description("The default permission on the feature")] bool permission)
+            [Description("The feature to configure")]
+            string feature,
+            [Description("The default permission on the feature")]
+            bool permission)
         {
             await ctx.TriggerTypingAsync();
 
@@ -83,7 +86,8 @@ namespace Negri.Wot.Bot
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = "Invalid Feature",
-                    Description = $"{emoji} There is no feature called `{feature}`. Check all the features with `admin features`.",
+                    Description =
+                        $"{emoji} There is no feature called `{feature}`. Check all the features with `admin features`.",
                     Color = DiscordColor.Red
                 };
 
@@ -103,9 +107,12 @@ namespace Negri.Wot.Bot
         [Command("SetFeaturePermissionForChannel")]
         [Description("Set the permission to a feature on a specific channel.")]
         public async Task SetFeaturePermissionForChannel(CommandContext ctx,
-            [Description("The feature to configure")] string feature,
-            [Description("The channel to configure (without the #)")] string channel,
-            [Description("The default permission on the feature")] bool permission)
+            [Description("The feature to configure")]
+            string feature,
+            [Description("The channel to configure (without the #)")]
+            string channel,
+            [Description("The default permission on the feature")]
+            bool permission)
         {
             await ctx.TriggerTypingAsync();
 
@@ -115,7 +122,8 @@ namespace Negri.Wot.Bot
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = "Invalid Feature",
-                    Description = $"{emoji} There is no feature called `{feature}`. Check all the features with `admin features`.",
+                    Description =
+                        $"{emoji} There is no feature called `{feature}`. Check all the features with `admin features`.",
                     Color = DiscordColor.Red
                 };
 
@@ -130,19 +138,23 @@ namespace Negri.Wot.Bot
                 permissions = new Dictionary<string, bool>();
                 configuration.PermissionsByFeatureChannel[feature] = permissions;
             }
+
             permissions[channel] = permission;
 
             configuration.Save();
 
-            await ctx.RespondAsync($"The default permission to the `{feature}` feature on the `{channel}` channel is now `{permission}`.");
+            await ctx.RespondAsync(
+                $"The default permission to the `{feature}` feature on the `{channel}` channel is now `{permission}`.");
         }
 
         [Command("SetFeaturePermissionForRole")]
         [Description("Set the permission to a feature on a specific role.")]
         public async Task SetFeaturePermissionForRole(CommandContext ctx,
-           [Description("The feature to configure")] string feature,
-           [Description("The role to configure")] string role,
-           [Description("The default permission on the feature")] bool permission)
+            [Description("The feature to configure")]
+            string feature,
+            [Description("The role to configure")] string role,
+            [Description("The default permission on the feature")]
+            bool permission)
         {
             await ctx.TriggerTypingAsync();
 
@@ -152,7 +164,8 @@ namespace Negri.Wot.Bot
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = "Invalid Feature",
-                    Description = $"{emoji} There is no feature called `{feature}`. Check all the features with `admin features`.",
+                    Description =
+                        $"{emoji} There is no feature called `{feature}`. Check all the features with `admin features`.",
                     Color = DiscordColor.Red
                 };
 
@@ -167,20 +180,25 @@ namespace Negri.Wot.Bot
                 permissions = new Dictionary<string, bool>();
                 configuration.PermissionsByFeatureRole[feature] = permissions;
             }
+
             permissions[role] = permission;
 
             configuration.Save();
 
-            await ctx.RespondAsync($"The default permission to the `{feature}` feature on the `{role}` role is now `{permission}`.");
+            await ctx.RespondAsync(
+                $"The default permission to the `{feature}` feature on the `{role}` role is now `{permission}`.");
         }
 
         [Command("SetFeaturePermissionForRoleAndChannel")]
         [Description("Set the permission to a feature on a specific role and channel.")]
         public async Task SetFeaturePermissionForRoleAndChannel(CommandContext ctx,
-           [Description("The feature to configure")] string feature,
-           [Description("The role to configure")] string role,
-           [Description("The channel to configure (without the #)")] string channel,
-           [Description("The default permission on the feature")] bool permission)
+            [Description("The feature to configure")]
+            string feature,
+            [Description("The role to configure")] string role,
+            [Description("The channel to configure (without the #)")]
+            string channel,
+            [Description("The default permission on the feature")]
+            bool permission)
         {
             await ctx.TriggerTypingAsync();
 
@@ -190,7 +208,8 @@ namespace Negri.Wot.Bot
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = "Invalid Feature",
-                    Description = $"{emoji} There is no feature called `{feature}`. Check all the features with `admin features`.",
+                    Description =
+                        $"{emoji} There is no feature called `{feature}`. Check all the features with `admin features`.",
                     Color = DiscordColor.Red
                 };
 
@@ -205,6 +224,7 @@ namespace Negri.Wot.Bot
                 permissionsByFeature = new Dictionary<string, Dictionary<string, bool>>();
                 configuration.PermissionsByFeatureRoleChannel[feature] = permissionsByFeature;
             }
+
             if (!permissionsByFeature.TryGetValue(role, out var permissionsByRole))
             {
                 permissionsByRole = new Dictionary<string, bool>();
@@ -215,14 +235,16 @@ namespace Negri.Wot.Bot
 
             configuration.Save();
 
-            await ctx.RespondAsync($"The permission to the `{feature}` feature on the `{role}` role and channel `#{channel}` is now `{permission}`.");
+            await ctx.RespondAsync(
+                $"The permission to the `{feature}` feature on the `{role}` role and channel `#{channel}` is now `{permission}`.");
         }
 
 
         [Command("ClearFeaturePermissions")]
         [Description("Clear all the explicit permissions on a feature.")]
         public async Task ClearFeaturePermissions(CommandContext ctx,
-            [Description("The feature to clear permissions")] string feature)
+            [Description("The feature to clear permissions")]
+            string feature)
         {
             await ctx.TriggerTypingAsync();
 
@@ -232,7 +254,8 @@ namespace Negri.Wot.Bot
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = "Invalid Feature",
-                    Description = $"{emoji} There is no feature called `{feature}`. Check all the features with `admin ListFeatures`.",
+                    Description =
+                        $"{emoji} There is no feature called `{feature}`. Check all the features with `admin ListFeatures`.",
                     Color = DiscordColor.Red
                 };
 
@@ -268,7 +291,7 @@ namespace Negri.Wot.Bot
 
             cfg.Save();
 
-            await ctx.RespondAsync($"All permissions were reset. Any command can be called by anyone everywhere.");
+            await ctx.RespondAsync("All permissions were reset. Any command can be called by anyone everywhere.");
         }
 
         [Command("ListFeatures")]
@@ -304,11 +327,13 @@ namespace Negri.Wot.Bot
                     {
                         foreach (var byChannel in byRole.Value.OrderBy(kv => kv.Key))
                         {
-                            sb.AppendLine($"  Feature `{byFeature.Key}`, role `{byRole.Key}`, channel `#{byChannel.Key}`: {(byChannel.Value ? "allow" : "deny")}");
+                            sb.AppendLine(
+                                $"  Feature `{byFeature.Key}`, role `{byRole.Key}`, channel `#{byChannel.Key}`: {(byChannel.Value ? "allow" : "deny")}");
                         }
                     }
                 }
             }
+
             sb.AppendLine();
 
             sb.AppendLine("2) Explicit permissions on a *feature* for a given *role*:");
@@ -322,10 +347,12 @@ namespace Negri.Wot.Bot
                 {
                     foreach (var byRole in byFeature.Value.OrderBy(kv => kv.Key))
                     {
-                        sb.AppendLine($"  Feature `{byFeature.Key}`, role `{byRole.Key}`: {(byRole.Value ? "allow" : "deny")}");
+                        sb.AppendLine(
+                            $"  Feature `{byFeature.Key}`, role `{byRole.Key}`: {(byRole.Value ? "allow" : "deny")}");
                     }
                 }
             }
+
             sb.AppendLine();
 
             sb.AppendLine("3) Explicit permissions on a *feature* for a given *channel*:");
@@ -339,10 +366,12 @@ namespace Negri.Wot.Bot
                 {
                     foreach (var byChannel in byFeature.Value.OrderBy(kv => kv.Key))
                     {
-                        sb.AppendLine($"  Feature `{byFeature.Key}`, channel `#{byChannel.Key}`: {(byChannel.Value ? "allow" : "deny")}");
+                        sb.AppendLine(
+                            $"  Feature `{byFeature.Key}`, channel `#{byChannel.Key}`: {(byChannel.Value ? "allow" : "deny")}");
                     }
                 }
             }
+
             sb.AppendLine();
 
             sb.AppendLine("4) Explicit permissions on a *feature*:");
@@ -357,6 +386,7 @@ namespace Negri.Wot.Bot
                     sb.AppendLine($"  Feature `{byFeature.Key}`: {(byFeature.Value ? "allow" : "deny")}");
                 }
             }
+
             sb.AppendLine();
 
             sb.AppendLine($"5) The *Global Permission*: {(cfg.PermissionDefault ? "allow" : "deny")}");
@@ -381,7 +411,8 @@ namespace Negri.Wot.Bot
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = "Invalid Feature",
-                    Description = $"{emoji} There is no feature called `{feature}`. Check all the features with `admin ListFeatures`.",
+                    Description =
+                        $"{emoji} There is no feature called `{feature}`. Check all the features with `admin ListFeatures`.",
                     Color = DiscordColor.Red
                 };
 
@@ -391,8 +422,9 @@ namespace Negri.Wot.Bot
 
             var configuration = GuildConfiguration.FromGuild(ctx.Guild);
 
-            var result = configuration.CanCallerExecute(feature, new[] { role }, channel, out var reason);
-            await ctx.RespondAsync($"The feature `{feature}` is **{(result ? "allowed" : "denied")}** on role `{role}` in the channel `#{channel}`. Explanation: {reason}");
+            var result = configuration.CanCallerExecute(feature, new[] {role}, channel, out var reason);
+            await ctx.RespondAsync(
+                $"The feature `{feature}` is **{(result ? "allowed" : "denied")}** on role `{role}` in the channel `#{channel}`. Explanation: {reason}");
         }
 
         [Command("SetPlataform")]
@@ -425,10 +457,10 @@ namespace Negri.Wot.Bot
         }
 
         /// <summary>
-        /// Retrieves the linker timestamp.
+        ///     Retrieves the linker timestamp.
         /// </summary>
         /// <remarks>
-        /// http://stackoverflow.com/questions/1600962/displaying-the-build-date
+        ///     http://stackoverflow.com/questions/1600962/displaying-the-build-date
         /// </remarks>
         private static DateTime RetrieveLinkerTimestamp()
         {

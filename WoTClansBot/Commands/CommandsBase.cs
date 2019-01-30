@@ -39,12 +39,12 @@ namespace Negri.Wot.Bot
             return await Task.Run(() => true);
         }
 
-        protected Plataform GetPlataform(string s, Plataform defaultPlataform, out string clean)
+        protected Plataform GetPlatform(string s, Plataform defaultPlatform, out string clean)
         {
             if (string.IsNullOrWhiteSpace(s))
             {
                 clean = string.Empty;
-                return defaultPlataform;
+                return defaultPlatform;
             }
             
             s = s.Trim('\"', ' ', '\t', '\r', '\n', '\'', '`', '´');
@@ -77,7 +77,7 @@ namespace Negri.Wot.Bot
             }
 
             clean = s;
-            return defaultPlataform;
+            return defaultPlatform;
         }
     }
 }

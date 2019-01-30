@@ -1,25 +1,25 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using log4net;
-using Negri.Wot.Sql;
-using System;
+﻿using System;
 using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using log4net;
+using Negri.Wot.Sql;
 
 namespace Negri.Wot.Bot
 {
     [Group("coder")]
-    [Description("Commands that only the maintaner of the WoTClans can issue.")]
+    [Description("Commands that only the maintainer of the WoTClans can issue.")]
     [Hidden]
     public class CoderCommands : CommandsBase
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(CoderCommands));
-        private readonly string _connectionString;
         private readonly ulong _coder;
+        private readonly string _connectionString;
 
         public CoderCommands()
         {
@@ -33,7 +33,7 @@ namespace Negri.Wot.Bot
         {
             await ctx.TriggerTypingAsync();
 
-            var userId = ctx?.User?.Id ?? 0;
+            var userId = ctx.User?.Id ?? 0;
 
             Log.Info($"Requesting {nameof(GetDbStatus)} by {userId}...");
             if (userId != _coder)
@@ -63,11 +63,12 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"Avg Players Per Hour Last 6 Hours: {s.AvgPlayersPerHourLast6Hours:N0}");
                 sb.AppendLine($"Avg Players Per Hour Last Day: {s.AvgPlayersPerHourLastDay:N0}");
                 sb.AppendLine();
-                sb.AppendLine($"Delay on the last 48h/72h/96h: {s.Last48HDelay:N1}; {s.Last72HDelay:N1}; {s.Last96HDelay:N1}");
+                sb.AppendLine(
+                    $"Delay on the last 48h/72h/96h: {s.Last48HDelay:N1}; {s.Last72HDelay:N1}; {s.Last96HDelay:N1}");
                 sb.AppendLine($"Total Players: {s.TotalPlayers:N0}; Enabled Clans: {s.TotalEnabledClans};");
-                sb.AppendLine($"Players Queue Lenght: {s.PlayersQueueLenght}");
-                sb.AppendLine($"Membership Queue Lenght: {s.MembershipQueueLenght}");
-                sb.AppendLine($"Calculate Queue Lenght: {s.CalculateQueueLenght}");
+                sb.AppendLine($"Players Queue Length: {s.PlayersQueueLenght}");
+                sb.AppendLine($"Membership Queue Length: {s.MembershipQueueLenght}");
+                sb.AppendLine($"Calculate Queue Length: {s.CalculateQueueLenght}");
 
                 var embed = new DiscordEmbedBuilder
                 {
@@ -77,7 +78,7 @@ namespace Negri.Wot.Bot
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -92,18 +93,19 @@ namespace Negri.Wot.Bot
             catch (Exception ex)
             {
                 Log.Error($"{nameof(GetDbStatus)}", ex);
-                await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
-                return;
+                await ctx.RespondAsync(
+                    $"Sorry, {ctx.User?.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
             }
         }
 
         [Command("site")]
         [Description("Retrieve the site status.")]
-        public async Task GetSiteStatus(CommandContext ctx, [Description("The site to query, *PS* or *XBOX*")] string plataformString = "XBOX")
+        public async Task GetSiteStatus(CommandContext ctx, [Description("The site to query, *PS* or *XBOX*")]
+            string platformString = "XBOX")
         {
             await ctx.TriggerTypingAsync();
 
-            var userId = ctx?.User?.Id ?? 0;
+            var userId = ctx.User?.Id ?? 0;
 
             Log.Info($"Requesting {nameof(GetSiteStatus)} by {userId}...");
             if (userId != _coder)
@@ -119,8 +121,9 @@ namespace Negri.Wot.Bot
                 await ctx.RespondAsync("", embed: embed);
                 return;
             }
+
             var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-            var plataform = GetPlataform(plataformString + ".", cfg.Plataform, out var _);
+            var platform = GetPlatform(platformString + ".", cfg.Plataform, out _);
 
             try
             {
@@ -135,7 +138,7 @@ namespace Negri.Wot.Bot
                     WebFetchInterval = TimeSpan.FromSeconds(1)
                 };
 
-                var s = fetcher.GetSiteDiagnostic(plataform, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                var s = fetcher.GetSiteDiagnostic(platform, ConfigurationManager.AppSettings["ApiAdminKey"]);
 
                 var sb = new StringBuilder();
                 sb.AppendLine($"Data Age Minutes: {s.DataAgeMinutes:N0}");
@@ -145,18 +148,18 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"Players: {s.PlayersCount:N0}; Clans: {s.ClansCount:N0}");
                 sb.AppendLine($"Clans With Players Updated On Last Hour: {s.ClansWithPlayersUpdatedOnLastHour:N0}");
                 sb.AppendLine($"Since Started Load: {s.AveragedProcessCpuUsage.SinceStartedLoad:P1}");
-                                
-                var plataformPrefix = plataform == Plataform.PS ? "ps." : string.Empty;
+
+                var platformPrefix = platform == Plataform.PS ? "ps." : string.Empty;
 
                 var embed = new DiscordEmbedBuilder
                 {
-                    Title = $"Site Status - {plataform.ToString().ToUpperInvariant()}",
+                    Title = $"Site Status - {platform.ToString().ToUpperInvariant()}",
                     Description = sb.ToString(),
                     Color = DiscordColor.Goldenrod,
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{plataformPrefix}wotclans.com.br"
+                        Url = $"https://{platformPrefix}wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -171,21 +174,23 @@ namespace Negri.Wot.Bot
             catch (Exception ex)
             {
                 Log.Error($"{nameof(GetSiteStatus)}", ex);
-                await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
-                return;
+                await ctx.RespondAsync(
+                    $"Sorry, {ctx.User?.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
             }
         }
 
         [Command("SetClan")]
         [Description("Set properties for a clan")]
         public async Task SetClan(CommandContext ctx, [Description("The clan tag")] string clanTag,
-            [Description("The clan flag")] string flagCode = null, 
-            [Description("Enable or Disable the Clan")] bool enable = true,
-            [Description("To ban or not a clan from the site")] bool isBan = false)
+            [Description("The clan flag")] string flagCode = null,
+            [Description("Enable or Disable the Clan")]
+            bool enable = true,
+            [Description("To ban or not a clan from the site")]
+            bool isBan = false)
         {
             await ctx.TriggerTypingAsync();
 
-            var userId = ctx?.User?.Id ?? 0;
+            var userId = ctx.User?.Id ?? 0;
 
             Log.Info($"Requesting {nameof(SetClan)} by {userId}...");
             if (userId != _coder)
@@ -201,15 +206,16 @@ namespace Negri.Wot.Bot
                 await ctx.RespondAsync("", embed: embed);
                 return;
             }
+
             var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-            var plataform = GetPlataform(clanTag, cfg.Plataform, out clanTag);
+            var platform = GetPlatform(clanTag, cfg.Plataform, out clanTag);
 
             clanTag = clanTag.Trim('[', ']');
             clanTag = clanTag.ToUpperInvariant();
 
             if (!ClanTagRegex.IsMatch(clanTag))
             {
-                await ctx.RespondAsync($"You must send a **valid** clan **tag** as parameter, {ctx.User.Mention}.");
+                await ctx.RespondAsync($"You must send a **valid** clan **tag** as parameter, {ctx.User?.Mention}.");
                 return;
             }
 
@@ -219,12 +225,12 @@ namespace Negri.Wot.Bot
 
                 if (flagCode.Length != 2)
                 {
-                    await ctx.RespondAsync($"The flag code must be 2 letters only, {ctx.User.Mention}.");
+                    await ctx.RespondAsync($"The flag code must be 2 letters only, {ctx.User?.Mention}.");
                     return;
-                }                
+                }
             }
 
-            Log.Warn($"{nameof(SetClan)}({clanTag}, {plataform}, {flagCode}, {enable}, {isBan})...");
+            Log.Warn($"{nameof(SetClan)}({clanTag}, {platform}, {flagCode}, {enable}, {isBan})...");
 
             try
             {
@@ -244,100 +250,118 @@ namespace Negri.Wot.Bot
                     WebFetchInterval = TimeSpan.FromSeconds(1)
                 };
 
-                var clan = provider.GetClan(plataform, clanTag);
+                var clan = provider.GetClan(platform, clanTag);
+                
                 if (clan == null && enable)
                 {
                     // Check to add...
                     await ctx.RespondAsync($"Not found `{clanTag}` on the database. Searching the WG API...");
                     await ctx.TriggerTypingAsync();
-                    
-                    var clanOnSite = fetcher.FindClan(plataform, clanTag, true);
+
+                    var clanOnSite = fetcher.FindClan(platform, clanTag, true);
                     if (clanOnSite == null)
                     {
-                        await ctx.RespondAsync($"Not found `{clanTag}` on the WG API for `{plataform}`. Check the clan tag.");
+                        await ctx.RespondAsync(
+                            $"Not found `{clanTag}` on the WG API for `{platform}`. Check the clan tag.");
                         return;
                     }
 
                     if (clanOnSite.AllMembersCount < 7)
                     {
-                        await ctx.RespondAsync($"The clan `{clanTag}` on `{plataform}` has only {clanOnSite.AllMembersCount}, and will not be added to the system.");
+                        await ctx.RespondAsync(
+                            $"The clan `{clanTag}` on `{platform}` has only {clanOnSite.AllMembersCount}, and will not be added to the system.");
                         return;
                     }
 
                     clanOnSite.Country = flagCode;
                     recorder.Add(clanOnSite);
 
-                    await ctx.RespondAsync($"The clan `{clanTag}` on `{plataform}` with {clanOnSite.AllMembersCount} members was added to the system and " +
-                        $"should appear on the site in ~12 hours. Keep playing to achieve at least 7 members with 21 recent battles and appear on the default view.");
+                    await ctx.RespondAsync(
+                        $"The clan `{clanTag}` on `{platform}` with {clanOnSite.AllMembersCount} members was added to the system and " +
+                        "should appear on the site in ~12 hours. Keep playing to achieve at least 7 members with 21 recent battles and appear on the default view.");
 
-                    Log.Info($"Added {plataform}.{clanTag}");
-                    return;                    
+                    Log.Info($"Added {platform}.{clanTag}");
+                    return;
+                }
+
+                if (clan == null)
+                {
+                    await ctx.RespondAsync(
+                        $"Not found `{clanTag}` on `{platform}`. Check the clan tag.");
+                    return;
                 }
 
                 if (!clan.Enabled && enable)
                 {
                     // Can be enabled?
-                    var clanOnSite = fetcher.GetClans(new[] { clan }).FirstOrDefault();
+                    var clanOnSite = fetcher.GetClans(new[] {clan}).FirstOrDefault();
                     if (clanOnSite == null)
                     {
-                        await ctx.RespondAsync($"Not found `{clanTag}` on the WG API for `{plataform}`. Check the clan tag.");
+                        await ctx.RespondAsync(
+                            $"Not found `{clanTag}` on the WG API for `{platform}`. Check the clan tag.");
                         return;
                     }
 
                     if (clanOnSite.IsDisbanded)
                     {
-                        await ctx.RespondAsync($"The clan `{clanTag}` on `{plataform}` was disbanded.");
+                        await ctx.RespondAsync($"The clan `{clanTag}` on `{platform}` was disbanded.");
                         return;
                     }
 
                     if (clanOnSite.Count < 7)
                     {
-                        await ctx.RespondAsync($"The clan `{clanTag}` on `{plataform}` has only {clanOnSite.Count} members and will not be enabled.");
+                        await ctx.RespondAsync(
+                            $"The clan `{clanTag}` on `{platform}` has only {clanOnSite.Count} members and will not be enabled.");
                         return;
                     }
 
                     if (clan.DisabledReason == DisabledReason.Banned)
                     {
-                        await ctx.RespondAsync($"The clan `{clanTag}` ({clan.ClanId}) on `{plataform}` was **banned** from the site.");
+                        await ctx.RespondAsync(
+                            $"The clan `{clanTag}` ({clan.ClanId}) on `{platform}` was **banned** from the site.");
                         return;
                     }
 
                     recorder.EnableClan(clanOnSite.Plataform, clanOnSite.ClanId);
-                    await ctx.RespondAsync($"The clan `{clanTag}` on `{plataform}` disabled for `{clan.DisabledReason}` is enabled again.");
-                    Log.Info($"Enabled {plataform}.{clanTag}");
+                    await ctx.RespondAsync(
+                        $"The clan `{clanTag}` on `{platform}` disabled for `{clan.DisabledReason}` is enabled again.");
+                    Log.Info($"Enabled {platform}.{clanTag}");
                 }
                 else if (clan.Enabled && !enable)
                 {
                     if (isBan)
                     {
                         recorder.DisableClan(clan.Plataform, clan.ClanId, DisabledReason.Banned);
-                        await ctx.RespondAsync($"The clan `{clanTag}` ({clan.ClanId}) on `{plataform}` was **BANNED** from the site.");
-                        Log.Warn($"BANNED {plataform}.{clanTag}");
+                        await ctx.RespondAsync(
+                            $"The clan `{clanTag}` ({clan.ClanId}) on `{platform}` was **BANNED** from the site.");
+                        Log.Warn($"BANNED {platform}.{clanTag}");
                     }
                     else
                     {
                         recorder.DisableClan(clan.Plataform, clan.ClanId, DisabledReason.Unknow);
-                        await ctx.RespondAsync($"The clan `{clanTag}` ({clan.ClanId}) on `{plataform}` was **disabled** from the site.");
-                        Log.Warn($"Disabled {plataform}.{clanTag}");
-                    }                    
+                        await ctx.RespondAsync(
+                            $"The clan `{clanTag}` ({clan.ClanId}) on `{platform}` was **disabled** from the site.");
+                        Log.Warn($"Disabled {platform}.{clanTag}");
+                    }
                 }
 
                 // change flag?
                 flagCode = flagCode ?? string.Empty;
-                if (flagCode.ToUpperInvariant() != (clan.Country ?? string.Empty).ToUpperInvariant())
+                if (!string.Equals(flagCode, clan.Country ?? string.Empty, StringComparison.InvariantCultureIgnoreCase))
                 {
                     recorder.SetClanFlag(clan.Plataform, clan.ClanId, flagCode);
-                    await ctx.RespondAsync($"The flag of the clan `{clanTag}` on `{plataform}` was changed to `{flagCode}`.");
-                    Log.Info($"Flag changed on {plataform}.{clanTag} to {flagCode}.");
+                    await ctx.RespondAsync(
+                        $"The flag of the clan `{clanTag}` on `{platform}` was changed to `{flagCode}`.");
+                    Log.Info($"Flag changed on {platform}.{clanTag} to {flagCode}.");
                 }
 
-                await ctx.RespondAsync($"all done for `{clan.ClanTag}` on `{plataform}`.");
+                await ctx.RespondAsync($"all done for `{clan.ClanTag}` on `{platform}`.");
             }
             catch (Exception ex)
             {
                 Log.Error($"{nameof(SetClan)}", ex);
-                await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
-                return;
+                await ctx.RespondAsync(
+                    $"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
             }
         }
     }

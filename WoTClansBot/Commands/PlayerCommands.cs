@@ -37,7 +37,7 @@ namespace Negri.Wot.Bot
             try
             {
                 var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-                var plataform = GetPlataform(gamerTag, cfg.Plataform, out gamerTag);
+                var plataform = GetPlatform(gamerTag, cfg.Plataform, out gamerTag);
 
                 var provider = new DbProvider(_connectionString);
                 var recorder = new DbRecorder(_connectionString);
@@ -466,7 +466,7 @@ namespace Negri.Wot.Bot
                 }                
 
                 var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-                var plataform = GetPlataform(gamerTag, cfg.Plataform, out gamerTag);
+                var plataform = GetPlatform(gamerTag, cfg.Plataform, out gamerTag);
 
                 if (string.IsNullOrWhiteSpace(gamerTag))
                 {
