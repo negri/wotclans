@@ -18,15 +18,13 @@ namespace Negri.Wot
 
         private readonly string _url;
         private readonly string _user;
-        private readonly string _password;        
-        private readonly Plataform _plataform;
+        private readonly string _password;
 
-        public FtpPutter(string url, string user, string password, Plataform plataform)
+        public FtpPutter(string url, string user, string password)
         {
             _url = url;
             _user = user;
             _password = password;
-            _plataform = plataform;
         }
 
         private static void Execute(Action action, int maxTries = 10)

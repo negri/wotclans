@@ -22,7 +22,7 @@ namespace Negri.Wot.WgApi
         /// <summary>
         /// A plataforma
         /// </summary>
-        public Plataform Plataform { get; set; }
+        public Platform Plataform { get; set; }
 
         /// <summary>
         /// A data a que se referem esses dados (Data da ultima batalha)

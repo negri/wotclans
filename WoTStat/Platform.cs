@@ -3,7 +3,7 @@ namespace Negri.Wot
     /// <summary>
     /// A plataforma do jogo
     /// </summary>
-    public enum Plataform
+    public enum Platform
     {
         /// <summary>
         /// Não existente, transiente

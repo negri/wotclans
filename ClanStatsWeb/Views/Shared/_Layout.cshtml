@@ -20,7 +20,7 @@
       data-request-grouping-separator="@CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator"
       data-request-date-format="@CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern"
       data-request-time-format="@CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern"
-      data-plataform="@GlobalHelper.Plataform" data-plataform-tag="@GlobalHelper.PlataformTag"
+      data-plataform="@GlobalHelper.Platform" data-plataform-tag="@GlobalHelper.PlataformTag"
       data-is-mobile="@GlobalHelper.IsMobile() ? 1 : 0)" data-root-url="@Url.Content("~")">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -158,13 +158,13 @@
                     <a href="~/About">Sobre esse site</a> |
                     <a href="~/About#aboutme">Sobre mim</a> |
                     <a href="~/Donate" title="@Resources.DonateExplain" style="color: gold;">@Resources.Donate</a> |
-                    @if (GlobalHelper.Plataform != Plataform.PS)
+                    @if (GlobalHelper.Platform != Platform.PS)
                     {
                         <span>
                             <a href="https://ps.wotclans.com.br">Veja clãs do PlayStation</a> |
                         </span>
                     }
-                    @if (GlobalHelper.Plataform != Plataform.XBOX)
+                    @if (GlobalHelper.Platform != Platform.XBOX)
                     {
                         <span>
                             <a href="https://wotclans.com.br">Veja clãs do XBOX</a> |
@@ -188,13 +188,13 @@
                     <a href="~/About#addClan">Add Your Clan</a> |
                     <a href="~/About#aboutme">About me</a> |
                     <a href="~/Donate" title="@Resources.DonateExplain" style="color: gold;">@Resources.Donate</a> |
-                    @if (GlobalHelper.Plataform != Plataform.PS)
+                    @if (GlobalHelper.Platform != Platform.PS)
                     {
                         <span>
                             <a href="https://ps.wotclans.com.br">See PlayStation Clans</a> |
                         </span>
                     }
-                    @if (GlobalHelper.Plataform != Plataform.XBOX)
+                    @if (GlobalHelper.Platform != Platform.XBOX)
                     {
                         <span>
                             <a href="https://wotclans.com.br">See XBOX Clans</a> |

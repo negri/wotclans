@@ -19,7 +19,7 @@ namespace Negri.Wot.Site
         /// <summary>
         ///     A plataforma para essa instância do site
         /// </summary>
-        public static Plataform Plataform { get; set; }
+        public static Platform Platform { get; set; }
 
         /// <summary>
         ///     O diretorio raiz de dados
@@ -111,13 +111,13 @@ namespace Negri.Wot.Site
         {
             get
             {
-                switch (Plataform)
+                switch (Platform)
                 {
-                    case Plataform.Virtual:
+                    case Platform.Virtual:
                         return "xxx";
-                    case Plataform.XBOX:
+                    case Platform.XBOX:
                         return "xbox";
-                    case Plataform.PS:
+                    case Platform.PS:
                         return "ps4";
                     default:
                         return "xxx";
@@ -129,13 +129,13 @@ namespace Negri.Wot.Site
         {
             get
             {
-                switch (Plataform)
+                switch (Platform)
                 {
-                    case Plataform.Virtual:
+                    case Platform.Virtual:
                         return "?";
-                    case Plataform.XBOX:
+                    case Platform.XBOX:
                         return Resources.ForXbox;
-                    case Plataform.PS:
+                    case Platform.PS:
                         return Resources.ForPs;
                     default:
                         return "?";

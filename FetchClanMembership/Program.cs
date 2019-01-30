@@ -104,9 +104,9 @@ namespace Negri.Wot
                 // Autocadastro de clãs
                 if (maxToAutoAdd > 0 && DateTime.UtcNow.Hour == hourToAutoAdd)
                 {
-                    var toAdd = fetcher.GetClans(Plataform.XBOX, autoMinNumberOfMembers)
+                    var toAdd = fetcher.GetClans(Platform.XBOX, autoMinNumberOfMembers)
                         .Where(c => !provider.ClanExists(c.Plataform, c.ClanId))
-                        .Concat(fetcher.GetClans(Plataform.PS, autoMinNumberOfMembers)
+                        .Concat(fetcher.GetClans(Platform.PS, autoMinNumberOfMembers)
                         .Where(c => !provider.ClanExists(c.Plataform, c.ClanId)))
                         .OrderByDescending(c => c.AllMembersCount).ThenBy(c => c.ClanId).ToArray();
 
@@ -185,15 +185,15 @@ namespace Negri.Wot
                     }
                 }
 
-                if (clansToRename.Any(c => c.Plataform == Plataform.XBOX))
+                if (clansToRename.Any(c => c.Plataform == Platform.XBOX))
                 {
                     var putter = new FtpPutter(ConfigurationManager.AppSettings["FtpFolder"],
                         ConfigurationManager.AppSettings["FtpUser"],
-                        ConfigurationManager.AppSettings["FtpPassworld"], Plataform.XBOX);
+                        ConfigurationManager.AppSettings["FtpPassworld"]);
 
                     var resultDirectory = Path.Combine(ConfigurationManager.AppSettings["ResultDirectory"], "Clans");
 
-                    foreach (var clan in clansToRename.Where(c => c.Plataform == Plataform.XBOX))
+                    foreach (var clan in clansToRename.Where(c => c.Plataform == Platform.XBOX))
                     {
                         Log.InfoFormat("O clã {0}.{1}@{2} teve o tag trocado a partir de {3}.", clan.ClanId,
                             clan.ClanTag, clan.Plataform, clan.OldTag);
@@ -214,15 +214,15 @@ namespace Negri.Wot
                     }
                 }
 
-                if (clansToRename.Any(c => c.Plataform == Plataform.PS))
+                if (clansToRename.Any(c => c.Plataform == Platform.PS))
                 {
                     var putter = new FtpPutter(ConfigurationManager.AppSettings["PsFtpFolder"],
                         ConfigurationManager.AppSettings["PsFtpUser"],
-                        ConfigurationManager.AppSettings["PsFtpPassworld"], Plataform.PS);
+                        ConfigurationManager.AppSettings["PsFtpPassworld"]);
 
                     var resultDirectory = ConfigurationManager.AppSettings["PsResultDirectory"];
 
-                    foreach (var clan in clansToRename.Where(c => c.Plataform == Plataform.XBOX))
+                    foreach (var clan in clansToRename.Where(c => c.Plataform == Platform.XBOX))
                     {
                         Log.InfoFormat("O clã {0}.{1}@{2} teve o tag trocado a partir de {3}.", clan.ClanId,
                             clan.ClanTag, clan.Plataform, clan.OldTag);
@@ -258,10 +258,10 @@ namespace Negri.Wot
             }
         }
 
-        private static string GetClanUrl(Plataform plataform, string clanTag)
+        private static string GetClanUrl(Platform platform, string clanTag)
         {
             return
-                $"https://{(plataform == Plataform.PS ? "ps." : "")}wotclans.com.br/Clan/{clanTag.ToUpperInvariant()}";
+                $"https://{(platform == Platform.PS ? "ps." : "")}wotclans.com.br/Clan/{clanTag.ToUpperInvariant()}";
         }
 
         private static void ParseParans(string[] args, out int ageHours, out int maxClans, out int maxRunMinutes,

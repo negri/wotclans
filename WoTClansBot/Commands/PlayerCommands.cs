@@ -95,7 +95,7 @@ namespace Negri.Wot.Bot
 
                 var player = provider.GetPlayer(playerId.Value, true);
 
-                var wn8Expected = provider.GetWn8ExpectedValues(player?.Plataform ?? apiPlayer?.Plataform ?? Plataform.XBOX);
+                var wn8Expected = provider.GetWn8ExpectedValues(player?.Plataform ?? apiPlayer?.Plataform ?? Platform.XBOX);
 
                 if (player == null && apiPlayer != null)
                 {
@@ -257,7 +257,7 @@ namespace Negri.Wot.Bot
                 sb.AppendLine("```");
 
                 var color = top.First().Wn8.ToColor();
-                var platformPrefix = player.Plataform == Plataform.PS ? "ps." : string.Empty;
+                var platformPrefix = player.Plataform == Platform.PS ? "ps." : string.Empty;
 
                 var embed = new DiscordEmbedBuilder
                 {
@@ -320,7 +320,7 @@ namespace Negri.Wot.Bot
                 var lastBattle = player.Performance.All.Values.Max(t => t.LastBattle);
 
                 var color = player.TotalWn8.ToColor();
-                var platformPrefix = player.Plataform == Plataform.PS ? "ps." : string.Empty;
+                var platformPrefix = player.Plataform == Platform.PS ? "ps." : string.Empty;
 
                 var sb = new StringBuilder();
                 if (string.IsNullOrWhiteSpace(player.ClanTag))
@@ -465,7 +465,7 @@ namespace Negri.Wot.Bot
                 Debug.Assert(player != null);
 
                 await ctx.RespondAsync(
-                    $"{ctx.User?.Mention}, as far as I know your {(player.Plataform == Plataform.PS ? "PSN Name" : "Gamer Tag")} is `{player.Name}`.");
+                    $"{ctx.User?.Mention}, as far as I know your {(player.Plataform == Platform.PS ? "PSN Name" : "Gamer Tag")} is `{player.Name}`.");
             }
             catch (Exception ex)
             {
@@ -661,7 +661,7 @@ namespace Negri.Wot.Bot
                     "if you *always* plays with Premium, or *always* plays *without* Premium. If you mix, take these number with great reserve.");
 
                 var color = tanks.First().Wn8.ToColor();
-                var platformPrefix = player.Plataform == Plataform.PS ? "ps." : string.Empty;
+                var platformPrefix = player.Plataform == Platform.PS ? "ps." : string.Empty;
 
                 var embed = new DiscordEmbedBuilder
                 {

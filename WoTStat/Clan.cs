@@ -22,8 +22,8 @@ namespace Negri.Wot
         private Dictionary<long, Player> _playersCacheById;
         private HistoricPoint[] _history = new HistoricPoint[0];
 
-        public Clan(Plataform plataform, long clanId, string clanTag, string description = null)
-            : base(plataform, clanId, clanTag)
+        public Clan(Platform platform, long clanId, string clanTag, string description = null)
+            : base(platform, clanId, clanTag)
         {
             Name = description ?? ClanTag;
         }
@@ -547,7 +547,7 @@ namespace Negri.Wot
                 return null;
             }
 
-            var clan = new Clan(Plataform.XBOX, 0, string.Empty);
+            var clan = new Clan(Platform.XBOX, 0, string.Empty);
 
             try
             {

@@ -106,7 +106,7 @@
     <Compile Include="InvalidClanFileException.cs" />
     <Compile Include="Mail\MailSender.cs" />
     <Compile Include="PartialClans.cs" />
-    <Compile Include="Plataform.cs" />
+    <Compile Include="Platform.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="PlayerDataOrigin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

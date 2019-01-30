@@ -7,10 +7,10 @@ namespace Negri.Wot
     public class ClanNotFoundException : ApplicationException
     {
         
-        public ClanNotFoundException(Plataform plataform, long clanId, string clanTag, string url, WebException innerException) :
-            base($"{clanId}.{clanTag}@{plataform} não achado (404) em '{url}'", innerException)
+        public ClanNotFoundException(Platform platform, long clanId, string clanTag, string url, WebException innerException) :
+            base($"{clanId}.{clanTag}@{platform} não achado (404) em '{url}'", innerException)
         {
-            Plataform = plataform;
+            Platform = platform;
             ClanTag = clanTag;
             Url = url;
             ClanId = clanId;
@@ -31,6 +31,6 @@ namespace Negri.Wot
 
         public string Url { get; private set; }
 
-        public Plataform Plataform { get; private set; }
+        public Platform Platform { get; private set; }
     }
 }

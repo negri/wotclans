@@ -80,9 +80,9 @@ namespace Negri.Wot
             return false;
         }
 
-        public SiteDiagnostic GetSiteDiagnostic(Plataform plataform, string apiKey)
+        public SiteDiagnostic GetSiteDiagnostic(Platform platform, string apiKey)
         {
-            var plataformPrefix = plataform == Plataform.PS ? "ps." : string.Empty;
+            var plataformPrefix = platform == Platform.PS ? "ps." : string.Empty;
             string url = $"https://{plataformPrefix}wotclans.com.br/api/status";
             return GetSiteDiagnostic(url, apiKey);
         }
@@ -100,17 +100,17 @@ namespace Negri.Wot
         /// <summary>
         ///     Obtem um tanque especifico
         /// </summary>
-        public Tank GetTank(Plataform plataform, long tankId)
+        public Tank GetTank(Platform platform, long tankId)
         {
-            return GetTanks(plataform, tankId).FirstOrDefault();
+            return GetTanks(platform, tankId).FirstOrDefault();
         }
 
         /// <summary>
         ///     Obtem todos os tanques do jogo
         /// </summary>
-        public IEnumerable<Tank> GetTanks(Plataform plataform)
+        public IEnumerable<Tank> GetTanks(Platform platform)
         {
-            return GetTanks(plataform, null);
+            return GetTanks(platform, null);
         }
 
         public async Task<Wn8ExpectedValues> GetXvmWn8ExpectedValuesAsync()
@@ -153,7 +153,7 @@ namespace Negri.Wot
             Log.DebugFormat("Obtendo WN8 do jogador {0}@{1}...", player.Id, player.Plataform);
 
             string url =
-                $"https://wotstatsconsole.de/api/rest?request=playerdata&id={player.Id}&sys={(player.Plataform == Plataform.PS ? "ps4" : "xbox")}";
+                $"https://wotstatsconsole.de/api/rest?request=playerdata&id={player.Id}&sys={(player.Plataform == Platform.PS ? "ps4" : "xbox")}";
             var content =
                 await
                     GetContent($"WotStatsConsole.{player.Plataform}.{player.Id}.json", url, WebCacheAge, false,
@@ -220,21 +220,21 @@ namespace Negri.Wot
         /// <summary>
         ///     Obtem os tanques de um jogador
         /// </summary>
-        public IEnumerable<TankPlayer> GetTanksForPlayer(Plataform plataform, long playerId, long? tankId = null)
+        public IEnumerable<TankPlayer> GetTanksForPlayer(Platform platform, long playerId, long? tankId = null)
         {
-            Log.DebugFormat("Obtendo tanques do jogador {0}@{1}...", playerId, plataform);
+            Log.DebugFormat("Obtendo tanques do jogador {0}@{1}...", playerId, platform);
 
             string server;
-            switch (plataform)
+            switch (platform)
             {
-                case Plataform.XBOX:
+                case Platform.XBOX:
                     server = "api-xbox-console.worldoftanks.com";
                     break;
-                case Plataform.PS:
+                case Platform.PS:
                     server = "api-ps4-console.worldoftanks.com";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(plataform), plataform, null);
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
             string requestUrl =
@@ -245,7 +245,7 @@ namespace Negri.Wot
             }
 
             var content =
-                    GetContent($"TanksStats.{plataform}.{playerId}.json", requestUrl, WebCacheAge, false,
+                    GetContent($"TanksStats.{platform}.{playerId}.json", requestUrl, WebCacheAge, false,
                         Encoding.UTF8).Result;
             var json = content.Content;
             var response = JsonConvert.DeserializeObject<TanksStatsResponse>(json);
@@ -262,7 +262,7 @@ namespace Negri.Wot
                 {
                     foreach (var tankPlayer in tankPlayers)
                     {
-                        tankPlayer.Plataform = plataform;
+                        tankPlayer.Plataform = platform;
                         list.Add(tankPlayer);
                     }
                 }
@@ -274,22 +274,22 @@ namespace Negri.Wot
         /// <summary>
         ///     Obtem os tanques de um jogador
         /// </summary>
-        public async Task<IEnumerable<TankPlayer>> GetTanksForPlayerAsync(Plataform plataform, long playerId,
+        public async Task<IEnumerable<TankPlayer>> GetTanksForPlayerAsync(Platform platform, long playerId,
             long? tankId = null)
         {
-            Log.DebugFormat("Obtendo tanques do jogador {0}@{1}...", playerId, plataform);
+            Log.DebugFormat("Obtendo tanques do jogador {0}@{1}...", playerId, platform);
 
             string server;
-            switch (plataform)
+            switch (platform)
             {
-                case Plataform.XBOX:
+                case Platform.XBOX:
                     server = "api-xbox-console.worldoftanks.com";
                     break;
-                case Plataform.PS:
+                case Platform.PS:
                     server = "api-ps4-console.worldoftanks.com";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(plataform), plataform, null);
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
             string requestUrl =
@@ -301,7 +301,7 @@ namespace Negri.Wot
 
             var content =
                 await
-                    GetContent($"TanksStats.{plataform}.{playerId}.json", requestUrl, WebCacheAge, false,
+                    GetContent($"TanksStats.{platform}.{playerId}.json", requestUrl, WebCacheAge, false,
                         Encoding.UTF8);
             var json = content.Content;
             var response = JsonConvert.DeserializeObject<TanksStatsResponse>(json);
@@ -318,7 +318,7 @@ namespace Negri.Wot
                 {
                     foreach (var tankPlayer in tankPlayers)
                     {
-                        tankPlayer.Plataform = plataform;
+                        tankPlayer.Plataform = platform;
                         list.Add(tankPlayer);
                     }
                 }
@@ -344,7 +344,7 @@ namespace Negri.Wot
                     url += $"&tank_id={tankId.Value}";
                 }
 
-                var json = GetContentSync($"Vehicles.{Plataform.PC}.{DateTime.UtcNow:yyyyMMddHH}.{page}.json", url, WebCacheAge, false, Encoding.UTF8).Content;
+                var json = GetContentSync($"Vehicles.{Platform.PC}.{DateTime.UtcNow:yyyyMMddHH}.{page}.json", url, WebCacheAge, false, Encoding.UTF8).Content;
                 var response = JsonConvert.DeserializeObject<VehiclesResponse>(json);
                 if (response.IsError)
                 {
@@ -360,28 +360,28 @@ namespace Negri.Wot
 
             foreach (var tank in tanks)
             {
-                tank.Plataform = Plataform.PC;
+                tank.Plataform = Platform.PC;
             }
 
             return tanks;
         }
 
-        private IEnumerable<Tank> GetTanks(Plataform plataform, long? tankId)
+        private IEnumerable<Tank> GetTanks(Platform platform, long? tankId)
         {
-            Log.DebugFormat("Procurando dados de tanques para {0}...", plataform);
+            Log.DebugFormat("Procurando dados de tanques para {0}...", platform);
             string server;
-            switch (plataform)
+            switch (platform)
             {
-                case Plataform.XBOX:
+                case Platform.XBOX:
                     server = "api-xbox-console.worldoftanks.com";
                     break;
-                case Plataform.PS:
+                case Platform.PS:
                     server = "api-ps4-console.worldoftanks.com";
                     break;
-                case Plataform.PC:
+                case Platform.PC:
                     return GetPcTanks(tankId);
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(plataform), plataform, null);
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
             string requestUrl =
@@ -392,7 +392,7 @@ namespace Negri.Wot
             }
 
             var json =
-                GetContentSync($"Vehicles.{plataform}.{DateTime.UtcNow:yyyyMMddHH}.json", requestUrl, WebCacheAge,
+                GetContentSync($"Vehicles.{platform}.{DateTime.UtcNow:yyyyMMddHH}.json", requestUrl, WebCacheAge,
                     false,
                     Encoding.UTF8).Content;
 
@@ -405,7 +405,7 @@ namespace Negri.Wot
 
             foreach (var tank in response.Data.Values)
             {
-                tank.Plataform = plataform;
+                tank.Plataform = platform;
             }
 
             return response.Data.Values;
@@ -415,27 +415,27 @@ namespace Negri.Wot
         /// <summary>
         ///     Encontra um clã a partir da tag dele
         /// </summary>
-        public Clan FindClan(Plataform plataform, string clanTag, bool returnSmallClans = false)
+        public Clan FindClan(Platform platform, string clanTag, bool returnSmallClans = false)
         {
-            Log.DebugFormat("Procurando dados do clã {0}@{1}...", clanTag, plataform);
+            Log.DebugFormat("Procurando dados do clã {0}@{1}...", clanTag, platform);
             string server;
-            switch (plataform)
+            switch (platform)
             {
-                case Plataform.XBOX:
+                case Platform.XBOX:
                     server = "api-xbox-console.worldoftanks.com";
                     break;
-                case Plataform.PS:
+                case Platform.PS:
                     server = "api-ps4-console.worldoftanks.com";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(plataform), plataform, null);
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
             string requestUrl =
                 $"https://{server}/wotx/clans/list/?application_id={ApplicationId}&search={clanTag}&limit=1";
 
             var json =
-                GetContentSync($"FindClan.{plataform}.{clanTag}.json", requestUrl, TimeSpan.FromMinutes(1), false,
+                GetContentSync($"FindClan.{platform}.{clanTag}.json", requestUrl, TimeSpan.FromMinutes(1), false,
                     Encoding.UTF8).Content;
 
             var response = JsonConvert.DeserializeObject<ClansListResponse>(json);
@@ -466,7 +466,7 @@ namespace Negri.Wot
                 return null;
             }
 
-            return new Clan(plataform, found.ClanId, found.Tag) { AllMembersCount = found.MembersCount };
+            return new Clan(platform, found.ClanId, found.Tag) { AllMembersCount = found.MembersCount };
         }
 
         /// <summary>
@@ -482,10 +482,10 @@ namespace Negri.Wot
             var statUrl = $"http://wotinfo.net/en/recent?playerid={player.Id}&server=";
             switch (player.Plataform)
             {
-                case Plataform.XBOX:
+                case Platform.XBOX:
                     statUrl += "xbox";
                     break;
-                case Plataform.PS:
+                case Platform.PS:
                     statUrl += "ps4";
                     break;
                 default:
@@ -925,7 +925,7 @@ namespace Negri.Wot
             DeleteFromCache($"WoTInfo.{playerId}.txt");
         }
 
-        public IEnumerable<Clan> GetClans(Plataform plataform, int minNumberOfPlayers = 15)
+        public IEnumerable<Clan> GetClans(Platform platform, int minNumberOfPlayers = 15)
         {
             if (minNumberOfPlayers < 4)
             {
@@ -933,19 +933,19 @@ namespace Negri.Wot
                     @"No mínimo 4 membros!");
             }
 
-            Log.DebugFormat("Listando clãs na plataforma {0} com pelo menos {1} membros...", plataform,
+            Log.DebugFormat("Listando clãs na plataforma {0} com pelo menos {1} membros...", platform,
                 minNumberOfPlayers);
             string server;
-            switch (plataform)
+            switch (platform)
             {
-                case Plataform.XBOX:
+                case Platform.XBOX:
                     server = "api-xbox-console.worldoftanks.com";
                     break;
-                case Plataform.PS:
+                case Platform.PS:
                     server = "api-ps4-console.worldoftanks.com";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(plataform), plataform, null);
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
             for (int pageNumber = 1, currentCount = 100; currentCount > 0; ++pageNumber)
@@ -954,7 +954,7 @@ namespace Negri.Wot
                     $"https://{server}/wotx/clans/list/?application_id={ApplicationId}&fields=clan_id%2Ctag%2Cmembers_count&page_no={pageNumber}";
 
                 var json =
-                    GetContentSync($"ListClans.{plataform}.{pageNumber}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", lisUrl,
+                    GetContentSync($"ListClans.{platform}.{pageNumber}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", lisUrl,
                         WebCacheAge, false, Encoding.UTF8).Content;
                 var response = JsonConvert.DeserializeObject<ClansListResponse>(json);
                 if (response.IsError)
@@ -981,12 +981,12 @@ namespace Negri.Wot
 
                 foreach (var clan in response.Clans.Where(c => c.MembersCount >= minNumberOfPlayers))
                 {
-                    yield return new Clan(plataform, clan.ClanId, clan.Tag) { AllMembersCount = clan.MembersCount };
+                    yield return new Clan(platform, clan.ClanId, clan.Tag) { AllMembersCount = clan.MembersCount };
                 }
             }
         }
 
-        private IEnumerable<Clan> GetClans(Plataform plataform, IEnumerable<ClanPlataform> clans)
+        private IEnumerable<Clan> GetClans(Platform platform, IEnumerable<ClanPlataform> clans)
         {
             var clanPlataforms = clans as ClanPlataform[] ?? clans.ToArray();
             if (!clanPlataforms.Any())
@@ -994,18 +994,18 @@ namespace Negri.Wot
                 yield break;
             }
 
-            Log.DebugFormat("Procurando dados na plataforma {0}...", plataform);
+            Log.DebugFormat("Procurando dados na plataforma {0}...", platform);
             string server;
-            switch (plataform)
+            switch (platform)
             {
-                case Plataform.XBOX:
+                case Platform.XBOX:
                     server = "api-xbox-console.worldoftanks.com";
                     break;
-                case Plataform.PS:
+                case Platform.PS:
                     server = "api-ps4-console.worldoftanks.com";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(plataform), plataform, null);
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
             var requestedClans = new HashSet<long>(clanPlataforms.Select(c => c.ClanId));
@@ -1014,7 +1014,7 @@ namespace Negri.Wot
             string disbandedUrl =
                 $"https://{server}/wotx/clans/info/?application_id={ApplicationId}&fields=clan_id%2Cis_clan_disbanded&clan_id={string.Join("%2C", requestedClans.Select(id => id.ToString()))}";
             var json =
-                GetContentSync($"DisbandedClan.{plataform}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", disbandedUrl,
+                GetContentSync($"DisbandedClan.{platform}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", disbandedUrl,
                     WebCacheAge, false, Encoding.UTF8).Content;
             var response = JsonConvert.DeserializeObject<ClansInfoResponse>(json);
             if (response.IsError)
@@ -1036,7 +1036,7 @@ namespace Negri.Wot
                                 $"{string.Join("%2C", requestedClans.Select(id => id.ToString()))}&fields=clan_id%2Ctag%2Cname%2Cmembers_count%2Ccreated_at%2Cis_clan_disbanded" +
                                 "%2Cmembers%2Cmembers.role%2Cmembers.account_name&extra=members";
 
-            json = GetContentSync($"InfoClan.{plataform}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", requestUrl,
+            json = GetContentSync($"InfoClan.{platform}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", requestUrl,
                 WebCacheAge, false, Encoding.UTF8).Content;
 
             response = JsonConvert.DeserializeObject<ClansInfoResponse>(json);
@@ -1055,7 +1055,7 @@ namespace Negri.Wot
                     continue;
                 }
 
-                var clan = new Clan(plataform, apiClanKv.Key, apiClanKv.Value.Tag, apiClanKv.Value.Name)
+                var clan = new Clan(platform, apiClanKv.Key, apiClanKv.Value.Tag, apiClanKv.Value.Name)
                 {
                     CreatedAtUtc = apiClanKv.Value.CreatedAtUtc,
                     MembershipMoment = DateTime.UtcNow
@@ -1069,7 +1069,7 @@ namespace Negri.Wot
                         {
                             Id = memberKv.Key,
                             Rank = memberKv.Value.Rank,
-                            Plataform = plataform,
+                            Plataform = platform,
                             Name = memberKv.Value.Name
                         });
                     }
@@ -1080,7 +1080,7 @@ namespace Negri.Wot
 
             foreach (var id in disbandedClans)
             {
-                yield return new Clan(plataform, id, string.Empty)
+                yield return new Clan(platform, id, string.Empty)
                 {
                     IsDisbanded = true
                 };
@@ -1090,25 +1090,25 @@ namespace Negri.Wot
         /// <summary>
         ///     Devolve a GT a partir do ID
         /// </summary>
-        public string GetPlayerNameById(Plataform plataform, long id)
+        public string GetPlayerNameById(Platform platform, long id)
         {
-            Log.DebugFormat("Procurando GT de {1} na plataforma {0}...", plataform, id);
+            Log.DebugFormat("Procurando GT de {1} na plataforma {0}...", platform, id);
             string server;
-            switch (plataform)
+            switch (platform)
             {
-                case Plataform.XBOX:
+                case Platform.XBOX:
                     server = "api-xbox-console.worldoftanks.com";
                     break;
-                case Plataform.PS:
+                case Platform.PS:
                     server = "api-ps4-console.worldoftanks.com";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(plataform), plataform, null);
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
             string url =
                 $"https://{server}/wotx/account/info/?application_id={ApplicationId}&account_id={id}&fields=nickname";
-            var json = GetContentSync($"GamerTagById.{plataform}.{id}.json", url, WebCacheAge, false, Encoding.UTF8)
+            var json = GetContentSync($"GamerTagById.{platform}.{id}.json", url, WebCacheAge, false, Encoding.UTF8)
                 .Content;
 
             var result = JObject.Parse(json);
@@ -1141,34 +1141,34 @@ namespace Negri.Wot
         {
             var clanPlataforms = clans as ClanPlataform[] ?? clans.ToArray();
 
-            var xboxClans = clanPlataforms.Where(c => c.Plataform == Plataform.XBOX);
-            var psClans = clanPlataforms.Where(c => c.Plataform == Plataform.PS);
+            var xboxClans = clanPlataforms.Where(c => c.Plataform == Platform.XBOX);
+            var psClans = clanPlataforms.Where(c => c.Plataform == Platform.PS);
 
-            return GetClans(Plataform.XBOX, xboxClans).Concat(GetClans(Plataform.PS, psClans));
+            return GetClans(Platform.XBOX, xboxClans).Concat(GetClans(Platform.PS, psClans));
         }
 
         /// <summary>
         ///     Devolve o jogador a partir da Gamertag
         /// </summary>
-        public Player GetPlayerByGamerTag(Plataform plataform, string gamerTag)
+        public Player GetPlayerByGamerTag(Platform platform, string gamerTag)
         {
-            Log.DebugFormat("Procurando dados na plataforma {0}...", plataform);
+            Log.DebugFormat("Procurando dados na plataforma {0}...", platform);
             string server;
-            switch (plataform)
+            switch (platform)
             {
-                case Plataform.XBOX:
+                case Platform.XBOX:
                     server = "api-xbox-console.worldoftanks.com";
                     break;
-                case Plataform.PS:
+                case Platform.PS:
                     server = "api-ps4-console.worldoftanks.com";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(plataform), plataform, null);
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
             string url = $"https://{server}/wotx/account/list/?application_id={ApplicationId}&search={gamerTag}";
             var json =
-                GetContentSync($"AccountList.{plataform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8)
+                GetContentSync($"AccountList.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8)
                     .Content;
             var result = JObject.Parse(json);
             if ((string) result["status"] == "error")
@@ -1199,14 +1199,14 @@ namespace Negri.Wot
                 Id = (long)result["data"][0]["account_id"],
                 Name = gamerTag,
                 Moment = DateTime.UtcNow,
-                Plataform = plataform
+                Plataform = platform
             };
 
             // Acho o clã do cidadão
             url =
                 $"https://{server}/wotx/clans/accountinfo/?application_id={ApplicationId}&account_id={player.Id}&extra=clan";
             json =
-                GetContentSync($"ClansAccountinfo.{plataform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8)
+                GetContentSync($"ClansAccountinfo.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8)
                     .Content;
             result = JObject.Parse(json);
             count = (int)result["meta"]["count"];

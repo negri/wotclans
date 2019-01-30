@@ -2,14 +2,14 @@ namespace Negri.Wot
 {
     public class ClanPlataform
     {
-        public ClanPlataform(Plataform plataform, long clanId, string clanTag)
+        public ClanPlataform(Platform platform, long clanId, string clanTag)
         {
-            Plataform = plataform;
+            Plataform = platform;
             ClanTag = clanTag;
             ClanId = clanId;
         }
 
-        public Plataform Plataform { get; protected set; }
+        public Platform Plataform { get; protected set; }
 
         public string ClanTag { get; protected set; }
 

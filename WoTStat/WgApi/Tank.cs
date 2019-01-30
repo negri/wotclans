@@ -11,7 +11,7 @@ namespace Negri.Wot.WgApi
         /// <summary>
         /// A plataforma do tanque
         /// </summary>
-        public Plataform Plataform { get; set; }
+        public Platform Plataform { get; set; }
 
         /// <summary>
         ///     Id do tanque.

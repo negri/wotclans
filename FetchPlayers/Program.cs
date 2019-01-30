@@ -116,27 +116,27 @@ namespace Negri.Wot
 
                 Log.Debug("Obtendo todos os tanques em XBOX...");
                 var f = fetchers.Dequeue();
-                recorder.Set(f.GetTanks(Plataform.XBOX));
-                var allTanksXbox = provider.GetTanks(Plataform.XBOX).ToDictionary(t => t.TankId);
+                recorder.Set(f.GetTanks(Platform.XBOX));
+                var allTanksXbox = provider.GetTanks(Platform.XBOX).ToDictionary(t => t.TankId);
                 fetchers.Enqueue(f);
                 Log.InfoFormat("Obtidos {0} tanques para XBOX.", allTanksXbox.Count);
 
                 Log.Debug("Obtendo todos os tanques em PS...");
                 f = fetchers.Dequeue();
-                recorder.Set(f.GetTanks(Plataform.PS));
-                var allTanksPs = provider.GetTanks(Plataform.PS).ToDictionary(t => t.TankId);
+                recorder.Set(f.GetTanks(Platform.PS));
+                var allTanksPs = provider.GetTanks(Platform.PS).ToDictionary(t => t.TankId);
                 fetchers.Enqueue(f);
                 Log.InfoFormat("Obtidos {0} tanques para PS.", allTanksPs.Count);
 
                 // Ambas as plataformas usam os mesmos valores de referência
-                var wn8Expected = provider.GetWn8ExpectedValues(Plataform.XBOX);
+                var wn8Expected = provider.GetWn8ExpectedValues(Platform.XBOX);
                 
                 var idealInterval = (maxRunMinutes.Value * 60.0 - sw.Elapsed.TotalSeconds) / players.Length;
                 double threadInterval = idealInterval*maxParallel*0.80;
                 var lockObject = new object();
 
                 // To save on players on the remote server (Same remote DB, so the plataform doesn't matter)
-                var putter = putPlayers ? new Putter(Plataform.PS, ConfigurationManager.AppSettings["ApiAdminKey"]) : null;
+                var putter = putPlayers ? new Putter(Platform.PS, ConfigurationManager.AppSettings["ApiAdminKey"]) : null;
 
                 var cts = new CancellationTokenSource();
                 var po = new ParallelOptions
@@ -177,7 +177,7 @@ namespace Negri.Wot
                         var player = players[i];
 
                         var swPlayer = Stopwatch.StartNew();
-                        var allTanks = player.Plataform == Plataform.XBOX ? allTanksXbox : allTanksPs;
+                        var allTanks = player.Plataform == Platform.XBOX ? allTanksXbox : allTanksPs;
                         RetrievePlayer(player, wg, ext, provider, recorder, allTanks, wn8Expected, putter);
                         swPlayer.Stop();
 

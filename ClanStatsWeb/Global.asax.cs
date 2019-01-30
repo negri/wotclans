@@ -35,7 +35,7 @@ namespace Negri.Wot.Site
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
             GlobalHelper.DataFolder = ConfigurationManager.AppSettings["ClanResultsFolder"];
-            GlobalHelper.Plataform = (Plataform) Enum.Parse(typeof (Plataform), ConfigurationManager.AppSettings["Plataform"]);
+            GlobalHelper.Platform = (Platform) Enum.Parse(typeof (Platform), ConfigurationManager.AppSettings["Plataform"]);
             GlobalHelper.CacheMinutes = int.Parse(ConfigurationManager.AppSettings["CacheMinutes"] ?? "0");
             GlobalHelper.DefaultPlayerDetails = (PlayerDataOrigin)Enum.Parse(typeof(PlayerDataOrigin), 
                 ConfigurationManager.AppSettings["DefaultPlayerDetails"] ?? PlayerDataOrigin.WotInfo.ToString());
@@ -47,7 +47,7 @@ namespace Negri.Wot.Site
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             Log.InfoFormat("App started for {0}, on data folder {1}, using {2}min of cache time.",
-                GlobalHelper.Plataform, GlobalHelper.DataFolder, GlobalHelper.CacheMinutes);
+                GlobalHelper.Platform, GlobalHelper.DataFolder, GlobalHelper.CacheMinutes);
         }
 
         protected void Application_Error(object sender, EventArgs e)

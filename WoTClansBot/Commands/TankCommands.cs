@@ -33,31 +33,31 @@ namespace Negri.Wot.Bot
             _connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
         }
 
-        private Tank[] GetTanks(Plataform platform)
+        private Tank[] GetTanks(Platform platform)
         {
             lock (_tankListLock)
             {
 
-                if (DateTime.UtcNow > (platform == Plataform.PS ? _tanksListValidUntilPs : _tanksListValidUntilXbox))
+                if (DateTime.UtcNow > (platform == Platform.PS ? _tanksListValidUntilPs : _tanksListValidUntilXbox))
                 {
                     var provider = new DbProvider(_connectionString);
-                    if (platform == Plataform.PS)
+                    if (platform == Platform.PS)
                     {
-                        _tanksPS = provider.EnumTanks(Plataform.PS).OrderByDescending(t => t.Tier).ThenBy(t => t.TankId).ToArray();
+                        _tanksPS = provider.EnumTanks(Platform.PS).OrderByDescending(t => t.Tier).ThenBy(t => t.TankId).ToArray();
                         _tanksListValidUntilPs = DateTime.UtcNow.AddMinutes(30);
                     }
                     else
                     {
-                        _tanksXbox = provider.EnumTanks(Plataform.XBOX).OrderByDescending(t => t.Tier).ThenBy(t => t.TankId).ToArray();
+                        _tanksXbox = provider.EnumTanks(Platform.XBOX).OrderByDescending(t => t.Tier).ThenBy(t => t.TankId).ToArray();
                         _tanksListValidUntilXbox = DateTime.UtcNow.AddMinutes(30);
                     }
                 }
 
-                return platform == Plataform.PS ? _tanksPS : _tanksXbox;
+                return platform == Platform.PS ? _tanksPS : _tanksXbox;
             }
         }
 
-        private Tank FindTank(Plataform platform, string tankName, out bool exact)
+        private Tank FindTank(Platform platform, string tankName, out bool exact)
         {
             var originalName = tankName;
             platform = GetPlatform(tankName, platform, out tankName);
@@ -254,7 +254,7 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"Battles: {tr.LastMonth.BattlesPerPlayer:N0}; Hours Battling: {tr.LastMonth.TimePerPlayer.TotalHours:N0}");
                 sb.AppendLine($"Max Kills: {tr.LastMonth.MaxKills:N1}; Avg Kills: {tr.LastMonth.Kills:N1}");                
 
-                var platformPrefix = tr.Plataform == Plataform.PS ? "ps." : string.Empty;
+                var platformPrefix = tr.Plataform == Platform.PS ? "ps." : string.Empty;
                 
                 var color = ptr.Wn8.ToColor();
 
@@ -341,7 +341,7 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in double quotes.");
             }
 
-            var platformPrefix = tr.Plataform == Plataform.PS ? "ps." : string.Empty;
+            var platformPrefix = tr.Plataform == Platform.PS ? "ps." : string.Empty;
 
             var color = tr.LastMonth.AverageWn8.ToColor();
 
@@ -415,7 +415,7 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in double quotes.");
             }
 
-            var platformPrefix = moe.Plataform == Plataform.PS ? "ps." : string.Empty;
+            var platformPrefix = moe.Plataform == Platform.PS ? "ps." : string.Empty;
 
             var embed = new DiscordEmbedBuilder
             {
@@ -550,7 +550,7 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in double quotes.");
             }
 
-            var platformPrefix = leaderboard.First().Plataform == Plataform.PS ? "ps." : string.Empty;
+            var platformPrefix = leaderboard.First().Plataform == Platform.PS ? "ps." : string.Empty;
 
             var embed = new DiscordEmbedBuilder
             {
@@ -695,7 +695,7 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in double quotes.");
             }
 
-            var platformPrefix = leaderboard.First().Plataform == Plataform.PS ? "ps." : string.Empty;
+            var platformPrefix = leaderboard.First().Plataform == Platform.PS ? "ps." : string.Empty;
 
             var embed = new DiscordEmbedBuilder
             {

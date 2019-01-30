@@ -35,7 +35,7 @@ namespace Negri.Wot.Bot
                 Title = "WoT Clans",
                 Description = $"The best WoT site in the universe is just a click away from you, {ctx.User.Mention}!",
                 Color = DiscordColor.DarkGreen,
-                Url = $"https://{(config.Plataform == Plataform.PS ? "ps." : "")}wotclans.com.br"
+                Url = $"https://{(config.Plataform == Platform.PS ? "ps." : "")}wotclans.com.br"
             };
 
             await ctx.RespondAsync("", embed: embed);

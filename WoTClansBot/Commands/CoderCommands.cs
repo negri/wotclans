@@ -149,7 +149,7 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"Clans With Players Updated On Last Hour: {s.ClansWithPlayersUpdatedOnLastHour:N0}");
                 sb.AppendLine($"Since Started Load: {s.AveragedProcessCpuUsage.SinceStartedLoad:P1}");
 
-                var platformPrefix = platform == Plataform.PS ? "ps." : string.Empty;
+                var platformPrefix = platform == Platform.PS ? "ps." : string.Empty;
 
                 var embed = new DiscordEmbedBuilder
                 {

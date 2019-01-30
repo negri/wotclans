@@ -431,13 +431,13 @@ namespace Negri.Wot.Bot
         [Description("Set the plataform this Guild is interested.")]
         public async Task SetPlataform(CommandContext ctx, [Description("Plataform")] string plataform)
         {
-            if (!Enum.TryParse(plataform, true, out Plataform plat))
+            if (!Enum.TryParse(plataform, true, out Platform plat))
             {
                 var emoji = DiscordEmoji.FromName(ctx.Client, ":no_entry:");
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = "Wrong parameter",
-                    Description = $"{emoji} The plataform should be `{Plataform.XBOX}` or `{Plataform.PS}`.",
+                    Description = $"{emoji} The plataform should be `{Platform.XBOX}` or `{Platform.PS}`.",
                     Color = DiscordColor.Red
                 };
                 await ctx.RespondAsync("", embed: embed);

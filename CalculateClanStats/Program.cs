@@ -56,11 +56,11 @@ namespace Negri.Wot
 
                 var putterXbox = new FtpPutter(ConfigurationManager.AppSettings["FtpFolder"],
                     ConfigurationManager.AppSettings["FtpUser"],
-                    ConfigurationManager.AppSettings["FtpPassworld"], Plataform.XBOX);
+                    ConfigurationManager.AppSettings["FtpPassworld"]);
 
                 var putterPs = new FtpPutter(ConfigurationManager.AppSettings["PsFtpFolder"],
                     ConfigurationManager.AppSettings["PsFtpUser"],
-                    ConfigurationManager.AppSettings["PsFtpPassworld"], Plataform.PS);
+                    ConfigurationManager.AppSettings["PsFtpPassworld"]);
 
                 var mailSender = new MailSender(ConfigurationManager.AppSettings["SmtpHost"],
                     int.Parse(ConfigurationManager.AppSettings["SmtpPort"]),
@@ -106,10 +106,10 @@ namespace Negri.Wot
                     }
 
                     // Apaga arquivos com a API administrativa
-                    var cleaner = new Putter(Plataform.XBOX, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                    var cleaner = new Putter(Platform.XBOX, ConfigurationManager.AppSettings["ApiAdminKey"]);
                     cleaner.CleanFiles();
 
-                    cleaner = new Putter(Plataform.PS, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                    cleaner = new Putter(Platform.PS, ConfigurationManager.AppSettings["ApiAdminKey"]);
                     cleaner.CleanFiles();                    
                 });
 
@@ -140,21 +140,21 @@ namespace Negri.Wot
                           var fsw = Stopwatch.StartNew();
                           switch (cc.Plataform)
                           {
-                              case Plataform.XBOX:
+                              case Platform.XBOX:
                                   {
                                       var fileName = cc.ToFile(resultDirectoryXbox);
                                       Log.InfoFormat("Arquivo de resultado escrito em '{0}'", fileName);
                                       putterXbox.PutClan(fileName);
                                   }
                                   break;
-                              case Plataform.PS:
+                              case Platform.PS:
                                   {
                                       var fileName = cc.ToFile(resultDirectoryPs);
                                       Log.InfoFormat("Arquivo de resultado escrito em '{0}'", fileName);
                                       putterPs.PutClan(fileName);
                                   }
                                   break;
-                              case Plataform.Virtual:
+                              case Platform.Virtual:
                                   break;
                               default:
                                   throw new ArgumentOutOfRangeException();
@@ -257,8 +257,8 @@ namespace Negri.Wot
             // Obtem os valores esperados de WN8
             if ((DateTime.UtcNow.Hour % 4) == 1)
             {
-                HandleWn8ExpectedValues(Plataform.XBOX, provider, resultDirectory, ftpPutterXbox, recorder, fetcher);
-                HandleWn8ExpectedValues(Plataform.PS,   provider, resultDirectoryPs, ftpPutterPs, recorder, fetcher);
+                HandleWn8ExpectedValues(Platform.XBOX, provider, resultDirectory, ftpPutterXbox, recorder, fetcher);
+                HandleWn8ExpectedValues(Platform.PS,   provider, resultDirectoryPs, ftpPutterPs, recorder, fetcher);
             }
             
             if (calculateMoe)
@@ -292,20 +292,20 @@ namespace Negri.Wot
 
             if (lastReferencesXbox.HasValue)
             {
-                PutTanksReferencesOnPlataform(Plataform.XBOX, lastReferencesXbox, provider, mailSender, resultDirectoryXbox, ftpPutterXbox, utcShiftToCalculate);
+                PutTanksReferencesOnPlataform(Platform.XBOX, lastReferencesXbox, provider, mailSender, resultDirectoryXbox, ftpPutterXbox, utcShiftToCalculate);
             }
 
             if (lastReferencesPs.HasValue)
             {
-                PutTanksReferencesOnPlataform(Plataform.PS, lastReferencesPs, provider, mailSender, resultDirectoryPs, ftpPutterPs, utcShiftToCalculate);
+                PutTanksReferencesOnPlataform(Platform.PS, lastReferencesPs, provider, mailSender, resultDirectoryPs, ftpPutterPs, utcShiftToCalculate);
             }
         }
 
-        private static void PutTanksReferencesOnPlataform(Plataform plataform, DateTime? lastReferences,
+        private static void PutTanksReferencesOnPlataform(Platform platform, DateTime? lastReferences,
             DbProvider provider, MailSender mailSender, string resultDirectory, FtpPutter ftpPutter, int utcShiftToCalculate)
         {
             Debug.Assert(lastReferences != null, nameof(lastReferences) + " != null");
-            Log.Debug($"Referências no site {plataform}: {lastReferences.Value:yyyy-MM-dd ddd}");
+            Log.Debug($"Referências no site {platform}: {lastReferences.Value:yyyy-MM-dd ddd}");
             var cd = DateTime.UtcNow.AddHours(utcShiftToCalculate);
             var previousMonday = cd.PreviousDayOfWeek(DayOfWeek.Monday);
             Log.Debug($"Segunda-Feira anterior: {previousMonday:yyyy-MM-dd ddd}; Current: {cd:o}");
@@ -317,7 +317,7 @@ namespace Negri.Wot
 
             // Preciso gerar referências e subir
             var references = provider
-                .GetTanksReferences(plataform, previousMonday).ToArray();
+                .GetTanksReferences(platform, previousMonday).ToArray();
             var referencesDir = Path.Combine(resultDirectory, "Tanks");
             var leaders = new ConcurrentBag<Leader>();
             Parallel.For(0, references.Length, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (i) =>
@@ -338,8 +338,8 @@ namespace Negri.Wot
             File.WriteAllText(leadersFile, json, Encoding.UTF8);
             ftpPutter.PutTankReference(leadersFile);
 
-            mailSender.Send($"Upload das Referências {plataform} para {previousMonday:yyyy-MM-dd} Ok",
-                $"Leaderboard: https://{(plataform == Plataform.PS ? "ps." : "")}wotclans.com.br/Leaderboard/All");
+            mailSender.Send($"Upload das Referências {platform} para {previousMonday:yyyy-MM-dd} Ok",
+                $"Leaderboard: https://{(platform == Platform.PS ? "ps." : "")}wotclans.com.br/Leaderboard/All");
         }
 
         private static void CalculateMoE(DateTime? moeLastDateXbox, DateTime? moeLastDatePs, DbProvider provider,
@@ -358,32 +358,32 @@ namespace Negri.Wot
 
             if (moeLastDateXbox.HasValue)
             {
-                PutMoEOnPlataform(Plataform.XBOX, moeLastDateXbox, provider, mailSender, resultDirectoryXbox, ftpPutterXbox);
+                PutMoEOnPlataform(Platform.XBOX, moeLastDateXbox, provider, mailSender, resultDirectoryXbox, ftpPutterXbox);
             }
 
             if (moeLastDatePs.HasValue)
             {
-                PutMoEOnPlataform(Plataform.PS, moeLastDatePs, provider, mailSender, resultDirectoryPs, ftpPutterPs);
+                PutMoEOnPlataform(Platform.PS, moeLastDatePs, provider, mailSender, resultDirectoryPs, ftpPutterPs);
             }
         }
 
-        private static void PutMoEOnPlataform(Plataform plataform, DateTime? moeLastDate,
+        private static void PutMoEOnPlataform(Platform platform, DateTime? moeLastDate,
             DbProvider provider, MailSender mailSender,
             string resultDirectory, FtpPutter ftpPutter)
         {
-            Log.Debug($"Verificando atualização de MoE em {plataform}");
+            Log.Debug($"Verificando atualização de MoE em {platform}");
 
             Debug.Assert(moeLastDate != null, nameof(moeLastDate) + " != null");
             Log.DebugFormat("Site Date: {0:yyyy-MM-dd}", moeLastDate.Value);
 
-            var dbDate = provider.GetMoe(plataform).First().Date;
+            var dbDate = provider.GetMoe(platform).First().Date;
             Log.DebugFormat("DB Date: {0:yyyy-MM-dd}", dbDate);
 
             var date = moeLastDate.Value.AddDays(1);
             while (date <= dbDate)
             {
                 Log.InfoFormat("Calculando e fazendo upload para {0:yyyy-MM-dd}...", date);
-                var moes = provider.GetMoe(plataform, date).ToDictionary(t => t.TankId);
+                var moes = provider.GetMoe(platform, date).ToDictionary(t => t.TankId);
 
                 if (moes.Count > 0)
                 {
@@ -395,8 +395,8 @@ namespace Negri.Wot
                     ftpPutter.PutMoe(file);
                     Log.Debug("Feito uploado do MoE");
 
-                    mailSender.Send($"Upload das MoE {plataform} para {date:yyyy-MM-dd} Ok",
-                        $"MoE: https://{(plataform == Plataform.PS ? "ps." : "")}wotclans.com.br/Tanks/MoE");
+                    mailSender.Send($"Upload das MoE {platform} para {date:yyyy-MM-dd} Ok",
+                        $"MoE: https://{(platform == Platform.PS ? "ps." : "")}wotclans.com.br/Tanks/MoE");
                 }
                 else
                 {
@@ -406,20 +406,20 @@ namespace Negri.Wot
                 date = date.AddDays(1);
             }
 
-            Log.Debug($"Verificação do MoE completa para {plataform}.");
+            Log.Debug($"Verificação do MoE completa para {platform}.");
         }
 
-        private static void HandleWn8ExpectedValues(Plataform plataform, DbProvider provider, string resultDirectory, FtpPutter ftpPutter, DbRecorder recorder, Fetcher fetcher)
+        private static void HandleWn8ExpectedValues(Platform platform, DbProvider provider, string resultDirectory, FtpPutter ftpPutter, DbRecorder recorder, Fetcher fetcher)
         {
             // Aproveito e pego e salvo os dados de WN8
             if ((recorder != null) && (fetcher != null))
             {
-                Log.Info($"Pegando dados de WN8 para {plataform}...");
+                Log.Info($"Pegando dados de WN8 para {platform}...");
                 recorder.Set(fetcher.GetXvmWn8ExpectedValuesAsync().Result);
                 Log.Info("Dados de WN8 obtidos e salvos.");
             }
 
-            var wn8 = provider.GetWn8ExpectedValues(plataform);
+            var wn8 = provider.GetWn8ExpectedValues(platform);
             if (wn8 != null)
             {
                 var json = JsonConvert.SerializeObject(wn8, Formatting.Indented);
@@ -428,7 +428,7 @@ namespace Negri.Wot
                 Log.DebugFormat("Salvo o WN8 Expected em '{0}'", file);
 
                 ftpPutter.PutMoe(file);
-                Log.Debug($"Feito uploado do WN8 para {plataform}");
+                Log.Debug($"Feito uploado do WN8 para {platform}");
             }
         }
 

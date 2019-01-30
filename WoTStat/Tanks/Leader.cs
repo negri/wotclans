@@ -56,7 +56,7 @@ namespace Negri.Wot.Tanks
         /// The clan url
         /// </summary>
         [JsonIgnore]
-        public string ClanUrl => $"https://{(Plataform == Plataform.PS ? "ps." : "")}wotclans.com.br/Clan/{ClanTag}";
+        public string ClanUrl => $"https://{(Plataform == Platform.PS ? "ps." : "")}wotclans.com.br/Clan/{ClanTag}";
 
         public override string ToString()
         {

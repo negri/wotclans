@@ -233,11 +233,11 @@ namespace Negri.Wot
         /// <summary>
         /// The site for the platafor, like https://wotclans.com.br or https://ps.wotclans.com.br
         /// </summary>
-        /// <param name="plataform"></param>
+        /// <param name="platform"></param>
         /// <returns></returns>
-        public static string SiteUrl(this Plataform plataform)
+        public static string SiteUrl(this Platform platform)
         {
-            if (plataform == Plataform.PS)
+            if (platform == Platform.PS)
             {
                 return "https://ps.wotclans.com.br";
             }
@@ -247,9 +247,9 @@ namespace Negri.Wot
             }
         }
 
-        public static string TagName(this Plataform plataform)
+        public static string TagName(this Platform platform)
         {
-            if (plataform == Plataform.PS)
+            if (platform == Platform.PS)
             {
                 return "PSN Name";
             }

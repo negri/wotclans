@@ -91,7 +91,7 @@ namespace UtilityProgram
             File.WriteAllText(@"c:\temp\Translation.txt", sb.ToString(), Encoding.UTF8);
         }
 
-        private static void GetAllTanks(Plataform plataform)
+        private static void GetAllTanks(Platform platform)
         {
             string cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
             Fetcher fetcher = new Fetcher(cacheDirectory)
@@ -101,7 +101,7 @@ namespace UtilityProgram
                 ApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
 
-            Tank[] tanks = fetcher.GetTanks(Plataform.PC).ToArray();
+            Tank[] tanks = fetcher.GetTanks(Platform.PC).ToArray();
 
             string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
             DbRecorder recorder = new DbRecorder(connectionString);
@@ -116,7 +116,7 @@ namespace UtilityProgram
             DateTime cd = DateTime.UtcNow.AddHours(-7);
             DateTime previousMonday = cd.PreviousDayOfWeek(DayOfWeek.Monday);
 
-            TankReference[] references = provider.GetTanksReferences(Plataform.XBOX, previousMonday, null, false, false, false).ToArray();
+            TankReference[] references = provider.GetTanksReferences(Platform.XBOX, previousMonday, null, false, false, false).ToArray();
 
             var sb = new StringBuilder();
             sb.AppendLine("Id\tName\tIsPremium\tTier\tType\tNumPlayers\tNumBattles\tAvgWN8\tDamageToUnicum");
@@ -133,7 +133,7 @@ namespace UtilityProgram
         {
             string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
             DbProvider provider = new DbProvider(connectionString);
-            Wn8ExpectedValues expected = provider.GetWn8ExpectedValues(Plataform.XBOX);
+            Wn8ExpectedValues expected = provider.GetWn8ExpectedValues(Platform.XBOX);
 
             Dictionary<long, TankPlayerStatistics> fakePlayed = new Dictionary<long, TankPlayerStatistics>();
             foreach (Wn8TankExpectedValues e in expected.AllTanks)
@@ -191,10 +191,10 @@ namespace UtilityProgram
         /// </summary>
         private static void DeleteOldFileOnServer()
         {
-            Putter cleanerXbox = new Putter(Plataform.XBOX, ConfigurationManager.AppSettings["ApiAdminKey"]);
+            Putter cleanerXbox = new Putter(Platform.XBOX, ConfigurationManager.AppSettings["ApiAdminKey"]);
             cleanerXbox.CleanFiles();
 
-            Putter cleanerPs = new Putter(Plataform.PS, ConfigurationManager.AppSettings["ApiAdminKey"]);
+            Putter cleanerPs = new Putter(Platform.PS, ConfigurationManager.AppSettings["ApiAdminKey"]);
             cleanerPs.CleanFiles();
         }
 
@@ -208,11 +208,11 @@ namespace UtilityProgram
 
             FtpPutter putter = new FtpPutter(ConfigurationManager.AppSettings["PsFtpFolder"],
                 ConfigurationManager.AppSettings["PsFtpUser"],
-                ConfigurationManager.AppSettings["PsFtpPassworld"], Plataform.PS);
+                ConfigurationManager.AppSettings["PsFtpPassworld"]);
 
             string resultDirectory = ConfigurationManager.AppSettings["PsResultDirectory"];
 
-            Wn8ExpectedValues wn8 = provider.GetWn8ExpectedValues(Plataform.PS);
+            Wn8ExpectedValues wn8 = provider.GetWn8ExpectedValues(Platform.PS);
             if (wn8 != null)
             {
                 string json = JsonConvert.SerializeObject(wn8, Formatting.Indented);
@@ -229,11 +229,11 @@ namespace UtilityProgram
         {
             FtpPutter putterXbox = new FtpPutter(ConfigurationManager.AppSettings["FtpFolder"],
                 ConfigurationManager.AppSettings["FtpUser"],
-                ConfigurationManager.AppSettings["FtpPassworld"], Plataform.XBOX);
+                ConfigurationManager.AppSettings["FtpPassworld"]);
 
             FtpPutter putterPs = new FtpPutter(ConfigurationManager.AppSettings["PsFtpFolder"],
                 ConfigurationManager.AppSettings["PsFtpUser"],
-                ConfigurationManager.AppSettings["PsFtpPassworld"], Plataform.PS);
+                ConfigurationManager.AppSettings["PsFtpPassworld"]);
 
             int deleted = putterXbox.DeleteOldFiles(daysToKeepTanks, "Tanks");
             deleted += putterXbox.DeleteOldFiles(daysToKeepClans);
@@ -258,11 +258,11 @@ namespace UtilityProgram
 
             FtpPutter putterXbox = new FtpPutter(ConfigurationManager.AppSettings["FtpFolder"],
                 ConfigurationManager.AppSettings["FtpUser"],
-                ConfigurationManager.AppSettings["FtpPassworld"], Plataform.XBOX);
+                ConfigurationManager.AppSettings["FtpPassworld"]);
 
             FtpPutter putterPs = new FtpPutter(ConfigurationManager.AppSettings["PsFtpFolder"],
                 ConfigurationManager.AppSettings["PsFtpUser"],
-                ConfigurationManager.AppSettings["PsFtpPassworld"], Plataform.PS);
+                ConfigurationManager.AppSettings["PsFtpPassworld"]);
 
             string resultDirectory = ConfigurationManager.AppSettings["ResultDirectory"];
             string resultDirectoryPs = ConfigurationManager.AppSettings["PsResultDirectory"];
@@ -281,11 +281,11 @@ namespace UtilityProgram
                   ClanPlataform clan = clans[i];
 
                   bool done = false;
-                  if (clan.Plataform == Plataform.XBOX)
+                  if (clan.Plataform == Platform.XBOX)
                   {
                       done = already.Contains(clan.ClanTag);
                   }
-                  else if (clan.Plataform == Plataform.PS)
+                  else if (clan.Plataform == Platform.PS)
                   {
                       done = alreadyPs.Contains(clan.ClanTag);
                   }
@@ -311,7 +311,7 @@ namespace UtilityProgram
                       Stopwatch fsw = Stopwatch.StartNew();
                       switch (cc.Plataform)
                       {
-                          case Plataform.XBOX:
+                          case Platform.XBOX:
                               {
                                   string fileName = cc.ToFile(resultDirectory);
                                   Log.InfoFormat("Arquivo de resultado escrito em '{0}'", fileName);
@@ -322,7 +322,7 @@ namespace UtilityProgram
                                   }
                               }
                               break;
-                          case Plataform.PS:
+                          case Platform.PS:
                               {
                                   string fileName = cc.ToFile(resultDirectoryPs);
                                   Log.InfoFormat("Arquivo de resultado escrito em '{0}'", fileName);
@@ -333,7 +333,7 @@ namespace UtilityProgram
                                   }
                               }
                               break;
-                          case Plataform.Virtual:
+                          case Platform.Virtual:
                               break;
                           default:
                               throw new ArgumentOutOfRangeException();
@@ -412,7 +412,7 @@ namespace UtilityProgram
                 ApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
 
-            Negri.Wot.Tanks.Tank[] data = provider.EnumTanks(Plataform.XBOX).ToArray();
+            Negri.Wot.Tanks.Tank[] data = provider.EnumTanks(Platform.XBOX).ToArray();
         }
 
         #endregion
@@ -510,7 +510,7 @@ namespace UtilityProgram
             DbProvider provider = new DbProvider(connectionString);
 
 
-            TankReference[] references = provider.GetTanksReferences(Plataform.PS, new DateTime(2018, 03, 12))
+            TankReference[] references = provider.GetTanksReferences(Platform.PS, new DateTime(2018, 03, 12))
                 .ToArray();
             string baseDir = ConfigurationManager.AppSettings["PsResultDirectory"];
             string dir = Path.Combine(baseDir, "Tanks");
@@ -546,7 +546,7 @@ namespace UtilityProgram
             string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
             DbProvider provider = new DbProvider(connectionString);
 
-            const Plataform plataform = Plataform.XBOX;
+            const Platform plataform = Platform.XBOX;
 
             DateTime date = new DateTime(2017, 03, 10);
             DateTime maxDate = new DateTime(2017, 04, 26);
@@ -598,7 +598,7 @@ namespace UtilityProgram
 
             // Obtem todos os tanques do jogo       
             Log.Debug("Obtendo todos os tanques do jogo...");
-            Dictionary<long, Tank> allTanks = fetcher.GetTanks(Plataform.XBOX).ToDictionary(t => t.TankId);
+            Dictionary<long, Tank> allTanks = fetcher.GetTanks(Platform.XBOX).ToDictionary(t => t.TankId);
             StringBuilder sb = new StringBuilder();
             foreach (Tank tank in allTanks.Values)
             {
@@ -615,7 +615,7 @@ namespace UtilityProgram
 
             // Lista todos os clas XBOX
             Clan[] allClans =
-                provider.GetClans().Where(c => c.Plataform == Plataform.XBOX).Select(cp => provider.GetClan(cp))
+                provider.GetClans().Where(c => c.Plataform == Platform.XBOX).Select(cp => provider.GetClan(cp))
                     .OrderByDescending(c => c.Top15Wn8).ToArray();
             Log.InfoFormat("Obtidos {0} clas.", allClans.Length);
 
@@ -650,7 +650,7 @@ namespace UtilityProgram
 
                     Console.WriteLine(@"    Jogador {0}.{1}@{2}...", player.Id, player.Name, clanTag);
 
-                    Task<IEnumerable<Negri.Wot.WgApi.TankPlayer>> tanksTask = fetcher.GetTanksForPlayerAsync(Plataform.XBOX, player.Id);
+                    Task<IEnumerable<Negri.Wot.WgApi.TankPlayer>> tanksTask = fetcher.GetTanksForPlayerAsync(Platform.XBOX, player.Id);
                     tanksTask.Wait();
                     Negri.Wot.WgApi.TankPlayer[] tanks = tanksTask.Result.ToArray();
                     foreach (Negri.Wot.WgApi.TankPlayer t in tanks)
@@ -689,7 +689,7 @@ namespace UtilityProgram
                 WebFetchInterval = TimeSpan.FromSeconds(1),
                 ApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
-            Clan[] clans = fetcher.GetClans(Plataform.XBOX, size).ToArray();
+            Clan[] clans = fetcher.GetClans(Platform.XBOX, size).ToArray();
 
             DbProvider provider = new DbProvider(ConfigurationManager.ConnectionStrings["Main"].ConnectionString);
 
@@ -717,7 +717,7 @@ namespace UtilityProgram
         {
             FtpPutter putter = new FtpPutter(ConfigurationManager.AppSettings["FtpFolder"],
                 ConfigurationManager.AppSettings["FtpUser"],
-                ConfigurationManager.AppSettings["FtpPassworld"], Plataform.XBOX);
+                ConfigurationManager.AppSettings["FtpPassworld"]);
             IEnumerable<string> remoteClanFiles = putter.List("clan.TERSP.");
             foreach (string remoteClanFile in remoteClanFiles)
             {

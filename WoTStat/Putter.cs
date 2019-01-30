@@ -17,18 +17,18 @@ namespace Negri.Wot
         private readonly string _apiKey;
         private readonly string _baseUrl;
         
-        public Putter(Plataform plataform, string apiKey)
+        public Putter(Platform platform, string apiKey)
         {
-            switch (plataform)
+            switch (platform)
             {
-                case Plataform.XBOX:
+                case Platform.XBOX:
                     _baseUrl = "https://wotclans.com.br";
                     break;
-                case Plataform.PS:
+                case Platform.PS:
                     _baseUrl = "https://ps.wotclans.com.br";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(plataform), plataform, "Not supported.");
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, "Not supported.");
             }            
             _apiKey = apiKey;
         }

@@ -38,7 +38,7 @@ namespace Negri.Wot.Bot
         /// <summary>
         /// Guild preferred plataform
         /// </summary>
-        public Plataform Plataform { get; set; } = Plataform.XBOX;
+        public Platform Plataform { get; set; } = Platform.XBOX;
 
         /// <summary>
         /// Guild Name

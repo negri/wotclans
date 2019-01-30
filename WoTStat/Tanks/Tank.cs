@@ -10,7 +10,7 @@ namespace Negri.Wot.Tanks
         /// <summary>
         /// Plataforma
         /// </summary>
-        public Plataform Plataform { get; set; }
+        public Platform Plataform { get; set; }
 
         /// <summary>
         ///     Tank Numeric Id
@@ -69,7 +69,7 @@ namespace Negri.Wot.Tanks
         public string SmallImageUrl => $"https://wxpcdn.gcdn.co/dcont/tankopedia/{Nation.ToStringUrl()}/{Tag}_preview.png";
 
         [JsonIgnore]
-        public string Url => $"https://{(Plataform == Plataform.PS ? "ps" : string.Empty)}wotclans.com.br/Tanks/{TankId}";
+        public string Url => $"https://{(Plataform == Platform.PS ? "ps" : string.Empty)}wotclans.com.br/Tanks/{TankId}";
 
         /// <summary>
         /// Flat, without any spaces and punctuation tank name

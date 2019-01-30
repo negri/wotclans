@@ -18,18 +18,18 @@ namespace Negri.Wot
         /// <summary>
         /// Constroi
         /// </summary>
-        /// <param name="plataform">Plataforma</param>
+        /// <param name="platform">Plataforma</param>
         /// <param name="playerId">Id no jogo</param>
         /// <param name="name">Gamer Tag</param>
-        public Player(Plataform plataform, long playerId, string name)
+        public Player(Platform platform, long playerId, string name)
         {
             Id = playerId;
             Name = name;
-            Plataform = plataform;
+            Plataform = platform;
             Moment = DateTime.UtcNow;
         }
 
-        public Plataform Plataform { get; set; } = Plataform.XBOX;
+        public Platform Plataform { get; set; } = Platform.XBOX;
 
         /// <summary>
         ///     Referencia (que é comum ser nula) ao clã do jogador
@@ -230,7 +230,7 @@ namespace Negri.Wot
                 {
                     return string.Empty;
                 }
-                return $"https://{(Plataform == Plataform.PS ? "ps." : "")}wotclans.com.br/Clan/{ClanTag}";
+                return $"https://{(Plataform == Platform.PS ? "ps." : "")}wotclans.com.br/Clan/{ClanTag}";
             }
         }
 

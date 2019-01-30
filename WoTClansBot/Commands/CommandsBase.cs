@@ -39,7 +39,7 @@ namespace Negri.Wot.Bot
             return await Task.Run(() => true);
         }
 
-        protected Plataform GetPlatform(string s, Plataform defaultPlatform, out string clean)
+        protected Platform GetPlatform(string s, Platform defaultPlatform, out string clean)
         {
             if (string.IsNullOrWhiteSpace(s))
             {
@@ -53,27 +53,27 @@ namespace Negri.Wot.Bot
             if (s.StartsWith("ps."))
             {
                 clean = s.Substring(3);
-                return Plataform.PS;                
+                return Platform.PS;                
             }
             else if (s.StartsWith("ps4."))
             {
                 clean = s.Substring(4);
-                return Plataform.PS;                
+                return Platform.PS;                
             }
             else if (s.StartsWith("xbox."))
             {
                 clean = s.Substring(5);
-                return Plataform.XBOX;                
+                return Platform.XBOX;                
             }
             else if (s.StartsWith("x."))
             {
                 clean = s.Substring(2);
-                return Plataform.XBOX;                
+                return Platform.XBOX;                
             }
             else if (s.StartsWith("p."))
             {
                 clean = s.Substring(2);
-                return Plataform.PS;                
+                return Platform.PS;                
             }
 
             clean = s;

@@ -60,7 +60,7 @@ namespace Negri.Wot.Bot
             var clan = provider.GetClan(platform, clanTag);
             if (clan == null)
             {
-                platform = platform == Plataform.PS ? Plataform.XBOX : Plataform.PS;
+                platform = platform == Platform.PS ? Platform.XBOX : Platform.PS;
 
                 clan = provider.GetClan(platform, clanTag);
                 if (clan == null)
@@ -120,7 +120,7 @@ namespace Negri.Wot.Bot
 
             var color = clan.Top15Wn8.ToColor();
 
-            var platformPrefix = clan.Plataform == Plataform.PS ? "ps." : string.Empty;
+            var platformPrefix = clan.Plataform == Platform.PS ? "ps." : string.Empty;
 
             var embed = new DiscordEmbedBuilder
             {

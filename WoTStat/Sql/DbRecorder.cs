@@ -427,12 +427,12 @@ namespace Negri.Wot.Sql
             }
         }
 
-        public void SetClanFlag(Plataform plataform, long clanId, string flagCode)
+        public void SetClanFlag(Platform platform, long clanId, string flagCode)
         {
-            Execute(transaction => { SetClanFlag(plataform, clanId, flagCode, transaction); });
+            Execute(transaction => { SetClanFlag(platform, clanId, flagCode, transaction); });
         }
 
-        private static void SetClanFlag(Plataform plataform, long clanId, string flagCode, SqlTransaction t)
+        private static void SetClanFlag(Platform platform, long clanId, string flagCode, SqlTransaction t)
         {
             const string sql =
                 "update Main.Clan set FlagCode = @flagCode where (ClanId = @clanId) and (PlataformId = @plataformId);";
@@ -442,7 +442,7 @@ namespace Negri.Wot.Sql
                 cmd.CommandTimeout = 5 * 60;
 
                 cmd.Parameters.AddWithValue("@clanId", clanId);
-                cmd.Parameters.AddWithValue("@plataformId", (int)plataform);
+                cmd.Parameters.AddWithValue("@plataformId", (int)platform);
                 if (string.IsNullOrWhiteSpace(flagCode))
                 {
                     cmd.Parameters.AddWithValue("@flagCode", DBNull.Value);
@@ -512,14 +512,14 @@ namespace Negri.Wot.Sql
         /// <summary>
         ///     Retorna o nome do clã, ou nulo caso ele não exista
         /// </summary>
-        private static string GetClanTag(Plataform plataform, long clanId, SqlTransaction t)
+        private static string GetClanTag(Platform platform, long clanId, SqlTransaction t)
         {
             const string sql =
                 "select ClanTag from Main.Clan where (PlataformId = @plataformId) and (ClanId = @clanId);";
             using (var cmd = new SqlCommand(sql, t.Connection, t))
             {
                 cmd.CommandTimeout = 5 * 60;
-                cmd.Parameters.AddWithValue("@plataformId", (int) plataform);
+                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
                 cmd.Parameters.AddWithValue("@clanId", clanId);
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -804,23 +804,23 @@ namespace Negri.Wot.Sql
             }
         }
 
-        public void EnableClan(Plataform plataform, long clanId)
+        public void EnableClan(Platform platform, long clanId)
         {
-            Log.DebugFormat("Habilitando clã {0}.{1} no BD...", clanId, plataform);
+            Log.DebugFormat("Habilitando clã {0}.{1} no BD...", clanId, platform);
             var sw = Stopwatch.StartNew();
-            Execute(t => EnableDisableClan(plataform, clanId, true, DisabledReason.NotDisabled, t));
-            Log.DebugFormat("Habilitado clã {0}.{1} no BD em {2}.", clanId, plataform, sw.Elapsed);
+            Execute(t => EnableDisableClan(platform, clanId, true, DisabledReason.NotDisabled, t));
+            Log.DebugFormat("Habilitado clã {0}.{1} no BD em {2}.", clanId, platform, sw.Elapsed);
         }
 
-        public void DisableClan(Plataform plataform, long clanId, DisabledReason disabledReason)
+        public void DisableClan(Platform platform, long clanId, DisabledReason disabledReason)
         {
-            Log.DebugFormat("Desabilitando clã {0}.{1} no BD por motivo {2}...", clanId, plataform, disabledReason);
+            Log.DebugFormat("Desabilitando clã {0}.{1} no BD por motivo {2}...", clanId, platform, disabledReason);
             var sw = Stopwatch.StartNew();
-            Execute(t => EnableDisableClan(plataform, clanId, false, disabledReason, t));
-            Log.DebugFormat("Desabilitado clã {0}.{1} no BD em {2}.", clanId, plataform, sw.Elapsed);
+            Execute(t => EnableDisableClan(platform, clanId, false, disabledReason, t));
+            Log.DebugFormat("Desabilitado clã {0}.{1} no BD em {2}.", clanId, platform, sw.Elapsed);
         }
 
-        private static void EnableDisableClan(Plataform plataform, long clanId, bool enable,
+        private static void EnableDisableClan(Platform platform, long clanId, bool enable,
             DisabledReason disabledReason, SqlTransaction t)
         {
             const string sql =
@@ -831,7 +831,7 @@ namespace Negri.Wot.Sql
                 cmd.CommandTimeout = 5 * 60;
 
                 cmd.Parameters.AddWithValue("@clanId", clanId);
-                cmd.Parameters.AddWithValue("@plataformId", (int) plataform);
+                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
                 cmd.Parameters.AddWithValue("@enableDisable", enable);
                 cmd.Parameters.AddWithValue("@disabledReason", (int) disabledReason);
 
