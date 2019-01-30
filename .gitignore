@@ -16,6 +16,7 @@
 Results/
 ResultsPS/
 Cache/
+/TestData
 WCLUtility/AppId.txt
 *.secrets.config
 *.secrets.md
@@ -339,3 +340,4 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+

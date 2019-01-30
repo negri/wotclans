@@ -1171,6 +1171,11 @@ namespace Negri.Wot
                 GetContentSync($"AccountList.{plataform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8)
                     .Content;
             var result = JObject.Parse(json);
+            if ((string) result["status"] == "error")
+            {
+                Log.WarnFormat("Erro na busca: {0}", (string)result["error"]["message"]);
+                return null;
+            }
             var count = (int)result["meta"]["count"];
             if (count < 1)
             {
