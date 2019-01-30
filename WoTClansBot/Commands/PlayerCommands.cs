@@ -125,6 +125,14 @@ namespace Negri.Wot.Bot
                     return apiPlayer;
                 }
 
+                if (player == null)
+                {
+                    Log.Warn($"{nameof(GetPlayer)}({gamerTag}) has no history on database or Wargaming. Does he ever played the game?");
+                    await ctx.RespondAsync(
+                        $"Sorry, {ctx.User.Mention}. There is no history on database or Wargaming for the player `{gamerTag}`. Does he ever played the game?");
+                    return null;
+                }
+
                 if (player.Age.TotalHours > 4)
                 {
                     willTryApiMessage = await ctx.RespondAsync($"Data for  `{player.Name}` on `{player.Plataform}` " +
