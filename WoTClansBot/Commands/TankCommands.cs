@@ -144,7 +144,13 @@ namespace Negri.Wot.Bot
 
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
-                await ctx.RespondAsync($"Please specify the *Gamer Tag*, {ctx.User.Mention}. Something like `!w tanker {ctx.User.Username.RemoveDiacritics()}`, for example.");
+                await ctx.RespondAsync($"Please specify the *Gamer Tag*, {ctx.User.Mention}. Something like `!w tankerTank \"{ctx.User.Username.RemoveDiacritics()}\" \"HWK 12\"`, for example.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(tankName))
+            {
+                await ctx.RespondAsync($"Please specify the *Tank Name*, {ctx.User.Mention}. Something like `!w tankerTank \"{ctx.User.Username.RemoveDiacritics()}\" \"HWK 12\"`, for example.");
                 return;
             }
 
