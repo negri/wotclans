@@ -13,7 +13,7 @@ namespace Negri.Wot.Tanks
         public Plataform Plataform { get; set; }
 
         /// <summary>
-        ///     Id numerico do tanque
+        ///     Tank Numeric Id
         /// </summary>
         public long TankId { get; set; }
 
@@ -72,13 +72,13 @@ namespace Negri.Wot.Tanks
         public string Url => $"https://{(Plataform == Plataform.PS ? "ps" : string.Empty)}wotclans.com.br/Tanks/{TankId}";
 
         /// <summary>
-        /// Flat, withou any spaces and punctuation tank name
+        /// Flat, without any spaces and punctuation tank name
         /// </summary>
         [JsonIgnore]
         public string FlatName => GetFlatString(Name);
 
         /// <summary>
-        /// Flat, withou any spaces and punctuation tank full name
+        /// Flat, without any spaces and punctuation tank full name
         /// </summary>
         [JsonIgnore]
         public string FlatFullName => GetFlatString(FullName);
@@ -86,7 +86,8 @@ namespace Negri.Wot.Tanks
         public static string GetFlatString(string s)
         {
             return s.RemoveDiacritics().ToLowerInvariant().Replace(" ", "").Replace("-", "").Replace(".", "")
-                .Replace(",", "").Replace("(", "").Replace(")", "").Replace("/", "");
+                .Replace(",", "").Replace("(", "").Replace(")", "").Replace("/", "").Replace("’", "").Replace("'", "")
+                .Replace("\"", "");
         }
     }
 }
