@@ -1,4 +1,5 @@
-﻿using Negri.Wot.WgApi;
+﻿using System.Collections.Generic;
+using Negri.Wot.WgApi;
 
 namespace Negri.Wot.Tanks
 {
@@ -16,6 +17,24 @@ namespace Negri.Wot.Tanks
             }
             return nation.ToString().ToLowerInvariant();
         }
+
+        public static IEnumerable<Nation> GetGameNations()
+        {
+            yield return Nation.Usa;
+            yield return Nation.France;
+            yield return Nation.Ussr;
+            yield return Nation.China;
+            yield return Nation.Uk;
+            yield return Nation.Japan;
+            yield return Nation.Germany;
+            yield return Nation.Czechoslovakia;
+            yield return Nation.Sweden;
+            yield return Nation.Poland;
+            yield return Nation.Mercenaries;
+            yield return Nation.Italy;
+        }
     }
+
+    
 
 }

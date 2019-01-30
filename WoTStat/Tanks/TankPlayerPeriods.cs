@@ -95,7 +95,7 @@ namespace Negri.Wot.Tanks
             return tanks.Sum(t => t.Tier * 1.0 * t.Battles) / tanks.Sum(t => t.Battles);
         }
 
-        public IEnumerable<TankPlayerStatistics> GetTanks(ReferencePeriod period = ReferencePeriod.All, int minTier = 1, int maxTier = 10, bool? isPremium = null, TankType? type = null, int? minBattles = null)
+        public IEnumerable<TankPlayerStatistics> GetTanks(ReferencePeriod period = ReferencePeriod.All, int minTier = 1, int maxTier = 10, bool? isPremium = null, TankType? type = null, int? minBattles = null, Nation? nation = null)
         {
             Dictionary<long, TankPlayerStatistics> dic;
             switch (period)
@@ -113,23 +113,28 @@ namespace Negri.Wot.Tanks
                     throw new ArgumentOutOfRangeException(nameof(period), period, null);
             }
 
-            var tanks = dic.Values.Where(t => (minTier <= t.Tier) && (t.Tier <= maxTier)).ToArray();
+            var tanks = dic.Values.Where(t => (minTier <= t.Tier) && (t.Tier <= maxTier));
             if (isPremium.HasValue)
             {
-                tanks = tanks.Where(t => t.IsPremium == isPremium.Value).ToArray();
+                tanks = tanks.Where(t => t.IsPremium == isPremium.Value);
             }
 
             if (type.HasValue)
             {
-                tanks = tanks.Where(t => t.Type == type.Value).ToArray();
+                tanks = tanks.Where(t => t.Type == type.Value);
             }
 
             if (minBattles.HasValue)
             {
-                tanks = tanks.Where(t => t.Battles >= minBattles.Value).ToArray();
+                tanks = tanks.Where(t => t.Battles >= minBattles.Value);
             }
 
-            return tanks;
+            if (nation.HasValue)
+            {
+                tanks = tanks.Where(t => t.Nation == nation.Value);
+            }
+
+            return tanks.ToArray();
         }
 
         public IEnumerable<TankPlayerStatistics> GetTopTanks(ReferencePeriod period = ReferencePeriod.All, int minNumberOfTanks = 5, int minTier = 1, int maxTier = 10, bool includePremiums = false)

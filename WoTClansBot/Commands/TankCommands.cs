@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Negri.Wot.Tanks;
 
 namespace Negri.Wot.Bot
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class TankCommands : CommandsBase
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(TankCommands));
@@ -114,6 +116,18 @@ namespace Negri.Wot.Bot
             Log.Warn($"Not found a tank on {platform} by the string '{originalName}'");
 
             return null;
+        }
+
+        [Command("nations")]
+        [Description("The nations that this bot understands as parameters on others commands.")]
+        public async Task GetNations(CommandContext ctx)
+        {
+            if (!await CanExecute(ctx, Features.Tanks))
+            {
+                return;
+            }
+
+            await ctx.RespondAsync($"Valid nations are: {string.Join(", ", NationExtensions.GetGameNations().Select(n => $"`{n}`"))}");                        
         }
 
         [Command("tankerTank")]
