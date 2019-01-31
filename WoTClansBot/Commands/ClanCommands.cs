@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -25,7 +26,7 @@ namespace Negri.Wot.Bot
 
         [Command("clan")]
         [Description("A quick overview of a clan")]
-        public async Task Clan(CommandContext ctx, [Description("The clan **tag**")] string clanTag)
+        public async Task Clan(CommandContext ctx, [Description("The clan **tag**")] string clanTag, [Description("Put `true` to dump all members of the clan")]bool all = false)
         {
             if (!await CanExecute(ctx, Features.Clans))
             {
@@ -142,6 +143,61 @@ namespace Negri.Wot.Bot
             Log.Debug($"Returned {nameof(Clan)}({clan.Plataform}.{clan.ClanTag})");
 
             await ctx.RespondAsync("", embed: embed);
+
+            if (all)
+            {
+                // We need more responses, as discord limits the amount of data we can send on one message
+                
+                var allPlayers = clan.Players.OrderByDescending(p => p.MonthBattles).ThenByDescending(p => p.TotalBattles).ToArray();
+                const int pageSize = 15;
+                var pages = allPlayers.Length / pageSize + 1;
+
+                color = clan.TotalWn8.ToColor();
+
+                for (var currentPage = 0; currentPage < pages; ++currentPage)
+                {
+                    sb.Clear();
+
+                    title = (clan.ClanTag.EqualsCiAi(clan.Name) ? clan.ClanTag : $"{clan.ClanTag} - {clan.Name}") +
+                            $" - Page {currentPage + 1} of {pages}";
+
+                    sb.Append($"All members of the `{clan.ClanTag}`");
+                    if (!string.IsNullOrWhiteSpace(clan.Country))
+                    {
+                        sb.Append($" ({clan.Country.ToUpperInvariant()})");
+                    }
+
+                    sb.AppendLine($", on the {clan.Plataform}:");
+                    sb.AppendLine();
+
+                    foreach (var p in allPlayers.Skip(currentPage*pageSize).Take(pageSize))
+                    {
+                        sb.AppendLine($"{Formatter.MaskedUrl(p.Name, new Uri(p.PlayerOverallUrl))}, {p.MonthBattles} battles, WN8: {p.MonthWn8:N0}");
+                    }
+
+                    embed = new DiscordEmbedBuilder
+                    {
+                        Title = title,
+                        Description = sb.ToString(),
+                        Color = new DiscordColor(color.R, color.G, color.B),
+                        Url = $"https://{platformPrefix}wotclans.com.br/Clan/{clan.ClanTag}",
+                        Author = new DiscordEmbedBuilder.EmbedAuthor
+                        {
+                            Name = "WoTClans",
+                            Url = $"https://{platform}wotclans.com.br"
+                        },
+                        Footer = new DiscordEmbedBuilder.EmbedFooter
+                        {
+                            Text = $"Page {currentPage + 1} of {pages}"
+                        }
+                    };
+
+                    await ctx.RespondAsync("", embed: embed);
+
+                }
+                               
+            }
+
         }
     }
 }
