@@ -841,7 +841,7 @@ namespace Negri.Wot.Sql
 
         public void ReAddClans(int maxToAutoAdd)
         {
-            Log.Debug("Readicionando clãs...");
+            Log.Debug("Adicionando clãs novamente...");
             var sw = Stopwatch.StartNew();
             Execute(t => ReAddClans(maxToAutoAdd, t));
             Log.DebugFormat("Readicionados clãs em {0}.", sw.Elapsed);
@@ -855,6 +855,32 @@ namespace Negri.Wot.Sql
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
                 cmd.Parameters.AddWithValue("@maxToAutoAdd", maxToAutoAdd);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
+        /// Purges a player from the database
+        /// </summary>
+        /// <remarks>
+        /// To more easily complain with Data Deletions laws.
+        /// </remarks>
+        public void PurgePlayer(long playerId)
+        {
+            Log.Debug($"Purging player {playerId}...");
+            var sw = Stopwatch.StartNew();
+            Execute(t => PurgePlayer(playerId, t));
+            Log.DebugFormat("Player purged in {0}.", sw.Elapsed);
+        }
+
+        private static void PurgePlayer(long playerId, SqlTransaction t)
+        {
+            const string sql = "Support.PurgePlayer";
+            using (var cmd = new SqlCommand(sql, t.Connection, t))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 5 * 60;
+                cmd.Parameters.AddWithValue("@id", playerId);
                 cmd.ExecuteNonQuery();
             }
         }

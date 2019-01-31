@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,7 @@ namespace Negri.Wot.Bot
     [Group("coder")]
     [Description("Commands that only the maintainer of the WoTClans can issue.")]
     [Hidden]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class CoderCommands : CommandsBase
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(CoderCommands));
@@ -89,6 +91,97 @@ namespace Negri.Wot.Bot
                 await ctx.RespondAsync("", embed: embed);
 
                 Log.Debug($"{nameof(GetDbStatus)} returned ok.");
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"{nameof(GetDbStatus)}", ex);
+                await ctx.RespondAsync(
+                    $"Sorry, {ctx.User?.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
+            }
+        }   
+
+        [Command("PurgeTanker")]
+        [Description("Purge a player by Wargaming ID.")]
+        public async Task PurgePlayer(CommandContext ctx, [Description("Player Id")] long playerId)
+        {
+            await ctx.TriggerTypingAsync();
+
+            var userId = ctx.User?.Id ?? 0;
+
+            Log.Info($"Requesting {nameof(GetPlayerById)}({playerId}) by {userId}...");
+            if (userId != _coder)
+            {
+                var emoji = DiscordEmoji.FromName(ctx.Client, ":no_entry:");
+                var embed = new DiscordEmbedBuilder
+                {
+                    Title = "Access denied",
+                    Description = $"{emoji} You may be a *coder*, but you are not **The Coder**!",
+                    Color = DiscordColor.Red
+                };
+
+                await ctx.RespondAsync("", embed: embed);
+                return;
+            }
+
+            try
+            {
+                var provider = new DbProvider(_connectionString);
+                var player = provider.GetPlayer(playerId);
+                if (player == null)
+                {
+                    await ctx.RespondAsync($"There is no player on the database with the id `{playerId}`.");
+                    return;
+                }
+
+                await ctx.RespondAsync($"The id `{playerId}` corresponds to the tanker `{player.Name}` on the `{player.Plataform}`...");
+
+                var recorder = new DbRecorder(_connectionString);
+                recorder.PurgePlayer(playerId);
+
+                await ctx.RespondAsync($"The tanker `{player.Name}` on `{player.Plataform}` was purged from the database. Rip.");
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"{nameof(GetDbStatus)}", ex);
+                await ctx.RespondAsync(
+                    $"Sorry, {ctx.User?.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
+            }
+        }
+
+        [Command("TankerById")]
+        [Description("Retrieve the game tag by Wargaming ID.")]
+        public async Task GetPlayerById(CommandContext ctx, [Description("Player Id")] long playerId)
+        {
+            await ctx.TriggerTypingAsync();
+
+            var userId = ctx.User?.Id ?? 0;
+
+            Log.Info($"Requesting {nameof(GetPlayerById)}({playerId}) by {userId}...");
+            if (userId != _coder)
+            {
+                var emoji = DiscordEmoji.FromName(ctx.Client, ":no_entry:");
+                var embed = new DiscordEmbedBuilder
+                {
+                    Title = "Access denied",
+                    Description = $"{emoji} You may be a *coder*, but you are not **The Coder**!",
+                    Color = DiscordColor.Red
+                };
+
+                await ctx.RespondAsync("", embed: embed);
+                return;
+            }
+
+            try
+            {
+                var provider = new DbProvider(_connectionString);
+                var player = provider.GetPlayer(playerId);
+                if (player == null)
+                {
+                    await ctx.RespondAsync($"There is no player on the database with the id `{playerId}`.");
+                    return;
+                }
+
+                await ctx.RespondAsync($"The id `{playerId}` corresponds to the tanker `{player.Name}` on the `{player.Plataform}`.");
             }
             catch (Exception ex)
             {
