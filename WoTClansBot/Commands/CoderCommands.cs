@@ -442,7 +442,7 @@ namespace Negri.Wot.Bot
                 flagCode = flagCode ?? string.Empty;
                 if (!string.Equals(flagCode, clan.Country ?? string.Empty, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    recorder.SetClanFlag(clan.Plataform, clan.ClanId, flagCode);
+                    recorder.SetClanFlag(clan.Plataform, clan.ClanId, flagCode.ToLowerInvariant());
                     await ctx.RespondAsync(
                         $"The flag of the clan `{clanTag}` on `{platform}` was changed to `{flagCode}`.");
                     Log.Info($"Flag changed on {platform}.{clanTag} to {flagCode}.");

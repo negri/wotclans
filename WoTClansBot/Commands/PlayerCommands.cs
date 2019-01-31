@@ -445,6 +445,8 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
+                Log.Debug($"Requesting {nameof(WhoIAm)}()...");
+
                 var userId = (long) (ctx.User?.Id ?? 0UL);
                 if (userId == 0)
                 {
@@ -490,6 +492,8 @@ namespace Negri.Wot.Bot
                 {
                     return;
                 }
+
+                Log.Debug($"Requesting {nameof(SetWhoIAm)}({gamerTag})...");
 
                 var userId = (long) (ctx.User?.Id ?? 0UL);
                 if (userId == 0)
@@ -545,6 +549,8 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
+                Log.Debug($"Requesting {nameof(ForgetWhoIAm)}()...");
+
                 var userId = (long) (ctx.User?.Id ?? 0UL);
                 if (userId == 0)
                 {
@@ -589,8 +595,7 @@ namespace Negri.Wot.Bot
                 return;
             }
 
-            Log.Debug(
-                $"Requesting {nameof(TankerXP)}({gamerTag}, {minBattles}, {minTier}, {maxTier}, {onlyPremium})...");
+            Log.Debug($"Requesting {nameof(TankerXP)}({gamerTag}, {minBattles}, {minTier}, {maxTier}, {onlyPremium}, {nation}, {sortByHour})...");
 
             try
             {

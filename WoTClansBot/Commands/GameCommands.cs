@@ -27,6 +27,8 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            Log.Debug($"Requesting {nameof(Random)}({min}, {max})...");
+
             var number = Rand.Next(min, max + 1);
             await ctx.RespondAsync($"🎲 {ctx.User.Mention}, your random number between {min} and {max} is: {number}");
         }
@@ -39,6 +41,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            Log.Debug($"Requesting {nameof(Dice)}({sides})...");
 
             var number = Rand.Next(1, sides + 1);
             await ctx.RespondAsync($"🎲 {ctx.User.Mention}, your dice rolled {number}");
@@ -53,6 +57,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            Log.Debug($"Requesting {nameof(Coin)}()...");
 
             var cfg = GuildConfiguration.FromGuild(ctx.Guild);
 
@@ -154,6 +160,8 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            Log.Debug($"Requesting {nameof(Kill)}()...");
+
             await ctx.TriggerTypingAsync();
 
             var removed = RemoveTimer(ctx.User.Id);
@@ -177,6 +185,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            Log.Debug($"Requesting {nameof(Timer)}({minutesOrSeconds})...");
 
             await ctx.TriggerTypingAsync();
 

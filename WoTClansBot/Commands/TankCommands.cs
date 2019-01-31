@@ -127,6 +127,8 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            Log.Debug($"Requesting {nameof(GetNations)}()...");
+
             await ctx.RespondAsync($"Valid nations are: {string.Join(", ", NationExtensions.GetGameNations().Select(n => $"`{n}`"))}");                        
         }
 
@@ -296,6 +298,8 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            Log.Info($"Requesting {nameof(Damage)}({tankName})");
+
             await ctx.TriggerTypingAsync();
 
             var cfg = GuildConfiguration.FromGuild(ctx.Guild);
@@ -307,7 +311,7 @@ namespace Negri.Wot.Bot
                 await ctx.RespondAsync($"Can't find a tank with `{tankName}` on the name, {ctx.User.Mention}.");
                 return;
             }
-            Log.Info($"Requested {nameof(Damage)}({tank.Plataform}.{tank.Name})");
+            
 
             var provider = new DbProvider(_connectionString);
             var tr = provider.GetTanksReferences(tank.Plataform, null, tank.TankId, false, false, false).FirstOrDefault();
@@ -377,6 +381,8 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            Log.Info($"Requesting {nameof(Moe)}({tankName})");
+
             await ctx.TriggerTypingAsync();
 
             var cfg = GuildConfiguration.FromGuild(ctx.Guild);
@@ -387,9 +393,7 @@ namespace Negri.Wot.Bot
             {
                 await ctx.RespondAsync($"Can't find a tank with `{tankName}` on the name, {ctx.User.Mention}.");
                 return;
-            }
-
-            Log.Info($"Requested {nameof(Moe)}({tank.Plataform}.{tank.Name})");
+            }            
 
             var provider = new DbProvider(_connectionString);
             var moe = provider.GetMoe(tank.Plataform, null, tank.TankId).FirstOrDefault();
@@ -449,6 +453,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            Log.Info($"Requesting {nameof(Leader)}({tankName}, {gamerTag})...");
 
             await ctx.TriggerTypingAsync();
 
@@ -585,6 +591,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            Log.Info($"Requesting {nameof(LeaderByFlag)}({flagCode}, {tankName}, {gamerTag})");
 
             await ctx.TriggerTypingAsync();
 

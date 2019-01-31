@@ -166,6 +166,11 @@ namespace Negri.Wot.Bot
                         return;
                     }
                     case CommandNotFoundException commandNotFoundException:
+                        if (commandNotFoundException.Command.Equals("b", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            // It's just a command to the Beta Bot version. Silently ignore it.
+                            return;
+                        }
                         Log.Error($"{nameof(CommandNotFoundException)} : {commandNotFoundException.Command}: { commandNotFoundException.Message}", commandNotFoundException);
                         await args.Context.RespondAsync("Sorry, I don't recognize the command that you issued. Take a look on `!w help` if needed.");
                         return;

@@ -2,11 +2,14 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using log4net;
 
 namespace Negri.Wot.Bot
 {
     public class GeneralCommands : CommandsBase
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(GeneralCommands));
+
         [Description("Check if I'm alive.")]
         [Command("hi")]
         public async Task Hi(CommandContext ctx)
@@ -15,6 +18,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            Log.Debug($"Requesting {nameof(Hi)}()...");
 
             await ctx.RespondAsync($"👋 Hello, {ctx.User.Mention}!");
         }
@@ -27,6 +32,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            Log.Debug($"Requesting {nameof(Site)}()...");
 
             var config = GuildConfiguration.FromGuild(ctx.Guild);
 
