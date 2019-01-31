@@ -45,6 +45,7 @@ namespace Negri.Wot.Bot
         }
 
         [Command("coin")]
+        [Aliases("flip")]
         [Description("Flip a coin.")]
         public async Task Coin(CommandContext ctx)
         {
