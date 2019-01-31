@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -128,41 +129,69 @@ namespace Negri.Wot.Bot
 
         private static async Task CommandsOnCommandErrored(CommandErrorEventArgs args)
         {
+            if (args == null)
+            {
+                Log.Error($"Mystery call to {nameof(CommandsOnCommandErrored)} without any details.");
+                return;
+            }
+
+            if (args.Exception == null)
+            {
+                Log.Error($"Mystery call to {nameof(CommandsOnCommandErrored)} without an exception.");
+                return;
+            }
+
             try
             {
-                Log.Error($"[{args?.Context?.User?.Username ?? "<???>"}] tried executing {args?.Command?.QualifiedName ?? "<???>"} on [{args?.Context?.Guild?.Name ?? "DM"}].{args?.Context.Guild?.Id ?? 0} #{args?.Context?.Channel?.Name ?? "DM"}.", args.Exception);
+                switch (args.Exception)
+                {
+                    case ChecksFailedException checksFailedException:
+                    {
+                        Log.Warn(
+                            $"{nameof(ChecksFailedException)}: {checksFailedException.Command.QualifiedName}: {string.Join(",", checksFailedException.FailedChecks.Select(c => c.ToString()))}",
+                            checksFailedException);
+
+                        var emoji = DiscordEmoji.FromName(checksFailedException.Context.Client, ":no_entry:");
+                        var embed = new DiscordEmbedBuilder
+                        {
+                            Title = "Access denied",
+                            Description = $"{emoji} You do not have the permissions required to execute this command.",
+                            Color = DiscordColor.Red
+                        };
+
+                        if (args.Context != null)
+                        {
+                            await args.Context.RespondAsync("", embed: embed);
+                        }
+                        return;
+                    }
+                    case CommandNotFoundException commandNotFoundException:
+                        Log.Error($"{nameof(CommandNotFoundException)} : {commandNotFoundException.Command}: { commandNotFoundException.Message}", commandNotFoundException);
+                        await args.Context.RespondAsync("Sorry, I don't recognize the command that you issued. Take a look on `!w help` if needed.");
+                        return;
+                    case ArgumentException exa:
+                    {
+                        if (args.Context != null)
+                        {
+                            await args.Context.RespondAsync($"{exa.Message}");
+                        }
+                        return;
+                    }
+                    default:
+                        Log.Error($"[{args?.Context?.User?.Username ?? "<???>"}] tried executing {args.Command?.QualifiedName ?? "<???>"} on [{args.Context?.Guild?.Name ?? "DM"}].{args.Context?.Guild?.Id ?? 0} #{args.Context?.Channel?.Name ?? "DM"}.", args.Exception);
+                        break;
+                }
             }
             catch (Exception exx)
             {
                 Log.Error("Error reporting a error!", exx);
-                Log.Error(args?.Command?.QualifiedName ?? "<???>", args.Exception);
-            }
-
-            if (args.Exception is ChecksFailedException ex)
-            {
-                var emoji = DiscordEmoji.FromName(ex.Context.Client, ":no_entry:");
-                var embed = new DiscordEmbedBuilder
-                {
-                    Title = "Access denied",
-                    Description = $"{emoji} You do not have the permissions required to execute this command.",
-                    Color = DiscordColor.Red
-                };
-
-                await args.Context.RespondAsync("", embed: embed);
-            }
-            if (args.Exception is CommandNotFoundException exnf)
-            {
-                Log.Warn($"{exnf.Command}: { exnf.Message}", exnf);
-            }
-            else if (args.Exception is ArgumentException exa)
-            {
-                await args.Context.RespondAsync($"{exa.Message}");
+                Log.Error(args.Command?.QualifiedName ?? "<???>", args.Exception);
             }
         }
 
         private static Task CommandsOnCommandExecuted(CommandExecutionEventArgs args)
         {
-            Log.Debug($"[{args.Context.User.Username}] successfully executed {args.Command.QualifiedName} on [{args.Context.Guild?.Name ?? "DM"}].{args?.Context.Guild?.Id ?? 0} #{args.Context.Channel?.Name ?? "DM"}.");
+            Log.Debug($"[{args.Context.User.Username}] successfully executed {args.Command.QualifiedName} on [{args.Context.Guild?.Name ?? "DM"}].{args.Context.Guild?.Id ?? 0} #{args.Context.Channel?.Name ?? "DM"}.");
             return Task.CompletedTask;
         }
 

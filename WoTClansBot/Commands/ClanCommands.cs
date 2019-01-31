@@ -42,7 +42,7 @@ namespace Negri.Wot.Bot
                 return;
             }
 
-            Log.Debug($"Requesting {nameof(Clan)}({clanTag})...");
+            Log.Debug($"Requesting {nameof(Clan)}({clanTag}, {all})...");
 
             var cfg = GuildConfiguration.FromGuild(ctx.Guild);
             var platform = GetPlatform(clanTag, cfg.Plataform, out clanTag);
