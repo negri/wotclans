@@ -32,7 +32,7 @@ namespace UtilityProgram
         {
             try
             {
-                CalculateAverageWn8OfAllTanks();
+                GetAllTanks(Platform.XBOX);
             }
             catch (Exception ex)
             {
