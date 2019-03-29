@@ -8,7 +8,7 @@
 
 @section extraHeaders {
     <meta name="description" content="@string.Format(Resources.RecentStatsForPlayer, Model.Player.Name, Model.Clan.ClanTag)">
-    <link href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css " rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css " rel="stylesheet" type="text/css" />
     <style>
         .top-banner {
             background: linear-gradient(to bottom right, @Math.Max(Model.Player.MonthWn8, (double)Wn8Rating.Average).ToWebColor(0.80, -0.50), @Math.Max(Model.Player.MonthWn8, (double)Wn8Rating.Average).ToWebColor(0.45, -0.98), rgba(10, 10, 10, 0.80)), url(@Model.BestMonthTankImageUrl);
@@ -294,8 +294,8 @@
 
 @section scripts {
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js  "></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js  "></script>
     <script type="text/javascript">
 
         // Converte hora UTC para hora local no formato do request
