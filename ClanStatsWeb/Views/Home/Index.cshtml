@@ -261,9 +261,15 @@
                 }
             });
 
-            $("#searchBox").keyup(function() {
+            $("#searchBox").keyup(function () {
+                oTable.searching = true;
                 oTable.search($(this).val()).draw();
+                oTable.searching = false;
             });
+
+            $(document).ready(function () {
+                oTable.searching = false;
+            }
 
             // Troca a hora UTC de atualização para a hora correspondente no cliente
             $("#last-update-time").text(convertToLocalTime($("#last-update-time").text()));
