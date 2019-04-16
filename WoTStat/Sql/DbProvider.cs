@@ -252,6 +252,47 @@ namespace Negri.Wot.Sql
             return l;
         }
 
+        /// <summary>
+        /// Returns the player history, as tracked by the site
+        /// </summary>
+        public IEnumerable<Player> GetPlayerHistory(long playerId)
+        {
+            return Get(t => GetPlayerHistory(playerId, t));
+        }
+
+        private static IEnumerable<Player> GetPlayerHistory(long playerId, SqlTransaction t)
+        {
+            const string sql = "select ClanId, ClanTag, Moment, TotalBattles, MonthBattles, TotalWn8, MonthWn8 from Main.GetPlayerHistoryById(@playerId) order by moment desc;";
+
+            var l = new List<Player>();
+
+            using (var cmd = new SqlCommand(sql, t.Connection, t))
+            {
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@playerId", playerId);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        l.Add(new Player()
+                        {
+                            Id = playerId,
+                            ClanId = reader.GetValueOrDefault<long?>(0),
+                            ClanTag = reader.GetValueOrDefault<string>(1),
+                            Moment = reader.GetNonNullValue<DateTime>(2).RemoveKind(),
+                            TotalBattles = reader.GetNonNullValue<int>(3),
+                            MonthBattles = reader.GetNonNullValue<int>(4),
+                            TotalWn8 = reader.GetNonNullValue<double>(5),
+                            MonthWn8 = reader.GetNonNullValue<double>(6)
+                        });
+                    }
+                }
+            }
+
+            return l;
+        }
+
         private static IEnumerable<TankReference> GetTanksReferences(Platform platform, 
             DateTime? date, long? tankId, bool includeMoe, bool includeHistogram, bool includeLeaders, SqlTransaction t)
         {

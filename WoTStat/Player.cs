@@ -197,6 +197,8 @@ namespace Negri.Wot
         /// </summary>
         public double Tier10MonthWn8 { get; set; }
 
+        #endregion
+
         /// <summary>
         /// Performance Details on each vehicle for the player
         /// </summary>
@@ -238,9 +240,7 @@ namespace Negri.Wot
         /// The age of the data
         /// </summary>
         [JsonIgnore]
-        public TimeSpan Age => DateTime.UtcNow - Moment;
-
-        #endregion
+        public TimeSpan Age => DateTime.UtcNow - Moment;        
 
         public bool Equals(Player other)
         {

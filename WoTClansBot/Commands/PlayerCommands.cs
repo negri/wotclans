@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -193,11 +195,154 @@ namespace Negri.Wot.Bot
             }
         }
 
+        [Command("TankerHist")]
+        [Aliases("PlayerHist", "GamerHist", "PlayerHistory", "GamerHistory", "TankerHistory")]
+        [Description("Brief history of a player on the game")]
+        public async Task TankerHistory(CommandContext ctx,
+            [Description("The *gamer tag* or *PSN Name*")] string gamerTag,
+            [Description("The maximum date to consider (`yyyy-MM-dd` format), or `recent`, or `all`")] string maxDate = "all",
+            [Description("To display monthly values instead of overall data")] bool monthlyValues = false)
+        {
+            if (!await CanExecute(ctx, Features.Players))
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(gamerTag))
+            {
+                await ctx.RespondAsync(
+                    $"Please specify the *Gamer Tag*, {ctx.User.Mention}. Something like `!w TankerHistory \"{ctx.User.Username.RemoveDiacritics()}\"`, for example.");
+                return;
+            }
+
+            Log.Debug($"Requesting {nameof(TankerHistory)}({gamerTag}, {maxDate}, {monthlyValues})...");
+
+            try
+            {
+                var player = await GetPlayer(ctx, gamerTag);
+                if (player == null)
+                {
+                    Log.Debug($"Not found player '{gamerTag}'.");
+                    return;
+                }
+
+                var provider = new DbProvider(_connectionString);
+                var playerHist = provider.GetPlayerHistory(player.Id).OrderByDescending(p => p.Date).ToArray();
+
+                if (playerHist.Length <= 0)
+                {
+                    await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. This player has no history on this system.");
+                    return;
+                }
+
+                const int maxHist = 42;
+
+                var l = new List<Player>(maxHist);
+
+                if (maxDate.EqualsCiAi("recent") || maxDate.EqualsCiAi("last"))
+                {
+                    l.AddRange(playerHist.Take(maxHist));
+                }
+                else if (maxDate.EqualsCiAi("all"))
+                {
+                    if (playerHist.Length <= maxHist)
+                    {
+                        l.AddRange(playerHist);
+                    }
+                    else
+                    {
+                        l.Add(playerHist.First());
+
+                        var step = (playerHist.Length - 2) / (maxHist - 2);
+                        if (step <= 0)
+                        {
+                            step = 1;
+                        }
+                        for (var i = step; i < playerHist.Length && l.Count < (maxHist - 1); i += step)
+                        {
+                            l.Add(playerHist[i]);
+                        }
+
+                        l.Add(playerHist.Last());
+                    }
+                }
+                else if (DateTime.TryParseExact(maxDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+                {
+                    l.AddRange(playerHist.Where(p => p.Date <= date).Take(maxHist));
+                }
+                else
+                {
+                    await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. The value `{maxDate}` is not valid. If the gamer tag has spaces, sorround it with quotes. Valid values to restrict the history are `all`, `recente`, ou a data on the `yyyy-MM-dd` format.");
+                    return;
+                }
+
+                var sb = new StringBuilder();
+
+                sb.AppendLine($"History of {Formatter.MaskedUrl(player.Name, new Uri(player.PlayerOverallUrl))}, {ctx.User.Mention}:");
+                if (monthlyValues)
+                {
+                    sb.AppendLine("Displaying monthly values.");
+                }
+                sb.AppendLine();
+                sb.AppendLine("```");
+                sb.AppendLine("Date       Clan  Battles  WN8");
+                foreach (var p in l)
+                {
+                    int battles;
+                    double wn8;
+                    if (monthlyValues)
+                    {
+                        battles = p.MonthBattles;
+                        wn8 = p.MonthWn8;
+                    }
+                    else
+                    {
+                        battles = p.TotalBattles;
+                        wn8 = p.TotalWn8;
+                    }
+                    sb.AppendLine($"{p.Date:yyyy-MM-dd} {(p.ClanTag ?? string.Empty).PadLeft(5)} {battles.ToString("N0").PadLeft(7)} {wn8.ToString("N0").PadLeft(6)}");
+                }
+                
+                sb.AppendLine("```");
+                sb.AppendLine();
+
+                var platformPrefix = player.Plataform == Platform.PS ? "ps." : string.Empty;
+
+                var color = player.MonthWn8.ToColor();
+
+                var embed = new DiscordEmbedBuilder
+                {
+                    Title = $"{player.Name} history",
+                    Description = sb.ToString(),
+                    Color = new DiscordColor(color.R, color.G, color.B),
+                    Url = player.PlayerOverallUrl,
+                    Author = new DiscordEmbedBuilder.EmbedAuthor
+                    {
+                        Name = "WoTClans",
+                        Url = $"https://{platformPrefix}wotclans.com.br"
+                    },
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = $"Retrieved at {player.Moment:yyyy-MM-dd HH:mm} UTC"
+                    }
+                };
+
+                await ctx.RespondAsync("", embed: embed);
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"{nameof(TankerHistory)}({gamerTag})", ex);
+                await ctx.RespondAsync(
+                    $"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
+            }
+        }
+
+
         [Command("TankerTop")]
         [Description("The top tanks of a player")]
         public async Task TankerTop(CommandContext ctx,
-            [Description("The *gamer tag* or *PSN Name*")]
-            string gamerTag,
+            [Description("The *gamer tag* or *PSN Name*")] string gamerTag,
             [Description("Minimum tier")] int minTier = 5,
             [Description("Maximum tier")] int maxTier = 10,
             [Description("Include premiums tanks. Use *true* or *false*.")]
