@@ -49,7 +49,7 @@ namespace Negri.Wot.Bot
                 long? playerId = null;
                 if (gamerTag.EqualsCiAi("me"))
                 {
-                    playerId = provider.GetPlayerIdByDiscordId((long) ctx.User.Id);
+                    playerId = provider.GetPlayerIdByDiscordId((long)ctx.User.Id);
                 }
 
                 playerId = playerId ?? provider.GetPlayerIdByName(platform, gamerTag);
@@ -288,23 +288,48 @@ namespace Negri.Wot.Bot
                 sb.AppendLine("Date       Clan  Battles  WN8");
                 foreach (var p in l)
                 {
-                    int battles;
+                    int periodBattles;
                     double wn8;
                     if (monthlyValues)
                     {
-                        battles = p.MonthBattles;
+                        periodBattles = p.MonthBattles;
                         wn8 = p.MonthWn8;
                     }
                     else
                     {
-                        battles = p.TotalBattles;
+                        periodBattles = p.TotalBattles;
                         wn8 = p.TotalWn8;
                     }
-                    sb.AppendLine($"{p.Date:yyyy-MM-dd} {(p.ClanTag ?? string.Empty).PadLeft(5)} {battles.ToString("N0").PadLeft(7)} {wn8.ToString("N0").PadLeft(6)}");
+                    sb.AppendLine($"{p.Date:yyyy-MM-dd} {(p.ClanTag ?? string.Empty).PadLeft(5)} {periodBattles.ToString("N0").PadLeft(7)} {wn8.ToString("N0").PadLeft(6)}");
                 }
-                
+
                 sb.AppendLine("```");
                 sb.AppendLine();
+
+                var recent = playerHist.First();
+                var older = playerHist.Last();
+
+                var days = (recent.Moment - older.Moment).TotalDays;
+                var battles = (recent.TotalBattles - older.TotalBattles);
+
+                if (maxDate.EqualsCiAi("all") && !monthlyValues)
+                {                                        
+                    var deltaPerYear = (recent.TotalWn8 - older.TotalWn8) / days * 365.25;
+                    var deltaPer1000Battles = (recent.TotalWn8 - older.TotalWn8) / battles * 1000.0;
+
+                    if (deltaPerYear > 0)
+                    {
+                        sb.AppendLine($"WN8 improvement per year: {deltaPerYear:N0}");
+                    }
+
+                    if (deltaPer1000Battles > 0)
+                    {
+                        sb.AppendLine($"WN8 improvement per {1000:N0} battles: {deltaPer1000Battles:N0}");
+                    }
+                }
+
+                var averageOnPeriod = monthlyValues ? playerHist.Average(p => p.MonthWn8) : playerHist.Average(p => p.TotalWn8);
+                sb.AppendLine($"WN8 average over {days:N0} days ({battles:N0} battles): {averageOnPeriod:N0}");
 
                 var platformPrefix = player.Plataform == Platform.PS ? "ps." : string.Empty;
 
@@ -592,7 +617,7 @@ namespace Negri.Wot.Bot
 
                 Log.Debug($"Requesting {nameof(WhoIAm)}()...");
 
-                var userId = (long) (ctx.User?.Id ?? 0UL);
+                var userId = (long)(ctx.User?.Id ?? 0UL);
                 if (userId == 0)
                 {
                     await ctx.RespondAsync($"Sorry, {ctx.User?.Mention}. I don't now your Discord User Id! WTF!??!");
@@ -640,7 +665,7 @@ namespace Negri.Wot.Bot
 
                 Log.Debug($"Requesting {nameof(SetWhoIAm)}({gamerTag})...");
 
-                var userId = (long) (ctx.User?.Id ?? 0UL);
+                var userId = (long)(ctx.User?.Id ?? 0UL);
                 if (userId == 0)
                 {
                     await ctx.RespondAsync($"Sorry, {ctx.User?.Mention}. I don't now your Discord User Id! WTF!??!");
@@ -696,7 +721,7 @@ namespace Negri.Wot.Bot
 
                 Log.Debug($"Requesting {nameof(ForgetWhoIAm)}()...");
 
-                var userId = (long) (ctx.User?.Id ?? 0UL);
+                var userId = (long)(ctx.User?.Id ?? 0UL);
                 if (userId == 0)
                 {
                     await ctx.RespondAsync($"Sorry, {ctx.User?.Mention}. I don't now your Discord User Id! WTF!??!");
@@ -769,11 +794,11 @@ namespace Negri.Wot.Bot
                         await ctx.RespondAsync(
                             $"Sorry, {ctx.User.Mention}. The supplied nation parameters does not correspond to something I can use. Try the `nations` command to see the valid values.");
 
-                        return;                        
+                        return;
                     }
                 }
 
-                var isPremium = onlyPremium ? true : (bool?) null;
+                var isPremium = onlyPremium ? true : (bool?)null;
                 var tanks = player.Performance
                     .GetTanks(ReferencePeriod.All, minTier, maxTier, isPremium, null, minBattles, nationValue)
                     .OrderByDescending(t => sortByHour ? t.XPPerHour : t.XPPerBattle).Take(25).ToArray();
