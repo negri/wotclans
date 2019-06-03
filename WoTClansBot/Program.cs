@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -73,10 +74,19 @@ namespace Negri.Wot.Bot
             _commands.RegisterCommands<CoderCommands>();
             _commands.RegisterCommands<AdminCommands>();
 
-            await _discord.ConnectAsync();
+            Log.Info("Connecting to Discord Servers...");
 
-            Log.Info("Connected. Waiting...");
-
+            var connectTask = _discord.ConnectAsync();
+            if (await Task.WhenAny(connectTask, Task.Delay(TimeSpan.FromMinutes(2))) == connectTask)
+            {
+                Log.Info("Connected. Waiting...");
+            }
+            else
+            {
+                Log.Error("Connection timeout.");
+                return 2;
+            }
+            
             while (true)
             {
                 await Task.Delay(TimeSpan.FromMinutes(1.0));
