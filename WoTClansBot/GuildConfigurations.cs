@@ -208,6 +208,19 @@ namespace Negri.Wot.Bot
                 };
             }
 
+            var fi = new FileInfo(configFile);
+            if (fi.Length < 50)
+            {
+                Log.Error($"On Guild id {guild.Id} the existing file '{configFile}' has only {fi.Length} bytes.");
+
+                // It's certain a corrupt save
+                return new GuildConfiguration(guild.Id)
+                {
+                    Name = guild.Name,
+                    Region = guild.RegionId
+                };
+            }
+
             var json = File.ReadAllText(configFile, Encoding.UTF8);
             var config = JsonConvert.DeserializeObject<GuildConfiguration>(json);
 
