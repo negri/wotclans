@@ -247,14 +247,17 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"WN8: {ptr.Wn8:N0}; Win Rate: {ptr.WinRate:P1}");               
                 sb.AppendLine($"Battles: {ptr.Battles:N0}; Hours Battling: {ptr.BattleLifeTime.TotalHours:N0}");
                 sb.AppendLine($"Max Kills: {ptr.MaxFrags:N1}; Avg Kills: {ptr.KillsPerBattle:N1}");
-                sb.AppendLine();
-                sb.AppendLine($"**Global Recent** average among {tr.LastMonth.TotalPlayers:N0} players of the {tr.Name}:");
-                sb.AppendLine($"Total Damage: {tr.LastMonth.TotalDamage:N0} ");
-                sb.AppendLine($"Direct Damage: {tr.LastMonth.DamageDealt:N0} ");
-                sb.AppendLine($"Assisted Damage: {tr.LastMonth.DamageAssisted:N0} ");
-                sb.AppendLine($"WN8: {tr.LastMonth.AverageWn8:N0}; Win Rate: {tr.LastMonth.WinRatio:P1}");                
-                sb.AppendLine($"Battles: {tr.LastMonth.BattlesPerPlayer:N0}; Hours Battling: {tr.LastMonth.TimePerPlayer.TotalHours:N0}");
-                sb.AppendLine($"Max Kills: {tr.LastMonth.MaxKills:N1}; Avg Kills: {tr.LastMonth.Kills:N1}");                
+                if (tr.LastMonth != null)
+                {
+                    sb.AppendLine();
+                    sb.AppendLine($"**Global Recent** average among {tr.LastMonth.TotalPlayers:N0} players of the {tr.Name}:");
+                    sb.AppendLine($"Total Damage: {tr.LastMonth.TotalDamage:N0} ");
+                    sb.AppendLine($"Direct Damage: {tr.LastMonth.DamageDealt:N0} ");
+                    sb.AppendLine($"Assisted Damage: {tr.LastMonth.DamageAssisted:N0} ");
+                    sb.AppendLine($"WN8: {tr.LastMonth.AverageWn8:N0}; Win Rate: {tr.LastMonth.WinRatio:P1}");
+                    sb.AppendLine($"Battles: {tr.LastMonth.BattlesPerPlayer:N0}; Hours Battling: {tr.LastMonth.TimePerPlayer.TotalHours:N0}");
+                    sb.AppendLine($"Max Kills: {tr.LastMonth.MaxKills:N1}; Avg Kills: {tr.LastMonth.Kills:N1}");
+                }
 
                 var platformPrefix = tr.Plataform == Platform.PS ? "ps." : string.Empty;
                 
