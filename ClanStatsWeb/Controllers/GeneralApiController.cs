@@ -274,6 +274,8 @@ namespace Negri.Wot.Site.Controllers
         {
             try
             {
+                var sw = Stopwatch.StartNew();
+
                 if (request.ApiKey != ApiAdminKey)
                 {
                     Log.Warn($"Invalid API key on {nameof(PutData)}: {request.ApiKey}");
@@ -309,17 +311,18 @@ namespace Negri.Wot.Site.Controllers
                     });
                 }
 
-                
-                
 
+                Log.Debug($"PutData in {sw.Elapsed}");
                 return Ok();
             }
-            catch (HttpResponseException)
+            catch (HttpResponseException ex)
             {
+                Log.Error("PutData", ex);
                 throw;
             }
             catch (Exception ex)
             {
+                Log.Error("PutData", ex);
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.InternalServerError)
                 {
                     Content = new StringContent(ex.Message),
