@@ -13,7 +13,7 @@ namespace Negri.Wot.Bot
         /// <summary>
         ///     Regex for clan tags
         /// </summary>
-        protected static readonly Regex ClanTagRegex = new Regex("^[A-Z0-9\\-_]{2,5}$", RegexOptions.Compiled);
+        protected static readonly Regex ClanTagRegex = new Regex("^[A-Z0-9\\-_]{2,5}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         protected async Task<bool> CanExecute(CommandContext ctx, string feature)
         {

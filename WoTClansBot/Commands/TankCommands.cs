@@ -57,7 +57,7 @@ namespace Negri.Wot.Bot
             }
         }
 
-        private Tank FindTank(Platform platform, string tankName, out bool exact)
+        public Tank FindTank(Platform platform, string tankName, out bool exact)
         {
             var originalName = tankName;
             platform = GetPlatform(tankName, platform, out tankName);
@@ -135,8 +135,8 @@ namespace Negri.Wot.Bot
         [Command("tankerTank")]
         [Description("The history of a tanker on a tank")]
         public async Task TankerTank(CommandContext ctx,    
-            [Description("The *gamer tag* or *PSN Name*. If it has spaces, enclose it on double quotes.")] string gamerTag,
-            [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on double quotes.")][RemainingText] string tankName)
+            [Description("The *gamer tag* or *PSN Name*. If it has spaces, enclose it on quotes.")] string gamerTag,
+            [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on quotes.")][RemainingText] string tankName)
         {
             // Yeah... it's a Player feature but it uses more calculations for tanks...
             if (!await CanExecute(ctx, Features.Players))
@@ -294,7 +294,7 @@ namespace Negri.Wot.Bot
         [Command("damage")]
         [Description("Returns the target damage to achieve a good WN8")]
         public async Task Damage(CommandContext ctx,
-            [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on double quotes.")][RemainingText] string tankName)
+            [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on quotes.")][RemainingText] string tankName)
         {
             if (!await CanExecute(ctx, Features.Tanks))
             {
@@ -345,7 +345,7 @@ namespace Negri.Wot.Bot
             if (!exact)
             {
                 sb.AppendLine();
-                sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in double quotes.");
+                sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in quotes.");
             }
 
             var platformPrefix = tr.Plataform == Platform.PS ? "ps." : string.Empty;
@@ -377,7 +377,7 @@ namespace Negri.Wot.Bot
         [Command("moe")]
         [Description("Returns the estimated Total Damage to achieve Marks of Excellence")]
         public async Task Moe(CommandContext ctx,
-            [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on double quotes.")][RemainingText] string tankName)
+            [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on quotes.")][RemainingText] string tankName)
         {
             if (!await CanExecute(ctx, Features.Tanks))
             {
@@ -419,7 +419,7 @@ namespace Negri.Wot.Bot
             if (!exact)
             {
                 sb.AppendLine();
-                sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in double quotes.");
+                sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in quotes.");
             }
 
             var platformPrefix = moe.Plataform == Platform.PS ? "ps." : string.Empty;
@@ -449,8 +449,8 @@ namespace Negri.Wot.Bot
         [Aliases("leaderboard")]
         [Description("Returns the leaderboard for a tank")]
         public async Task Leader(CommandContext ctx,
-            [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on double quotes.")] string tankName,
-            [Description("A gamer tag, to be searched on the leaderboard of this tank.  If it has spaces, enclose it on double quotes.")][RemainingText] string gamerTag)
+            [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on quotes.")] string tankName,
+            [Description("A gamer tag, to be searched on the leaderboard of this tank.  If it has spaces, enclose it on quotes.")][RemainingText] string gamerTag)
         {
             if (!await CanExecute(ctx, Features.Tanks))
             {
@@ -556,7 +556,7 @@ namespace Negri.Wot.Bot
             if (!exact)
             {
                 sb.AppendLine();
-                sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in double quotes.");
+                sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in quotes.");
             }
 
             var platformPrefix = leaderboard.First().Plataform == Platform.PS ? "ps." : string.Empty;
@@ -587,8 +587,8 @@ namespace Negri.Wot.Bot
         [Description("Returns the leaderboard for a tank taking into account the clan flags")]
         public async Task LeaderByFlag(CommandContext ctx,
             [Description("The clan flag **code**. As they appears on https://wotclans.com.br/Flags")] string flagCode,
-            [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on double quotes.")] string tankName,
-            [Description("A gamer tag, to be searched on the leaderboard of this tank. If it has spaces, enclose it on double quotes.")][RemainingText] string gamerTag)
+            [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on quotes.")] string tankName,
+            [Description("A gamer tag, to be searched on the leaderboard of this tank. If it has spaces, enclose it in quotes.")][RemainingText] string gamerTag)
         {
             if (!await CanExecute(ctx, Features.Tanks))
             {
@@ -703,7 +703,7 @@ namespace Negri.Wot.Bot
             if (!exact)
             {
                 sb.AppendLine();
-                sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in double quotes.");
+                sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in quotes.");
             }
 
             var platformPrefix = leaderboard.First().Plataform == Platform.PS ? "ps." : string.Empty;

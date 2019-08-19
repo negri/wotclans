@@ -127,6 +127,41 @@ namespace Negri.Wot.Sql
         }
 
         /// <summary>
+        /// Retorna os jogadores de um clã que tem partidas com um tanque especifico.
+        /// </summary>
+        public IEnumerable<Player> GetClanPlayerIdsOnTank(Platform platform, long clanId, long tankId)
+        {
+            return Get(t => GetClanPlayerIdsOnTank(platform, clanId, tankId, t));
+        }
+
+        private static IEnumerable<Player> GetClanPlayerIdsOnTank(Platform platform, long clanId, long tankId, SqlTransaction t)
+        {
+            var list = new List<Player>();
+
+            const string sql = "select distinct p.PlayerId, rcc.GamerTag " +
+                "from Performance.PlayerDate p inner join Main.RecentClanCompositionStats rcc on (rcc.PlataformId = p.PlataformId) and (rcc.PlayerId = p.PlayerId) " +
+                "where rcc.ClanId = @clanId and rcc.PlataformId = @platformId and rcc.IsActive = 1 and p.TankId = @tankId order by rcc.GamerTag;";
+
+            using(var cmd = new SqlCommand(sql, t.Connection, t))
+            {
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@platformId", (int)platform);
+                cmd.Parameters.AddWithValue("@tankId", tankId);
+                cmd.Parameters.AddWithValue("@clanId", clanId);
+
+                using(var r = cmd.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        list.Add(new Player(platform, r.GetNonNullValue<long>(0), r.GetNonNullValue<string>(1)));
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        /// <summary>
         /// Retrieve the leaderboard for a given tank
         /// </summary>
         public IEnumerable<Leader> GetLeaderboard(Platform platform, long tankId, int top = 25, string flagCode = null, int skip = 0)
