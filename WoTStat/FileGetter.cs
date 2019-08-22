@@ -140,6 +140,7 @@ namespace Negri.Wot
                 var di = new DirectoryInfo(dir);
 
                 var dates = di.EnumerateFiles("????-??-??.moe.json")
+                    .Where(fi => fi.Length > (10*1024))
                     .Select(fi => DateTime.ParseExact(fi.Name.Substring(0, 10), "yyyy-MM-dd",
                         CultureInfo.InvariantCulture))
                     .OrderByDescending(d => d).ToArray();
