@@ -36,7 +36,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
 
-                    <li class="dropdown">
+                    @*<li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             @Resources.Tournaments <span class="caret"></span>
                         </a>
@@ -48,7 +48,7 @@
                             <li role="separator" class="divider"></li>
                             <li>@Html.ActionLink(Resources.AboutTournamentsTextLink, Resources.AboutLink, "Home", null, null, "tournaments", null, null)</li>
                         </ul>
-                    </li>
+                    </li>*@
 
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -117,7 +117,7 @@
             </section>
         }
 
-        <section id="donateSection" class="row" style="padding-top: 1em;">
+        @*<section id="donateSection" class="row" style="padding-top: 1em;">
             <div class="col-md-2"></div>
             <div class="col-md-8 alert alert-dismissible alert-info">
                 <button class="close" type="button" data-dismiss="alert">x</button>
@@ -131,7 +131,7 @@
                 }
             </div>
             <div class="col-md-2"></div>
-        </section>
+        </section>*@
 
         @RenderBody()
 
