@@ -22,7 +22,7 @@ using Tank = Negri.Wot.WgApi.Tank;
 namespace Negri.Wot
 {
     /// <summary>
-    ///     Lê informações de um clã da Web
+    ///     Retrieve information from the web (and APIs)
     /// </summary>
     public class Fetcher
     {
@@ -53,12 +53,21 @@ namespace Negri.Wot
         }
 
         /// <summary>
-        ///     Id da aplicação para consultas na API da Wargaming
+        ///     WG App ID
         /// </summary>
+        /// <remarks>
+        /// The <c>Demo</c> api key does not work anymore
+        /// </remarks>
         public string ApplicationId { set; private get; } = "demo";
 
+        /// <summary>
+        /// Cache Age
+        /// </summary>
         public TimeSpan WebCacheAge { set; private get; }
 
+        /// <summary>
+        /// Min interval between external web calls
+        /// </summary>
         public TimeSpan WebFetchInterval { set; private get; }
 
         private static bool ServerCertificateValidationCallback(object s, X509Certificate certificate, X509Chain chain,
@@ -73,7 +82,7 @@ namespace Negri.Wot
             DateTime expDate = DateTime.Parse(expDateString, CultureInfo.CurrentCulture);
             if (expDate < DateTime.Now)
             {
-                // Assumindo que vencido não é um problema sério
+                // Expired certificates are not big issues (I hope)
                 return true;
             }
 
@@ -82,8 +91,8 @@ namespace Negri.Wot
 
         public SiteDiagnostic GetSiteDiagnostic(Platform platform, string apiKey)
         {
-            var plataformPrefix = platform == Platform.PS ? "ps." : string.Empty;
-            string url = $"https://{plataformPrefix}wotclans.com.br/api/status";
+            var platformPrefix = platform == Platform.PS ? "ps." : string.Empty;
+            string url = $"https://{platformPrefix}wotclans.com.br/api/status";
             return GetSiteDiagnostic(url, apiKey);
         }
 
@@ -97,17 +106,11 @@ namespace Negri.Wot
             return siteDiagnostic;
         }
 
-        /// <summary>
-        ///     Obtem um tanque especifico
-        /// </summary>
         public Tank GetTank(Platform platform, long tankId)
         {
             return GetTanks(platform, tankId).FirstOrDefault();
         }
 
-        /// <summary>
-        ///     Obtem todos os tanques do jogo
-        /// </summary>
         public IEnumerable<Tank> GetTanks(Platform platform)
         {
             return GetTanks(platform, null);
@@ -145,9 +148,6 @@ namespace Negri.Wot
             return ev;
         }
 
-        /// <summary>
-        ///     Obtem o WN8 do jogador na api do WoTStatConsole.de
-        /// </summary>
         public async Task<Player> GetPlayerWn8Async(Player player)
         {
             Log.DebugFormat("Obtendo WN8 do jogador {0}@{1}...", player.Id, player.Plataform);
@@ -217,9 +217,6 @@ namespace Negri.Wot
             return player;
         }
 
-        /// <summary>
-        ///     Obtem os tanques de um jogador
-        /// </summary>
         public IEnumerable<TankPlayer> GetTanksForPlayer(Platform platform, long playerId, long? tankId = null)
         {
             Log.DebugFormat("Obtendo tanques do jogador {0}@{1}...", playerId, platform);
@@ -271,9 +268,6 @@ namespace Negri.Wot
             return list;
         }
 
-        /// <summary>
-        ///     Obtem os tanques de um jogador
-        /// </summary>
         public async Task<IEnumerable<TankPlayer>> GetTanksForPlayerAsync(Platform platform, long playerId,
             long? tankId = null)
         {
@@ -328,7 +322,7 @@ namespace Negri.Wot
         }
 
         /// <summary>
-        /// Because the PC API has pagination
+        ///     Because the PC API has pagination
         /// </summary>
         private IEnumerable<Tank> GetPcTanks(long? tankId)
         {
@@ -412,9 +406,6 @@ namespace Negri.Wot
         }
 
 
-        /// <summary>
-        ///     Encontra um clã a partir da tag dele
-        /// </summary>
         public Clan FindClan(Platform platform, string clanTag, bool returnSmallClans = false)
         {
             Log.DebugFormat("Procurando dados do clã {0}@{1}...", clanTag, platform);
@@ -469,11 +460,6 @@ namespace Negri.Wot
             return new Clan(platform, found.ClanId, found.Tag) { AllMembersCount = found.MembersCount };
         }
 
-        /// <summary>
-        ///     Obtem o jogado em WoTInfo
-        /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
         public Player GetPlayer(Player player)
         {
             Log.DebugFormat("Obtendo jogador {0}.{1}, @{2}, do clan '{3}'...", player.Name, player.Id, player.Plataform,
@@ -988,8 +974,8 @@ namespace Negri.Wot
 
         private IEnumerable<Clan> GetClans(Platform platform, IEnumerable<ClanPlataform> clans)
         {
-            var clanPlataforms = clans as ClanPlataform[] ?? clans.ToArray();
-            if (!clanPlataforms.Any())
+            var clanPlatforms = clans as ClanPlataform[] ?? clans.ToArray();
+            if (!clanPlatforms.Any())
             {
                 yield break;
             }
@@ -1008,7 +994,7 @@ namespace Negri.Wot
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
-            var requestedClans = new HashSet<long>(clanPlataforms.Select(c => c.ClanId));
+            var requestedClans = new HashSet<long>(clanPlatforms.Select(c => c.ClanId));
 
             // Verifica se algum dos clãs foi encerrado
             string disbandedUrl =
@@ -1088,7 +1074,7 @@ namespace Negri.Wot
         }
 
         /// <summary>
-        ///     Devolve a GT a partir do ID
+        ///     Retrieve a GT given a player ID
         /// </summary>
         public string GetPlayerNameById(Platform platform, long id)
         {
@@ -1134,9 +1120,6 @@ namespace Negri.Wot
             return name;
         }
 
-        /// <summary>
-        ///     Obtem da API os clãs todos
-        /// </summary>
         public IEnumerable<Clan> GetClans(IEnumerable<ClanPlataform> clans)
         {
             var clanPlataforms = clans as ClanPlataform[] ?? clans.ToArray();
@@ -1147,9 +1130,6 @@ namespace Negri.Wot
             return GetClans(Platform.XBOX, xboxClans).Concat(GetClans(Platform.PS, psClans));
         }
 
-        /// <summary>
-        ///     Devolve o jogador a partir da Gamertag
-        /// </summary>
         public Player GetPlayerByGamerTag(Platform platform, string gamerTag)
         {
             Log.DebugFormat("Procurando dados na plataforma {0}...", platform);
@@ -1236,7 +1216,7 @@ namespace Negri.Wot
         }
 
         /// <summary>
-        ///     Conteudo obtido na Web (ou cache dela)
+        ///     Content retrieved from the web
         /// </summary>
         private class WebContent
         {
@@ -1246,13 +1226,10 @@ namespace Negri.Wot
                 Moment = DateTime.UtcNow;
             }
 
-            /// <summary>
-            ///     O conteudo em si
-            /// </summary>
             public string Content { get; }
 
             /// <summary>
-            ///     O momento em que o dado foi pego
+            ///     Time it was retrieved 
             /// </summary>
             public DateTime Moment { get; set; }
         }
