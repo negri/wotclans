@@ -4,14 +4,11 @@ using Newtonsoft.Json;
 namespace Negri.Wot.WgApi
 {
     /// <summary>
-    /// A resposta da busca por estatisticas de jogadores em seus tanques
+    /// The response for stats on a tank
     /// </summary>
     public class TanksStatsResponse : ResponseBase
     {
-        /// <summary>
-        /// Id do Clã (nunca muda)
-        /// </summary>
         [JsonProperty("data")]
-        public Dictionary<long, TankPlayer[]> Tanks { get; set; } = new Dictionary<long, TankPlayer[]>();
+        public Dictionary<long, TankPlayer[]> Players { get; set; } = new Dictionary<long, TankPlayer[]>();
     }
 }

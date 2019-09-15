@@ -217,7 +217,7 @@ namespace Negri.Wot
             return player;
         }
 
-        public IEnumerable<TankPlayer> GetTanksForPlayer(Platform platform, long playerId, long? tankId = null)
+        public IEnumerable<TankPlayer> GetTanksForPlayer(Platform platform, long playerId, long? tankId = null, bool includeMedals = false)
         {
             Log.DebugFormat("Obtendo tanques do jogador {0}@{1}...", playerId, platform);
 
@@ -252,20 +252,52 @@ namespace Negri.Wot
                 return Enumerable.Empty<TankPlayer>();
             }
 
-            var list = new List<TankPlayer>();
-            foreach (var tankPlayers in response.Tanks.Values)
+            var list = new Dictionary<long, TankPlayer>();
+            foreach (var tankPlayers in response.Players.Values)
             {
                 if (tankPlayers != null)
                 {
                     foreach (var tankPlayer in tankPlayers)
                     {
                         tankPlayer.Plataform = platform;
-                        list.Add(tankPlayer);
+                        list.Add(tankPlayer.TankId, tankPlayer);
                     }
                 }
             }
 
-            return list;
+            if (!includeMedals)
+            {
+                return list.Values;
+            }
+
+            // Retrieve also the medals
+            requestUrl =
+                $"https://{server}/wotx/tanks/achievements/?application_id={ApplicationId}&account_id={playerId}";
+            if (tankId.HasValue)
+            {
+                requestUrl += $"&tank_id={tankId.Value}";
+            }
+
+            content = GetContent($"TanksAchievements.{platform}.{playerId}.json", requestUrl, WebCacheAge, false, Encoding.UTF8).Result;
+            json = content.Content;
+            var achievementsResponse = JsonConvert.DeserializeObject<TanksAchievementsResponse>(json);
+            if (achievementsResponse.IsError)
+            {
+                Log.Error(achievementsResponse.Error);
+                return Enumerable.Empty<TankPlayer>();
+            }
+
+            var tanksAchievements = achievementsResponse.Players[playerId];
+            foreach (var ta in tanksAchievements)
+            {
+                if (list.TryGetValue(ta.TankId, out var tankPlayer))
+                {
+                    tankPlayer.Ribbons = ta.Ribbons;
+                    tankPlayer.Achievements = ta.Achievements;
+                }
+            }
+
+            return list.Values;
         }
 
         public async Task<IEnumerable<TankPlayer>> GetTanksForPlayerAsync(Platform platform, long playerId,
@@ -306,7 +338,7 @@ namespace Negri.Wot
             }
 
             var list = new List<TankPlayer>();
-            foreach (var tankPlayers in response.Tanks.Values)
+            foreach (var tankPlayers in response.Players.Values)
             {
                 if (tankPlayers != null)
                 {

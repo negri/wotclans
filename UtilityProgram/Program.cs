@@ -16,6 +16,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using Negri.Wot.WgApi;
+using Clan = Negri.Wot.Clan;
 using Formatting = Newtonsoft.Json.Formatting;
 using Tank = Negri.Wot.WgApi.Tank;
 
@@ -32,7 +34,7 @@ namespace UtilityProgram
         {
             try
             {
-                GetAllTanks(Platform.XBOX);
+                CheckChiselDuelistMedalRate(long.Parse(args[0]));
             }
             catch (Exception ex)
             {
@@ -41,6 +43,48 @@ namespace UtilityProgram
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// The rate a particular medal is won
+        /// </summary>
+        private static void CheckChiselDuelistMedalRate(long playerId)
+        {
+            string cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
+            var fetcher = new Fetcher(cacheDirectory)
+            {
+                WebCacheAge = TimeSpan.FromMinutes(15),
+                WebFetchInterval = TimeSpan.FromSeconds(1),
+                ApplicationId = ConfigurationManager.AppSettings["WgApi"]
+            };
+
+            var player = fetcher.GetTanksForPlayer(Platform.XBOX, playerId, null, true).ToDictionary(t => t.TankId);
+            var tanks = fetcher.GetTanks(Platform.XBOX).ToList();
+
+            var eligibleTanks = tanks
+                .Where(t => (t.Tier >= 8) && ((t.Type == TankType.Heavy) || (t.Type == TankType.Medium)) &&
+                            ((t.Nation == Nation.Uk) || (t.Nation == Nation.Usa) || (t.Nation == Nation.Mercenaries)))
+                .ToList();
+
+            foreach (var tank in eligibleTanks.OrderBy(t => t.Tier).ThenBy(t => t.Type).ThenBy(t => t.Nation))
+            {
+                if (!player.TryGetValue(tank.TankId, out var tankPlayer))
+                {
+                    continue;
+                }
+
+                if (!tankPlayer.Achievements.TryGetValue("duelist", out var numberOfDuelists))
+                {
+                    continue;
+                }
+
+                if (numberOfDuelists > 0)
+                {
+                    double rate = numberOfDuelists / (double)tankPlayer.All.Battles;
+                    Log.Debug($"{tank.ShortName.PadRight(15, '.')}: {rate.ToString("P1").PadLeft(5)}, {numberOfDuelists.ToString("N0").PadLeft(5)} in {tankPlayer.All.Battles.ToString("N0").PadLeft(5)} battles");
+                }
+            }
+
         }
 
         private static void PutPlayer(long playerId)

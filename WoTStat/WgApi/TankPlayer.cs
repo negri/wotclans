@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Negri.Wot.Tanks;
 using Newtonsoft.Json;
 
@@ -65,5 +66,15 @@ namespace Negri.Wot.WgApi
         /// </summary>
         [JsonProperty("all")]
         public TankPlayerStatistics All { get; set; }
+
+        /// <summary>
+        /// Ribbons on the tank
+        /// </summary>
+        public Dictionary<string, int> Ribbons { get; set; }
+
+        /// <summary>
+        /// Achievements (medals) on the tank
+        /// </summary>
+        public Dictionary<string, int> Achievements { get; set; }
     }
 }

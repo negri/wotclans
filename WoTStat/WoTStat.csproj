@@ -162,8 +162,10 @@
     <Compile Include="Tanks\NationExtensions.cs" />
     <Compile Include="WgApi\ResponseBase.cs" />
     <Compile Include="WgApi\Tank.cs" />
+    <Compile Include="WgApi\TankAchievements.cs" />
     <Compile Include="WgApi\TankPlayer.cs" />
     <Compile Include="Tanks\TankPlayerStatistics.cs" />
+    <Compile Include="WgApi\TanksAchievementsResponse.cs" />
     <Compile Include="WgApi\TanksStatsResponse.cs" />
     <Compile Include="WgApi\TankType.cs" />
     <Compile Include="WgApi\VehiclesResponse.cs" />
