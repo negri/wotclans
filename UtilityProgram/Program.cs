@@ -48,7 +48,7 @@ namespace UtilityProgram
         /// <summary>
         /// The rate a particular medal is won
         /// </summary>
-        private static void CheckChiselDuelistMedalRate(long playerId)
+        private static void CheckChiselMedalRate(string medalCode, long playerId)
         {
             string cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
             var fetcher = new Fetcher(cacheDirectory)
@@ -66,6 +66,8 @@ namespace UtilityProgram
                             ((t.Nation == Nation.Uk) || (t.Nation == Nation.Usa) || (t.Nation == Nation.Mercenaries)))
                 .ToList();
 
+            Log.Debug($"Stats for player {playerId} on the medal {medalCode}:");
+
             foreach (var tank in eligibleTanks.OrderBy(t => t.Tier).ThenBy(t => t.Type).ThenBy(t => t.Nation))
             {
                 if (!player.TryGetValue(tank.TankId, out var tankPlayer))
@@ -73,7 +75,7 @@ namespace UtilityProgram
                     continue;
                 }
 
-                if (!tankPlayer.Achievements.TryGetValue("duelist", out var numberOfDuelists))
+                if (!tankPlayer.Achievements.TryGetValue(medalCode, out var numberOfDuelists))
                 {
                     continue;
                 }
@@ -86,6 +88,20 @@ namespace UtilityProgram
             }
 
         }
+
+        /// <summary>
+        /// The rate a particular medal is won
+        /// </summary>
+        private static void CheckChiselDuelistMedalRate(long playerId)
+        {
+            CheckChiselMedalRate("duelist", playerId);
+        }
+
+        private static void CheckChiselHighCaliberMedalRate(long playerId)
+        {
+            CheckChiselMedalRate("mainGun", playerId);
+        }
+
 
         private static void PutPlayer(long playerId)
         {
