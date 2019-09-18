@@ -34,7 +34,7 @@ namespace UtilityProgram
         {
             try
             {
-                CheckChiselDuelistMedalRate(long.Parse(args[0]));
+                PopulateAllMedals();
             }
             catch (Exception ex)
             {
@@ -44,6 +44,24 @@ namespace UtilityProgram
 
             return 0;
         }
+
+        /// <summary>
+        /// Retrieve and populate all medals in the game
+        /// </summary>
+        private static void PopulateAllMedals()
+        {
+            string cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
+            var fetcher = new Fetcher(cacheDirectory)
+            {
+                WebCacheAge = TimeSpan.FromMinutes(15),
+                WebFetchInterval = TimeSpan.FromSeconds(1),
+                ApplicationId = ConfigurationManager.AppSettings["WgApi"]
+            };
+
+            var gameMedals = fetcher.GetMedals(Platform.XBOX).ToDictionary(m => m.Code);
+
+        }
+    
 
         /// <summary>
         /// The rate a particular medal is won

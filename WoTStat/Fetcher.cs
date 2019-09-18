@@ -12,12 +12,14 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using log4net;
+using Negri.Wot.Achievements;
 using Negri.Wot.Diagnostics;
 using Negri.Wot.Tanks;
 using Negri.Wot.WgApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tank = Negri.Wot.WgApi.Tank;
+using Type = Negri.Wot.Achievements.Type;
 
 namespace Negri.Wot
 {
@@ -1240,6 +1242,64 @@ namespace Negri.Wot
             return player;
         }
 
+        /// <summary>
+        /// Get all medals on the game
+        /// </summary>
+        public IEnumerable<Medal> GetMedals(Platform platform)
+        {
+            Log.DebugFormat("Fetching medals on platform {0}...", platform);
+            string server;
+            switch (platform)
+            {
+                case Platform.XBOX:
+                    server = "api-xbox-console.worldoftanks.com";
+                    break;
+                case Platform.PS:
+                    server = "api-ps4-console.worldoftanks.com";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
+            }
+
+            var url = $"https://{server}/wotx/encyclopedia/achievements/?application_id={ApplicationId}";
+            var json = GetContentSync($"Achievements.{platform}.json", url, WebCacheAge, false, Encoding.UTF8).Content;
+
+            var o = JObject.Parse(json);
+
+            var status = (string) o["status"];
+            if (status != "ok")
+            {
+                var error = o["error"];
+                Log.Error($"Error: {(string)error["code"]} - {(string)error["message"]}");
+                throw new ApplicationException($"Error calling WG API: {(string)error["code"]} - {(string)error["message"]}");
+            }
+
+            var medals = new List<Medal>();
+
+            var data = o["data"];
+            foreach (var t in data.Cast<JProperty>())
+            {
+                var ti = t.Value;
+
+                var medal = new Medal
+                {
+                    Code = t.Name,
+                    Category = CategoryExtensions.Parse((string) ti["category"]),
+                    Name = (string) ti["name"],
+                    Section = SectionExtensions.Parse((string) ti["section"]),
+                    Type = TypeExtensions.Parse((string) ti["type"]),
+                    Description = (string)ti["description"],
+                    HeroInformation = (string)ti["hero_info"],
+                    Condition = (string)ti["condition"]
+                };
+
+                medals.Add(medal);
+                
+            }
+
+            return medals;
+        }
+
         private enum ParsePlayerError
         {
             NoError = 0,
@@ -1265,5 +1325,7 @@ namespace Negri.Wot
             /// </summary>
             public DateTime Moment { get; set; }
         }
+
+        
     }
 }

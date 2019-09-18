@@ -83,6 +83,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Achievements\Category.cs" />
+    <Compile Include="Achievements\Medal.cs" />
+    <Compile Include="Achievements\Section.cs" />
+    <Compile Include="Achievements\Type.cs" />
     <Compile Include="CacheExtensions.cs" />
     <Compile Include="Clan.cs" />
     <Compile Include="ClanSummary.cs" />
@@ -200,6 +204,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
