@@ -1283,6 +1283,7 @@ namespace Negri.Wot
 
                 var medal = new Medal
                 {
+                    Platform = platform,
                     Code = t.Name,
                     Category = CategoryExtensions.Parse((string) ti["category"]),
                     Name = (string) ti["name"],

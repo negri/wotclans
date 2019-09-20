@@ -59,6 +59,15 @@ namespace UtilityProgram
             };
 
             var gameMedals = fetcher.GetMedals(Platform.XBOX).ToDictionary(m => m.Code);
+            var maxCode = gameMedals.Values.Max(m => m.Code.Length);
+            var maxName = gameMedals.Values.Max(m => m.Name.Length);
+            var maxDescription = gameMedals.Values.Max(m => m.Description.Length);
+            var maxHeroInformation = gameMedals.Values.Max(m => m.HeroInformation?.Length ?? 0);
+            var maxCondition = gameMedals.Values.Max(m => m.Condition?.Length ?? 0);
+
+            string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            DbRecorder recorder = new DbRecorder(connectionString);
+            recorder.Set(gameMedals.Values);
 
         }
     

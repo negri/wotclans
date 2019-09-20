@@ -6,8 +6,8 @@ namespace Negri.Wot.Achievements
     /// </summary>
     public class Medal
     {
-        public Medal() { }
-
+        public Platform Platform { get; set; }
+        
         /// <summary>
         /// The WG Code for the Medal
         /// </summary>

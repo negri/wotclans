@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using log4net;
+using Negri.Wot.Achievements;
 using Negri.Wot.Tanks;
 using Negri.Wot.WgApi;
 using Tank = Negri.Wot.WgApi.Tank;
@@ -882,6 +883,41 @@ namespace Negri.Wot.Sql
                 cmd.CommandTimeout = 5 * 60;
                 cmd.Parameters.AddWithValue("@id", playerId);
                 cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void Set(IEnumerable<Medal> medals)
+        {
+            Log.Debug($"Saving medals...");
+            var sw = Stopwatch.StartNew();
+            Execute(t => Set(medals, t));
+            Log.DebugFormat("Saved medals in {0}.", sw.Elapsed);
+        }
+
+        private static void Set(IEnumerable<Medal> medals, SqlTransaction t)
+        {
+            const string sql = "Achievements.SetMedal";
+            using (var cmd = new SqlCommand(sql, t.Connection, t))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                foreach (var medal in medals)
+                {
+                    cmd.Parameters.Clear();
+
+                    cmd.Parameters.AddWithValue("@PlataformId", (int) medal.Platform);
+                    cmd.Parameters.AddWithValue("@MedalCode", medal.Code);
+                    cmd.Parameters.AddWithValue("@Name", medal.Name);
+                    cmd.Parameters.AddWithValue("@Description", (object) medal.Description ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@HeroInformation", (object) medal.HeroInformation ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Condition", (object) medal.Condition ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CategoryId", (int)medal.Category);
+                    cmd.Parameters.AddWithValue("@TypeId", (int)medal.Type);
+                    cmd.Parameters.AddWithValue("@SectionId", (int)medal.Section);
+
+                    cmd.ExecuteNonQuery();
+                }
+                
             }
         }
     }
