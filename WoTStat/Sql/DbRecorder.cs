@@ -284,7 +284,6 @@ namespace Negri.Wot.Sql
             Log.DebugFormat("Salva performance em tanques no BD em {0}.", sw.Elapsed);
         }
 
-        [SuppressMessage("ReSharper", "LocalizableElement")]
         private static void Set(IEnumerable<TankPlayer> tankPlayers, SqlTransaction t)
         {
             if (tankPlayers == null)
@@ -300,7 +299,7 @@ namespace Negri.Wot.Sql
 
             if (tps.Select(tp => tp.PlayerId).Distinct().Count() != 1)
             {
-                throw new ArgumentException("Only one player should be set at time.", nameof(tankPlayers));
+                throw new ArgumentException(@"Only one player should be set at time.", nameof(tankPlayers));
             }
 
             bool firstTime;
@@ -411,66 +410,54 @@ namespace Negri.Wot.Sql
                 }
             }
 
-            using (var cmd = new SqlCommand("Achievements.SetPlayerMedal", t.Connection, t))
+            var medals = CreateMedalsTable(tps);
+            if (medals.Rows.Count > 0)
             {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandTimeout = 5 * 60;
+                // TODO: Delete previous data and bulk load
 
-                // Loop for medals
-                foreach (var tp in tps)
+            }
+
+        }
+
+        private static DataTable CreateMedalsTable(TankPlayer[] tanks)
+        {
+            var t = new DataTable("TankMedal");
+
+            var dc1 = new DataColumn("PlataformId", typeof(int));
+            t.Columns.Add(dc1);
+
+            var dc2 = new DataColumn("PlayerId", typeof(long));
+            t.Columns.Add(dc2);
+
+            var dc3 = new DataColumn("TankId", typeof(long));
+            t.Columns.Add(dc3);
+
+            var dc4 = new DataColumn("MedalCode", typeof(string));
+            t.Columns.Add(dc4);
+
+            var dc5 = new DataColumn("Count", typeof(int));
+            t.Columns.Add(dc5);
+
+            foreach (var tank in tanks)
+            {
+                if ((tank.Achievements != null) && (tank.Achievements.Count > 0))
                 {
-                    if (tp.Achievements == null)
+                    foreach (var medal in tank.Achievements)
                     {
-                        continue;
-                    }
-
-                    if (tp.Achievements.Count <= 0)
-                    {
-                        continue;
-                    }
-
-                    foreach (var medal in tp.Achievements)
-                    {
-                        cmd.Parameters.Clear();
-
-                        cmd.Parameters.AddWithValue("@PlataformId", (int)tp.Plataform);
-                        cmd.Parameters.AddWithValue("@PlayerId", tp.PlayerId);
-                        cmd.Parameters.AddWithValue("@TankId", tp.TankId);
-                        cmd.Parameters.AddWithValue("@MedalCode", medal.Key);
-                        cmd.Parameters.AddWithValue("@Count", medal.Value);
-                        
-                        cmd.ExecuteNonQuery();
+                        t.Rows.Add((int) tank.Plataform, tank.PlayerId, tank.TankId, medal.Key, medal.Value);
                     }
                 }
 
-                // Loop for ribbons
-                foreach (var tp in tps)
+                if ((tank.Ribbons != null) && (tank.Ribbons.Count > 0))
                 {
-                    if (tp.Ribbons == null)
+                    foreach (var medal in tank.Ribbons)
                     {
-                        continue;
-                    }
-
-                    if (tp.Ribbons.Count <= 0)
-                    {
-                        continue;
-                    }
-
-                    foreach (var medal in tp.Ribbons)
-                    {
-                        cmd.Parameters.Clear();
-
-                        cmd.Parameters.AddWithValue("@PlataformId", (int)tp.Plataform);
-                        cmd.Parameters.AddWithValue("@PlayerId", tp.PlayerId);
-                        cmd.Parameters.AddWithValue("@TankId", tp.TankId);
-                        cmd.Parameters.AddWithValue("@MedalCode", medal.Key);
-                        cmd.Parameters.AddWithValue("@Count", medal.Value);
-
-                        cmd.ExecuteNonQuery();
+                        t.Rows.Add((int)tank.Plataform, tank.PlayerId, tank.TankId, medal.Key, medal.Value);
                     }
                 }
             }
 
+            return t;
         }
 
         public void AssociateDiscordUserToPlayer(long userId, long playerId)
