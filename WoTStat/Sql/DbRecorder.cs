@@ -413,7 +413,21 @@ namespace Negri.Wot.Sql
             var medals = CreateMedalsTable(tps);
             if (medals.Rows.Count > 0)
             {
-                // TODO: Delete previous data and bulk load
+                const string delSql = "delete Achievements.PlayerMedal where (PlataformId = @plataformId) and (PlayerId = @playerId);";
+                using (var cmd = new SqlCommand(delSql, t.Connection, t))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandTimeout = 5 * 60;
+                    cmd.Parameters.AddWithValue("@plataformId", tps[0].Plataform);
+                    cmd.Parameters.AddWithValue("@playerId", tps[0].PlayerId);
+                    cmd.ExecuteNonQuery();
+                }
+
+                using(var bc = new SqlBulkCopy(t.Connection, SqlBulkCopyOptions.Default, t))
+                {
+                    bc.DestinationTableName = "Achievements.PlayerMedal";
+                    bc.WriteToServer(medals);
+                }
 
             }
 
