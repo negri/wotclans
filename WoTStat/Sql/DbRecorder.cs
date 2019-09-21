@@ -45,7 +45,7 @@ namespace Negri.Wot.Sql
             if (string.IsNullOrWhiteSpace(databaseClanTag))
             {
                 throw new ApplicationException(
-                    $"Já deveria existier em Main.Clan o clã {clan.ClanId}.{clan.ClanTag}@{clan.Plataform}!");
+                    $"Já deveria existir em Main.Clan o clã {clan.ClanId}.{clan.ClanTag}@{clan.Plataform}!");
             }
 
             if (databaseClanTag != clan.ClanTag)
@@ -315,7 +315,7 @@ namespace Negri.Wot.Sql
 
             if (firstTime)
             {
-                // Para que a contagem de mês funcione é preciso ancorar o que foi recem lido também no passado, de modo que a contagem inicie agora
+                // Para que a contagem de mês funcione é preciso ancorar o que foi recém lido também no passado, de modo que a contagem inicie agora
                 using (var cmd = new SqlCommand("Performance.SetPlayerDate", t.Connection, t))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -410,6 +410,67 @@ namespace Negri.Wot.Sql
                     cmd.ExecuteNonQuery();
                 }
             }
+
+            using (var cmd = new SqlCommand("Achievements.SetPlayerMedal", t.Connection, t))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 5 * 60;
+
+                // Loop for medals
+                foreach (var tp in tps)
+                {
+                    if (tp.Achievements == null)
+                    {
+                        continue;
+                    }
+
+                    if (tp.Achievements.Count <= 0)
+                    {
+                        continue;
+                    }
+
+                    foreach (var medal in tp.Achievements)
+                    {
+                        cmd.Parameters.Clear();
+
+                        cmd.Parameters.AddWithValue("@PlataformId", (int)tp.Plataform);
+                        cmd.Parameters.AddWithValue("@PlayerId", tp.PlayerId);
+                        cmd.Parameters.AddWithValue("@TankId", tp.TankId);
+                        cmd.Parameters.AddWithValue("@MedalCode", medal.Key);
+                        cmd.Parameters.AddWithValue("@Count", medal.Value);
+                        
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                // Loop for ribbons
+                foreach (var tp in tps)
+                {
+                    if (tp.Ribbons == null)
+                    {
+                        continue;
+                    }
+
+                    if (tp.Ribbons.Count <= 0)
+                    {
+                        continue;
+                    }
+
+                    foreach (var medal in tp.Ribbons)
+                    {
+                        cmd.Parameters.Clear();
+
+                        cmd.Parameters.AddWithValue("@PlataformId", (int)tp.Plataform);
+                        cmd.Parameters.AddWithValue("@PlayerId", tp.PlayerId);
+                        cmd.Parameters.AddWithValue("@TankId", tp.TankId);
+                        cmd.Parameters.AddWithValue("@MedalCode", medal.Key);
+                        cmd.Parameters.AddWithValue("@Count", medal.Value);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+
         }
 
         public void AssociateDiscordUserToPlayer(long userId, long playerId)
@@ -417,7 +478,7 @@ namespace Negri.Wot.Sql
             Execute(t => AssociateDiscordUserToPlayer(userId, playerId, t));
         }
 
-        private void AssociateDiscordUserToPlayer(long userId, long playerId, SqlTransaction t)
+        private static void AssociateDiscordUserToPlayer(long userId, long playerId, SqlTransaction t)
         {
             using(var cmd = new SqlCommand("Discord.AssociateUserToPlayer", t.Connection, t))
             {
@@ -888,7 +949,7 @@ namespace Negri.Wot.Sql
 
         public void Set(IEnumerable<Medal> medals)
         {
-            Log.Debug($"Saving medals...");
+            Log.Debug("Saving medals...");
             var sw = Stopwatch.StartNew();
             Execute(t => Set(medals, t));
             Log.DebugFormat("Saved medals in {0}.", sw.Elapsed);
