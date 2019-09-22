@@ -25,15 +25,14 @@ namespace Negri.Wot
                 var sw = Stopwatch.StartNew();
 
                 ParseParans(args, out var ageHours, out var maxPlayers, out var maxRunMinutes,
-                    out var webCacheAge, out var kp, out var ki, out var kd, out var maxParallel, out var queryWotStatConsoleApi, 
-                    out var putPlayers);
+                    out var webCacheAge, out var kp, out var ki, out var kd, out var maxParallel, out var putPlayers);
 
                 var cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
 
                 Log.Info("------------------------------------------------------------------------------------");
                 Log.Info("FetchPlayers iniciando...");
                 Log.Info($"Compilado em {RetrieveLinkerTimestamp():yyyy-MM-dd HH:mm}; executando no diretorio {Environment.CurrentDirectory}");
-                Log.InfoFormat("ageHours: {0}; cacheDirectory: {1}, maxParallel: {2}, queryWotStatConsoleApi: {3}", ageHours, cacheDirectory, maxParallel, queryWotStatConsoleApi);
+                Log.InfoFormat("ageHours: {0}; cacheDirectory: {1}, maxParallel: {2}", ageHours, cacheDirectory, maxParallel);
                 Log.Info($"kp: {kp:R}; ki: {ki:R}; kd: {kd:R}");
                 
                 var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
@@ -70,18 +69,7 @@ namespace Negri.Wot
 
                 double playersPerMinute = players.Length * 1.0 / ((double) maxRunMinutes);
                 Log.Debug("Avg playersPerMinute: {playersPerMinute:N0}");
-                double externalApiCallFactor = 0.0;
-                if (queryWotStatConsoleApi > 0)
-                {
-                    externalApiCallFactor = queryWotStatConsoleApi / playersPerMinute;
-                    if (externalApiCallFactor > 1.0)
-                    {
-                        externalApiCallFactor = 1.0;
-                    }
-                    Log.Debug("externalApiCallFactor: {externalApiCallFactor}");
-                }
-                var externalCallRandom = new Random(69);
-
+                
                 var recentlyUpdatedPlayers = players.Select(p => p.AdjustedAgeHours).Where(a => a < 6000).ToArray();
                 if (recentlyUpdatedPlayers.Any())
                 {
@@ -168,23 +156,12 @@ namespace Negri.Wot
 
                         var wg = fetchers.Dequeue();
 
-                        Fetcher ext = null;
-                        if (externalCallRandom.NextDouble() < externalApiCallFactor)
-                        {
-                            ext = fetchers.Dequeue();
-                        }
-
                         var player = players[i];
 
                         var swPlayer = Stopwatch.StartNew();
                         var allTanks = player.Plataform == Platform.XBOX ? allTanksXbox : allTanksPs;
-                        RetrievePlayer(player, wg, ext, provider, recorder, allTanks, wn8Expected, putter);
+                        RetrievePlayer(player, wg, provider, recorder, allTanks, wn8Expected, putter);
                         swPlayer.Stop();
-
-                        if (ext != null)
-                        {
-                            fetchers.Enqueue(ext);
-                        }
                         
                         fetchers.Enqueue(wg);        
                         
@@ -223,8 +200,7 @@ namespace Negri.Wot
 
                                 Log.Info($"i: {i:0000}; {player.Id:00000000000}@{player.Plataform.ToString().PadRight(4)}; Count: {count:0000}; " +
                                          $"TI: {threadInterval:00.00}; Actual: {actualInterval:00.00}; Ideal: {idealInterval:00.00}; " +
-                                         $"out: {output:+00.000;-00.000}; dt: {dt:000.000}; rt: {swPlayer.Elapsed.TotalSeconds:000.000}; Target: {maxRunMinutes*60.0/actualInterval:0000}; " +
-                                         $"HadExt: {ext != null}");
+                                         $"out: {output:+00.000;-00.000}; dt: {dt:000.000}; rt: {swPlayer.Elapsed.TotalSeconds:000.000}; Target: {maxRunMinutes*60.0/actualInterval:0000}; ");
 
                                 idealInterval = remainingSeconds / remainingPlayers;
                             }
@@ -232,8 +208,7 @@ namespace Negri.Wot
                             {
                                 Log.Info($"i: {i:0000}; {player.Id:00000000000}@{player.Plataform.ToString().PadRight(4)}; Count: {count:0000}; " +
                                          $"TI: {threadInterval:00.00}; Actual: {actualInterval:00.00}; Ideal: {idealInterval:00.00}; " +
-                                         $"out: {0.0:+00.000;-00.000}; dt: {dt:000.000}; rt: {swPlayer.Elapsed.TotalSeconds:000.000}; Target: {maxRunMinutes * 60.0 / actualInterval:0000}; " +
-                                         $"HadExt: {ext != null}");
+                                         $"out: {0.0:+00.000;-00.000}; dt: {dt:000.000}; rt: {swPlayer.Elapsed.TotalSeconds:000.000}; Target: {maxRunMinutes * 60.0 / actualInterval:0000}; ");
                             }
                             
                             previousError = error;
@@ -261,15 +236,11 @@ namespace Negri.Wot
         }
         
 
-        private static void RetrievePlayer(Player player, Fetcher fetcher, Fetcher externalFetcher,
-            DbProvider provider, DbRecorder recorder, IReadOnlyDictionary<long, Tank> allTanks, Wn8ExpectedValues wn8Expected, Putter putter)
+        private static void RetrievePlayer(Player player, Fetcher fetcher, 
+            DbProvider provider, DbRecorder recorder, IReadOnlyDictionary<long, Tank> allTanks, 
+            Wn8ExpectedValues wn8Expected, Putter putter)
         {
-            Task<Player> externalTask = null;
-            if (externalFetcher != null)
-            {
-                externalTask = externalFetcher.GetPlayerWn8Async((Player)player.Clone());
-            }            
-
+                        
             var tanks = fetcher.GetTanksForPlayer(player.Plataform, player.Id);
             var validTanks = tanks.Where(t => allTanks.ContainsKey(t.TankId)).ToArray();
             recorder.Set(validTanks);
@@ -302,20 +273,16 @@ namespace Negri.Wot
                 Log.Warn($"Player {player.Name}.{player.Id}@{player.Plataform} has to much zero data.");
             }
             
-            // Se foi feita a chamada na API externa, espero o retorno, que será ignorado; mas serviu para popular o BD do parceiro.
-            externalTask?.Wait();
         }
         
         private static void ParseParans(IEnumerable<string> args, out int ageHours, out int? maxPlayers,
             out int? maxRunMinutes, out TimeSpan webCacheAge,
-            out double kp, out double ki, out double kd, out int maxParallel, out int queryWotStatConsoleApi, 
-            out bool putPlayers)
+            out double kp, out double ki, out double kd, out int maxParallel, out bool putPlayers)
         {
             ageHours = 24;
             maxPlayers = null;
             maxRunMinutes = null;
             maxParallel = 2;
-            queryWotStatConsoleApi = -1; // Não faz queries na API de WoTStatConsole.de
             putPlayers = true;
             
             webCacheAge = TimeSpan.FromMinutes(10);
@@ -353,10 +320,6 @@ namespace Negri.Wot
                 else if (arg.StartsWith("kd:"))
                 {
                     kd = double.Parse(arg.Substring("kd:".Length));
-                }
-                else if (arg.StartsWith("QueryWotStatConsoleApi:"))
-                {
-                    queryWotStatConsoleApi = int.Parse(arg.Substring("QueryWotStatConsoleApi:".Length));
                 }
                 else if (arg.StartsWith("PutPlayers:"))
                 {
