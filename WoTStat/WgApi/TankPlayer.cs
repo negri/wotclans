@@ -67,14 +67,6 @@ namespace Negri.Wot.WgApi
         [JsonProperty("all")]
         public TankPlayerStatistics All { get; set; }
 
-        /// <summary>
-        /// Ribbons on the tank
-        /// </summary>
-        public Dictionary<string, int> Ribbons { get; set; }
-
-        /// <summary>
-        /// Achievements (medals) on the tank
-        /// </summary>
-        public Dictionary<string, int> Achievements { get; set; }
+        
     }
 }

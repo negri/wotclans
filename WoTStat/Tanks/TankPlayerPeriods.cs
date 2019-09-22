@@ -217,5 +217,50 @@ namespace Negri.Wot.Tanks
             return GetTopTanks(period, 25, 5, 10, false).FirstOrDefault() ?? All.Values.OrderByDescending(t => t.Wn8).FirstOrDefault();            
         }
 
+        public void PurgeMedals()
+        {
+            PurgeMedals(All);
+            PurgeMedals(Month);
+            PurgeMedals(Week);
+        }
+
+        private void PurgeMedals(Dictionary<long, TankPlayerStatistics> tanks)
+        {
+            foreach(var t in tanks.Values)
+            {
+                t.Achievements = null;
+                t.Ribbons = null;
+            }
+        }
+
+        /// <summary>
+        /// <c>True</c> if Achievements are present on tanks
+        /// </summary>
+        public bool HasMedals
+        {
+            get
+            {
+                return IsMedalsPopulated(All) || IsMedalsPopulated(Month) || IsMedalsPopulated(Week);
+            }
+        }
+
+        private static bool IsMedalsPopulated(Dictionary<long, TankPlayerStatistics> tanks)
+        {
+            if (tanks == null)
+            {
+                return false;
+            }
+
+            if (tanks.Values.Any(t => (t.Achievements != null) && (t.Achievements.Count > 0)))
+            {
+                return true;
+            }
+            if (tanks.Values.Any(t => (t.Ribbons != null) && (t.Ribbons.Count > 0)))
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

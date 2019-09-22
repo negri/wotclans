@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Negri.Wot.Tanks
@@ -209,5 +210,15 @@ namespace Negri.Wot.Tanks
         /// </summary>
         [JsonIgnore]
         public double XPPerHour => 1.0 * XP / BattleLifeTime.TotalHours;
+
+        /// <summary>
+        /// Ribbons on the tank
+        /// </summary>
+        public Dictionary<string, int> Ribbons { get; set; }
+
+        /// <summary>
+        /// Achievements (medals) on the tank
+        /// </summary>
+        public Dictionary<string, int> Achievements { get; set; }
     }
 }

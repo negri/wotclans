@@ -454,17 +454,17 @@ namespace Negri.Wot.Sql
 
             foreach (var tank in tanks)
             {
-                if ((tank.Achievements != null) && (tank.Achievements.Count > 0))
+                if ((tank?.All?.Achievements != null) && (tank.All.Achievements.Count > 0))
                 {
-                    foreach (var medal in tank.Achievements)
+                    foreach (var medal in tank.All.Achievements)
                     {
                         t.Rows.Add((int) tank.Plataform, tank.PlayerId, tank.TankId, medal.Key, medal.Value);
                     }
                 }
 
-                if ((tank.Ribbons != null) && (tank.Ribbons.Count > 0))
+                if ((tank?.All?.Ribbons != null) && (tank.All.Ribbons.Count > 0))
                 {
-                    foreach (var medal in tank.Ribbons)
+                    foreach (var medal in tank.All.Ribbons)
                     {
                         t.Rows.Add((int)tank.Plataform, tank.PlayerId, tank.TankId, medal.Key, medal.Value);
                     }

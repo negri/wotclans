@@ -958,7 +958,7 @@ namespace Negri.Wot.Sql
         /// <summary>
         /// Get the Player (the most up to date information)
         /// </summary>
-        public Player GetPlayer(long id, bool includePerformance = false)
+        public Player GetPlayer(long id, bool includePerformance = false, bool includeMedals = false)
         {
             return Get(transaction =>
             {
@@ -969,8 +969,18 @@ namespace Negri.Wot.Sql
                     player.Performance = GetWn8RawStatsForPlayer(player.Plataform, id, transaction);
                 }
 
+                if (includeMedals && (player?.Performance != null))
+                {
+                    FillMedals(player.Plataform, id, player.Performance, transaction);
+                }
+
                 return player;
             });
+        }
+
+        private void FillMedals(Platform plataform, long id, TankPlayerPeriods performance, SqlTransaction t)
+        {
+            throw new NotImplementedException();
         }
 
         private static Player GetPlayer(long id, SqlTransaction t)

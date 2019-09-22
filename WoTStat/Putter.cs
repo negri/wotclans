@@ -74,6 +74,14 @@ namespace Negri.Wot
 
         public bool Put(Player player)
         {
+            if (player.HasMedals)
+            {
+                // Don't save medals on the remote server, as it will take too much space and there is no use to it (so far)
+                var copy = (Player) player.Clone();
+                copy.PurgeMedals();
+                player = copy;
+            }
+
             try
             {
                 Execute(() =>

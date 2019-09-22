@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using Negri.Wot.Tanks;
 using Newtonsoft.Json;
 
@@ -267,48 +268,13 @@ namespace Negri.Wot
         }
 
         /// <inheritdoc />
+        /// <remarks>
+        /// Not very good performance, as it will use json serialization to create a deep copy
+        /// </remarks>
         public object Clone()
         {
-            return new Player(Plataform, Id, Name)
-            {
-                Origin = Origin,
-                Delay = Delay,
-                AdjustedAgeHours = AdjustedAgeHours,
-                ClanDelay = ClanDelay,
-                ClanId = ClanId,
-                ClanTag = ClanTag,
-                IsPatched = IsPatched,
-                Moment = Moment,
-                Rank = Rank,
-
-                TotalTime = TotalTime,
-                TotalBattles = TotalBattles,
-                TotalWinRate = TotalWinRate,
-                TotalWn8 = TotalWn8,
-                TotalTier = TotalTier,
-
-                MonthTime = MonthTime,
-                MonthBattles = MonthBattles,
-                MonthWinRate = MonthWinRate,
-                MonthWn8 = MonthWn8,
-                MonthTier = MonthTier,
-
-                WeekTime = WeekTime,
-                WeekBattles = WeekBattles,
-                WeekWinRate = WeekWinRate,
-                WeekWn8 = WeekWn8,
-                WeekTier = WeekTier,
-
-                Tier10TotalTime = Tier10TotalTime,
-                Tier10TotalBattles =  Tier10TotalBattles,
-                Tier10MonthWinRate = Tier10MonthWinRate,
-                Tier10TotalWn8 = Tier10TotalWn8,
-
-                Tier10MonthTime = Tier10MonthTime,
-                Tier10MonthBattles = Tier10MonthBattles,                                
-                Tier10TotalWinRate = Tier10TotalWinRate,                                
-                Tier10MonthWn8 = Tier10MonthWn8
-            };
+            var json = JsonConvert.SerializeObject(this, Formatting.None);
+            return JsonConvert.DeserializeObject<Player>(json);
         }
 
         /// <inheritdoc />
@@ -435,6 +401,24 @@ namespace Negri.Wot
 
             IsPatched = true;
             return true;
+        }
+
+        public bool HasMedals
+        {
+            get
+            {
+                if (Performance == null)
+                {
+                    return false;
+                }
+
+                return Performance.HasMedals;
+            }
+        }
+
+        public void PurgeMedals()
+        {
+            Performance?.PurgeMedals();
         }
 
         /// <summary>

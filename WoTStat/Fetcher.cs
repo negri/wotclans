@@ -219,7 +219,7 @@ namespace Negri.Wot
             return player;
         }
 
-        public IEnumerable<TankPlayer> GetTanksForPlayer(Platform platform, long playerId, long? tankId = null, bool includeMedals = false)
+        public IEnumerable<TankPlayer> GetTanksForPlayer(Platform platform, long playerId, long? tankId = null, bool includeMedals = true)
         {
             Log.DebugFormat("Obtendo tanques do jogador {0}@{1}...", playerId, platform);
 
@@ -294,8 +294,8 @@ namespace Negri.Wot
             {
                 if (list.TryGetValue(ta.TankId, out var tankPlayer))
                 {
-                    tankPlayer.Ribbons = ta.Ribbons;
-                    tankPlayer.Achievements = ta.Achievements;
+                    tankPlayer.All.Ribbons = ta.Ribbons;
+                    tankPlayer.All.Achievements = ta.Achievements;
                 }
             }
 

@@ -102,7 +102,7 @@ namespace UtilityProgram
                     continue;
                 }
 
-                if (!tankPlayer.Achievements.TryGetValue(medalCode, out var numberOfDuelists))
+                if (!tankPlayer.All.Achievements.TryGetValue(medalCode, out var numberOfDuelists))
                 {
                     continue;
                 }
