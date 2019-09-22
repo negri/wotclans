@@ -95,7 +95,7 @@ namespace Negri.Wot.Bot
                     playerId = apiPlayer.Id;
                 }
 
-                var player = provider.GetPlayer(playerId.Value, true);
+                var player = provider.GetPlayer(playerId.Value, true, true);
 
                 var wn8Expected = provider.GetWn8ExpectedValues(player?.Plataform ?? apiPlayer?.Plataform ?? Platform.XBOX);
 

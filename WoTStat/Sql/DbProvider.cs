@@ -980,7 +980,47 @@ namespace Negri.Wot.Sql
 
         private void FillMedals(Platform plataform, long id, TankPlayerPeriods performance, SqlTransaction t)
         {
-            throw new NotImplementedException();
+            const string sql = "select p.TankId, m.CategoryId, p.MedalCode, p.[Count] " +
+                "from Achievements.PlayerMedal p inner join Achievements.Medal m on (p.PlataformId = m.PlataformId) and (p.MedalCode = m.MedalCode) " +
+                "where (p.PlataformId = @PlataformId) and (p.PlayerId = @PlayerId);";
+
+            using(var cmd = new SqlCommand(sql, t.Connection, t))
+            {
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@PlataformId", plataform);
+                cmd.Parameters.AddWithValue("@PlayerId", id);
+
+                using(var r = cmd.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        var tankId = r.GetNonNullValue<long>(0);
+                        var category = r.GetNonNullValue<Achievements.Category>(1);
+                        var medal = r.GetNonNullValue<string>(2);
+                        var count = r.GetNonNullValue<int>(3);
+
+                        if (performance.All.TryGetValue(tankId, out var tank))
+                        {
+                            if (category == Achievements.Category.Achievements)
+                            {
+                                if (tank.Achievements == null)
+                                {
+                                    tank.Achievements = new Dictionary<string, int>();
+                                }
+                                tank.Achievements[medal] = count;
+                            }
+                            else if (category == Achievements.Category.Ribbons)
+                            {
+                                if (tank.Ribbons == null)
+                                {
+                                    tank.Ribbons = new Dictionary<string, int>();
+                                }
+                                tank.Ribbons[medal] = count;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private static Player GetPlayer(long id, SqlTransaction t)
