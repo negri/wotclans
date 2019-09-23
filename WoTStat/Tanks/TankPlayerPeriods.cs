@@ -262,5 +262,20 @@ namespace Negri.Wot.Tanks
 
             return false;
         }
+
+        public IEnumerable<TankPlayerStatistics> WithMedal(ReferencePeriod period, string medalCode)
+        {
+            var all = All.Values;
+            if (period == ReferencePeriod.Month)
+            {
+                all = Month.Values;
+            }
+            else if (period == ReferencePeriod.Week)
+            {
+                all = Week.Values;
+            }
+
+            return all.Where(t => t.WithMedal(medalCode));
+        }
     }
 }

@@ -85,9 +85,7 @@ namespace Negri.Wot.Tanks
 
         public static string GetFlatString(string s)
         {
-            return s.RemoveDiacritics().ToLowerInvariant().Replace(" ", "").Replace("-", "").Replace(".", "")
-                .Replace(",", "").Replace("(", "").Replace(")", "").Replace("/", "").Replace("’", "").Replace("'", "")
-                .Replace("\"", "");
+            return s.GetFlatString();
         }
     }
 }

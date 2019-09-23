@@ -195,6 +195,245 @@ namespace Negri.Wot.Bot
             }
         }
 
+        [Command("TankerMedalRate")]
+        [Aliases("MedalRate", "GamerMedalRate")]
+        [Description("The rate at witch a tanker gets a particular medal with his tanks")]
+        public async Task TankerMedalRate(CommandContext ctx,
+            [Description("The *gamer tag* or *PSN Name*")] string gamerTag,
+            [Description("The medal name")] string medal,
+            [Description("The minimun number of battles on the tank")] int minBattles = 1,
+            [Description("The minimun tier of the tanks")] int minTier = 1,
+            [Description("Nation of the tank, or *any*. Multiple values can be sent using *;* as separators")] string nationFilter = "any",
+            [Description("Type of the tank, or *any*. Multiple values can be sent using *;* as separators")] string typeFiler = "any")
+        {
+            if (!await CanExecute(ctx, Features.Players))
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(gamerTag))
+            {
+                await ctx.RespondAsync(
+                    $"Please specify the *Gamer Tag*, {ctx.User.Mention}. Something like `!w TankerHistory \"{ctx.User.Username.RemoveDiacritics()}\"`, for example.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(medal))
+            {
+                await ctx.RespondAsync(
+                    $"Please specify the *medal*, {ctx.User.Mention}.");
+                return;
+            }
+
+            Log.Debug($"Requesting {nameof(TankerMedalRate)}({gamerTag}, {medal}, {minBattles}, {minTier}, {nationFilter}, {typeFiler})...");
+
+            try
+            {
+                await ctx.TriggerTypingAsync();
+
+                var player = await GetPlayer(ctx, gamerTag);
+                if (player == null)
+                {
+                    Log.Debug($"Not found player '{gamerTag}'.");
+                    return;
+                }
+
+                #region Shortcuts for filters used on mercenaries contracts
+
+                if (medal.EqualsCiAi("chisel5"))
+                {
+                    medal = "mainGun";
+                    if (minTier < 8)
+                    {
+                        minTier = 8;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "usa,uk,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "medium,heavy";
+                    }
+                }
+                else if (medal.EqualsCiAi("chisel6"))
+                {
+                    medal = "duelist";
+                    if (minTier < 8)
+                    {
+                        minTier = 8;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "usa,uk,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "medium,heavy";
+                    }
+                }
+
+                #endregion
+
+                #region medal
+
+                var provider = new DbProvider(_connectionString);
+                var medals = provider.GetMedals(player.Plataform).Where(m => m.Category == Achievements.Category.Achievements).ToArray();
+
+                var originalMedal = medal;
+                medal = medal.RemoveDiacritics().ToLowerInvariant();
+
+                var targetMedal = medals.FirstOrDefault(m => m.Code.EqualsCiAi(medal));
+                if (targetMedal == null)
+                {
+                    targetMedal = medals.FirstOrDefault(m => m.Name.RemoveDiacritics().ToLowerInvariant().EqualsCiAi(medal));
+                }
+                if (targetMedal == null)
+                {
+                    targetMedal = medals.FirstOrDefault(m => m.Name.RemoveDiacritics().ToLowerInvariant().StartsWith(medal));
+                }
+                if (targetMedal == null)
+                {
+                    targetMedal = medals.FirstOrDefault(m => m.Name.RemoveDiacritics().ToLowerInvariant().Contains(medal));
+                }
+                if (targetMedal == null)
+                {
+                    medal = medal.GetFlatString();
+                    targetMedal = medals.FirstOrDefault(m => m.Name.GetFlatString().EqualsCiAi(medal));
+                }
+                if (targetMedal == null)
+                {
+                    targetMedal = medals.FirstOrDefault(m => m.Name.GetFlatString().StartsWith(medal));
+                }
+                if (targetMedal == null)
+                {
+                    targetMedal = medals.FirstOrDefault(m => m.Name.GetFlatString().Contains(medal));
+                }
+                if (targetMedal == null)
+                {
+                    await ctx.RespondAsync(
+                        $"Sorry, could not find a medal named **{originalMedal}**, {ctx.User.Mention}.");
+                    return;
+                }
+
+                var tanksWithMedal = player.Performance.WithMedal(ReferencePeriod.All, targetMedal.Code).ToList();
+                if (tanksWithMedal.Count <= 0)
+                {
+                    await ctx.RespondAsync(
+                        $"Sorry, {ctx.User.Mention}, the player `{player.Name}` does not have any tank with the `{targetMedal.Name}` medal.");
+                    return;
+                }
+
+                #endregion
+
+                #region Filters
+
+                tanksWithMedal = tanksWithMedal.Where(t => t.Tier >= minTier).ToList();
+                tanksWithMedal = tanksWithMedal.Where(t => t.Battles >= minBattles).ToList();
+
+                if (!string.IsNullOrWhiteSpace(nationFilter) && !nationFilter.EqualsCiAi("any"))
+                {
+                    var filtersText = nationFilter.Split(new[] { ',', ';', '-', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var filters = new HashSet<Nation>();
+                    foreach(var filterText in filtersText)
+                    {
+                        if (Enum.TryParse<Nation>(filterText, true, out var nation))
+                        {
+                            filters.Add(nation);
+                        }
+                        else
+                        {
+                            await ctx.RespondAsync(
+                                $"Sorry, {ctx.User.Mention}, the nation `{filterText}` is not a valid nation. Use the `nations` command to see the valid values.");
+                            return;
+                        }
+                    }
+
+                    tanksWithMedal = tanksWithMedal.Where(t => filters.Contains(t.Nation)).ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(typeFiler) && !typeFiler.EqualsCiAi("any"))
+                {
+                    var filtersText = typeFiler.Split(new[] { ',', ';', '-', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var filters = new HashSet<TankType>();
+                    foreach (var filterText in filtersText)
+                    {
+                        if (Enum.TryParse<TankType>(filterText, true, out var tankType))
+                        {
+                            filters.Add(tankType);
+                        }
+                        else
+                        {
+                            await ctx.RespondAsync(
+                                $"Sorry, {ctx.User.Mention}, the tank type `{filterText}` is not a valid type. Use the `tankTypes` command to see the valid values.");
+                            return;
+                        }
+                    }
+
+                    tanksWithMedal = tanksWithMedal.Where(t => filters.Contains(t.Type)).ToList();
+                }
+
+                if (tanksWithMedal.Count <= 0)
+                {
+                    await ctx.RespondAsync(
+                        $"Sorry, {ctx.User.Mention}, the player `{player.Name}` does not have any tank with the `{targetMedal.Name}` medal that also passes the command filters.");
+                    return;
+                }
+
+                #endregion
+
+                // The top tanks with the medal, finally!
+                tanksWithMedal = tanksWithMedal.OrderByDescending(t => (double)t.Achievements[targetMedal.Code] / t.Battles).Take(25).ToList();
+
+                var sb = new StringBuilder();
+
+                sb.AppendLine($"`{player.Name}`'s best tanks to get the `{targetMedal.Name}` medal:");
+
+                sb.Append("```");
+
+                var maxTankName = tanksWithMedal.Max(t => t.Name.Length);
+
+                sb.AppendLine($"{"Tank".PadRight(maxTankName)} {"Battles".PadLeft(7)} {"Medals".PadLeft(7)}  {"‰".PadLeft(7)}");
+                foreach(var t in tanksWithMedal)
+                {
+                    sb.AppendLine($"{t.Name.PadRight(maxTankName)} {t.Battles.ToString("N0").PadLeft(7)} {t.Achievements[targetMedal.Code].ToString("N0").PadLeft(7)}  {((double)t.Achievements[targetMedal.Code]/t.Battles*1000.0).ToString("N0").PadLeft(7)}");
+                }
+
+                sb.Append("```");
+
+                var platformPrefix = player.Plataform == Platform.PS ? "ps." : string.Empty;
+
+                var color = player.MonthWn8.ToColor();
+
+                var embed = new DiscordEmbedBuilder
+                {
+                    Title = $"{player.Name}'s {targetMedal.Name} medals",
+                    Description = sb.ToString(),
+                    Color = new DiscordColor(color.R, color.G, color.B),
+                    Url = player.PlayerOverallUrl,
+                    Author = new DiscordEmbedBuilder.EmbedAuthor
+                    {
+                        Name = "WoTClans",
+                        Url = $"https://{platformPrefix}wotclans.com.br"
+                    },
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = $"Retrieved at {player.Moment:yyyy-MM-dd HH:mm} UTC"
+                    }
+                };
+
+                await ctx.RespondAsync("", embed: embed);
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"{nameof(TankerHistory)}({gamerTag})", ex);
+                await ctx.RespondAsync(
+                    $"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
+            }
+        }
+
+
         [Command("TankerHist")]
         [Aliases("PlayerHist", "GamerHist", "PlayerHistory", "GamerHistory", "TankerHistory")]
         [Description("Brief history of a player on the game")]

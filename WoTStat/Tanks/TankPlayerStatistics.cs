@@ -220,5 +220,25 @@ namespace Negri.Wot.Tanks
         /// Achievements (medals) on the tank
         /// </summary>
         public Dictionary<string, int> Achievements { get; set; }
+
+        public bool WithMedal(string medalCode)
+        {
+            if (Achievements != null)
+            {
+                if (Achievements.ContainsKey(medalCode))
+                {
+                    return true;
+                }
+            }
+            if (Ribbons != null)
+            {
+                if (Ribbons.ContainsKey(medalCode))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

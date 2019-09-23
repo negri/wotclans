@@ -53,6 +53,18 @@ namespace Negri.Wot
         }
 
         /// <summary>
+        /// Converts to a flat string, without space, lower case, no diacritics
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string GetFlatString(this string s)
+        {
+            return s.RemoveDiacritics().ToLowerInvariant().Replace(" ", "").Replace("-", "").Replace(".", "")
+                .Replace(",", "").Replace("(", "").Replace(")", "").Replace("/", "").Replace("’", "").Replace("'", "")
+                .Replace("\"", "");
+        }
+
+        /// <summary>
         /// Faz o Equals de strings, desconsiderando Case e Acentos (Diacriticos)
         /// </summary>
         public static bool EqualsCiAi(this string a, string b)

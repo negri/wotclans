@@ -6,6 +6,7 @@ using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
 using log4net;
+using Negri.Wot.Achievements;
 using Negri.Wot.Diagnostics;
 using Negri.Wot.Tanks;
 using Negri.Wot.WgApi;
@@ -1517,6 +1518,48 @@ namespace Negri.Wot.Sql
             }
 
             return tp;
+        }
+
+        public IEnumerable<Achievements.Medal> GetMedals(Platform platform)
+        {
+            return Get(t => GetMedals(platform, t));
+        }
+
+        private IEnumerable<Medal> GetMedals(Platform platform, SqlTransaction t)
+        {
+            const string sql = "SELECT [MedalCode], [Name], [Description], [HeroInformation], [Condition], " +
+                "[CategoryId], [TypeId], [SectionId] " +
+                "FROM [Achievements].[Medal] " +
+                "WHERE [PlataformId] = @PlataformId;";
+
+            var medals = new List<Medal>();
+
+            using(var cmd = new SqlCommand(sql, t.Connection, t))
+            {
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@PlataformId", platform);
+
+                using(var r = cmd.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        medals.Add(new Medal()
+                        {
+                            Platform = platform,
+                            Code = r.GetNonNullValue<string>(0),
+                            Name = r.GetNonNullValue<string>(1),
+                            Description = r.GetValueOrDefault<string>(2),
+                            HeroInformation = r.GetValueOrDefault<string>(3),
+                            Condition = r.GetValueOrDefault<string>(4),
+                            Category = r.GetNonNullValue<Category>(5),
+                            Type = r.GetNonNullValue<Achievements.Type>(6),
+                            Section = r.GetNonNullValue<Section>(7)
+                        });
+                    }
+                }
+            }
+
+            return medals;
         }
 
         public Wn8ExpectedValues GetWn8ExpectedValues(Platform platform)

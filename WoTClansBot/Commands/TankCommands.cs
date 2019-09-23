@@ -132,6 +132,20 @@ namespace Negri.Wot.Bot
             await ctx.RespondAsync($"Valid nations are: {string.Join(", ", NationExtensions.GetGameNations().Select(n => $"`{n}`"))}");                        
         }
 
+        [Command("types")]
+        [Description("The types of tanks that this bot understands as parameters on others commands.")]
+        public async Task GetTypes(CommandContext ctx)
+        {
+            if (!await CanExecute(ctx, Features.Tanks))
+            {
+                return;
+            }
+
+            Log.Debug($"Requesting {nameof(GetTypes)}()...");
+
+            await ctx.RespondAsync($"Valid tank types are: {string.Join(", ", TankTypeExtensions.GetGameTankTypes().Select(n => $"`{n}`"))}");
+        }
+
         [Command("tankerTank")]
         [Description("The history of a tanker on a tank")]
         public async Task TankerTank(CommandContext ctx,    

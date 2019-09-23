@@ -151,6 +151,7 @@
     <Compile Include="Tanks\TankMoe.cs" />
     <Compile Include="Tanks\TankPlayerPeriods.cs" />
     <Compile Include="Tanks\TankReference.cs" />
+    <Compile Include="Tanks\TankTypeExtensions.cs" />
     <Compile Include="Tanks\Wn8ExpectedValues.cs" />
     <Compile Include="Tanks\Wn8TankExpectedValues.cs" />
     <Compile Include="Tanks\Wn8TankExpectedValuesOrigin.cs" />
