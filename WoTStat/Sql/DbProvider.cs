@@ -1349,9 +1349,16 @@ namespace Negri.Wot.Sql
             return null;
         }
 
-        public TankPlayerPeriods GetWn8RawStatsForPlayer(Platform platform, long playerId)
+        public TankPlayerPeriods GetWn8RawStatsForPlayer(Platform platform, long playerId, bool includeMedals = false)
         {
-            return Get(t => GetWn8RawStatsForPlayer(platform, playerId, t));
+            return Get(t => {
+                var performance = GetWn8RawStatsForPlayer(platform, playerId, t);
+                if ((performance != null) && includeMedals)
+                {
+                    FillMedals(platform, playerId, performance, t);
+                }
+                return performance;
+            });
         }
 
         private static TankPlayerPeriods GetWn8RawStatsForPlayer(Platform platform, long playerId, SqlTransaction t)

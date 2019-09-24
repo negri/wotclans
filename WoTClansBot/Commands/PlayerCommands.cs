@@ -135,7 +135,7 @@ namespace Negri.Wot.Bot
                     return null;
                 }
 
-                if (player.Age.TotalHours > 4)
+                if (player.Age.TotalHours > 1)
                 {
                     willTryApiMessage = await ctx.RespondAsync($"Data for  `{player.Name}` on `{player.Plataform}` " +
                                                                $"is more than {player.Age.TotalHours:N0}h old, {ctx.User.Mention}. Retrieving fresh data, please wait...");
@@ -145,7 +145,7 @@ namespace Negri.Wot.Bot
                     var validTanks = tanks.Where(t => allTanks.ContainsKey(t.TankId)).ToArray();
                     recorder.Set(validTanks);
 
-                    var played = provider.GetWn8RawStatsForPlayer(player.Plataform, player.Id);
+                    var played = provider.GetWn8RawStatsForPlayer(player.Plataform, player.Id, true);
                     player.Performance = played;
                     player.Calculate(wn8Expected);
                     player.Moment = DateTime.UtcNow;
@@ -272,6 +272,214 @@ namespace Negri.Wot.Bot
                         typeFiler = "medium,heavy";
                     }
                 }
+                else if (medal.EqualsCiAi("cruncher6"))
+                {
+                    medal = "duelist";
+                    if (minTier < 6)
+                    {
+                        minTier = 6;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "germany,usa,czechoslovakia,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "medium,heavy";
+                    }
+                }
+                else if (medal.EqualsCiAi("jammer5"))
+                {
+                    medal = "mainGun";
+                    if (minTier < 5)
+                    {
+                        minTier = 5;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "usa,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "medium,heavy";
+                    }
+                }
+                else if (medal.EqualsCiAi("jammer6"))
+                {
+                    medal = "duelist";
+                    if (minTier < 6)
+                    {
+                        minTier = 6;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "ussr,usa,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "medium,TankDestroyer";
+                    }
+                }
+                else if (medal.EqualsCiAi("plaguebringer6demolition"))
+                {
+                    medal = "demolition";
+                    if (minTier < 6)
+                    {
+                        minTier = 6;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "usa,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "medium,TankDestroyer";
+                    }
+                }
+                else if (medal.EqualsCiAi("plaguebringer6arsonist"))
+                {
+                    medal = "demolition";
+                    if (minTier < 6)
+                    {
+                        minTier = 6;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "usa,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "medium,TankDestroyer";
+                    }
+                }
+                else if (medal.EqualsCiAi("stinger5"))
+                {
+                    medal = "confederate";
+                    if (minTier < 7)
+                    {
+                        minTier = 7;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "france,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "Medium,Light";
+                    }
+                }
+                else if (medal.EqualsCiAi("stinger6"))
+                {
+                    medal = "scout";
+                    if (minTier < 5)
+                    {
+                        minTier = 5;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "usa,france,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "Light";
+                    }
+                }
+                else if (medal.EqualsCiAi("longReach5"))
+                {
+                    medal = "bruiser";
+                    if (minTier < 6)
+                    {
+                        minTier = 6;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "germany,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "Heavy";
+                    }
+                }
+                else if (medal.EqualsCiAi("longReach6"))
+                {
+                    medal = "sniper";
+                    if (minTier < 5)
+                    {
+                        minTier = 5;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "uk,ussr,germany,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "Heavy";
+                    }
+                }
+                else if (medal.EqualsCiAi("roundabout6demolition"))
+                {
+                    medal = "demolition";
+                    if (minTier < 4)
+                    {
+                        minTier = 4;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "ussr,germany,usa,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "light,TankDestroyer";
+                    }
+                }
+                else if (medal.EqualsCiAi("roundabout6arsonist"))
+                {
+                    medal = "arsonist";
+                    if (minTier < 4)
+                    {
+                        minTier = 4;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "ussr,germany,usa,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "light,TankDestroyer";
+                    }
+                }
+                else if (medal.EqualsCiAi("lawgiver5"))
+                {
+                    medal = "mainGun";
+                    if (minTier < 3)
+                    {
+                        minTier = 3;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "germany,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "Medium,Heavy,TankDestroyer";
+                    }
+                }
+                else if (medal.EqualsCiAi("lawgiver6"))
+                {
+                    medal = "duelist";
+                    if (minTier < 3)
+                    {
+                        minTier = 3;
+                    }
+                    if (string.IsNullOrEmpty(nationFilter) || nationFilter.EqualsCiAi("any"))
+                    {
+                        nationFilter = "germany,uk,mercenaries";
+                    }
+                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    {
+                        typeFiler = "Medium,Light";
+                    }
+                }
 
                 #endregion
 
@@ -312,7 +520,8 @@ namespace Negri.Wot.Bot
                 if (targetMedal == null)
                 {
                     await ctx.RespondAsync(
-                        $"Sorry, could not find a medal named **{originalMedal}**, {ctx.User.Mention}.");
+                        $"Sorry, could not find a medal named **{originalMedal}**, {ctx.User.Mention}. " +
+                        $"Check the game guide at https://console.worldoftanks.com/en/content/guide/achievements/ to see medal's names.");
                     return;
                 }
 
@@ -344,7 +553,7 @@ namespace Negri.Wot.Bot
                         else
                         {
                             await ctx.RespondAsync(
-                                $"Sorry, {ctx.User.Mention}, the nation `{filterText}` is not a valid nation. Use the `nations` command to see the valid values.");
+                                $"Sorry, {ctx.User.Mention}, the nation `{filterText}` is not a valid nation. Valid nations are: {string.Join(", ", NationExtensions.GetGameNations().Select(n => $"`{n.ToString().ToLowerInvariant()}`"))}.");
                             return;
                         }
                     }
@@ -365,7 +574,7 @@ namespace Negri.Wot.Bot
                         else
                         {
                             await ctx.RespondAsync(
-                                $"Sorry, {ctx.User.Mention}, the tank type `{filterText}` is not a valid type. Use the `tankTypes` command to see the valid values.");
+                                $"Sorry, {ctx.User.Mention}, the tank type `{filterText}` is not a valid type. Valid tank types are: {string.Join(", ", TankTypeExtensions.GetGameTankTypes().Select(n => $"`{n.ToString().ToLowerInvariant()}`"))}.");
                             return;
                         }
                     }
@@ -387,7 +596,7 @@ namespace Negri.Wot.Bot
 
                 var sb = new StringBuilder();
 
-                sb.AppendLine($"`{player.Name}`'s best tanks to get the `{targetMedal.Name}` medal:");
+                sb.AppendLine($"`{player.Name}`'s best tanks to get the `{targetMedal.Name}` medal, {ctx.User.Mention}:");
 
                 sb.Append("```");
 

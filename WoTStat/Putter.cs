@@ -74,12 +74,12 @@ namespace Negri.Wot
 
         public bool Put(Player player)
         {
+            var copy = player;
             if (player.HasMedals)
             {
                 // Don't save medals on the remote server, as it will take too much space and there is no use to it (so far)
-                var copy = (Player) player.Clone();
+                copy = (Player) player.Clone();
                 copy.PurgeMedals();
-                player = copy;
             }
 
             try
@@ -98,7 +98,7 @@ namespace Negri.Wot
                         ApiKey = _apiKey,
                         Context = "Player"
                     };
-                    req.SetObject(player);
+                    req.SetObject(copy);
 
                     var bsonFormatter = new BsonMediaTypeFormatter();
                     var res = client.PutAsync("api/admin/Data", req, bsonFormatter).Result;
