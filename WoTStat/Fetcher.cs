@@ -286,10 +286,17 @@ namespace Negri.Wot
             if (achievementsResponse.IsError)
             {
                 Log.Error(achievementsResponse.Error);
-                return Enumerable.Empty<TankPlayer>();
+                return list.Values;
             }
 
             var tanksAchievements = achievementsResponse.Players[playerId];
+
+            if (tanksAchievements == null)
+            {
+                Log.Error($"No tanksAchievements for player {playerId}");
+                return list.Values;
+            }
+
             foreach (var ta in tanksAchievements)
             {
                 if (list.TryGetValue(ta.TankId, out var tankPlayer))
