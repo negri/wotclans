@@ -452,13 +452,16 @@ namespace Negri.Wot.Sql
             var dc5 = new DataColumn("Count", typeof(int));
             t.Columns.Add(dc5);
 
+            var dc6 = new DataColumn("Battles", typeof(long));
+            t.Columns.Add(dc6);
+
             foreach (var tank in tanks)
             {
                 if ((tank?.All?.Achievements != null) && (tank.All.Achievements.Count > 0))
                 {
                     foreach (var medal in tank.All.Achievements)
                     {
-                        t.Rows.Add((int) tank.Plataform, tank.PlayerId, tank.TankId, medal.Key, medal.Value);
+                        t.Rows.Add((int) tank.Plataform, tank.PlayerId, tank.TankId, medal.Key, medal.Value, tank.All.Battles);
                     }
                 }
 
@@ -466,7 +469,7 @@ namespace Negri.Wot.Sql
                 {
                     foreach (var medal in tank.All.Ribbons)
                     {
-                        t.Rows.Add((int)tank.Plataform, tank.PlayerId, tank.TankId, medal.Key, medal.Value);
+                        t.Rows.Add((int)tank.Plataform, tank.PlayerId, tank.TankId, medal.Key, medal.Value, tank.All.Battles);
                     }
                 }
             }
