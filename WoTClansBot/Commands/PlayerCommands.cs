@@ -201,8 +201,8 @@ namespace Negri.Wot.Bot
         public async Task TankerMedalRate(CommandContext ctx,
             [Description("The *gamer tag* or *PSN Name*")] string gamerTag,
             [Description("The medal name")] string medal,
-            [Description("The minimun number of battles on the tank")] int minBattles = 1,
-            [Description("The minimun tier of the tanks")] int minTier = 1,
+            [Description("The minimum number of battles on the tank")] int minBattles = 1,
+            [Description("The minimum tier of the tanks")] int minTier = 1,
             [Description("Nation of the tank, or *any*. Multiple values can be sent using *;* as separators")] string nationFilter = "any",
             [Description("Type of the tank, or *any*. Multiple values can be sent using *;* as separators")] string typeFiler = "any")
         {
@@ -592,7 +592,7 @@ namespace Negri.Wot.Bot
                 #endregion
 
                 // The top tanks with the medal, finally!
-                tanksWithMedal = tanksWithMedal.OrderByDescending(t => (double)t.Achievements[targetMedal.Code] / t.Battles).Take(25).ToList();
+                tanksWithMedal = tanksWithMedal.OrderBy(t => (double) t.Battles / t.Achievements[targetMedal.Code]).Take(25).ToList();
 
                 var sb = new StringBuilder();
 
@@ -602,10 +602,11 @@ namespace Negri.Wot.Bot
 
                 var maxTankName = tanksWithMedal.Max(t => t.Name.Length);
 
-                sb.AppendLine($"{"Tank".PadRight(maxTankName)} {"Battles".PadLeft(7)} {"Medals".PadLeft(7)}  {"‰".PadLeft(7)}");
+                sb.AppendLine($"{"Tank".PadRight(maxTankName)} {"Battles".PadLeft(7)} {"Medals".PadLeft(7)}  {"⚔/🎖".PadLeft(7)}");
                 foreach(var t in tanksWithMedal)
                 {
-                    sb.AppendLine($"{t.Name.PadRight(maxTankName)} {t.Battles.ToString("N0").PadLeft(7)} {t.Achievements[targetMedal.Code].ToString("N0").PadLeft(7)}  {((double)t.Achievements[targetMedal.Code]/t.Battles*1000.0).ToString("N0").PadLeft(7)}");
+                    sb.AppendLine($"{t.Name.PadRight(maxTankName)} {t.Battles.ToString("N0").PadLeft(7)} {t.Achievements[targetMedal.Code].ToString("N0").PadLeft(7)}  " +
+                                  $"{((double) t.Battles / t.Achievements[targetMedal.Code]).ToString("N0").PadLeft(7)}");
                 }
 
                 sb.Append("```");
