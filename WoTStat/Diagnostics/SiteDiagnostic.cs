@@ -10,19 +10,24 @@ namespace Negri.Wot.Diagnostics
 
         public SiteDiagnostic(IEnumerable<Clan> clans)
         {
-            var a = clans as Clan[] ?? clans.ToArray();
-
-            ServerMoment = DateTime.UtcNow;            
-            ClansCount = a.Length;
-            PlayersCount = a.Where(c => !c.IsObsolete).Sum(c => c.Count);
-            MostRecentClanMoment = a.Where(c => !c.IsObsolete).Max(c => c.Moment);
-            ClansWithPlayersUpdatedOnLastHour = a.Count(c => (DateTime.UtcNow - c.Moment).TotalMinutes <= 60);
-            ClansWithAnyUpdatedOnLastHour = a.Count(c => (DateTime.UtcNow - c.LastUpdate).TotalMinutes <= 60);
+            ServerMoment = DateTime.UtcNow;
             ProcessMemoryUsage = CpuUsage.GetProcessMemoryInformation();
             AveragedProcessCpuUsage = CpuUsage.GetProcessTotalTime();
+
+            if (clans != null)
+            {
+                var a = clans as Clan[] ?? clans.ToArray();
+                if (a.Length > 0)
+                {
+                    ClansCount = a.Length;
+                    PlayersCount = a.Where(c => !c.IsObsolete).Sum(c => c.Count);
+                    MostRecentClanMoment = a.Where(c => !c.IsObsolete).Max(c => c.Moment);
+                    ClansWithPlayersUpdatedOnLastHour = a.Count(c => (DateTime.UtcNow - c.Moment).TotalMinutes <= 60);
+                    ClansWithAnyUpdatedOnLastHour = a.Count(c => (DateTime.UtcNow - c.LastUpdate).TotalMinutes <= 60);
+                }
+            }
         }
 
-        
         public DateTime ServerMoment { get; set; }
 
         public int DataAgeMinutes => (int)(DateTime.UtcNow - MostRecentClanMoment).TotalMinutes;

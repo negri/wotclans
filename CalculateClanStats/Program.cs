@@ -27,9 +27,9 @@ namespace Negri.Wot
         {
             try
             {
-                ParseParans(args, out int ageHours, out int maxRunMinutes,
-                    out int hourToDeleteOldFiles, out int daysToKeepOnDelete, out bool calculateMoe,
-                    out bool calculateReference, out int playersPerMinute, out int utcShiftToCalculate);
+                ParseParams(args, out var ageHours, out var maxRunMinutes,
+                    out var hourToDeleteOldFiles, out var daysToKeepOnDelete, out var calculateMoe,
+                    out var calculateReference, out var playersPerMinute, out var utcShiftToCalculate, out var waitForRemote);
 
                 var resultDirectoryXbox = ConfigurationManager.AppSettings["ResultDirectory"];
                 var resultDirectoryPs = ConfigurationManager.AppSettings["PsResultDirectory"];
@@ -37,8 +37,8 @@ namespace Negri.Wot
                 Log.Info("------------------------------------------------------------------------------------");
                 Log.Info("CalculateClanStats iniciando...");
                 Log.InfoFormat(
-                    "ageHours: {0}; maxRunMinutes: {1}; resultDirectory: {2}; resultDirectoryPs: {3}; utcShiftToCalculate: {4}",
-                    ageHours, maxRunMinutes, resultDirectoryXbox, resultDirectoryPs, utcShiftToCalculate);
+                    "ageHours: {0}; maxRunMinutes: {1}; resultDirectory: {2}; resultDirectoryPs: {3}; utcShiftToCalculate: {4}; waitForRemote: {5}",
+                    ageHours, maxRunMinutes, resultDirectoryXbox, resultDirectoryPs, utcShiftToCalculate, waitForRemote);
 
                 var sw = Stopwatch.StartNew();
 
@@ -49,8 +49,8 @@ namespace Negri.Wot
 
                 const int averageOutTimeMinutes = 30;
                 const int averageClanSize = 25;
-                int maxPerDay = playersPerMinute * 60 * 24 - averageOutTimeMinutes * playersPerMinute;
-                int minPerDay = maxPerDay - averageClanSize;
+                var maxPerDay = playersPerMinute * 60 * 24 - averageOutTimeMinutes * playersPerMinute;
+                var minPerDay = maxPerDay - averageClanSize;
                 Log.Info($"playersPerMinute: {playersPerMinute}; maxPerDay: {maxPerDay}; minPerDay: {minPerDay}");
 
                 var recorder = new DbRecorder(connectionString);
@@ -82,23 +82,30 @@ namespace Negri.Wot
                 };
 
                 // Obtém o status, por causa da data dos MoE, para disparar o cálculo assíncrono
+                DateTime lastMoeXbox, lastMoePs, lastReferencesXbox, lastReferencesPs;
+                SiteDiagnostic siteStatusXbox, siteStatusPs;
+                try
+                {
+                    siteStatusXbox = fetcher.GetSiteDiagnostic(
+                        ConfigurationManager.AppSettings["RemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
+                    siteStatusPs = fetcher.GetSiteDiagnostic(
+                        ConfigurationManager.AppSettings["PsRemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
 
-                /*
-                var siteStatusXbox = fetcher.GetSiteDiagnostic(
-                    ConfigurationManager.AppSettings["RemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
-                var siteStatusPs = fetcher.GetSiteDiagnostic(
-                    ConfigurationManager.AppSettings["PsRemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
+                    lastMoeXbox = siteStatusXbox.TanksMoELastDate;
+                    lastMoePs = siteStatusPs.TanksMoELastDate;
+                    lastReferencesXbox = siteStatusXbox.TankLeadersLastDate;
+                    lastReferencesPs = siteStatusPs.TankLeadersLastDate;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Error getting initial site diagnostics", ex);
 
-                var lastMoeXbox = siteStatusXbox.TanksMoELastDate;
-                var lastMoePs = siteStatusPs.TanksMoELastDate;
-                var lastReferencesXbox = siteStatusXbox.TankLeadersLastDate;
-                var lastReferencesPs = siteStatusPs.TankLeadersLastDate;
-                */
-
-                // Since the site id offline...
-                GetLastDatesFromFiles(resultDirectoryXbox, out var lastMoeXbox, out var lastReferencesXbox);
-                GetLastDatesFromFiles(resultDirectoryPs, out var lastMoePs, out var lastReferencesPs);
-
+                    // Since the site id offline...
+                    siteStatusXbox = siteStatusPs = new SiteDiagnostic(null);
+                    GetLastDatesFromFiles(resultDirectoryXbox, out lastMoeXbox, out lastReferencesXbox);
+                    GetLastDatesFromFiles(resultDirectoryPs, out lastMoePs, out lastReferencesPs);
+                }
+                
                 Log.Info($"lastMoeXbox: {lastMoeXbox:yyyy-MM-dd}");
                 Log.Info($"lastMoePs: {lastMoePs:yyyy-MM-dd}");
 
@@ -120,7 +127,7 @@ namespace Negri.Wot
                     }
 
                     // Apaga arquivos com a API administrativa
-                    _ = Task.Run(() =>
+                    var cleanXBox = Task.Run(() =>
                     {
                         try
                         {
@@ -133,7 +140,7 @@ namespace Negri.Wot
                         }
                     });
 
-                    _ = Task.Run(() =>
+                    var cleanPs = Task.Run(() =>
                     {
                         try
                         {
@@ -146,7 +153,11 @@ namespace Negri.Wot
                         }
                     });
 
-                    
+                    if (waitForRemote)
+                    {
+                        Task.WhenAll(cleanXBox, cleanPs);
+                    }
+
                 });
 
                 // Calcula cada clã
@@ -181,7 +192,7 @@ namespace Negri.Wot
                                       var fileName = cc.ToFile(resultDirectoryXbox);
                                       Log.InfoFormat("Arquivo de resultado escrito em '{0}'", fileName);
 
-                                      _ = Task.Run(() =>
+                                      var putTask = Task.Run(() =>
                                       {
                                           try
                                           {
@@ -192,6 +203,12 @@ namespace Negri.Wot
                                               Log.Error($"Error putting XBOX clan file for {cc.ClanTag}", ex);
                                           }
                                       });
+
+                                      if (waitForRemote)
+                                      {
+                                          putTask.Wait();
+                                      }
+
                                   }
                                   break;
                               case Platform.PS:
@@ -199,7 +216,7 @@ namespace Negri.Wot
                                       var fileName = cc.ToFile(resultDirectoryPs);
                                       Log.InfoFormat("Arquivo de resultado escrito em '{0}'", fileName);
 
-                                      _ = Task.Run(() =>
+                                      var putTask = Task.Run(() =>
                                       {
                                           try
                                           {
@@ -210,7 +227,11 @@ namespace Negri.Wot
                                               Log.Error($"Error putting PS clan file for {cc.ClanTag}", ex);
                                           }
                                       });
-                                      
+
+                                      if (waitForRemote)
+                                      {
+                                          putTask.Wait();
+                                      }
                                   }
                                   break;
                               case Platform.Virtual:
@@ -229,14 +250,18 @@ namespace Negri.Wot
 
                 // Envia o e-mail de status
 
-                /*
-                var siteStatusXbox = fetcher.GetSiteDiagnostic(ConfigurationManager.AppSettings["RemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
-                var siteStatusPs = fetcher.GetSiteDiagnostic(ConfigurationManager.AppSettings["PsRemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
-                */
+                try
+                {
+                    siteStatusXbox = fetcher.GetSiteDiagnostic(ConfigurationManager.AppSettings["RemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
+                    siteStatusPs = fetcher.GetSiteDiagnostic(ConfigurationManager.AppSettings["PsRemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Error getting final site diagnostics", ex);
 
-                // The site is offline...
-                var siteStatusXbox = new SiteDiagnostic();
-                var siteStatusPs = new SiteDiagnostic();
+                    // The site is offline...
+                    siteStatusXbox = siteStatusPs = new SiteDiagnostic(null);
+                }
 
                 Log.Debug("Obtendo informações do BD...");
                 var dd = provider.GetDataDiagnostic();
@@ -549,9 +574,9 @@ namespace Negri.Wot
         }
 
 
-        private static void ParseParans(string[] args, out int ageHours, out int maxRunMinutes,
+        private static void ParseParams(string[] args, out int ageHours, out int maxRunMinutes,
             out int hourToDeleteOldFiles, out int daysToKeepOnDelete, out bool calculateMoe,
-            out bool calculateReference, out int playersPerMinute, out int utcShiftToCalculate)
+            out bool calculateReference, out int playersPerMinute, out int utcShiftToCalculate, out bool waitForRemote)
         {
             ageHours = int.Parse(args[0]);
             maxRunMinutes = int.Parse(args[1]);
@@ -562,6 +587,7 @@ namespace Negri.Wot
             calculateReference = true;
             playersPerMinute = 6;
             utcShiftToCalculate = 0;
+            waitForRemote = true;
 
             for (var i = 2; i < args.Length; ++i)
             {
@@ -586,6 +612,10 @@ namespace Negri.Wot
                 else if (arg.Contains("UtcShiftToCalculate:"))
                 {
                     utcShiftToCalculate = int.Parse(arg.Substring("UtcShiftToCalculate:".Length));
+                }
+                else if (arg.Contains("WaitForRemote:"))
+                {
+                    waitForRemote = bool.Parse(arg.Substring("WaitForRemote:".Length));
                 }
                 else if (arg.Contains("DaysToKeepOnDelete:"))
                 {
