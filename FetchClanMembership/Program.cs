@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using log4net;
 using Negri.Wot.Mail;
 using Negri.Wot.Sql;
@@ -204,9 +205,20 @@ namespace Negri.Wot
                         {
                             string newFile = Path.Combine(resultDirectory, $"clan.{clan.ClanTag}.json");
                             File.Copy(oldFile, newFile, true);
-                            putter.PutClan(newFile);
-                            putter.DeleteFile($"Clans/clan.{clan.OldTag}.json");                            
-                            putter.SetRenameFile(clan.OldTag, clan.ClanTag);
+
+                            _ = Task.Run(() =>
+                            {
+                                try
+                                {
+                                    putter.PutClan(newFile);
+                                    putter.DeleteFile($"Clans/clan.{clan.OldTag}.json");
+                                    putter.SetRenameFile(clan.OldTag, clan.ClanTag);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error($"Error on XBOX renaming clan {clan.OldTag} to {clan.ClanTag}", ex);
+                                }
+                            });
                         }
                                                 
                         mailSender.Send($"Clã Renomeado: {clan.OldTag} -> {clan.ClanTag} em {clan.Plataform}",
@@ -222,7 +234,7 @@ namespace Negri.Wot
 
                     var resultDirectory = ConfigurationManager.AppSettings["PsResultDirectory"];
 
-                    foreach (var clan in clansToRename.Where(c => c.Plataform == Platform.XBOX))
+                    foreach (var clan in clansToRename.Where(c => c.Plataform == Platform.PS))
                     {
                         Log.InfoFormat("O clã {0}.{1}@{2} teve o tag trocado a partir de {3}.", clan.ClanId,
                             clan.ClanTag, clan.Plataform, clan.OldTag);
@@ -233,9 +245,21 @@ namespace Negri.Wot
                         {
                             string newFile = Path.Combine(resultDirectory, $"clan.{clan.ClanTag}.json");
                             File.Copy(oldFile, newFile, true);
-                            putter.PutClan(newFile);
-                            putter.DeleteFile($"Clans/clan.{clan.OldTag}.json");
-                            putter.SetRenameFile(clan.OldTag, clan.ClanTag);
+
+                            _ = Task.Run(() =>
+                            {
+                                try
+                                {
+                                    putter.PutClan(newFile);
+                                    putter.DeleteFile($"Clans/clan.{clan.OldTag}.json");
+                                    putter.SetRenameFile(clan.OldTag, clan.ClanTag);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error($"Error on PS renaming clan {clan.OldTag} to {clan.ClanTag}", ex);
+                                }
+                            });
+
                         }
 
                         mailSender.Send($"Clã Renomeado: {clan.OldTag} -> {clan.ClanTag} em {clan.Plataform}",

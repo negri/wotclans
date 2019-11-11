@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using log4net;
+using Negri.Wot.Diagnostics;
 using Negri.Wot.Mail;
 using Negri.Wot.Sql;
 using Negri.Wot.Tanks;
@@ -80,7 +81,9 @@ namespace Negri.Wot
                     ApplicationId = ConfigurationManager.AppSettings["WgApi"]
                 };
 
-                // Obtem o status, por causa da data dos MoE, para disparar o cálculo assincrono
+                // Obtém o status, por causa da data dos MoE, para disparar o cálculo assíncrono
+
+                /*
                 var siteStatusXbox = fetcher.GetSiteDiagnostic(
                     ConfigurationManager.AppSettings["RemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
                 var siteStatusPs = fetcher.GetSiteDiagnostic(
@@ -90,6 +93,17 @@ namespace Negri.Wot
                 var lastMoePs = siteStatusPs.TanksMoELastDate;
                 var lastReferencesXbox = siteStatusXbox.TankLeadersLastDate;
                 var lastReferencesPs = siteStatusPs.TankLeadersLastDate;
+                */
+
+                // Since the site id offline...
+                GetLastDatesFromFiles(resultDirectoryXbox, out var lastMoeXbox, out var lastReferencesXbox);
+                GetLastDatesFromFiles(resultDirectoryPs, out var lastMoePs, out var lastReferencesPs);
+
+                Log.Info($"lastMoeXbox: {lastMoeXbox:yyyy-MM-dd}");
+                Log.Info($"lastMoePs: {lastMoePs:yyyy-MM-dd}");
+
+                Log.Info($"lastReferencesXbox: {lastReferencesXbox:yyyy-MM-dd}");
+                Log.Info($"lastReferencesPs: {lastReferencesPs:yyyy-MM-dd}");
 
                 // Dispara as tarefas de calculo gerais
                 var calculationTask = Task.Run(() => RunCalculations(calculateReference, calculateMoe,
@@ -106,11 +120,33 @@ namespace Negri.Wot
                     }
 
                     // Apaga arquivos com a API administrativa
-                    var cleaner = new Putter(Platform.XBOX, ConfigurationManager.AppSettings["ApiAdminKey"]);
-                    cleaner.CleanFiles();
+                    _ = Task.Run(() =>
+                    {
+                        try
+                        {
+                            var cleaner = new Putter(Platform.XBOX, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                            cleaner.CleanFiles();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("Erro cleaning XBOX", ex);
+                        }
+                    });
 
-                    cleaner = new Putter(Platform.PS, ConfigurationManager.AppSettings["ApiAdminKey"]);
-                    cleaner.CleanFiles();                    
+                    _ = Task.Run(() =>
+                    {
+                        try
+                        {
+                            var cleaner = new Putter(Platform.PS, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                            cleaner.CleanFiles();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("Erro cleaning XBOX", ex);
+                        }
+                    });
+
+                    
                 });
 
                 // Calcula cada clã
@@ -144,14 +180,37 @@ namespace Negri.Wot
                                   {
                                       var fileName = cc.ToFile(resultDirectoryXbox);
                                       Log.InfoFormat("Arquivo de resultado escrito em '{0}'", fileName);
-                                      putterXbox.PutClan(fileName);
+
+                                      _ = Task.Run(() =>
+                                      {
+                                          try
+                                          {
+                                              putterXbox.PutClan(fileName);
+                                          }
+                                          catch (Exception ex)
+                                          {
+                                              Log.Error($"Error putting XBOX clan file for {cc.ClanTag}", ex);
+                                          }
+                                      });
                                   }
                                   break;
                               case Platform.PS:
                                   {
                                       var fileName = cc.ToFile(resultDirectoryPs);
                                       Log.InfoFormat("Arquivo de resultado escrito em '{0}'", fileName);
-                                      putterPs.PutClan(fileName);
+
+                                      _ = Task.Run(() =>
+                                      {
+                                          try
+                                          {
+                                              putterPs.PutClan(fileName);
+                                          }
+                                          catch (Exception ex)
+                                          {
+                                              Log.Error($"Error putting PS clan file for {cc.ClanTag}", ex);
+                                          }
+                                      });
+                                      
                                   }
                                   break;
                               case Platform.Virtual:
@@ -169,14 +228,19 @@ namespace Negri.Wot
                 var calculationTime = sw.Elapsed;
 
                 // Envia o e-mail de status
-                siteStatusXbox = fetcher.GetSiteDiagnostic(
-                    ConfigurationManager.AppSettings["RemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
-                siteStatusPs = fetcher.GetSiteDiagnostic(
-                    ConfigurationManager.AppSettings["PsRemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
+
+                /*
+                var siteStatusXbox = fetcher.GetSiteDiagnostic(ConfigurationManager.AppSettings["RemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
+                var siteStatusPs = fetcher.GetSiteDiagnostic(ConfigurationManager.AppSettings["PsRemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
+                */
+
+                // The site is offline...
+                var siteStatusXbox = new SiteDiagnostic();
+                var siteStatusPs = new SiteDiagnostic();
 
                 Log.Debug("Obtendo informações do BD...");
                 var dd = provider.GetDataDiagnostic();
-                Log.InfoFormat("Filas: {0} jogadores; {1} clans; {2} calculos.",
+                Log.InfoFormat("Filas: {0} jogadores; {1} clans; {2} cálculos.",
                     dd.PlayersQueueLenght, dd.MembershipQueueLenght, dd.CalculateQueueLenght);
                 Log.InfoFormat(
                     "{0} jogadores; {1:N0} por dia; {2:N0} por hora; reais: {3:N0}; {4:N0}; {5:N0}; {6:N0}",
@@ -213,6 +277,13 @@ namespace Negri.Wot
                 Console.WriteLine(ex);
                 return 1;
             }
+        }
+
+        private static void GetLastDatesFromFiles(string resultDirectory, out DateTime lastMoe, out DateTime lastLeader)
+        {
+            var getter = new FileGetter(resultDirectory);
+            lastMoe = getter.GetTanksMoe().Values.First().Date;
+            lastLeader = getter.GetTankLeaders().FirstOrDefault()?.Date ?? new DateTime(2017, 03, 25);
         }
 
         private static Clan CalculateClan(ClanPlataform clan, DbProvider provider,
@@ -324,7 +395,19 @@ namespace Negri.Wot
               {
                   var r = references[i];
                   var tankFile = r.Save(referencesDir);
-                  ftpPutter.PutTankReference(tankFile);
+
+                  _ = Task.Run(() =>
+                  {
+                      try
+                      {
+                          ftpPutter.PutTankReference(tankFile);
+                      }
+                      catch (Exception ex)
+                      {
+                          Log.Error($"Error putting tank reference files for {platform} and tank {r.Name}", ex);
+                      }
+                  });
+
                   Log.Info($"Escrito e feito upload da referência {tankFile}");
 
                   foreach (var leader in r.Leaders)
@@ -336,7 +419,18 @@ namespace Negri.Wot
             var json = JsonConvert.SerializeObject(leaders.ToArray(), Formatting.Indented);
             var leadersFile = Path.Combine(referencesDir, $"{previousMonday:yyyy-MM-dd}.Leaders.json");
             File.WriteAllText(leadersFile, json, Encoding.UTF8);
-            ftpPutter.PutTankReference(leadersFile);
+
+            _ = Task.Run(() =>
+            {
+                try
+                {
+                    ftpPutter.PutTankReference(leadersFile);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"Error putting leader file for {platform}", ex);
+                }
+            });
 
             mailSender.Send($"Upload das Referências {platform} para {previousMonday:yyyy-MM-dd} Ok",
                 $"Leaderboard: https://{(platform == Platform.PS ? "ps." : "")}wotclans.com.br/Leaderboard/All");
@@ -392,7 +486,18 @@ namespace Negri.Wot
                     File.WriteAllText(file, json, Encoding.UTF8);
                     Log.DebugFormat("Salvo o MoE em '{0}'", file);
 
-                    ftpPutter.PutMoe(file);
+                    _ = Task.Run(() =>
+                    {
+                        try
+                        {
+                            ftpPutter.PutMoe(file);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error($"Error putting MoE on {platform}", ex);
+                        }
+                    });
+
                     Log.Debug("Feito uploado do MoE");
 
                     mailSender.Send($"Upload das MoE {platform} para {date:yyyy-MM-dd} Ok",
@@ -427,8 +532,19 @@ namespace Negri.Wot
                 File.WriteAllText(file, json, Encoding.UTF8);
                 Log.DebugFormat("Salvo o WN8 Expected em '{0}'", file);
 
-                ftpPutter.PutMoe(file);
-                Log.Debug($"Feito uploado do WN8 para {platform}");
+                _ = Task.Run(() =>
+                {
+                    try
+                    {
+                        ftpPutter.PutMoe(file);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error($"Error putting WN8 on {platform}", ex);
+                    }
+                });
+
+                Log.Debug($"Feito upload do WN8 para {platform}");
             }
         }
 

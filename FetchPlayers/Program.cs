@@ -220,17 +220,26 @@ namespace Negri.Wot
                 {
                     Log.WarnFormat("Tempo esgotado antes de concluir a fila no {0} de {1}. Erro de Controle: {2:N4}",
                         count, players.Length, sumErrorSq / controlledLoops);
+
+                    Task.Delay(TimeSpan.FromMinutes(1)).Wait();
+
                     return 2;
                 }
 
                 Log.InfoFormat("FetchPlayers terminando normalmente em {0}. Feitos {1}. Erro de Controle: {2:N4}", 
                     sw.Elapsed, players.Length, sumErrorSq/controlledLoops);
+
+                Task.Delay(TimeSpan.FromMinutes(1)).Wait();
+
                 return 0;
             }
             catch (Exception ex)
             {
                 Log.Fatal(ex);
                 Console.WriteLine(ex);
+
+                Task.Delay(TimeSpan.FromMinutes(1)).Wait();
+
                 return 1;
             }
         }
@@ -265,7 +274,17 @@ namespace Negri.Wot
                 recorder.Set(player);
                 if (!player.IsPatched)
                 {
-                    putter?.Put(player);
+                    _ = Task.Run(() =>
+                    {
+                        try
+                        {
+                            putter?.Put(player);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error($"Error putting player {player.Id} on the remote site.", ex);
+                        }
+                    });
                 }
             }
             else

@@ -165,8 +165,20 @@ namespace Negri.Wot.Bot
                         recorder.Set(player);
                         if (!player.IsPatched)
                         {
-                            var putter = new Putter(player.Plataform, ConfigurationManager.AppSettings["ApiAdminKey"]);
-                            putter.Put(player);
+
+                            _ =Task.Run(() =>
+                              {
+                                  try
+                                  {
+                                      var putter = new Putter(player.Plataform, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                                      putter.Put(player);
+                                  }
+                                  catch (Exception ex)
+                                  {
+                                      Log.Error($"Error putting player {player.Id} on the remote site.", ex);
+                                  }
+                              });
+
                         }
                     }
                     else
