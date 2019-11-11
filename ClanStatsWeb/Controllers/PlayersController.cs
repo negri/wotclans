@@ -174,8 +174,8 @@ namespace Negri.Wot.Site.Controllers
 
         private static string GetWoTStatConsoleOverallUrl(Player player)
         {
-            // https://wotstatsconsole.de/player?id=1073992096&system=ps4&language=en&useTanks=1&useMedals=1&quickView=1
-            // https://wotstatsconsole.de/player?id=1763298&system=xbox&language=pt&useTanks=1&useMedals=1
+            // https://wotstatsconsole.de/player?id=1073992096&s=ps4&l=en&useTanks=1&useMedals=1&quickView=1
+            // https://wotstatsconsole.de/player?id=1763298&s=xbox&l=pt&useTanks=1&useMedals=1
 
             string lang = GlobalHelper.Language;
             string externalLang;
@@ -196,7 +196,7 @@ namespace Negri.Wot.Site.Controllers
             }
 
             var url =
-                $"https://wotstatsconsole.de/player?id={player.Id}&system={GlobalHelper.PlataformTag}&language={externalLang}&useTanks=1";
+                $"https://wotstatsconsole.de/player?id={player.Id}&s={GlobalHelper.PlataformTag}&l={externalLang}&useTanks=1";
             if (GlobalHelper.IsMobile())
             {
                 url += "&quickView=1";
