@@ -281,8 +281,16 @@ namespace Negri.Wot
 
                 var fileName = Path.Combine(dir, $"{date.Value:yyyy-MM-dd}.Leaders.json");
                 var json = File.ReadAllText(fileName, Encoding.UTF8);
-                leaders = JsonConvert.DeserializeObject<List<Leader>>(json);
-
+                try
+                {
+                    leaders = JsonConvert.DeserializeObject<List<Leader>>(json);
+                }
+                catch (JsonReaderException ex)
+                {
+                    Log.Error($"Error parsing Leaders file at {fileName} with {json.Length} chars", ex);
+                    throw;
+                }
+                
                 _leaders[date.Value] = leaders;
                 if (date.Value != keyDate)
                 {
