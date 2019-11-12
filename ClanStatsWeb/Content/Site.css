@@ -25,10 +25,10 @@ textarea {
 
 /* Top Banner */
 .top-banner {
-    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.60)), url(../Images/Art/su-152_1440x900_wall.jpg);
+    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.60)), url(../Images/Art/shashka-timeline.png);
     background-size: auto auto;
     background-repeat: no-repeat;
-    background-position: center center;
+    background-position: 40% 20%;
     border-width: 0;
 }
 
