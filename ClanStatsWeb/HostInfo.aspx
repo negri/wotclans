@@ -62,7 +62,11 @@
                                     else
                                     {
                                         int releaseKey = (int) ndpKey.GetValue("Release");
-                                        if (releaseKey >= 461808)
+                                        if (releaseKey >= 528040)
+                                        {
+                                            version = "4.8 or latter";
+                                        }
+                                        else if (releaseKey >= 461808)
                                         {
                                             version = "4.7.2 or latter";
                                         }
