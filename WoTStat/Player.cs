@@ -416,6 +416,14 @@ namespace Negri.Wot
             }
         }
 
+        /// <summary>
+        /// Last battle
+        /// </summary>
+        /// <remarks>
+        /// Only can be retrieved if full performance was acquired.
+        /// </remarks>
+        public DateTime? LastBattle => Performance?.All.Values.Max(t => t.LastBattle);
+
         public void PurgeMedals()
         {
             Performance?.PurgeMedals();

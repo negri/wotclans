@@ -196,6 +196,22 @@ namespace Negri.Wot
         }
 
         /// <summary>
+        /// The overall WN8 of the inactive players of the clan
+        /// </summary>
+        public double InactivesWn8
+        {
+            get
+            {
+                var inactivesBattles = Players.Where(p => !p.IsActive).Sum(p => p.TotalBattles);
+                if (inactivesBattles <= 0)
+                {
+                    return 0.0;
+                }
+                return Players.Where(p => !p.IsActive).Sum(p => p.TotalWn8* p.TotalBattles) / inactivesBattles;
+            }
+        }
+
+        /// <summary>
         ///     Os 7 melhores jogadores
         /// </summary>
         [JsonIgnore]

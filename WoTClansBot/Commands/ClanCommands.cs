@@ -26,6 +26,128 @@ namespace Negri.Wot.Bot
             _connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
         }
 
+
+
+        [Command("clanInactives")]
+        [Aliases("Inactives")]
+        [Description("The clan's inactives players")]
+        public async Task ClanInactives(CommandContext ctx,
+            [Description("The clan **tag**")] string clanTag)
+        {
+            try
+            {
+                if (!await CanExecute(ctx, Features.Clans))
+                {
+                    return;
+                }
+
+                await ctx.TriggerTypingAsync();
+
+                if (string.IsNullOrWhiteSpace(clanTag))
+                {
+                    await ctx.RespondAsync($"You must send a clan tag as parameter, {ctx.User.Mention}.");
+                    return;
+                }
+
+                Log.Debug($"Requesting {nameof(ClanInactives)}({clanTag})...");
+
+                var cfg = GuildConfiguration.FromGuild(ctx.Guild);
+                var platform = GetPlatform(clanTag, cfg.Plataform, out clanTag);
+
+                clanTag = clanTag.Trim('[', ']');
+                clanTag = clanTag.ToUpperInvariant();
+
+                if (!ClanTagRegex.IsMatch(clanTag))
+                {
+                    await ctx.RespondAsync($"You must send a **valid** clan **tag** as parameter, {ctx.User.Mention}.");
+                    return;
+                }
+
+                var provider = new DbProvider(_connectionString);
+
+                var clan = provider.GetClan(platform, clanTag);
+                if (clan == null)
+                {
+                    platform = platform == Platform.PS ? Platform.XBOX : Platform.PS;
+
+                    clan = provider.GetClan(platform, clanTag);
+                    if (clan == null)
+                    {
+                        await ctx.RespondAsync(
+                            $"Can't find on a clan with tag `[{clanTag}]`, {ctx.User.Mention}. Maybe my site doesn't track it yet... or you have the wrong clan tag.");
+                        return;
+                    }
+                }
+
+                if (!clan.Enabled)
+                {
+                    await ctx.RespondAsync($"Data collection for this clan is **disabled**, the reason for this is {clan.DisabledReason}, {ctx.User.Mention}.");
+                    return;
+                }
+
+                var inactives = clan.Players.Where(p => !p.IsActive).ToArray();
+                if (inactives.Length <= 0)
+                {
+                    await ctx.RespondAsync($"There are no inactive tankers on this clan, {ctx.User.Mention}.");
+                    return;
+                }
+
+                // To retrieve the last battle
+                for (int i = 0; i < inactives.Length; i++)
+                {
+                    inactives[i] = provider.GetPlayer(inactives[i].Id, true);
+                }
+
+                inactives = inactives.OrderBy(p => p.MonthBattles).ThenBy(p => p.LastBattle ?? DateTime.Today.AddYears(-5)).ToArray();
+
+                var sb = new StringBuilder();
+
+                sb.Append($"Information about `{clan.ClanTag}`'s {inactives.Length} inactives tankers on the {clan.Plataform}, {ctx.User.Mention}:");
+                sb.AppendLine();
+
+                var maxNameLength = inactives.Max(p => p.Name.Length);
+
+                sb.AppendLine("```");
+                sb.AppendLine($"{platform.TagName().PadRight(maxNameLength)} {"Days".PadLeft(5)} {"Battles".PadLeft(7)} {"WN8".PadLeft(6)}");
+                foreach (var p in inactives.Take(30))
+                {
+                    sb.AppendLine($"{(p.Name ?? string.Empty).PadRight(maxNameLength)} {(DateTime.UtcNow - (p.LastBattle ?? DateTime.Today.AddYears(-5))).TotalDays.ToString("N0").PadLeft(5)} {p.MonthBattles.ToString("N0").PadLeft(7)} {p.TotalWn8.ToString("N0").PadLeft(6)}");
+                }
+                sb.AppendLine("```");
+
+                var color = clan.InactivesWn8.ToColor();
+                var platformPrefix = clan.Plataform == Platform.PS ? "ps." : string.Empty;
+
+                var embed = new DiscordEmbedBuilder
+                {
+                    Title = $"{clan.ClanTag}'s Inactives Tankers",
+                    Description = sb.ToString(),
+                    Color = new DiscordColor(color.R, color.G, color.B),
+                    Url = $"https://{platformPrefix}wotclans.com.br/Clan/{clan.ClanTag}",
+                    Author = new DiscordEmbedBuilder.EmbedAuthor
+                    {
+                        Name = "WoTClans",
+                        Url = $"https://{platformPrefix}wotclans.com.br"
+                    },
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = $"Calculated at {DateTime.UtcNow:yyyy-MM-dd HH:mm} UTC"
+                    }
+                };
+
+                await ctx.RespondAsync("", embed: embed);
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error calling {nameof(ClanInactives)}({clanTag})", ex);
+                await ctx.RespondAsync(
+                    $"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
+                
+            }
+        }
+
+
         [Command("clanTopOnTank")]
         [Description("The clan's best players on a given tank")]
         public async Task ClanTopOnTank(CommandContext ctx, 
@@ -80,7 +202,7 @@ namespace Negri.Wot.Bot
             }
 
             var tankCommands = new TankCommands();
-            var tank = tankCommands.FindTank(platform, tankName, out var exactTank);
+            var tank = tankCommands.FindTank(platform, tankName, out _);
 
             if (tank == null)
             {
@@ -131,17 +253,16 @@ namespace Negri.Wot.Bot
 
             var sb = new StringBuilder();
 
-            int maxNameLeght = fullPlayers.Max(p => p.Name.Length);
+            var maxNameLength = fullPlayers.Max(p => p.Name.Length);
 
-            
             //sb.AppendLine($"Here `[{clan.ClanTag}]` top players on the `{tank.Name}`, {ctx.User.Mention}:");
             //sb.AppendLine();
             sb.AppendLine("```");
-            sb.AppendLine($"{platform.TagName().PadRight(maxNameLeght)} {"Days".PadLeft(5)} {"Battles".PadLeft(7)} {"WN8".PadLeft(6)}");
+            sb.AppendLine($"{platform.TagName().PadRight(maxNameLength)} {"Days".PadLeft(5)} {"Battles".PadLeft(7)} {"WN8".PadLeft(6)}");
             foreach (var p in fullPlayers.OrderByDescending(p => p.Performance.All[tank.TankId].Wn8).Take(25))
             {
                 var tp = p.Performance.All[tank.TankId];
-                sb.AppendLine($"{(p.Name ?? string.Empty).PadRight(maxNameLeght)} {(DateTime.UtcNow - tp.LastBattle).TotalDays.ToString("N0").PadLeft(5)} {tp.Battles.ToString("N0").PadLeft(7)} {tp.Wn8.ToString("N0").PadLeft(6)}");
+                sb.AppendLine($"{(p.Name ?? string.Empty).PadRight(maxNameLength)} {(DateTime.UtcNow - tp.LastBattle).TotalDays.ToString("N0").PadLeft(5)} {tp.Battles.ToString("N0").PadLeft(7)} {tp.Wn8.ToString("N0").PadLeft(6)}");
             }
             sb.AppendLine("```");
             sb.AppendLine();
@@ -230,7 +351,7 @@ namespace Negri.Wot.Bot
 
             if (!clan.Enabled)
             {
-                sb.AppendLine("Data collection for this clan is **disabled**!");
+                sb.AppendLine($"Data collection for this clan is **disabled**, the reason for this is {clan.DisabledReason}.");
             }
 
             sb.AppendLine();
