@@ -64,19 +64,19 @@ namespace Negri.Wot.Site.Controllers
         }
 
         /// <summary>
-        /// Dispara a limpesa dos diretorios de dados
+        /// Triggers Data Cleaning
         /// </summary>
-        /// <param name="apiAdminKey">A chave de API administrativa</param>
-        /// <param name="daysToKeepOnDaily">Dias para manter os arquivos de geração diaria, padrao 1 mês</param>
-        /// <param name="daysToKeepOnWeekly">Dias para manter os arquivos de geração semanal, padrao 3 meses</param>
-        /// <param name="daysToKeepClanFiles">Dias para manter os arquivos de clãs mortos, padrao 3 meses</param>
-        /// <param name="daysToKeepPlayerFiles">Dias para manter os arquivos de jogadores, padrao 3 meses</param>
+        /// <param name="apiAdminKey">The Administrative API keu</param>
+        /// <param name="daysToKeepOnDaily">Days to keep daily generated files, default 1 month</param>
+        /// <param name="daysToKeepOnWeekly">Days to keep weekly generated files, default 3 months</param>
+        /// <param name="daysToKeepClanFiles">Days to keep clan files, default 2 months</param>
+        /// <param name="daysToKeepPlayerFiles">Days to keep player files (or records), default 2 months</param>
         [HttpDelete]
         public IHttpActionResult CleanDataFolders(string apiAdminKey,
             int daysToKeepOnDaily = 4 * 7 + 7,
             int daysToKeepOnWeekly = 3 * 4 * 7 + 7,
-            int daysToKeepClanFiles = 3 * 4 * 7 + 7,
-            int daysToKeepPlayerFiles = 3 * 4 * 7 + 7)
+            int daysToKeepClanFiles = 2 * 4 * 7 + 7,
+            int daysToKeepPlayerFiles = 2 * 4 * 7 + 7)
         {
             try
             {
@@ -129,7 +129,7 @@ namespace Negri.Wot.Site.Controllers
 
                 var sw = Stopwatch.StartNew();
 
-                string rootFolder = GlobalHelper.DataFolder;
+                var rootFolder = GlobalHelper.DataFolder;
 
                 long deleted = 0;
                 long bytes = 0;
@@ -157,7 +157,7 @@ namespace Negri.Wot.Site.Controllers
                     }
                 }
 
-                // O diretorio raiz deve ser mantido sempre limpo
+                // The root directory should be always empty of files
                 var di = new DirectoryInfo(rootFolder);
                 foreach (var fi in di.EnumerateFiles())
                 {
@@ -166,7 +166,7 @@ namespace Negri.Wot.Site.Controllers
 
                 var regex = new Regex(@"\d{4}-\d{2}-\d{2}", RegexOptions.Compiled);
 
-                // MoE, é diario
+                // MoE, is a daily file
                 di = new DirectoryInfo(Path.Combine(rootFolder, "MoE"));
                 foreach (var fi in di.EnumerateFiles())
                 {
@@ -176,15 +176,15 @@ namespace Negri.Wot.Site.Controllers
                         continue;
                     }
 
-                    DateTime date = DateTime.ParseExact(m.Value, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                    double age = (DateTime.UtcNow.Date - date).TotalDays;
+                    var date = DateTime.ParseExact(m.Value, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    var age = (DateTime.UtcNow.Date - date).TotalDays;
                     if (age > daysToKeepOnDaily)
                     {
                         DeletedFileLocal(fi);
                     }
                 }
 
-                // Tanks é semanal
+                // Tanks are weekly files
                 di = new DirectoryInfo(Path.Combine(rootFolder, "Tanks"));
                 foreach (var fi in di.EnumerateFiles())
                 {
@@ -194,37 +194,42 @@ namespace Negri.Wot.Site.Controllers
                         continue;
                     }
 
-                    DateTime date = DateTime.ParseExact(m.Value, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                    double age = (DateTime.UtcNow.Date - date).TotalDays;
+                    var date = DateTime.ParseExact(m.Value, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    var age = (DateTime.UtcNow.Date - date).TotalDays;
                     if (age > daysToKeepOnWeekly)
                     {
                         DeletedFileLocal(fi);
                     }
                 }
 
-                // Arquivos de Clãs que não sofreram nenhuma alteração
+                // Clans without any updates
                 di = new DirectoryInfo(Path.Combine(rootFolder, "Clans"));
                 foreach (var fi in di.EnumerateFiles())
                 {
-                    DateTime date = fi.LastWriteTimeUtc;
-                    double age = (DateTime.UtcNow.Date - date).TotalDays;
+                    var date = fi.LastWriteTimeUtc;
+                    var age = (DateTime.UtcNow.Date - date).TotalDays;
                     if (age > daysToKeepClanFiles)
                     {
                         DeletedFileLocal(fi);
                     }
                 }
 
-                // Arquivos de Jogadores que não sofreram nenhuma alteração
+                // Players without any updates on files (old way)
                 di = new DirectoryInfo(Path.Combine(rootFolder, "Players"));
                 foreach (var fi in di.EnumerateFiles())
                 {
-                    DateTime date = fi.LastWriteTimeUtc;
-                    double age = (DateTime.UtcNow.Date - date).TotalDays;
+                    var date = fi.LastWriteTimeUtc;
+                    var age = (DateTime.UtcNow.Date - date).TotalDays;
                     if (age > daysToKeepPlayerFiles)
                     {
                         DeletedFileLocal(fi);
                     }
                 }
+
+                // Players without any updates on the database (current way)
+                var connectionString = ConfigurationManager.ConnectionStrings["Store"].ConnectionString;
+                var db = new KeyStore(connectionString);
+                db.CleanOldPlayers(daysToKeepPlayerFiles);
 
                 sw.Stop();
 

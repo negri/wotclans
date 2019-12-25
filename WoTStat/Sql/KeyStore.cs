@@ -20,6 +20,28 @@ namespace Negri.Wot.Sql
         }
 
         /// <summary>
+        /// Clean from the database players that are not being updated 
+        /// </summary>
+        /// <param name="age">Age (in days) of the stale records to be cleaned</param>
+        public void CleanOldPlayers(int age = 63)
+        {
+            Log.Debug($"Cleaning old players with age > {age}...");
+            var sw = Stopwatch.StartNew();
+            Execute(transaction => { CleanOldPlayers(age, transaction); }, 3);
+            Log.Debug($"Cleaned old players with age > {age} in {sw.Elapsed}.");
+        }
+
+        private static void CleanOldPlayers(int age, SqlTransaction t)
+        {
+            using (var cmd = new SqlCommand("Store.ClearPlayers", t.Connection, t))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@age", age);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
         /// Set a player
         /// </summary>
         public void Set(Player player)
@@ -29,7 +51,7 @@ namespace Negri.Wot.Sql
                 return;
             }
 
-            Log.Debug($"Seting player {player.Id}...");
+            Log.Debug($"Setting player {player.Id}...");
             var sw = Stopwatch.StartNew();
             Execute(transaction => { Set(player, transaction); }, 3);
             Log.Debug($"Set player {player.Id} done in {sw.Elapsed}.");
