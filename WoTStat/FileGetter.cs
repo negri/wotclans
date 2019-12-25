@@ -130,7 +130,7 @@ namespace Negri.Wot
                 }
 
                 var keyDate = date ?? DateTime.MinValue;
-                if (_moes.TryGetValue(keyDate, out IDictionary<long, TankMoe> tanks))
+                if (_moes.TryGetValue(keyDate, out var tanks))
                 {
                     Log.DebugFormat("Cache hit de MoE para {0:yyyy-MM-dd}", keyDate);
                     return tanks;
@@ -240,7 +240,7 @@ namespace Negri.Wot
                 }
 
                 var keyDate = date ?? DateTime.MinValue;
-                if (_leaders.TryGetValue(keyDate, out IEnumerable<Leader> leaders))
+                if (_leaders.TryGetValue(keyDate, out var leaders))
                 {
                     Log.DebugFormat("Cache hit de Leaders para {0:yyyy-MM-dd}", keyDate);
                     return leaders;
@@ -285,10 +285,25 @@ namespace Negri.Wot
                 {
                     leaders = JsonConvert.DeserializeObject<List<Leader>>(json);
                 }
-                catch (JsonReaderException ex)
+                catch (JsonException ex)
                 {
-                    Log.Error($"Error parsing Leaders file at {fileName} with {json.Length} chars", ex);
-                    throw;
+                    if (ex is JsonSerializationException sex)
+                    {
+                        Log.Error($"Error parsing Leaders file at {fileName}, Line {sex.LineNumber} at position {sex.LinePosition}", sex);
+                    }
+                    else
+                    {
+                        Log.Error($"Error parsing Leaders file at {fileName} with {json.Length} chars", ex);
+                    }
+
+                    if (dates.Length > 1)
+                    {
+                        // Use the next one, on the hope it's works
+                        date = dates[1];
+                        return GetTankLeaders(date);
+                    }
+
+                    return Enumerable.Empty<Leader>();
                 }
                 
                 _leaders[date.Value] = leaders;
@@ -395,7 +410,7 @@ namespace Negri.Wot
                 return null;
             }
 
-            string json = File.ReadAllText(fi.FullName, Encoding.UTF8);
+            var json = File.ReadAllText(fi.FullName, Encoding.UTF8);
             tr = JsonConvert.DeserializeObject<TankReference>(json);
 
             _tanks[tankId] = tr;
