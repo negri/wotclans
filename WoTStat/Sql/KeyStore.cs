@@ -27,18 +27,21 @@ namespace Negri.Wot.Sql
         {
             Log.Debug($"Cleaning old players with age > {age}...");
             var sw = Stopwatch.StartNew();
-            Execute(transaction => { CleanOldPlayers(age, transaction); }, 3);
-            Log.Debug($"Cleaned old players with age > {age} in {sw.Elapsed}.");
-        }
 
-        private static void CleanOldPlayers(int age, SqlTransaction t)
-        {
-            using (var cmd = new SqlCommand("Store.ClearPlayers", t.Connection, t))
+            // No transactions on this case, as any old record deleted should remain deleted anyway
+            using (var conn = new SqlConnection(ConnectionString))
             {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@age", age);
-                cmd.ExecuteNonQuery();
+                conn.Open();
+                using (var cmd = new SqlCommand("Store.ClearPlayers", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandTimeout = 2 * 60;
+                    cmd.Parameters.AddWithValue("@age", age);
+                    cmd.ExecuteNonQuery();
+                }
             }
+            
+            Log.Debug($"Cleaned old players with age > {age} in {sw.Elapsed}.");
         }
 
         /// <summary>
