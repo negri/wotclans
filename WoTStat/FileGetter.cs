@@ -249,7 +249,11 @@ namespace Negri.Wot
                 var dir = Path.Combine(_dataDirectory, "Tanks");
                 var di = new DirectoryInfo(dir);
 
+                // Unlikely the leaders file became less than 9MB
+                const int minFileSize = 9;
+
                 var dates = di.EnumerateFiles("????-??-??.Leaders.json")
+                    .Where(fi => fi.Length > minFileSize * 1024*1024)
                     .Select(fi => DateTime.ParseExact(fi.Name.Substring(0, 10), "yyyy-MM-dd",
                         CultureInfo.InvariantCulture))
                     .OrderByDescending(d => d).ToArray();
