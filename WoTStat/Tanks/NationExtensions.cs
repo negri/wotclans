@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using Negri.Wot.WgApi;
 
 namespace Negri.Wot.Tanks
@@ -16,6 +19,16 @@ namespace Negri.Wot.Tanks
                 return "merc";
             }
             return nation.ToString().ToLowerInvariant();
+        }
+
+        public static string GetDescription(this Nation nation)
+        {
+            var enumType = typeof(Nation);
+            var memberData = enumType.GetMember(nation.ToString());
+            var description =
+                (memberData[0].GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as
+                    DescriptionAttribute)?.Description;
+            return description ?? nation.ToString().ToLowerInvariant();
         }
 
         public static IEnumerable<Nation> GetGameNations()

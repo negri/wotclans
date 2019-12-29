@@ -11,6 +11,8 @@ using DSharpPlus.Entities;
 using log4net;
 using Negri.Wot.Sql;
 using Negri.Wot.Tanks;
+using Negri.Wot.WgApi;
+using Tank = Negri.Wot.Tanks.Tank;
 
 namespace Negri.Wot.Bot
 {
@@ -62,7 +64,27 @@ namespace Negri.Wot.Bot
             var originalName = tankName;
             platform = GetPlatform(tankName, platform, out tankName);
 
+            Nation? nation = null;
+            if (tankName.Contains("."))
+            {
+                // It may have a nation prefix
+                foreach (var validNation in NationExtensions.GetGameNations())
+                {
+                    if (tankName.RemoveDiacritics().ToLowerInvariant().StartsWith(validNation.ToString().ToLowerInvariant() + "."))
+                    {
+                        nation = validNation;
+                        tankName = tankName.Substring(validNation.ToString().Length + 1);
+                        break;
+                    }
+                }
+            }
+
             var all = GetTanks(platform);
+
+            if (nation.HasValue)
+            {
+                all = all.Where(t => t.Nation == nation.Value).ToArray();
+            }
 
             exact = true;
             var tank = all.FirstOrDefault(t => t.Name.EqualsCiAi(tankName));
@@ -119,6 +141,7 @@ namespace Negri.Wot.Bot
         }
 
         [Command("nations")]
+        [Aliases("nation")]
         [Description("The nations that this bot understands as parameters on others commands.")]
         public async Task GetNations(CommandContext ctx)
         {
@@ -133,6 +156,7 @@ namespace Negri.Wot.Bot
         }
 
         [Command("types")]
+        [Aliases("type")]
         [Description("The types of tanks that this bot understands as parameters on others commands.")]
         public async Task GetTypes(CommandContext ctx)
         {
@@ -233,7 +257,7 @@ namespace Negri.Wot.Bot
 
                 var sb = new StringBuilder();
 
-                sb.AppendLine($"History of the {Formatter.MaskedUrl(tr.Name, new Uri(tr.Url))}, Tier {tr.Tier.ToRomanNumeral()}, {(tr.IsPremium ? "Premium" : "Regular")}, as played by {Formatter.MaskedUrl(gamerTag, new Uri(player.PlayerOverallUrl))}, {ctx.User.Mention}:");
+                sb.AppendLine($"History of the {Formatter.MaskedUrl(tr.Name, new Uri(tr.Url))}, Tier {tr.Tier.ToRomanNumeral()}, {tr.Nation.GetDescription()}, {(tr.IsPremium ? "Premium" : "Regular")}, as played by {Formatter.MaskedUrl(gamerTag, new Uri(player.PlayerOverallUrl))}, {ctx.User.Mention}:");
                 sb.AppendLine();
                 sb.AppendLine("```");
                 sb.AppendLine("Date       Battles Tot.Dmg   WN8");
@@ -341,14 +365,17 @@ namespace Negri.Wot.Bot
 
             var sb = new StringBuilder();
 
-            sb.AppendLine($"Here the **Target Damage** information about the `{tr.Name}`, Tier {tr.Tier.ToRomanNumeral()}, {(tr.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}:");
+            sb.AppendLine($"Here the **Target Damage** information about the `{tr.Name}`, Tier {tr.Tier.ToRomanNumeral()}, {tr.Nation.GetDescription()}, {(tr.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}:");
 
             sb.AppendLine();
-            sb.AppendLine($"Average WN8: {(int)Wn8Rating.Average:N0}, Dmg: {tr.TargetDamageAverage:N0}, Piercings: {tr.TargetDamageAveragePiercings}, Shots: {tr.TargetDamageAverageShots};");
-            sb.AppendLine($"Good    WN8: {(int)Wn8Rating.Good:N0}, Dmg: {tr.TargetDamageGood:N0}, Piercings: {tr.TargetDamageGoodPiercings}, Shots: {tr.TargetDamageGoodShots};");
-            sb.AppendLine($"Great   WN8: {(int)Wn8Rating.Great:N0}, Dmg: {tr.TargetDamageGreat:N0}, Piercings: {tr.TargetDamageGreatPiercings}, Shots: {tr.TargetDamageGreatShots};");
-            sb.AppendLine($"Unicum  WN8: {(int)Wn8Rating.Unicum:N0}, Dmg: {tr.TargetDamageUnicum:N0}, Piercings: {tr.TargetDamageUnicumPiercings}, Shots: {tr.TargetDamageUnicumShots};");
-            sb.AppendLine($"Super   WN8: {(int)Wn8Rating.SuperUnicum:N0}, Dmg: {tr.TargetDamageSuperUnicum:N0}, Piercings: {tr.TargetDamageSuperUnicumPiercings}, Shots: {tr.TargetDamageSuperUnicumShots}.");
+            sb.AppendLine("```");
+            sb.AppendLine( "Rating   WN8  Damage Piercings Shots");
+            sb.AppendLine($"Average {    ((int)Wn8Rating.Average).ToString("N0").PadLeft(5)} {    tr.TargetDamageAverage.ToString("N0").PadLeft(6)}        {    tr.TargetDamageAveragePiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageAverageShots.ToString("N0").PadLeft(2)}");
+            sb.AppendLine($"Good    {       ((int)Wn8Rating.Good).ToString("N0").PadLeft(5)} {       tr.TargetDamageGood.ToString("N0").PadLeft(6)}        {       tr.TargetDamageGoodPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageGoodShots.ToString("N0").PadLeft(2)}");
+            sb.AppendLine($"Great   {      ((int)Wn8Rating.Great).ToString("N0").PadLeft(5)} {      tr.TargetDamageGreat.ToString("N0").PadLeft(6)}        {      tr.TargetDamageGreatPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageGreatShots.ToString("N0").PadLeft(2)}");
+            sb.AppendLine($"Unicum  {     ((int)Wn8Rating.Unicum).ToString("N0").PadLeft(5)} {     tr.TargetDamageUnicum.ToString("N0").PadLeft(6)}        {     tr.TargetDamageUnicumPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageUnicumShots.ToString("N0").PadLeft(2)}");
+            sb.AppendLine($"Super   {((int)Wn8Rating.SuperUnicum).ToString("N0").PadLeft(5)} {tr.TargetDamageSuperUnicum.ToString("N0").PadLeft(6)}        {tr.TargetDamageSuperUnicumPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageSuperUnicumShots.ToString("N0").PadLeft(2)}");
+            sb.AppendLine("```");
             sb.AppendLine();
 
             sb.AppendLine($"Recent Averages: WN8: {tr.LastMonth.AverageWn8:N0}, Win Rate: {tr.LastMonth.WinRatio:P1}, Direct Dmg: {tr.LastMonth.DamageDealt:N0}, " +
@@ -423,7 +450,7 @@ namespace Negri.Wot.Bot
 
             var sb = new StringBuilder();
 
-            sb.AppendLine($"Here the MoE information about the `{moe.Name}`, Tier {moe.Tier.ToRomanNumeral()}, {(moe.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}:");
+            sb.AppendLine($"Here the MoE information about the `{moe.Name}`, Tier {moe.Tier.ToRomanNumeral()}, {moe.Nation.GetDescription()}, {(moe.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}:");
             sb.AppendLine($"```  * 1  mark: {moe.Moe1Dmg:N0} Total Damage");
             sb.AppendLine($" ** 2 marks: {moe.Moe2Dmg:N0} Total Damage");
             sb.AppendLine($"*** 3 marks: {moe.Moe3Dmg:N0} Total Damage```");
@@ -528,7 +555,7 @@ namespace Negri.Wot.Bot
 
             var sb = new StringBuilder();
 
-            sb.AppendLine($"Here the top {Math.Min(leaderboard.Length, 25)} players on the `{tank.Name}`, Tier {tank.Tier.ToRomanNumeral()}, {(tank.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}:");
+            sb.AppendLine($"Here the top {Math.Min(leaderboard.Length, 25)} players on the `{tank.Name}`, Tier {tank.Tier.ToRomanNumeral()}, {tank.Nation.GetDescription()}, {(tank.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}:");
 
             for (int i = 0; i < Math.Min(leaderboard.Length, 25); i++)
             {
@@ -675,7 +702,7 @@ namespace Negri.Wot.Bot
 
             var sb = new StringBuilder();
 
-            sb.AppendLine($"Here the top {Math.Min(leaderboard.Length, 25)} players from {flagCode.ToUpperInvariant()} on the `{tank.Name}`, Tier {tank.Tier.ToRomanNumeral()}, {(tank.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}:");
+            sb.AppendLine($"Here the top {Math.Min(leaderboard.Length, 25)} players from {flagCode.ToUpperInvariant()} on the `{tank.Name}`, Tier {tank.Tier.ToRomanNumeral()}, {tank.Nation.GetDescription()}, {(tank.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}:");
 
             for (int i = 0; i < Math.Min(leaderboard.Length, 25); i++)
             {
