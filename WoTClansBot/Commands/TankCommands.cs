@@ -525,7 +525,7 @@ namespace Negri.Wot.Bot
 
             var provider = new DbProvider(_connectionString);
 
-            int top = 25;
+            var top = 25;
             gamerTag = gamerTag ?? string.Empty;
             gamerTag = gamerTag.Replace("\"", "").ToLowerInvariant();
             if (!string.IsNullOrEmpty(gamerTag))
@@ -556,19 +556,30 @@ namespace Negri.Wot.Bot
             var sb = new StringBuilder();
 
             sb.AppendLine($"Here the top {Math.Min(leaderboard.Length, 25)} players on the `{tank.Name}`, Tier {tank.Tier.ToRomanNumeral()}, {tank.Nation.GetDescription()}, {(tank.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}:");
+            sb.AppendLine();
+            sb.AppendLine("```");
 
-            for (int i = 0; i < Math.Min(leaderboard.Length, 25); i++)
+            var size = Math.Min(leaderboard.Length, 25);
+            var maxGamerTag = leaderboard.Take(size).Select(l => l.GamerTag.Length).Max();
+            if (maxGamerTag < 9)
+            {
+                maxGamerTag = 9;
+            }
+            sb.AppendLine($"  # {tank.Plataform.TagName().PadRight(maxGamerTag)} {"Clan".PadRight(5)} {"Total".PadLeft(6)} {"Dir".PadLeft(6)} { "Aux".PadLeft(6)}");
+
+            for (var i = 0; i < Math.Min(leaderboard.Length, 25); i++)
             {
                 var l = leaderboard[i];
-                sb.AppendLine($"{(i + 1).ToString().PadLeft(3)}: `{l.GamerTag}`, " +
-                    $"from `{l.ClanTag}`. Dmg = {l.TotalDamage:N0} = {l.DirectDamage:N0} + {l.DamageAssisted:N0}");
+                sb.AppendLine($"{(i + 1).ToString().PadLeft(3)} {l.GamerTag.PadRight(maxGamerTag)} {l.ClanTag.PadRight(5)} {l.TotalDamage.ToString("N0").PadLeft(6)} {l.DirectDamage.ToString("N0").PadLeft(6)} {l.DamageAssisted.ToString("N0").PadLeft(6)}");
             }
+
+            sb.AppendLine("```");
 
             if (!string.IsNullOrWhiteSpace(gamerTag))
             {
                 Leader leader = null;
-                int position = 1;
-                for (int i = 0; i < leaderboard.Length; i++)
+                var position = 1;
+                for (var i = 0; i < leaderboard.Length; i++)
                 {
                     var l = leaderboard[i];
                     if (l.GamerTag.ToLowerInvariant() == gamerTag.ToLowerInvariant())
@@ -670,7 +681,7 @@ namespace Negri.Wot.Bot
 
             Log.Info($"Requested {nameof(LeaderByFlag)}({flagCode}, {tank.Plataform}.{tank.Name}, {gamerTag})");
 
-            int top = 25;
+            var top = 25;
             gamerTag = gamerTag ?? string.Empty;
             gamerTag = gamerTag.Replace("\"", "").ToLowerInvariant();
             if (!string.IsNullOrEmpty(gamerTag))
@@ -704,18 +715,30 @@ namespace Negri.Wot.Bot
 
             sb.AppendLine($"Here the top {Math.Min(leaderboard.Length, 25)} players from {flagCode.ToUpperInvariant()} on the `{tank.Name}`, Tier {tank.Tier.ToRomanNumeral()}, {tank.Nation.GetDescription()}, {(tank.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}:");
 
-            for (int i = 0; i < Math.Min(leaderboard.Length, 25); i++)
+            sb.AppendLine();
+            sb.AppendLine("```");
+
+            var size = Math.Min(leaderboard.Length, 25);
+            var maxGamerTag = leaderboard.Take(size).Select(l => l.GamerTag.Length).Max();
+            if (maxGamerTag < 9)
+            {
+                maxGamerTag = 9;
+            }
+            sb.AppendLine($"  # {tank.Plataform.TagName().PadRight(maxGamerTag)} {"Clan".PadRight(5)} {"Total".PadLeft(6)} {"Dir".PadLeft(6)} { "Aux".PadLeft(6)}");
+
+            for (var i = 0; i < Math.Min(leaderboard.Length, 25); i++)
             {
                 var l = leaderboard[i];
-                sb.AppendLine($"{(i + 1).ToString().PadLeft(3)}: `{l.GamerTag}`, " +
-                    $"from `{l.ClanTag}`. Dmg = {l.TotalDamage:N0} = {l.DirectDamage:N0} + {l.DamageAssisted:N0}");
+                sb.AppendLine($"{(i + 1).ToString().PadLeft(3)} {l.GamerTag.PadRight(maxGamerTag)} {l.ClanTag.PadRight(5)} {l.TotalDamage.ToString("N0").PadLeft(6)} {l.DirectDamage.ToString("N0").PadLeft(6)} {l.DamageAssisted.ToString("N0").PadLeft(6)}");
             }
+
+            sb.AppendLine("```");
 
             if (!string.IsNullOrWhiteSpace(gamerTag))
             {
                 Leader leader = null;
-                int position = 1;
-                for (int i = 0; i < leaderboard.Length; i++)
+                var position = 1;
+                for (var i = 0; i < leaderboard.Length; i++)
                 {
                     var l = leaderboard[i];
                     if (l.GamerTag.ToLowerInvariant() == gamerTag.ToLowerInvariant())

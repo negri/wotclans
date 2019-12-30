@@ -243,7 +243,7 @@ namespace Negri.Wot
         }
 
         /// <summary>
-        /// The site for the platafor, like https://wotclans.com.br or https://ps.wotclans.com.br
+        /// The site for the platform, like https://wotclans.com.br or https://ps.wotclans.com.br
         /// </summary>
         /// <param name="platform"></param>
         /// <returns></returns>
@@ -259,6 +259,9 @@ namespace Negri.Wot
             }
         }
 
+        /// <summary>
+        /// Returns Gamer Tag os PSN Name, according to the platform
+        /// </summary>
         public static string TagName(this Platform platform)
         {
             if (platform == Platform.PS)
