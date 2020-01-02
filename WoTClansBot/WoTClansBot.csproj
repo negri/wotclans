@@ -82,7 +82,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <Content Include="secrets.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WoTStat\WoTStat.csproj">

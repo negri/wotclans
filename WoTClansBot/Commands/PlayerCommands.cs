@@ -216,7 +216,7 @@ namespace Negri.Wot.Bot
             [Description("The minimum number of battles on the tank")] int minBattles = 1,
             [Description("The minimum tier of the tanks")] int minTier = 1,
             [Description("Nation of the tank, or *any*. Multiple values can be sent using *;* as separators")] string nationFilter = "any",
-            [Description("Type of the tank, or *any*. Multiple values can be sent using *;* as separators")] string typeFiler = "any")
+            [Description("Type of the tank, or *any*. Multiple values can be sent using *;* as separators")] string typeFilter = "any")
         {
             if (!await CanExecute(ctx, Features.Players))
             {
@@ -237,7 +237,7 @@ namespace Negri.Wot.Bot
                 return;
             }
 
-            Log.Debug($"Requesting {nameof(TankerMedalRate)}({gamerTag}, {medal}, {minBattles}, {minTier}, {nationFilter}, {typeFiler})...");
+            Log.Debug($"Requesting {nameof(TankerMedalRate)}({gamerTag}, {medal}, {minBattles}, {minTier}, {nationFilter}, {typeFilter})...");
 
             try
             {
@@ -263,9 +263,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "usa,uk,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "medium,heavy";
+                        typeFilter = "medium,heavy";
                     }
                 }
                 else if (medal.EqualsCiAi("chisel6"))
@@ -279,9 +279,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "usa,uk,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "medium,heavy";
+                        typeFilter = "medium,heavy";
                     }
                 }
                 else if (medal.EqualsCiAi("cruncher6"))
@@ -295,9 +295,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "germany,usa,czechoslovakia,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "medium,heavy";
+                        typeFilter = "medium,heavy";
                     }
                 }
                 else if (medal.EqualsCiAi("jammer5"))
@@ -311,9 +311,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "usa,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "medium,heavy";
+                        typeFilter = "medium,heavy";
                     }
                 }
                 else if (medal.EqualsCiAi("jammer6"))
@@ -327,9 +327,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "ussr,usa,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "medium,TankDestroyer";
+                        typeFilter = "medium,TankDestroyer";
                     }
                 }
                 else if (medal.EqualsCiAi("plaguebringer6demolition"))
@@ -343,9 +343,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "usa,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "medium,TankDestroyer";
+                        typeFilter = "medium,TankDestroyer";
                     }
                 }
                 else if (medal.EqualsCiAi("plaguebringer6arsonist"))
@@ -359,9 +359,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "usa,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "medium,TankDestroyer";
+                        typeFilter = "medium,TankDestroyer";
                     }
                 }
                 else if (medal.EqualsCiAi("stinger5"))
@@ -375,9 +375,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "france,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "Medium,Light";
+                        typeFilter = "Medium,Light";
                     }
                 }
                 else if (medal.EqualsCiAi("stinger6"))
@@ -391,9 +391,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "usa,france,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "Light";
+                        typeFilter = "Light";
                     }
                 }
                 else if (medal.EqualsCiAi("longReach5"))
@@ -407,9 +407,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "germany,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "Heavy";
+                        typeFilter = "Heavy";
                     }
                 }
                 else if (medal.EqualsCiAi("longReach6"))
@@ -423,9 +423,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "uk,ussr,germany,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "Heavy";
+                        typeFilter = "Heavy";
                     }
                 }
                 else if (medal.EqualsCiAi("roundabout6demolition"))
@@ -439,9 +439,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "ussr,germany,usa,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "light,TankDestroyer";
+                        typeFilter = "light,TankDestroyer";
                     }
                 }
                 else if (medal.EqualsCiAi("roundabout6arsonist"))
@@ -455,9 +455,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "ussr,germany,usa,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "light,TankDestroyer";
+                        typeFilter = "light,TankDestroyer";
                     }
                 }
                 else if (medal.EqualsCiAi("lawgiver5"))
@@ -471,9 +471,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "germany,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "Medium,Heavy,TankDestroyer";
+                        typeFilter = "Medium,Heavy,TankDestroyer";
                     }
                 }
                 else if (medal.EqualsCiAi("lawgiver6"))
@@ -487,9 +487,9 @@ namespace Negri.Wot.Bot
                     {
                         nationFilter = "germany,uk,mercenaries";
                     }
-                    if (string.IsNullOrEmpty(typeFiler) || typeFiler.EqualsCiAi("any"))
+                    if (string.IsNullOrEmpty(typeFilter) || typeFilter.EqualsCiAi("any"))
                     {
-                        typeFiler = "Medium,Light";
+                        typeFilter = "Medium,Light";
                     }
                 }
 
@@ -573,9 +573,9 @@ namespace Negri.Wot.Bot
                     tanksWithMedal = tanksWithMedal.Where(t => filters.Contains(t.Nation)).ToList();
                 }
 
-                if (!string.IsNullOrWhiteSpace(typeFiler) && !typeFiler.EqualsCiAi("any"))
+                if (!string.IsNullOrWhiteSpace(typeFilter) && !typeFilter.EqualsCiAi("any"))
                 {
-                    var filtersText = typeFiler.Split(new[] { ',', ';', '-', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var filtersText = typeFilter.Split(new[] { ',', ';', '-', ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     var filters = new HashSet<TankType>();
                     foreach (var filterText in filtersText)
                     {

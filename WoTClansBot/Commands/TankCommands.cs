@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace Negri.Wot.Bot
     public class TankCommands : CommandsBase
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(TankCommands));
+        private static readonly Random Rand = new Random();
 
         private readonly string _connectionString;
 
@@ -154,6 +156,8 @@ namespace Negri.Wot.Bot
 
             await ctx.RespondAsync($"Valid nations are: {string.Join(", ", NationExtensions.GetGameNations().Select(n => $"`{n}`"))}");                        
         }
+
+
 
         [Command("types")]
         [Aliases("type")]
@@ -791,6 +795,193 @@ namespace Negri.Wot.Bot
             };
 
             await ctx.RespondAsync("", embed: embed);
+        }
+
+
+        [Command("randomTank")]
+        [Aliases("randTank")]
+        [Description("Picks a random tank, so you can chase a objective, or not...")]
+        public async Task RandTank(CommandContext ctx,
+            [Description("The minimum tier of the tanks")] int minTier = 5,
+            [Description("The maximum tier of the tanks")] int maxTier = 10,
+            [Description("Nation of the tank, or *any*. Multiple values can be sent using *;* as separators")] string nationFilter = "any",
+            [Description("Type of the tank, or *any*. Multiple values can be sent using *;* as separators")] string typeFilter = "any",
+            [Description("*Premium*, *regular*, or *any*")] string premiumFilter = "any",
+            [Description("The *gamer tag* or *PSN Name*, so it only returns tanks that the player have (or had)")] string gamerTag = null,
+            [Description("If *true* then a tank that the given player **hadn't** will be picked")] bool notOnPlayer = false)
+        {
+            // Yeah... it's a Player feature but it uses more calculations for tanks...
+            if (!await CanExecute(ctx, Features.Tanks))
+            {
+                return;
+            }
+
+            if (minTier < 1)
+            {
+                await ctx.RespondAsync("The minimum tier is 1.");
+                return;
+            }
+
+            if (minTier > 10)
+            {
+                await ctx.RespondAsync("The maximum tier is 1.");
+                return;
+            }
+
+            if (maxTier < 1)
+            {
+                await ctx.RespondAsync("The minimum tier is 1.");
+                return;
+            }
+
+            if (maxTier > 10)
+            {
+                await ctx.RespondAsync("The maximum tier is 1.");
+                return;
+            }
+
+            if (maxTier < minTier)
+            {
+                var temp = maxTier;
+                maxTier = minTier;
+                minTier = temp;
+            }
+
+            await ctx.TriggerTypingAsync();
+
+            var cfg = GuildConfiguration.FromGuild(ctx.Guild);
+
+            Log.Debug($"Requesting {nameof(RandTank)}({minTier}, {maxTier}, {nationFilter}, {typeFilter}, {premiumFilter}, {gamerTag ?? string.Empty}, {notOnPlayer})...");
+
+            try
+            {
+                var provider = new DbProvider(_connectionString);
+
+                var allTanks = provider.EnumTanks(cfg.Plataform).Where(t => (t.Tier >= minTier) && (t.Tier <= maxTier)).ToList();
+
+                if (!string.IsNullOrWhiteSpace(nationFilter) && !nationFilter.EqualsCiAi("any"))
+                {
+                    var filtersText = nationFilter.Split(new[] { ',', ';', '-', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var filters = new HashSet<Nation>();
+                    foreach (var filterText in filtersText)
+                    {
+                        if (Enum.TryParse<Nation>(filterText, true, out var nation))
+                        {
+                            filters.Add(nation);
+                        }
+                        else
+                        {
+                            await ctx.RespondAsync(
+                                $"Sorry, {ctx.User.Mention}, the nation `{filterText}` is not a valid nation. Valid nations are: {string.Join(", ", NationExtensions.GetGameNations().Select(n => $"`{n.ToString().ToLowerInvariant()}`"))}.");
+                            return;
+                        }
+                    }
+
+                    allTanks = allTanks.Where(t => filters.Contains(t.Nation)).ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(typeFilter) && !typeFilter.EqualsCiAi("any"))
+                {
+                    var filtersText = typeFilter.Split(new[] { ',', ';', '-', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var filters = new HashSet<TankType>();
+                    foreach (var filterText in filtersText)
+                    {
+                        if (Enum.TryParse<TankType>(filterText, true, out var tankType))
+                        {
+                            filters.Add(tankType);
+                        }
+                        else
+                        {
+                            await ctx.RespondAsync(
+                                $"Sorry, {ctx.User.Mention}, the tank type `{filterText}` is not a valid type. Valid tank types are: {string.Join(", ", TankTypeExtensions.GetGameTankTypes().Select(n => $"`{n.ToString().ToLowerInvariant()}`"))}.");
+                            return;
+                        }
+                    }
+
+                    allTanks = allTanks.Where(t => filters.Contains(t.Type)).ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(premiumFilter) && !premiumFilter.EqualsCiAi("any"))
+                {
+                    if (premiumFilter.EqualsCiAi("regular"))
+                    {
+                        allTanks = allTanks.Where(t => !t.IsPremium).ToList();
+                    }
+                    else if (premiumFilter.EqualsCiAi("premium"))
+                    {
+                        allTanks = allTanks.Where(t => t.IsPremium).ToList();
+                    }
+                    else
+                    {
+                        await ctx.RespondAsync(
+                            $"Sorry, {ctx.User.Mention}, the premium filter `{premiumFilter}` is not a valid value. Valid values are: `Regular`, `Premium` or `Any`.");
+                        return;
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(gamerTag))
+                {
+                    var playerCommands = new PlayerCommands();
+                    var player = await playerCommands.GetPlayer(ctx, gamerTag);
+                    if (player == null)
+                    {
+                        Log.Debug($"Could not find player {gamerTag}");
+                        await ctx.RespondAsync("I could not find a tanker " +
+                                               $"with the Gamer Tag `{gamerTag}` on the Database, {ctx.User.Mention}. I may not track this player, or the Gamer Tag is wrong.");
+                        return;
+                    }
+                    gamerTag = player.Name;
+
+                    var playerTanks = player.Performance.All.Select(kv => kv.Key).ToHashSet();
+
+                    allTanks = notOnPlayer
+                        ? allTanks.Where(t => !playerTanks.Contains(t.TankId)).ToList()
+                        : allTanks.Where(t => playerTanks.Contains(t.TankId)).ToList();
+
+                }
+
+                if (allTanks.Count <= 0)
+                {
+                    await ctx.RespondAsync(
+                        $"Sorry, {ctx.User.Mention}, there are no tanks with the given criteria.");
+                    return;
+                }
+
+                var number = Rand.Next(0, allTanks.Count);
+
+                var tank = allTanks[number];
+
+                var platformPrefix = tank.Plataform == Platform.PS ? "ps." : string.Empty;
+
+                var sb = new StringBuilder();
+
+                sb.AppendLine($"The random tank is the `{tank.Name}`, Tier {tank.Tier.ToRomanNumeral()}, {tank.Nation.GetDescription()}, {(tank.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}!");
+                
+                var embed = new DiscordEmbedBuilder
+                {
+                    Title = $"{tank.Name} is the random Tank",
+                    Description = sb.ToString(),
+                    Color = DiscordColor.Gray,
+                    ThumbnailUrl = tank.SmallImageUrl,
+                    Url = $"https://{platformPrefix}wotclans.com.br/Tanks/{tank.TankId}",
+                    Author = new DiscordEmbedBuilder.EmbedAuthor
+                    {
+                        Name = "WoTClans",
+                        Url = $"https://{platformPrefix}wotclans.com.br"
+                    },
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = $"Picked at {DateTime.UtcNow:yyyy-MM-dd HH:mm}."
+                    }
+                };
+
+                await ctx.RespondAsync("", embed: embed);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error on {nameof(RandTank)}({minTier}, {maxTier}, {nationFilter}, {typeFilter}, {premiumFilter}, {gamerTag ?? string.Empty}, {notOnPlayer})", ex);
+                await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
+            }
         }
     }
 }
