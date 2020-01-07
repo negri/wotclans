@@ -45,6 +45,11 @@ namespace Negri.Wot.Tanks
         public Wn8TankExpectedValuesOrigin Origin { get; set; } = Wn8TankExpectedValuesOrigin.Source;
 
         /// <summary>
+        /// The Origin Name
+        /// </summary>
+        public string OriginName => Origin.ToString();
+
+        /// <summary>
         /// Calcula o WN8 em relação a esses valores
         /// </summary>
         /// <param name="damage">Dano direto por partida</param>

@@ -1,3 +1,5 @@
+using System.Runtime.Serialization;
+
 namespace Negri.Wot
 {
     public class ClanPlataform

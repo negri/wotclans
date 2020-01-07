@@ -1,12 +1,17 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace Negri.Wot
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class ClanSummary : ClanPlataform
+    [DataContract]
+    public class ClanSummary
     {
-        public ClanSummary(Clan c) : base(c.Plataform, c.ClanId, c.ClanTag)
+        public ClanSummary(Clan c)
         {
+            Plataform = c.Plataform;
+            ClanTag = c.ClanTag;
+            ClanId = c.ClanId;
             Country = c.Country;
             ActivePlayers = c.Active;
             ActiveBattles = c.ActiveBattles;
@@ -21,28 +26,49 @@ namespace Negri.Wot
             Name = c.Name;
         }
 
+        [DataMember]
+        public Platform Plataform { get; protected set; }
+
+        [DataMember]
+        public string ClanTag { get; protected set; }
+
+        [DataMember]
+        public long ClanId { get; protected set; }
+
+        [DataMember]
         public string Name { get; set; }
 
+        [DataMember]
         public double TotalWn8 { get; set; }
 
+        [DataMember]
         public double TotalWinRate { get; set; }
 
+        [DataMember]
         public int TotalBattles { get; set; }
 
+        [DataMember]
         public int TotalPlayers { get; set; }
 
+        [DataMember]
         public double WN8t7 { get; set; }
 
+        [DataMember]
         public double WN8t15 { get; set; }
 
+        [DataMember]
         public double WN8a { get; set; }
 
+        [DataMember]
         public double ActiveWinRate { get; set; }
 
+        [DataMember]
         public int ActiveBattles { get; set; }
 
+        [DataMember]
         public int ActivePlayers { get; set; }
 
+        [DataMember]
         public string Country { get; set; }
     }
 }

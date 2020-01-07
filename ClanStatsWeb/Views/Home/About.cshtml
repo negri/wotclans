@@ -265,10 +265,14 @@
         <p>
             The current APIs are
             <ul>
-                <li><a rel="nofollow" href="~/api/clan">Clans</a>: All the clans on the system;</li>
+                <li><a rel="nofollow" href="~/api/clan">Clans</a>: All the clans on the system. This endpoint supports <a href="https://docs.microsoft.com/en-us/odata/concepts/queryoptions-overview">OData</a> queries, like <a rel="nofollow" href="~/api/clan?$filter=WN8t15 gt 1500 and WN8t15 lt 2450&$orderby=ClanTag&$skip=10&$top=5">this</a>;</li>
                 <li><a rel="nofollow" href="~/api/clan/UP">Clan Detail</a>: Details on a particular Clan;</li>
                 <li><a rel="nofollow" href="~/api/tanks/moe">MoE</a>: The estimated MoE values;</li>
+                <li><a rel="nofollow" href="~/api/tanks/moe?tankId=34337">MoE by Tank Id</a>: The estimated MoE values for a given tank by its id;</li>
+                <li><a rel="nofollow" href="~/api/tanks/moe?tank=T34 Black">MoE by Tank Name</a>: The estimated MoE values for a given tank by its short name;</li>
                 <li><a rel="nofollow" href="~/api/tanks/wn8">WN8</a>: The expected values for WN8 calculation.</li>
+                <li><a rel="nofollow" href="~/api/tanks/wn8?tankId=34337">WN8</a>: The expected values for WN8 calculation for a given tank by its id.</li>
+                <li><a rel="nofollow" href="~/api/tanks/wn8?tank=T34 Black">WN8</a>: The expected values for WN8 calculation for a given tank by its short name.</li>
             </ul>
         </p>
         <h4>Source Code</h4>

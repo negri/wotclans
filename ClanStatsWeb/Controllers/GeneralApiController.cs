@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Http;
@@ -390,12 +391,12 @@ namespace Negri.Wot.Site.Controllers
             var getter = HttpRuntime.Cache.Get("FileGetter", GlobalHelper.CacheMinutes,
                 () => new FileGetter(GlobalHelper.DataFolder));
 
-            var moes = getter.GetTanksMoe(date);
+            var allTanks = getter.GetTanksMoe(date);
 
-            TankMoe[] tanks = null;
+            Dictionary<long, TankMoe> tanks = null;
             if (tankId.HasValue)
             {
-                if (!moes.ContainsKey(tankId.Value))
+                if (!allTanks.ContainsKey(tankId.Value))
                 {
                     throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
                     {
@@ -403,20 +404,20 @@ namespace Negri.Wot.Site.Controllers
                         ReasonPhrase = "Tank not found."
                     });
                 }
-                tanks = new[] {moes[tankId.Value]};
+                tanks = new Dictionary<long, TankMoe> {{tankId.Value, allTanks[tankId.Value]}};
             }
             else if (!string.IsNullOrWhiteSpace(tank))
             {
-                var byName = moes.Values.FirstOrDefault(t => t.Name.EqualsCiAi(tank));
+                var byName = allTanks.Values.FirstOrDefault(t => t.Name.EqualsCiAi(tank));
                 if (byName != null)
                 {
-                    tanks = new[] { byName };
+                    tanks = new Dictionary<long, TankMoe> { { byName.TankId, byName } };
                 }
                 else
                 {
-                    var byFullName = moes.Values
-                        .Where(t => t.FullName.ToLowerInvariant().RemoveDiacritics().Contains(tank.ToLowerInvariant().RemoveDiacritics())).ToArray();
-                    if (byFullName.Length > 0)
+                    var byFullName = allTanks.Values
+                        .Where(t => t.FullName.ToLowerInvariant().RemoveDiacritics().Contains(tank.ToLowerInvariant().RemoveDiacritics())).ToDictionary(t => t.TankId);
+                    if (byFullName.Count > 0)
                     {
                         tanks = byFullName;
                     }
@@ -424,8 +425,7 @@ namespace Negri.Wot.Site.Controllers
             }
             else
             {
-                tanks = moes.Values.Where(t => t.Tier >= 5).OrderByDescending(t => t.Tier).ThenBy(t => t.Type)
-                    .ThenBy(t => t.Nation).ThenBy(t => t.Nation).ToArray();
+                tanks = allTanks.Values.Where(t => t.Tier >= 5).ToDictionary(t => t.TankId);
             }
 
             if (tanks == null)
@@ -439,11 +439,11 @@ namespace Negri.Wot.Site.Controllers
 
             var r = new
             {
-                moes.First().Value.Date,
-                PreviousDay = moes.First().Value.Date.AddDays(-1).Date,
-                PreviousWeek = moes.First().Value.Date.AddDays(-7).Date,
-                PreviousMonth = moes.First().Value.Date.AddDays(-7 * 4).Date,
-                Tanks = tanks
+                allTanks.First().Value.Date,
+                PreviousDay = allTanks.First().Value.Date.AddDays(-1).Date,
+                PreviousWeek = allTanks.First().Value.Date.AddDays(-7).Date,
+                PreviousMonth = allTanks.First().Value.Date.AddDays(-7 * 4).Date,
+                Tanks = tanks.Values.ToArray()
             };
 
             return Ok(r);
@@ -452,7 +452,7 @@ namespace Negri.Wot.Site.Controllers
 
 
         [HttpGet]
-        public IHttpActionResult GetWN8(DateTime? date = null)
+        public IHttpActionResult GetWN8(DateTime? date = null, string tank = null, long? tankId = null)
         {
             var getter = HttpRuntime.Cache.Get("FileGetter", GlobalHelper.CacheMinutes,
                 () => new FileGetter(GlobalHelper.DataFolder));
@@ -467,8 +467,62 @@ namespace Negri.Wot.Site.Controllers
                     ReasonPhrase = "WN8 expected values not found"
                 });
             }
+
+            Dictionary<long, Wn8TankExpectedValues> allTanks = wn8.AllTanks.ToDictionary(t => t.TankId);
+
+            Dictionary<long, Wn8TankExpectedValues> tanks = null;
+            if (tankId.HasValue)
+            {
+                if (!allTanks.ContainsKey(tankId.Value))
+                {
+                    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
+                    {
+                        Content = new StringContent($"Can't find a tank with id {tankId.Value} on the MoE list."),
+                        ReasonPhrase = "Tank not found."
+                    });
+                }
+                tanks = new Dictionary<long, Wn8TankExpectedValues> { { tankId.Value, allTanks[tankId.Value] } };
+            }
+            else if (!string.IsNullOrWhiteSpace(tank))
+            {
+                var byName = allTanks.Values.FirstOrDefault(t => t.Name.EqualsCiAi(tank));
+                if (byName != null)
+                {
+                    tanks = new Dictionary<long, Wn8TankExpectedValues> { { byName.TankId, byName } };
+                }
+                else
+                {
+                    var byFullName = allTanks.Values
+                        .Where(t => t.FullName.ToLowerInvariant().RemoveDiacritics().Contains(tank.ToLowerInvariant().RemoveDiacritics())).ToDictionary(t => t.TankId);
+                    if (byFullName.Count > 0)
+                    {
+                        tanks = byFullName;
+                    }
+                }
+            }
+            else
+            {
+                tanks = allTanks;
+            }
+
+            if (tanks == null)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
+                {
+                    Content = new StringContent("Can't find any tank with that matches the query."),
+                    ReasonPhrase = "Tank not found."
+                });
+            }
+
+            var r = new
+            {
+                Date = wn8.Date,
+                Source = wn8.Source,
+                Version = wn8.Version,
+                Tanks = tanks.Values.ToArray()
+            };
            
-            return Ok(wn8);
+            return Ok(r);
         }
 
         #endregion
