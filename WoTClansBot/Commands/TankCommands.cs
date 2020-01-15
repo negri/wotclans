@@ -154,7 +154,7 @@ namespace Negri.Wot.Bot
 
             Log.Debug($"Requesting {nameof(GetNations)}()...");
 
-            await ctx.RespondAsync($"Valid nations are: {string.Join(", ", NationExtensions.GetGameNations().Select(n => $"`{n}`"))}");                        
+            await ctx.RespondAsync($"Valid nations are: {string.Join(", ", NationExtensions.GetGameNations().Select(n => $"`{n}`"))}");
         }
 
 
@@ -176,7 +176,7 @@ namespace Negri.Wot.Bot
 
         [Command("tankerTank")]
         [Description("The history of a tanker on a tank")]
-        public async Task TankerTank(CommandContext ctx,    
+        public async Task TankerTank(CommandContext ctx,
             [Description("The *gamer tag* or *PSN Name*. If it has spaces, enclose it on quotes.")] string gamerTag,
             [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on quotes.")][RemainingText] string tankName)
         {
@@ -240,7 +240,7 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
-                var wn8Expected = provider.GetWn8ExpectedValues(player.Plataform);                
+                var wn8Expected = provider.GetWn8ExpectedValues(player.Plataform);
 
                 foreach (var h in hist)
                 {
@@ -286,7 +286,7 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"Total Damage: {ptr.TotalDamagePerBattle:N0} ");
                 sb.AppendLine($"Direct Damage: {ptr.DirectDamagePerBattle:N0} ");
                 sb.AppendLine($"Assisted Damage: {ptr.DamageAssistedPerBattle:N0} ");
-                sb.AppendLine($"WN8: {ptr.Wn8:N0}; Win Rate: {ptr.WinRate:P1}");               
+                sb.AppendLine($"WN8: {ptr.Wn8:N0}; Win Rate: {ptr.WinRate:P1}");
                 sb.AppendLine($"Battles: {ptr.Battles:N0}; Hours Battling: {ptr.BattleLifeTime.TotalHours:N0}");
                 sb.AppendLine($"Max Kills: {ptr.MaxFrags:N1}; Avg Kills: {ptr.KillsPerBattle:N1}");
                 if (tr.LastMonth != null)
@@ -302,7 +302,7 @@ namespace Negri.Wot.Bot
                 }
 
                 var platformPrefix = tr.Plataform == Platform.PS ? "ps." : string.Empty;
-                
+
                 var color = ptr.Wn8.ToColor();
 
                 var embed = new DiscordEmbedBuilder
@@ -343,79 +343,94 @@ namespace Negri.Wot.Bot
                 return;
             }
 
-            Log.Info($"Requesting {nameof(Damage)}({tankName})");
-
-            await ctx.TriggerTypingAsync();
-
-            var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-
-            var tank = FindTank(cfg.Plataform, tankName, out var exact);
-
-            if (tank == null)
+            try
             {
-                await ctx.RespondAsync($"Can't find a tank with `{tankName}` on the name, {ctx.User.Mention}.");
-                return;
-            }
-            
+                Log.Info($"Requesting {nameof(Damage)}({tankName})");
 
-            var provider = new DbProvider(_connectionString);
-            var tr = provider.GetTanksReferences(tank.Plataform, null, tank.TankId, false, false, false).FirstOrDefault();
+                await ctx.TriggerTypingAsync();
 
-            if (tr == null)
-            {
-                await ctx.RespondAsync($"Sorry, there is no tank statistics for the `{tank.Name}`, {ctx.User.Mention}.");
-                return;
-            }
+                var cfg = GuildConfiguration.FromGuild(ctx.Guild);
 
-            var sb = new StringBuilder();
+                var tank = FindTank(cfg.Plataform, tankName, out var exact);
 
-            sb.AppendLine($"Here the **Target Damage** information about the `{tr.Name}`, Tier {tr.Tier.ToRomanNumeral()}, {tr.Nation.GetDescription()}, {(tr.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}:");
-
-            sb.AppendLine();
-            sb.AppendLine("```");
-            sb.AppendLine( "Rating   WN8  Damage Piercings Shots");
-            sb.AppendLine($"Average {    ((int)Wn8Rating.Average).ToString("N0").PadLeft(5)} {    tr.TargetDamageAverage.ToString("N0").PadLeft(6)}        {    tr.TargetDamageAveragePiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageAverageShots.ToString("N0").PadLeft(2)}");
-            sb.AppendLine($"Good    {       ((int)Wn8Rating.Good).ToString("N0").PadLeft(5)} {       tr.TargetDamageGood.ToString("N0").PadLeft(6)}        {       tr.TargetDamageGoodPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageGoodShots.ToString("N0").PadLeft(2)}");
-            sb.AppendLine($"Great   {      ((int)Wn8Rating.Great).ToString("N0").PadLeft(5)} {      tr.TargetDamageGreat.ToString("N0").PadLeft(6)}        {      tr.TargetDamageGreatPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageGreatShots.ToString("N0").PadLeft(2)}");
-            sb.AppendLine($"Unicum  {     ((int)Wn8Rating.Unicum).ToString("N0").PadLeft(5)} {     tr.TargetDamageUnicum.ToString("N0").PadLeft(6)}        {     tr.TargetDamageUnicumPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageUnicumShots.ToString("N0").PadLeft(2)}");
-            sb.AppendLine($"Super   {((int)Wn8Rating.SuperUnicum).ToString("N0").PadLeft(5)} {tr.TargetDamageSuperUnicum.ToString("N0").PadLeft(6)}        {tr.TargetDamageSuperUnicumPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageSuperUnicumShots.ToString("N0").PadLeft(2)}");
-            sb.AppendLine("```");
-            sb.AppendLine();
-
-            sb.AppendLine($"Recent Averages: WN8: {tr.LastMonth.AverageWn8:N0}, Win Rate: {tr.LastMonth.WinRatio:P1}, Direct Dmg: {tr.LastMonth.DamageDealt:N0}, " +
-                $"Total Dmg: {tr.LastMonth.TotalDamage:N0}, Spots: {tr.LastMonth.Spotted:N1}, Kills: {tr.LastMonth.Kills:N1}.");
-
-            var emoji = DiscordEmoji.FromName(ctx.Client, ":exclamation:");
-
-            if (!exact)
-            {
-                sb.AppendLine();
-                sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in quotes.");
-            }
-
-            var platformPrefix = tr.Plataform == Platform.PS ? "ps." : string.Empty;
-
-            var color = tr.LastMonth.AverageWn8.ToColor();
-
-            var embed = new DiscordEmbedBuilder
-            {
-                Title = $"{tank.Name} Target Damage",
-                Description = sb.ToString(),
-                Color = new DiscordColor(color.R, color.G, color.B),
-                ThumbnailUrl = tank.SmallImageUrl,
-                Url = tank.Url,
-                Author = new DiscordEmbedBuilder.EmbedAuthor
+                if (tank == null)
                 {
-                    Name = "WoTClans",
-                    Url = $"https://{platformPrefix}wotclans.com.br"
-                },
-                Footer = new DiscordEmbedBuilder.EmbedFooter
-                {
-                    Text = $"Calculated at {tr.Date:yyyy-MM-dd} from {tr.LastMonth.TotalPlayers:N0} recent players and {tr.LastMonth.TotalBattles:N0} battles."
+                    await ctx.RespondAsync($"Can't find a tank with `{tankName}` on the name, {ctx.User.Mention}.");
+                    return;
                 }
-            };
 
-            await ctx.RespondAsync("", embed: embed);
+
+                var provider = new DbProvider(_connectionString);
+                var tr = provider.GetTanksReferences(tank.Plataform, null, tank.TankId, false, false, false).FirstOrDefault();
+
+                if (tr == null)
+                {
+                    await ctx.RespondAsync($"Sorry, there is no tank statistics for the `{tank.Name}`, {ctx.User.Mention}.");
+                    return;
+                }
+
+                var sb = new StringBuilder();
+
+                sb.AppendLine($"Here the **Target Damage** information about the `{tr.Name}`, Tier {tr.Tier.ToRomanNumeral()}, {tr.Nation.GetDescription()}, {(tr.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}:");
+
+                sb.AppendLine();
+                sb.AppendLine("```");
+                sb.AppendLine("Rating   WN8  Damage Piercings Shots");
+                sb.AppendLine($"Average {    ((int)Wn8Rating.Average).ToString("N0").PadLeft(5)} {    tr.TargetDamageAverage.ToString("N0").PadLeft(6)}        {    tr.TargetDamageAveragePiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageAverageShots.ToString("N0").PadLeft(2)}");
+                sb.AppendLine($"Good    {       ((int)Wn8Rating.Good).ToString("N0").PadLeft(5)} {       tr.TargetDamageGood.ToString("N0").PadLeft(6)}        {       tr.TargetDamageGoodPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageGoodShots.ToString("N0").PadLeft(2)}");
+                sb.AppendLine($"Great   {      ((int)Wn8Rating.Great).ToString("N0").PadLeft(5)} {      tr.TargetDamageGreat.ToString("N0").PadLeft(6)}        {      tr.TargetDamageGreatPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageGreatShots.ToString("N0").PadLeft(2)}");
+                sb.AppendLine($"Unicum  {     ((int)Wn8Rating.Unicum).ToString("N0").PadLeft(5)} {     tr.TargetDamageUnicum.ToString("N0").PadLeft(6)}        {     tr.TargetDamageUnicumPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageUnicumShots.ToString("N0").PadLeft(2)}");
+                sb.AppendLine($"Super   {((int)Wn8Rating.SuperUnicum).ToString("N0").PadLeft(5)} {tr.TargetDamageSuperUnicum.ToString("N0").PadLeft(6)}        {tr.TargetDamageSuperUnicumPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageSuperUnicumShots.ToString("N0").PadLeft(2)}");
+                sb.AppendLine("```");
+                sb.AppendLine();
+
+                if (tr.LastMonth != null)
+                {
+                    sb.AppendLine($"Recent Averages: WN8: {tr.LastMonth.AverageWn8:N0}, Win Rate: {tr.LastMonth.WinRatio:P1}, Direct Dmg: {tr.LastMonth.DamageDealt:N0}, " +
+                                  $"Total Dmg: {tr.LastMonth.TotalDamage:N0}, Spots: {tr.LastMonth.Spotted:N1}, Kills: {tr.LastMonth.Kills:N1}.");
+                    sb.AppendLine();
+                }
+                sb.AppendLine($"Overall Averages: WN8: {tr.AverageWn8:N0}, Win Rate: {tr.WinRatio:P1}, Direct Dmg: {tr.DamageDealt:N0}, " +
+                              $"Total Dmg: {tr.TotalDamage:N0}, Spots: {tr.Spotted:N1}, Kills: {tr.Kills:N1}.");
+
+                var emoji = DiscordEmoji.FromName(ctx.Client, ":exclamation:");
+
+                if (!exact)
+                {
+                    sb.AppendLine();
+                    sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in quotes.");
+                }
+
+                var platformPrefix = tr.Plataform == Platform.PS ? "ps." : string.Empty;
+
+                var color = (tr.LastMonth?.AverageWn8 ?? tr.AverageWn8).ToColor();
+
+                var embed = new DiscordEmbedBuilder
+                {
+                    Title = $"{tank.Name} Target Damage",
+                    Description = sb.ToString(),
+                    Color = new DiscordColor(color.R, color.G, color.B),
+                    ThumbnailUrl = tank.SmallImageUrl,
+                    Url = tank.Url,
+                    Author = new DiscordEmbedBuilder.EmbedAuthor
+                    {
+                        Name = "WoTClans",
+                        Url = $"https://{platformPrefix}wotclans.com.br"
+                    },
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = $"Calculated at {tr.Date:yyyy-MM-dd} from {tr.LastMonth?.TotalPlayers ?? tr.TotalPlayers:N0} recent players and {tr.LastMonth?.TotalBattles ?? tr.TotalBattles:N0} battles."
+                    }
+                };
+
+                await ctx.RespondAsync("", embed: embed);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error in {nameof(Damage)}({tankName})", ex);
+                await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
+                return;
+            }
         }
 
 
@@ -441,7 +456,7 @@ namespace Negri.Wot.Bot
             {
                 await ctx.RespondAsync($"Can't find a tank with `{tankName}` on the name, {ctx.User.Mention}.");
                 return;
-            }            
+            }
 
             var provider = new DbProvider(_connectionString);
             var moe = provider.GetMoe(tank.Plataform, null, tank.TankId).FirstOrDefault();
@@ -548,7 +563,7 @@ namespace Negri.Wot.Bot
 
             Log.Info($"Requested {nameof(Leader)}({tank.Plataform}.{tank.Name}, {gamerTag})");
 
-            
+
             var leaderboard = provider.GetLeaderboard(tank.Plataform, tank.TankId, top).ToArray();
 
             if (!leaderboard.Any())
@@ -705,7 +720,7 @@ namespace Negri.Wot.Bot
                 }
             }
 
-            
+
             var leaderboard = provider.GetLeaderboard(tank.Plataform, tank.TankId, top, flagCode).Where(l => (l.ClanFlag ?? string.Empty)
                 .ToLowerInvariant() == flagCode).ToArray();
 
@@ -956,7 +971,7 @@ namespace Negri.Wot.Bot
                 var sb = new StringBuilder();
 
                 sb.AppendLine($"The random tank is the `{tank.Name}`, Tier {tank.Tier.ToRomanNumeral()}, {tank.Nation.GetDescription()}, {(tank.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}!");
-                
+
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = $"{tank.Name} is the random Tank",
