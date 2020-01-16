@@ -15,6 +15,7 @@ using Negri.Wot.Mail;
 using Negri.Wot.Sql;
 using Negri.Wot.Tanks;
 using Newtonsoft.Json;
+using Tank = Negri.Wot.WgApi.Tank;
 
 namespace Negri.Wot
 {
@@ -350,13 +351,21 @@ namespace Negri.Wot
         {
             Debug.Assert(mailSender != null);
 
-            // Obtem os valores esperados de WN8
+            // Obtém os valores esperados de WN8
             if ((DateTime.UtcNow.Hour % 4) == 1)
             {
                 HandleWn8ExpectedValues(Platform.XBOX, provider, resultDirectory, ftpPutterXbox, recorder, fetcher);
                 HandleWn8ExpectedValues(Platform.PS,   provider, resultDirectoryPs, ftpPutterPs, recorder, fetcher);
             }
-            
+
+            // 2nd hour of every day retrieve PC Tanks
+            if (DateTime.UtcNow.Hour == 2)
+            {
+                Log.Info("Retrieving PC Tanks...");
+                recorder.Set(fetcher.GetTanks(Platform.PC));
+                Log.Debug("PC Tanks saved on Database");
+            }
+
             if (calculateMoe)
             {
                 CalculateMoE(moeLastDateXbox, moeLastDatePs, provider, recorder, mailSender, resultDirectory, resultDirectoryPs, 
