@@ -37,7 +37,7 @@ namespace Negri.Wot.Site
         public static PlayerDataOrigin DefaultPlayerDetails { get; set; } = PlayerDataOrigin.WotInfo;
 
         /// <summary>
-        /// A lingua que esta sendo servida
+        /// A língua que esta sendo servida
         /// </summary>
         public static string Language
         {

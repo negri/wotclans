@@ -34,7 +34,7 @@ namespace UtilityProgram
         {
             try
             {
-                GetAllTanks(Platform.PC);
+                ExportResString();
             }
             catch (Exception ex)
             {
@@ -50,7 +50,7 @@ namespace UtilityProgram
         /// </summary>
         private static void PopulateAllMedals()
         {
-            string cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
+            var cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
             var fetcher = new Fetcher(cacheDirectory)
             {
                 WebCacheAge = TimeSpan.FromMinutes(15),
@@ -65,8 +65,8 @@ namespace UtilityProgram
             var maxHeroInformation = gameMedals.Values.Max(m => m.HeroInformation?.Length ?? 0);
             var maxCondition = gameMedals.Values.Max(m => m.Condition?.Length ?? 0);
 
-            string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            DbRecorder recorder = new DbRecorder(connectionString);
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var recorder = new DbRecorder(connectionString);
             recorder.Set(gameMedals.Values);
 
         }
@@ -77,7 +77,7 @@ namespace UtilityProgram
         /// </summary>
         private static void CheckChiselMedalRate(string medalCode, long playerId)
         {
-            string cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
+            var cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
             var fetcher = new Fetcher(cacheDirectory)
             {
                 WebCacheAge = TimeSpan.FromMinutes(15),
@@ -109,7 +109,7 @@ namespace UtilityProgram
 
                 if (numberOfDuelists > 0)
                 {
-                    double rate = numberOfDuelists / (double)tankPlayer.All.Battles;
+                    var rate = numberOfDuelists / (double)tankPlayer.All.Battles;
                     Log.Debug($"{tank.ShortName.PadRight(15, '.')}: {rate.ToString("P1").PadLeft(5)}, {numberOfDuelists.ToString("N0").PadLeft(5)} in {tankPlayer.All.Battles.ToString("N0").PadLeft(5)} battles");
                 }
             }
@@ -132,40 +132,40 @@ namespace UtilityProgram
 
         private static void PutPlayer(long playerId)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            DbProvider provider = new DbProvider(connectionString);
-            Player player = provider.GetPlayer(playerId, true);
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var provider = new DbProvider(connectionString);
+            var player = provider.GetPlayer(playerId, true);
             player.Calculate(provider.GetWn8ExpectedValues(player.Plataform));
 
-            Putter putter = new Putter("http://localhost:6094/", ConfigurationManager.AppSettings["ApiAdminKey"]);
+            var putter = new Putter("http://localhost:6094/", ConfigurationManager.AppSettings["ApiAdminKey"]);
             putter.Put(player);
 
-            KeyStore ks = new KeyStore(connectionString);
-            Player savedPlayer = ks.GetPlayer(playerId);
+            var ks = new KeyStore(connectionString);
+            var savedPlayer = ks.GetPlayer(playerId);
         }
 
         private static void ExportResString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             const string file = @"C:\Projects\wotclans\WoTStat\Properties\Resources.resx";
-            XDocument doc = XDocument.Load(new XmlTextReader(new FileStream(file, FileMode.Open)));
-            XElement root = doc.Root;
+            var doc = XDocument.Load(new XmlTextReader(new FileStream(file, FileMode.Open)));
+            var root = doc.Root;
 
             if (root == null)
             {
                 return;
             }
 
-            foreach (XElement x in root.Descendants())
+            foreach (var x in root.Descendants())
             {
                 if (x.Name.LocalName != "data")
                 {
                     continue;
                 }
 
-                string name = x.Attributes().FirstOrDefault(a => a.Name.LocalName == "name")?.Value ?? string.Empty;
-                string value = x.Descendants().FirstOrDefault(d => d.Name.LocalName == "value")?.Value ?? string.Empty;
+                var name = x.Attributes().FirstOrDefault(a => a.Name.LocalName == "name")?.Value ?? string.Empty;
+                var value = x.Descendants().FirstOrDefault(d => d.Name.LocalName == "value")?.Value ?? string.Empty;
 
                 if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(value))
                 {
@@ -180,30 +180,30 @@ namespace UtilityProgram
 
         private static void GetAllTanks(Platform platform)
         {
-            string cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
-            Fetcher fetcher = new Fetcher(cacheDirectory)
+            var cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
+            var fetcher = new Fetcher(cacheDirectory)
             {
                 WebCacheAge = TimeSpan.FromMinutes(15),
                 WebFetchInterval = TimeSpan.FromSeconds(1),
                 ApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
 
-            Tank[] tanks = fetcher.GetTanks(Platform.PC).ToArray();
+            var tanks = fetcher.GetTanks(Platform.PC).ToArray();
 
-            string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            DbRecorder recorder = new DbRecorder(connectionString);
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var recorder = new DbRecorder(connectionString);
             recorder.Set(tanks);
         }
 
         private static void CalculateAverageWn8OfAllTanks()
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            DbProvider provider = new DbProvider(connectionString);
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var provider = new DbProvider(connectionString);
 
-            DateTime cd = DateTime.UtcNow.AddHours(-7);
-            DateTime previousMonday = cd.PreviousDayOfWeek(DayOfWeek.Monday);
+            var cd = DateTime.UtcNow.AddHours(-7);
+            var previousMonday = cd.PreviousDayOfWeek(DayOfWeek.Monday);
 
-            TankReference[] references = provider.GetTanksReferences(Platform.XBOX, previousMonday, null, false, false, false).ToArray();
+            var references = provider.GetTanksReferences(Platform.XBOX, previousMonday, null, false, false, false).ToArray();
 
             var sb = new StringBuilder();
             sb.AppendLine("Id\tName\tIsPremium\tTier\tType\tNumPlayers\tNumBattles\tAvgWN8\tDamageToUnicum");
@@ -218,12 +218,12 @@ namespace UtilityProgram
 
         private static void TestWN8Calculation()
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            DbProvider provider = new DbProvider(connectionString);
-            Wn8ExpectedValues expected = provider.GetWn8ExpectedValues(Platform.XBOX);
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var provider = new DbProvider(connectionString);
+            var expected = provider.GetWn8ExpectedValues(Platform.XBOX);
 
-            Dictionary<long, TankPlayerStatistics> fakePlayed = new Dictionary<long, TankPlayerStatistics>();
-            foreach (Wn8TankExpectedValues e in expected.AllTanks)
+            var fakePlayed = new Dictionary<long, TankPlayerStatistics>();
+            foreach (var e in expected.AllTanks)
             {
                 fakePlayed.Add(e.TankId,
                     new TankPlayerStatistics
@@ -238,12 +238,12 @@ namespace UtilityProgram
             }
 
             // Teste do geral
-            double wn8 = expected.CalculateWn8(fakePlayed);
+            var wn8 = expected.CalculateWn8(fakePlayed);
             Log.Info($"WN8 de Referência: {wn8} - Deve ser proximo de 1565");
 
             // Teste de um jogador (eu!)
-            Stopwatch sw = Stopwatch.StartNew();
-            Player p = provider.GetPlayer(1763298, true);
+            var sw = Stopwatch.StartNew();
+            var p = provider.GetPlayer(1763298, true);
             p.Calculate(expected);
             sw.Stop();
             Log.Info($"All:   {p.TotalWn8:N0} on {p.TotalBattles:N0} @ {p.TotalWinRate:P2} on Tier {p.TotalTier:N1}");
@@ -251,9 +251,9 @@ namespace UtilityProgram
             Log.Info($"Week:  {p.WeekWn8:N0} on {p.WeekBattles:N0} @ {p.WeekWinRate:P2} on Tier {p.WeekTier:N1}");
             Log.Debug($"In {sw.Elapsed.TotalMilliseconds:N0}ms");
 
-            foreach (KeyValuePair<long, TankPlayerStatistics> t in p.Performance.Month)
+            foreach (var t in p.Performance.Month)
             {
-                Wn8TankExpectedValues td = expected[t.Key];
+                var td = expected[t.Key];
                 if (td.Tier < 10)
                 {
                     continue;
@@ -264,11 +264,11 @@ namespace UtilityProgram
 
             // Teste de dano esperado para um tanque qualquer (T110E5)
             sw = Stopwatch.StartNew();
-            Wn8TankExpectedValues te = expected[10785];
-            double damageAverage = te.GetTargetDamage(Wn8Rating.Average);
-            double damageGood = te.GetTargetDamage(Wn8Rating.Good);
-            double damageGreat = te.GetTargetDamage(Wn8Rating.Great);
-            double damageUnicum = te.GetTargetDamage(Wn8Rating.Unicum);
+            var te = expected[10785];
+            var damageAverage = te.GetTargetDamage(Wn8Rating.Average);
+            var damageGood = te.GetTargetDamage(Wn8Rating.Good);
+            var damageGreat = te.GetTargetDamage(Wn8Rating.Great);
+            var damageUnicum = te.GetTargetDamage(Wn8Rating.Unicum);
             sw.Stop();
             Log.Debug($"Target Damages em {sw.Elapsed.TotalMilliseconds:N1}ms: {damageAverage:N0}; {damageGood:N0}; {damageGreat:N0}; {damageUnicum:N0}");
         }
@@ -278,10 +278,10 @@ namespace UtilityProgram
         /// </summary>
         private static void DeleteOldFileOnServer()
         {
-            Putter cleanerXbox = new Putter(Platform.XBOX, ConfigurationManager.AppSettings["ApiAdminKey"]);
+            var cleanerXbox = new Putter(Platform.XBOX, ConfigurationManager.AppSettings["ApiAdminKey"]);
             cleanerXbox.CleanFiles();
 
-            Putter cleanerPs = new Putter(Platform.PS, ConfigurationManager.AppSettings["ApiAdminKey"]);
+            var cleanerPs = new Putter(Platform.PS, ConfigurationManager.AppSettings["ApiAdminKey"]);
             cleanerPs.CleanFiles();
         }
 
@@ -290,20 +290,20 @@ namespace UtilityProgram
         /// </summary>
         public static void CalculateWn8Expected()
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            DbProvider provider = new DbProvider(connectionString);
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var provider = new DbProvider(connectionString);
 
-            FtpPutter putter = new FtpPutter(ConfigurationManager.AppSettings["PsFtpFolder"],
+            var putter = new FtpPutter(ConfigurationManager.AppSettings["PsFtpFolder"],
                 ConfigurationManager.AppSettings["PsFtpUser"],
                 ConfigurationManager.AppSettings["PsFtpPassworld"]);
 
-            string resultDirectory = ConfigurationManager.AppSettings["PsResultDirectory"];
+            var resultDirectory = ConfigurationManager.AppSettings["PsResultDirectory"];
 
-            Wn8ExpectedValues wn8 = provider.GetWn8ExpectedValues(Platform.PS);
+            var wn8 = provider.GetWn8ExpectedValues(Platform.PS);
             if (wn8 != null)
             {
-                string json = JsonConvert.SerializeObject(wn8, Formatting.Indented);
-                string file = Path.Combine(resultDirectory, "MoE", $"{wn8.Date:yyyy-MM-dd}.WN8.json");
+                var json = JsonConvert.SerializeObject(wn8, Formatting.Indented);
+                var file = Path.Combine(resultDirectory, "MoE", $"{wn8.Date:yyyy-MM-dd}.WN8.json");
                 File.WriteAllText(file, json, Encoding.UTF8);
                 Log.DebugFormat("Salvo o WN8 Expected em '{0}'", file);
 
@@ -314,15 +314,15 @@ namespace UtilityProgram
 
         private static void DeleteOldFiles(int daysToKeepClans, int daysToKeepTanks)
         {
-            FtpPutter putterXbox = new FtpPutter(ConfigurationManager.AppSettings["FtpFolder"],
+            var putterXbox = new FtpPutter(ConfigurationManager.AppSettings["FtpFolder"],
                 ConfigurationManager.AppSettings["FtpUser"],
                 ConfigurationManager.AppSettings["FtpPassworld"]);
 
-            FtpPutter putterPs = new FtpPutter(ConfigurationManager.AppSettings["PsFtpFolder"],
+            var putterPs = new FtpPutter(ConfigurationManager.AppSettings["PsFtpFolder"],
                 ConfigurationManager.AppSettings["PsFtpUser"],
                 ConfigurationManager.AppSettings["PsFtpPassworld"]);
 
-            int deleted = putterXbox.DeleteOldFiles(daysToKeepTanks, "Tanks");
+            var deleted = putterXbox.DeleteOldFiles(daysToKeepTanks, "Tanks");
             deleted += putterXbox.DeleteOldFiles(daysToKeepClans);
             Log.InfoFormat($"Deletados {deleted} do XBOX");
 
@@ -336,38 +336,38 @@ namespace UtilityProgram
         /// </summary>
         private static void CalculateAllClans()
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            DbProvider provider = new DbProvider(connectionString);
-            ClanPlataform[] clans = provider.GetClans().ToArray();
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var provider = new DbProvider(connectionString);
+            var clans = provider.GetClans().ToArray();
             Log.InfoFormat("{0} clas devem ser calculados.", clans.Length);
 
-            DbRecorder recorder = new DbRecorder(connectionString);
+            var recorder = new DbRecorder(connectionString);
 
-            FtpPutter putterXbox = new FtpPutter(ConfigurationManager.AppSettings["FtpFolder"],
+            var putterXbox = new FtpPutter(ConfigurationManager.AppSettings["FtpFolder"],
                 ConfigurationManager.AppSettings["FtpUser"],
                 ConfigurationManager.AppSettings["FtpPassworld"]);
 
-            FtpPutter putterPs = new FtpPutter(ConfigurationManager.AppSettings["PsFtpFolder"],
+            var putterPs = new FtpPutter(ConfigurationManager.AppSettings["PsFtpFolder"],
                 ConfigurationManager.AppSettings["PsFtpUser"],
                 ConfigurationManager.AppSettings["PsFtpPassworld"]);
 
-            string resultDirectory = ConfigurationManager.AppSettings["ResultDirectory"];
-            string resultDirectoryPs = ConfigurationManager.AppSettings["PsResultDirectory"];
+            var resultDirectory = ConfigurationManager.AppSettings["ResultDirectory"];
+            var resultDirectoryPs = ConfigurationManager.AppSettings["PsResultDirectory"];
 
 
-            HashSet<string> already = new HashSet<string>(File.ReadAllLines(Path.Combine(resultDirectory, "CalcTask.txt")));
-            HashSet<string> alreadyPs = new HashSet<string>(File.ReadAllLines(Path.Combine(resultDirectoryPs, "CalcTask.txt")));
+            var already = new HashSet<string>(File.ReadAllLines(Path.Combine(resultDirectory, "CalcTask.txt")));
+            var alreadyPs = new HashSet<string>(File.ReadAllLines(Path.Combine(resultDirectoryPs, "CalcTask.txt")));
 
-            object o = new object();
+            var o = new object();
 
             // Calcula cada cla
-            int doneCount = 0;
-            Stopwatch sw = Stopwatch.StartNew();
+            var doneCount = 0;
+            var sw = Stopwatch.StartNew();
             Parallel.For(0, clans.Length, new ParallelOptions { MaxDegreeOfParallelism = 2 }, i =>
               {
-                  ClanPlataform clan = clans[i];
+                  var clan = clans[i];
 
-                  bool done = false;
+                  var done = false;
                   if (clan.Plataform == Platform.XBOX)
                   {
                       done = already.Contains(clan.ClanTag);
@@ -386,21 +386,21 @@ namespace UtilityProgram
 
                   Log.InfoFormat("Processando cla {0} de {1}: {2}@{3}...", i + 1, clans.Length, clan.ClanTag,
                       clan.Plataform);
-                  Stopwatch csw = Stopwatch.StartNew();
+                  var csw = Stopwatch.StartNew();
 
-                  Clan cc = CalculateClan(clan, provider, recorder);
+                  var cc = CalculateClan(clan, provider, recorder);
 
                   Log.InfoFormat("Calculado cla {0} de {1}: {2}@{3} em {4:N1}s...",
                       i + 1, clans.Length, clan.ClanTag, clan.Plataform, csw.Elapsed.TotalSeconds);
 
                   if (cc != null)
                   {
-                      Stopwatch fsw = Stopwatch.StartNew();
+                      var fsw = Stopwatch.StartNew();
                       switch (cc.Plataform)
                       {
                           case Platform.XBOX:
                               {
-                                  string fileName = cc.ToFile(resultDirectory);
+                                  var fileName = cc.ToFile(resultDirectory);
                                   Log.InfoFormat("Arquivo de resultado escrito em '{0}'", fileName);
                                   putterXbox.PutClan(fileName);
                                   lock (o)
@@ -411,7 +411,7 @@ namespace UtilityProgram
                               break;
                           case Platform.PS:
                               {
-                                  string fileName = cc.ToFile(resultDirectoryPs);
+                                  var fileName = cc.ToFile(resultDirectoryPs);
                                   Log.InfoFormat("Arquivo de resultado escrito em '{0}'", fileName);
                                   putterPs.PutClan(fileName);
                                   lock (o)
@@ -434,7 +434,7 @@ namespace UtilityProgram
                   Log.InfoFormat("Processado cla {0} de {1}: {2}@{3} em {4:N1}s. {5} totais.",
                       i + 1, clans.Length, clan.ClanTag, clan.Plataform, csw.Elapsed.TotalSeconds, doneCount);
               });
-            TimeSpan calculationTime = sw.Elapsed;
+            var calculationTime = sw.Elapsed;
         }
 
         private static Clan CalculateClan(ClanPlataform clan, DbProvider provider,
@@ -442,7 +442,7 @@ namespace UtilityProgram
         {
             Log.DebugFormat("Calculando cla {0}@{1}...", clan.ClanTag, clan.Plataform);
 
-            Clan cc = provider.GetClan(clan.Plataform, clan.ClanId);
+            var cc = provider.GetClan(clan.Plataform, clan.ClanId);
 
             if (cc == null)
             {
@@ -470,36 +470,36 @@ namespace UtilityProgram
 
         private static void GetSiteDiagnostic()
         {
-            TimeSpan webCacheAge = TimeSpan.FromMinutes(10);
-            string cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
-            Fetcher fetcher = new Fetcher(cacheDirectory)
+            var webCacheAge = TimeSpan.FromMinutes(10);
+            var cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
+            var fetcher = new Fetcher(cacheDirectory)
             {
                 WebCacheAge = webCacheAge,
                 WebFetchInterval = TimeSpan.FromSeconds(1),
                 ApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
-            Negri.Wot.Diagnostics.SiteDiagnostic si = fetcher.GetSiteDiagnostic("https://wotclans.com.br/api/status", ConfigurationManager.AppSettings["ApiAdminKey"]);
+            var si = fetcher.GetSiteDiagnostic("https://wotclans.com.br/api/status", ConfigurationManager.AppSettings["ApiAdminKey"]);
         }
 
         #region Valores Esperados de WN8
 
         private static void GetXvmWn8()
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            DbProvider provider = new DbProvider(connectionString);
-            DbRecorder recorder = new DbRecorder(connectionString);
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var provider = new DbProvider(connectionString);
+            var recorder = new DbRecorder(connectionString);
 
-            TimeSpan webCacheAge = TimeSpan.FromMinutes(10);
-            string cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
+            var webCacheAge = TimeSpan.FromMinutes(10);
+            var cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
 
-            Fetcher fetcher = new Fetcher(cacheDirectory)
+            var fetcher = new Fetcher(cacheDirectory)
             {
                 WebCacheAge = webCacheAge,
                 WebFetchInterval = TimeSpan.FromSeconds(1),
                 ApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
 
-            Negri.Wot.Tanks.Tank[] data = provider.EnumTanks(Platform.XBOX).ToArray();
+            var data = provider.EnumTanks(Platform.XBOX).ToArray();
         }
 
         #endregion
@@ -508,14 +508,14 @@ namespace UtilityProgram
 
         private static void GetFromWoTStatConsole()
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            DbProvider provider = new DbProvider(connectionString);
-            DbRecorder recorder = new DbRecorder(connectionString);
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var provider = new DbProvider(connectionString);
+            var recorder = new DbRecorder(connectionString);
 
-            TimeSpan webCacheAge = TimeSpan.FromMinutes(10);
-            string cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
+            var webCacheAge = TimeSpan.FromMinutes(10);
+            var cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
 
-            Fetcher fetcher = new Fetcher(cacheDirectory)
+            var fetcher = new Fetcher(cacheDirectory)
             {
                 WebCacheAge = webCacheAge,
                 WebFetchInterval = TimeSpan.FromSeconds(1),
@@ -524,7 +524,7 @@ namespace UtilityProgram
 
             Log.Debug("Obtendo jogadores a atualizar.");
             const int ageHours = 24;
-            Player[] players = provider.GetPlayersUpdateOrder(1000, ageHours).Where(p => p.AdjustedAgeHours < 1000).Take(1000).ToArray();
+            var players = provider.GetPlayersUpdateOrder(1000, ageHours).Where(p => p.AdjustedAgeHours < 1000).Take(1000).ToArray();
 
             if (players.Length <= 0)
             {
@@ -534,17 +534,17 @@ namespace UtilityProgram
 
             Log.Info($"{players.Length} na fila.");
 
-            Stopwatch sw = Stopwatch.StartNew();
+            var sw = Stopwatch.StartNew();
 
-            CancellationTokenSource cts = new CancellationTokenSource();
-            ParallelOptions po = new ParallelOptions
+            var cts = new CancellationTokenSource();
+            var po = new ParallelOptions
             {
                 CancellationToken = cts.Token,
                 MaxDegreeOfParallelism = 2
             };
 
-            bool isEnd = false;
-            int count = 0;
+            var isEnd = false;
+            var count = 0;
             Parallel.For(0, players.Length, po, i =>
             {
                 if (isEnd)
@@ -561,11 +561,11 @@ namespace UtilityProgram
                     return;
                 }
 
-                Player player = players[i];
-                Task<Player> task = fetcher.GetPlayerWn8Async(player);
+                var player = players[i];
+                var task = fetcher.GetPlayerWn8Async(player);
                 task.Wait(po.CancellationToken);
 
-                Player completePlayer = task.Result;
+                var completePlayer = task.Result;
                 if (completePlayer != null)
                 {
                     if (completePlayer.CanSave())
@@ -593,29 +593,29 @@ namespace UtilityProgram
 
         private static void DumpReferenceFiles()
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            DbProvider provider = new DbProvider(connectionString);
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var provider = new DbProvider(connectionString);
 
 
-            TankReference[] references = provider.GetTanksReferences(Platform.PS, new DateTime(2018, 03, 12))
+            var references = provider.GetTanksReferences(Platform.PS, new DateTime(2018, 03, 12))
                 .ToArray();
-            string baseDir = ConfigurationManager.AppSettings["PsResultDirectory"];
-            string dir = Path.Combine(baseDir, "Tanks");
+            var baseDir = ConfigurationManager.AppSettings["PsResultDirectory"];
+            var dir = Path.Combine(baseDir, "Tanks");
 
-            List<Leader> leaders = new List<Leader>();
-            foreach (TankReference r in references)
+            var leaders = new List<Leader>();
+            foreach (var r in references)
             {
                 r.Save(dir);
                 Log.InfoFormat("Escrito {0}", r.Name);
                 leaders.AddRange(r.Leaders);
             }
 
-            string json = JsonConvert.SerializeObject(leaders, Formatting.Indented);
-            string file = Path.Combine(dir, $"{references.First().Date:yyyy-MM-dd}.Leaders.json");
+            var json = JsonConvert.SerializeObject(leaders, Formatting.Indented);
+            var file = Path.Combine(dir, $"{references.First().Date:yyyy-MM-dd}.Leaders.json");
             File.WriteAllText(file, json, Encoding.UTF8);
 
-            StringBuilder sb = new StringBuilder();
-            foreach (Leader leader in leaders)
+            var sb = new StringBuilder();
+            foreach (var leader in leaders)
             {
                 sb.AppendLine(leader.ToString());
             }
@@ -630,23 +630,23 @@ namespace UtilityProgram
 
         private static void DumpMoEFiles(string[] args)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            DbProvider provider = new DbProvider(connectionString);
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var provider = new DbProvider(connectionString);
 
             const Platform plataform = Platform.XBOX;
 
-            DateTime date = new DateTime(2017, 03, 10);
-            DateTime maxDate = new DateTime(2017, 04, 26);
+            var date = new DateTime(2017, 03, 10);
+            var maxDate = new DateTime(2017, 04, 26);
 
             while (date <= maxDate)
             {
-                Dictionary<long, TankMoe> moes = provider.GetMoe(plataform, date).ToDictionary(t => t.TankId);
-                DateTime dateOnDb = moes.First().Value.Date;
+                var moes = provider.GetMoe(plataform, date).ToDictionary(t => t.TankId);
+                var dateOnDb = moes.First().Value.Date;
 
-                string json = JsonConvert.SerializeObject(moes, Formatting.Indented);
+                var json = JsonConvert.SerializeObject(moes, Formatting.Indented);
 
-                string baseDir = ConfigurationManager.AppSettings["ResultsFolder"];
-                string file = Path.Combine(baseDir, "MoE", $"{dateOnDb:yyyy-MM-dd}.moe.json");
+                var baseDir = ConfigurationManager.AppSettings["ResultsFolder"];
+                var file = Path.Combine(baseDir, "MoE", $"{dateOnDb:yyyy-MM-dd}.moe.json");
                 File.WriteAllText(file, json, Encoding.UTF8);
 
                 date = date.AddDays(1.0);
@@ -661,13 +661,13 @@ namespace UtilityProgram
 
         private static void GetAllTanks(string[] args)
         {
-            Fetcher fetcher = new Fetcher(ConfigurationManager.AppSettings["CacheDirectory"])
+            var fetcher = new Fetcher(ConfigurationManager.AppSettings["CacheDirectory"])
             {
                 WebFetchInterval = TimeSpan.FromSeconds(5),
                 ApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
 
-            int topCount = 20;
+            var topCount = 20;
             if (args.Length >= 1)
             {
                 topCount = int.Parse(args[0]);
@@ -675,7 +675,7 @@ namespace UtilityProgram
 
             Log.InfoFormat("Top Count: {0}", topCount);
 
-            string dir = "c:\\Projects\\wotclans\\TopTanks";
+            var dir = "c:\\Projects\\wotclans\\TopTanks";
             if (args.Length >= 2)
             {
                 dir = args[2];
@@ -685,64 +685,64 @@ namespace UtilityProgram
 
             // Obtem todos os tanques do jogo       
             Log.Debug("Obtendo todos os tanques do jogo...");
-            Dictionary<long, Tank> allTanks = fetcher.GetTanks(Platform.XBOX).ToDictionary(t => t.TankId);
-            StringBuilder sb = new StringBuilder();
-            foreach (Tank tank in allTanks.Values)
+            var allTanks = fetcher.GetTanks(Platform.XBOX).ToDictionary(t => t.TankId);
+            var sb = new StringBuilder();
+            foreach (var tank in allTanks.Values)
             {
                 sb.Append(
                     $"{tank.TankId}\t{tank.Name}\t{tank.Images["big_icon"]}\t{tank.IsPremium}\t{tank.NationString}\t{tank.ShortName}\t{tank.Tag}\t{tank.Tier}\t{tank.TypeString}\r\n");
             }
 
-            string tanksFile = $"{dir}\\AllTanks.{DateTime.Today:yyyy-MM-dd}.txt";
+            var tanksFile = $"{dir}\\AllTanks.{DateTime.Today:yyyy-MM-dd}.txt";
             File.WriteAllText(tanksFile, sb.ToString(), Encoding.UTF8);
             Log.InfoFormat("Salvos {0} tanques em {1}", allTanks.Count, tanksFile);
 
-            string connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            DbProvider provider = new DbProvider(connectionString);
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var provider = new DbProvider(connectionString);
 
             // Lista todos os clas XBOX
-            Clan[] allClans =
+            var allClans =
                 provider.GetClans().Where(c => c.Plataform == Platform.XBOX).Select(cp => provider.GetClan(cp))
                     .OrderByDescending(c => c.Top15Wn8).ToArray();
             Log.InfoFormat("Obtidos {0} clas.", allClans.Length);
 
             // Seleciona a amostragem
-            Clan[] topClans = allClans.Take(topCount).ToArray();
-            int topPlayersCount = topClans.Sum(c => c.Active);
+            var topClans = allClans.Take(topCount).ToArray();
+            var topPlayersCount = topClans.Sum(c => c.Active);
 
-            int i = allClans.Length - 1;
-            List<Clan> bottonClans = new List<Clan>();
+            var i = allClans.Length - 1;
+            var bottonClans = new List<Clan>();
             while (bottonClans.Sum(c => c.Active) < topPlayersCount && i >= 0)
             {
                 bottonClans.Add(allClans[i--]);
             }
 
 
-            string[] clanTags = new[]
+            var clanTags = new[]
             {
                 "ETBR", "UNOT", "BOPBR", "BK", "FERAS", "BR", "VIS", "171BS", "GDAB3", "TCF",
                 "DV", "TOPBR", "OWS", "AR-15", "DBD", "NT", "ITA", "13RCM", "BOPE", "-RSA-"
             };
-            foreach (Clan clanTag in topClans)
+            foreach (var clanTag in topClans)
             {
                 Console.WriteLine(@"cla {0}...", clanTag.Name);
                 File.Delete($"{dir}\\AllStats.{clanTag}.{DateTime.Today:yyyy-MM-dd}.txt");
 
-                Clan cc = clanTag;
+                var cc = clanTag;
 
-                foreach (Player player in cc.Players)
+                foreach (var player in cc.Players)
                 {
                     sb = new StringBuilder();
 
 
                     Console.WriteLine(@"    Jogador {0}.{1}@{2}...", player.Id, player.Name, clanTag);
 
-                    Task<IEnumerable<Negri.Wot.WgApi.TankPlayer>> tanksTask = fetcher.GetTanksForPlayerAsync(Platform.XBOX, player.Id);
+                    var tanksTask = fetcher.GetTanksForPlayerAsync(Platform.XBOX, player.Id);
                     tanksTask.Wait();
-                    Negri.Wot.WgApi.TankPlayer[] tanks = tanksTask.Result.ToArray();
-                    foreach (Negri.Wot.WgApi.TankPlayer t in tanks)
+                    var tanks = tanksTask.Result.ToArray();
+                    foreach (var t in tanks)
                     {
-                        if (!allTanks.TryGetValue(t.TankId, out Tank td))
+                        if (!allTanks.TryGetValue(t.TankId, out var td))
                         {
                             td = new Tank { ShortName = "???", Tier = 0, TypeString = "???" };
                         }
@@ -771,20 +771,20 @@ namespace UtilityProgram
 
         private static void ListClans(int size)
         {
-            Fetcher fetcher = new Fetcher(@"C:\Projects\wotclans\Cache")
+            var fetcher = new Fetcher(@"C:\Projects\wotclans\Cache")
             {
                 WebFetchInterval = TimeSpan.FromSeconds(1),
                 ApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
-            Clan[] clans = fetcher.GetClans(Platform.XBOX, size).ToArray();
+            var clans = fetcher.GetClans(Platform.XBOX, size).ToArray();
 
-            DbProvider provider = new DbProvider(ConfigurationManager.ConnectionStrings["Main"].ConnectionString);
+            var provider = new DbProvider(ConfigurationManager.ConnectionStrings["Main"].ConnectionString);
 
-            int newClans = 0;
-            foreach (Clan clan in clans)
+            var newClans = 0;
+            foreach (var clan in clans)
             {
                 Console.Write(@"{0} ({1}). Já existe? ", clan.ClanTag, clan.ClanId);
-                Clan existingClan = provider.GetClan(clan);
+                var existingClan = provider.GetClan(clan);
                 Console.WriteLine(@"{0}", existingClan == null ? " não" : "Sim");
                 if (existingClan == null)
                 {
@@ -802,11 +802,11 @@ namespace UtilityProgram
         /// </summary>
         private static void ListFiles()
         {
-            FtpPutter putter = new FtpPutter(ConfigurationManager.AppSettings["FtpFolder"],
+            var putter = new FtpPutter(ConfigurationManager.AppSettings["FtpFolder"],
                 ConfigurationManager.AppSettings["FtpUser"],
                 ConfigurationManager.AppSettings["FtpPassworld"]);
-            IEnumerable<string> remoteClanFiles = putter.List("clan.TERSP.");
-            foreach (string remoteClanFile in remoteClanFiles)
+            var remoteClanFiles = putter.List("clan.TERSP.");
+            foreach (var remoteClanFile in remoteClanFiles)
             {
                 putter.DeleteFile(remoteClanFile);
             }
@@ -817,24 +817,24 @@ namespace UtilityProgram
         /// </summary>
         private static void GetAllClans()
         {
-            List<string> ids = new List<string>();
+            var ids = new List<string>();
 
-            using (HttpClient client = new HttpClient())
+            using (var client = new HttpClient())
             {
                 // Numero de Páginas a serem lidas
-                int lastSize = 100;
-                for (int i = 1; i <= 62 && lastSize >= 7; ++i)
+                var lastSize = 100;
+                for (var i = 1; i <= 62 && lastSize >= 7; ++i)
                 {
                     Console.WriteLine("Consultando página {0}...", i);
 
-                    string urlRequest =
+                    var urlRequest =
                         $"https://api-xbox-console.worldoftanks.com/wotx/clans/list/?application_id=demo&fields=clan_id%2Ctag%2Cname%2Cmembers_count&page_no={i}";
-                    HttpResponseMessage result = client.GetAsync(urlRequest).Result;
-                    string json = result.Content.ReadAsStringAsync().Result;
-                    ClanInfoResult clanInfoResult = JsonConvert.DeserializeObject<ClanInfoResult>(json);
+                    var result = client.GetAsync(urlRequest).Result;
+                    var json = result.Content.ReadAsStringAsync().Result;
+                    var clanInfoResult = JsonConvert.DeserializeObject<ClanInfoResult>(json);
                     if (clanInfoResult.Status == "ok" && clanInfoResult.Meta.Count >= 1)
                     {
-                        foreach (ClanInfo c in clanInfoResult.Data)
+                        foreach (var c in clanInfoResult.Data)
                         {
                             ids.Add($"{c.Tag}\t{c.Name}\t{c.ClanId}\t{c.MembersCount}");
                             Console.WriteLine($"    {c.Tag} - {c.ClanId} - {c.MembersCount}");
@@ -852,19 +852,19 @@ namespace UtilityProgram
         private static void GetIds()
         {
             const string clansToIdFile = @"C:\Projects\wotclans\GetAllClanIds\ClansToId.txt";
-            string[] clansTags = File.ReadAllLines(clansToIdFile, Encoding.UTF8).Select(s => s.Trim())
+            var clansTags = File.ReadAllLines(clansToIdFile, Encoding.UTF8).Select(s => s.Trim())
                 .Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-            List<string> ids = new List<string>();
+            var ids = new List<string>();
 
-            using (HttpClient client = new HttpClient())
+            using (var client = new HttpClient())
             {
-                foreach (string tag in clansTags)
+                foreach (var tag in clansTags)
                 {
-                    string urlRequest =
+                    var urlRequest =
                         $"https://api-xbox-console.worldoftanks.com/wotx/clans/list/?application_id=demo&search={tag}&limit=1&fields=clan_id%2Ctag";
-                    HttpResponseMessage result = client.GetAsync(urlRequest).Result;
-                    string json = result.Content.ReadAsStringAsync().Result;
-                    ClanInfoResult clanInfoResult = JsonConvert.DeserializeObject<ClanInfoResult>(json);
+                    var result = client.GetAsync(urlRequest).Result;
+                    var json = result.Content.ReadAsStringAsync().Result;
+                    var clanInfoResult = JsonConvert.DeserializeObject<ClanInfoResult>(json);
                     if (clanInfoResult.Status == "ok" && clanInfoResult.Meta.Count == 1 &&
                         clanInfoResult.Data[0].Tag == tag)
                     {
