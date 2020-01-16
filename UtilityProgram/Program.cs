@@ -34,7 +34,7 @@ namespace UtilityProgram
         {
             try
             {
-                PopulateAllMedals();
+                GetAllTanks(Platform.PC);
             }
             catch (Exception ex)
             {
