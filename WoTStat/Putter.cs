@@ -141,5 +141,32 @@ namespace Negri.Wot
 
             });
         }
+
+        /// <summary>
+        /// Removes a clan from the site
+        /// </summary>
+        /// <remarks>
+        /// For when a clan gets disbanded, so it's reflected on the site as soon as this is detected
+        /// </remarks>
+        public void DeleteClan(string clanTag)
+        {
+            Log.Debug("Calling DeleteClan API...");
+
+            var client = new HttpClient
+            {
+                BaseAddress = new Uri(_baseUrl)
+            };
+            var res = client.DeleteAsync($"api/admin/DeleteClan?apiAdminKey={_apiKey}&clanTag={clanTag}").Result;
+
+            if (res.StatusCode == HttpStatusCode.OK)
+            {
+                Log.Debug("Remote deletion is done.");
+            }
+            else
+            {
+                Log.Warn($"Remote deletion fail: {res.StatusCode}, {res.ReasonPhrase}");
+            }
+        }
+
     }
 }

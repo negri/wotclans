@@ -191,6 +191,60 @@ namespace Negri.Wot.Bot
             }
         }
 
+        [Command("ClanDelete")]
+        [Description("Deletes a clan from the site.")]
+        public async Task ClanDelete(CommandContext ctx, 
+            [Description("The clan Tag")] string clanTag)
+        {
+            await ctx.TriggerTypingAsync();
+
+            var userId = ctx.User?.Id ?? 0;
+
+            Log.Info($"Requesting {nameof(ClanDelete)}({clanTag}) by {userId}...");
+            if (userId != _coder)
+            {
+                var emoji = DiscordEmoji.FromName(ctx.Client, ":no_entry:");
+                var embed = new DiscordEmbedBuilder
+                {
+                    Title = "Access denied",
+                    Description = $"{emoji} You may be a *coder*, but you are not **The Coder**!",
+                    Color = DiscordColor.Red
+                };
+
+                await ctx.RespondAsync("", embed: embed);
+                return;
+            }
+
+            var cfg = GuildConfiguration.FromGuild(ctx.Guild);
+            var platform = GetPlatform(clanTag, cfg.Plataform, out clanTag);
+
+            clanTag = clanTag.Trim('[', ']');
+            clanTag = clanTag.ToUpperInvariant();
+
+            if (!ClanTagRegex.IsMatch(clanTag))
+            {
+                await ctx.RespondAsync($"You must send a **valid** clan **tag** as parameter, {ctx.User?.Mention}.");
+                return;
+            }
+
+            try
+            {
+                var putter = new Putter(platform, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                putter.DeleteClan(clanTag);
+
+                await ctx.RespondAsync(
+                    $"The clan `{clanTag}` on `{platform}` was deleted from the site.");
+                
+                Log.Debug($"{nameof(ClanDelete)} returned ok.");
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"{nameof(ClanDelete)}", ex);
+                await ctx.RespondAsync(
+                    $"Sorry, {ctx.User?.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
+            }
+        }
+
         [Command("site")]
         [Description("Retrieve the site status.")]
         public async Task GetSiteStatus(CommandContext ctx, [Description("The site to query, *PS* or *XBOX*")]
@@ -425,6 +479,11 @@ namespace Negri.Wot.Bot
                     if (isBan)
                     {
                         recorder.DisableClan(clan.Plataform, clan.ClanId, DisabledReason.Banned);
+
+                        // Also deletes from the remote site
+                        var putter = new Putter(clan.Plataform, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                        putter.DeleteClan(clan.ClanTag);
+
                         await ctx.RespondAsync(
                             $"The clan `{clanTag}` ({clan.ClanId}) on `{platform}` was **BANNED** from the site.");
                         Log.Warn($"BANNED {platform}.{clanTag}");

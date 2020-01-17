@@ -134,6 +134,8 @@ namespace Negri.Wot
                 var clansToRename = new List<Clan>();
                 var clansToUpdate = fetcher.GetClans(clans).ToArray();
 
+
+
                 // Clãs debandados
                 foreach (var clan in clansToUpdate.Where(c => c.IsDisbanded))
                 {
@@ -141,6 +143,9 @@ namespace Negri.Wot
                     if (saveOnDatabase)
                     {
                         recorder.DisableClan(disbandedClan.Plataform, disbandedClan.ClanId, DisabledReason.Disbanded);
+
+                        var putter = new Putter(disbandedClan.Plataform, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                        putter.DeleteClan(disbandedClan.ClanTag);
                     }
 
                     var sb = new StringBuilder();

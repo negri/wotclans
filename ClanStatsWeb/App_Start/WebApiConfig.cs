@@ -21,6 +21,12 @@ namespace Negri.Wot.Site
             );
 
             config.Routes.MapHttpRoute(
+                name: "DeleteClan",
+                routeTemplate: "api/admin/DeleteClan",
+                defaults: new { controller = "GeneralApi", action = "DeleteClan" }
+            );
+
+            config.Routes.MapHttpRoute(
                 name: "PutData",
                 routeTemplate: "api/admin/Data",
                 defaults: new { controller = "GeneralApi", action = "PutData" }

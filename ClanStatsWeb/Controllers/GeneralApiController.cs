@@ -250,6 +250,89 @@ namespace Negri.Wot.Site.Controllers
             }
             catch (Exception ex)
             {
+                Log.Error($"Error in {nameof(CleanDataFolders)}", ex);
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(ex.Message),
+                    ReasonPhrase = "Clean failed"
+                });
+            }
+        }
+
+        [HttpDelete]
+        public IHttpActionResult DeleteClan(string apiAdminKey, string clanTag)
+        {
+            try
+            {
+                var sw = Stopwatch.StartNew();
+
+                if (apiAdminKey != ApiAdminKey)
+                {
+                    Log.Warn($"Invalid API key on {nameof(DeleteClan)}: {apiAdminKey}");
+                    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized)
+                    {
+                        Content = new StringContent("Incorrect key! Your try was logged."),
+                        ReasonPhrase = "Incorrect key"
+                    });
+                }
+
+                long deleted = 0;
+                long bytes = 0;
+                var errors = new List<string>();
+
+                void DeleteFileLocal(FileInfo fi)
+                {
+                    var b = fi.Length;
+                    if (!DeleteFile(fi, out var e))
+                    {
+                        errors.Add(e);
+                        if (errors.Count > 1000)
+                        {
+                            throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                            {
+                                Content = new StringContent("Too many errors deleting the files."),
+                                ReasonPhrase = "Clean failed"
+                            });
+                        }
+                    }
+                    else
+                    {
+                        deleted++;
+                        bytes += b;
+                    }
+                }
+
+                var clanFile = Path.Combine(GlobalHelper.DataFolder, "Clans", $"clan.{clanTag.ToUpperInvariant()}.json");
+                if (File.Exists(clanFile))
+                {
+                    var fi = new FileInfo(clanFile);
+                    DeleteFileLocal(fi);
+                }
+                
+                var renameFile = Path.Combine(GlobalHelper.DataFolder, "Renames", $"{clanTag.ToUpperInvariant()}.ren.txt");
+                if (File.Exists(renameFile))
+                {
+                    var fi = new FileInfo(renameFile);
+                    DeleteFileLocal(fi);
+                }
+
+                var result = new
+                {
+                    TimeTaken = sw.ElapsedMilliseconds,
+                    Deleted = deleted,
+                    DeletedBytes = bytes,
+                    Errors = errors
+                };
+
+                return Ok(result);
+            }
+            catch (HttpResponseException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error in {nameof(DeleteClan)}", ex);
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.InternalServerError)
                 {
                     Content = new StringContent(ex.Message),
