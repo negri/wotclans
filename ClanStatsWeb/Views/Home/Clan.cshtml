@@ -191,21 +191,10 @@
     <section id="suspectedDataCall" class="row" style="padding-top: 1em;">
         <div class="col-md-4"></div>
         <div class="col-md-4 alert alert-info">
-
-            @if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "pt")
-            {
-                <p>
-                    Existem <a href="#tankers"> tanqueiros </a> com <a href="~/About#suspectData">dados suspeitos</a>.
-                </p>
-            }
-            else
-            {
-                <p>
-                    There are <a href="#tankers"> tankers </a> with <a href="~/About#suspectData">suspect data</a>.
-                </p>
-            }
+            <p>
+                <a href="~/About#suspectData">@Resources.SuspectData</a>
+            </p>
         </div>
-
         <div class="col-md-4"></div>
     </section>
 }
@@ -374,6 +363,156 @@
                     </p>
                 </div>
             }
+            else if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es")
+            {
+                <div lang="es">
+                    <h4>¡Relájate!</h4>
+                    <p>
+                        Si usted está apareciendo con un ranking bajo, con un número WN8 promedio abajo, <b>tómalo fácil</b>!
+                        <ol>
+                            <li>
+                                Esto es <b>sólo un juego</b>. Se supone, ante todo, ser <b>divertido</b> jugando;
+                            </li>
+                            <li>
+                                Nadie empieza este juego haciéndolo bien. Realmente se necesita <em>muchos miles de batallas</em>
+                                para aprender tanques, mapas, tácticas, mecánicas de juego, etc;
+                            </li>
+                            <li>
+                                El ranking se basa en un promedio mensual móvil. Si en el último mes estás empezando una nueva línea de tanques,
+                                moler un tanque de stock o aprender un nuevo estilo de juego se espera que el WN8 disminuye;
+                            </li>
+                            <li>
+                                WN8 es sólo una medida, entre docenas de otros, para medir el rendimiento. Pero no es perfecto,
+                                y el jugador de un clan no se puede resumir en un solo número;
+                            </li>
+                            <li>
+                                Todo en la vida se puede aprender. <strong>Todo</strong> Buscar más información
+                                acerca de <i>cómo jugar WoT</i> en la Web: hay una gran cantidad de recursos.
+                            </li>
+                        </ol>
+                    </p>
+                </div>
+            }
+            else if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "fr")
+            {
+                <div lang="fr">
+                    <h4>Détendez-vous !</h4>
+                    <p>
+                        Si vous apparaissez avec un faible classement, avec un nombre WN8 moyenne soufflet, <b>prenez-le facile</b>!
+                        <ol>
+                            <li>
+                                C'est <b>juste un jeu</b>. C'est censé, d'abord et avant tout, être <b>fun</b> jouer;
+                            </li>
+                            <li>
+                                Personne ne commence ce jeu à bien faire. Il faut vraiment <em> plusieurs milliers de batailles</em>
+                                pour apprendre les chars, les cartes, les tactiques, la mécanique de jeu, etc. ;
+                            </li>
+                            <li>
+                                Le classement est basé sur une moyenne mensuelle mobile. Si le mois dernier vous démarrez une nouvelle ligne de réservoir,
+                                broyage d'un réservoir de stock ou d'apprendre un nouveau style de jeu, il est prévu que le WN8 diminue;
+                            </li>
+                            <li>
+                                WN8 est juste une mesure, parmi des dizaines d'autres, pour mesurer la performance. Mais ce n'est pas parfait,
+                                et le joueur d'un clan ne peut pas être résumé à un seul nombre;
+                            </li>
+                            <li>
+                                Tout dans la vie peut être appris. <strong>Tout! </strong> Rechercher plus d'informations
+                                sur <i>comment de jouer WoT</i> sur le Web: il ya beaucoup de ressources.
+                            </li>
+                        </ol>
+                    </p>
+                </div>
+            }
+            else if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "pl")
+            {
+                <div lang="pl">
+                    <h4>Zrelaksuj się!</h4>
+                    <p>
+                        Jeśli pojawiają się z niskim rankingu, z numerem WN8 poniżej średniej, <b> wziąć to łatwe </b>!
+                        <ol>
+                            <li>
+                                To jest <b> just pewien gra </b>. To ma przede wszystkim być <b> zabawy </b> grania;
+                            </li>
+                            <li>
+                                Nikt nie rozpoczyna tej gry dobrze. To naprawdę trwa <em> wielu tysięcy bitew </em>
+                                nauczyć się czołgów, map, taktyk, mechaniki gry itp.;
+                            </li>
+                            <li>
+                                Ranking opiera się na stopniowej średniej miesięcznej. Jeśli w ostatnim miesiącu zaczynasz nową linię zbiornika,
+                                szlifowanie zbiornika lub uczenia się nowego stylu gry oczekuje się, że WN8 maleje;
+                            </li>
+                            <li>
+                                WN8 jest tylko miarą, wśród kilkudziesięciu innych, do pomiaru wydajności. Ale to nie jest idealne,
+                                a gracz klanu nie może być podsumowany tylko jedną liczbą;
+                            </li>
+                            <li>
+                                Wszystko w życiu można nauczyć. <strong> wszystko! </strong> Szukaj więcej informacji
+                                o <i> jak grać w WoT </i> w sieci: istnieje wiele zasobów.
+                            </li>
+                        </ol>
+                    </p>
+                </div>
+            }
+            else if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "de")
+            {
+                <div lang="de">
+                    <h4>Entspannen Sie sich!</h4>
+                    <p>
+                        Wenn Sie mit einem niedrigen Ranking erscheinen, mit einer WN8-Zahl unten Durchschnitt, <b>nehmen Sie es einfach</b>!
+                        <ol>
+                            <li>
+                                Dies ist <b>nur ein Spiel</b>. Es soll in erster Linie <b>Spaß</b> spielen;
+                            </li>
+                            <li>
+                                Niemand beginnt, dass dieses Spiel gut läuft. Es dauert wirklich <em>viele Tausende von Schlachten</em>
+                                um Panzer, Karten, Taktiken, Spielmechaniken usw. zu lernen;
+                            </li>
+                            <li>
+                                Das Ranking basiert auf einem gleitenden Monatsdurchschnitt. Wenn Sie im letzten Monat eine neue Tankleitung
+                                Schleifen eines Lagertanks oder Erlernen einer neuen Spielweise wird erwartet, dass der WN8 abnimmt;
+                            </li>
+                            <li>
+                                WN8 ist nur eine Maßnahme, unter Dutzenden von anderen, um die Leistung zu messen. Aber es ist nicht perfekt,
+                                und der Spieler eines Clans kann nicht auf nur eine Zahl zusammengefasst werden;
+                            </li>
+                            <li>
+                                Alles im Leben kann man lernen. <strong>Alles!</strong> Weitere Informationen suchen
+                                über <i>wie man WoT </i> im Web spielt: Es gibt viele Ressourcen.
+                            </li>
+                        </ol>
+                    </p>
+                </div>
+            }
+            else if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ru")
+            {
+                <div lang="ru">
+                    <h4>Расслабься!</h4>
+                    <p>
+                        Если вы появляетесь с низким рейтингом, с номером WN8 в среднем, <b>возьмите его легко</b>!
+                        <ol>
+                            <li>
+                                Это <b> просто игра</b>. Предполагается, в первую очередь, <b>весело</b> играть;
+                            </li>
+                            <li>
+                                Никто не начинает эту игру делать хорошо. Это действительно занимает <em>много тысячи сражений</em>
+                                учиться танки, карты, тактика, механика игры и т.д.;
+                            </li>
+                            <li>
+                                Рейтинг основан на скользящей среднемесячной средней. Если в прошлом месяце вы начинаете новую линию танков,
+                                шлифовка фондового бака или изучение нового стиля игры ожидается, что WN8 уменьшается;
+                            </li>
+                            <li>
+                                WN8 является лишь мерой, среди десятков других, для измерения производительности. Но это не идеально,
+                                и игрок клана не может быть обобщен только одним номером;
+                            </li>
+                            <li>
+                                Все в жизни можно узнать. <strong>Все!</strong> Поиск дополнительной информации
+                                о <i> том, как играть woT</i> в Интернете: Есть много ресурсов.
+                            </li>
+                        </ol>
+                    </p>
+                </div>
+            }
             else
             {
                 <div lang="en">
@@ -420,6 +559,26 @@
             {
                 <h2 lang="pt">Tanqueiros no <a href="~/Leaderboard/All">Placar de Líderes</a></h2>
                 <p lang="pt">Tanqueiros do clã que são top 25 nos tanques, entre todos os jogadores rastreados nesse site, classificados por dano combinado.</p>
+            }
+            else if (GlobalHelper.Language == "pl")
+            {
+                <h2 lang="de">Dowódcy na <a href="~/Leaderboard/All">tablicy liderów</a></h2>
+                <p lang="de">Dowódcy na klanie, którzy znajdują się w pierwszej 25 każdego czołgu, na wszystkich graczy na tej stronie, w rankingu połączonych uszkodzeń.</p>
+            }
+            else if (GlobalHelper.Language == "de")
+            {
+                <h2 lang="de">Kommandanten auf der  <a href="~/Leaderboard/All">Bestenliste</a></h2>
+                <p lang="de">Kommandanten auf dem Clan, die in den Top 25 jedes Panzers sind, über alle Spieler auf dieser Seite, geordnet nach kombiniertem Schaden.</p>
+            }
+            else if (GlobalHelper.Language == "ru")
+            {
+                <h2 lang="ru">Командиры на <a href="~/Leaderboard/All">доске лидеров</a></h2>
+                <p lang="ru">Командиры клана, которые находятся в топ-25 каждого танка, над всеми игроками на этом сайте, ранжируются по комбинированному ущербу.</p>
+            }
+            else if (GlobalHelper.Language == "es")
+            {
+                <h2 lang="es">Comandantes en la <a href="~/Leaderboard/All">tabla de posiciones</a></h2>
+                <p lang="es">Los comandantes del clan que están en el top 25 de cada tanque, sobre todos los jugadores de este sitio, clasificados por daño combinado.</p>
             }
             else if (GlobalHelper.Language == "fr")
             {
@@ -499,13 +658,29 @@
             {
                 <p lang="pt">Veja todos os <a href="~/Tanks/Aces"><b>ases dos tanques</b></a>!</p>
             }
+            else if (GlobalHelper.Language == "de")
+            {
+                <p lang="de">Sehen Sie alle <a href="~/Tanks/Aces"><b>Asse der Panzer</b></a>!</p>
+            }
+            else if (GlobalHelper.Language == "ru")
+            {
+                <p lang="ru">Посмотри на все <a href="~/Tanks/Aces"><b>тузы танков</b></a>!</p>
+            }
+            else if (GlobalHelper.Language == "es")
+            {
+                <p lang="es">¡Mira todos los <a href="~/Tanks/Aces"><b>ases de los tanques</b></a>!</p>
+            }
+            else if (GlobalHelper.Language == "pl")
+            {
+                <p lang="pl">Zobacz wszystkie <a href="~/Tanks/Aces"><b>asy czołgów</b></a>!</p>
+            }
             else if (GlobalHelper.Language == "fr")
             {
-                <p lang="fr">Voir tous les <a href="~/Tanks/Aces"><b>chars maîtrise</b></a>!</p>
+                <p lang="fr">Voir tous les <a href="~/Tanks/Aces"><b>maîtrise des chars</b></a>!</p>
             }
             else
             {
-            <p lang="en">See all the <a href="~/Tanks/Aces"><b>tank aces</b></a>!</p>
+                <p lang="en">See all the <a href="~/Tanks/Aces"><b>tanks' aces</b></a>!</p>
             }
 
         </div>

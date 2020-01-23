@@ -813,6 +813,9 @@
   <data name="SurvivalRateExplanation" xml:space="preserve">
     <value>% битв, в которых машина уцелела</value>
   </data>
+  <data name="SuspectData" xml:space="preserve">
+    <value>Есть командиры с подозрительными данными</value>
+  </data>
   <data name="TalkToMeDiscord" xml:space="preserve">
     <value>Поговорите со мной на Discord (Английский)</value>
   </data>

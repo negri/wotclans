@@ -966,6 +966,9 @@
   <data name="SourceCode" xml:space="preserve">
     <value>Código Fonte</value>
   </data>
+  <data name="SuspectData" xml:space="preserve">
+    <value>Existem tanqueiros com dados suspeitos.</value>
+  </data>
   <data name="TalkToMeDiscord" xml:space="preserve">
     <value>Fale comigo no Discord</value>
   </data>

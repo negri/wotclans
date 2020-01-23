@@ -2149,6 +2149,15 @@ namespace Negri.Wot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are commanders with suspect data..
+        /// </summary>
+        public static string SuspectData {
+            get {
+                return ResourceManager.GetString("SuspectData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Talk to me on Discord (English).
         /// </summary>
         public static string TalkToMeDiscord {
