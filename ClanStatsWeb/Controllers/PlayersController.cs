@@ -140,11 +140,11 @@ namespace Negri.Wot.Site.Controllers
                     LeaderOnNextUpdate = leaderOnNextUpdate,
                     ExternalUrl = url,
                     WoTStatConsoleOverallUrl = GetWoTStatConsoleOverallUrl(player),
-                    WotStatConsoleRecentUrl = GetWoTStatConsolRecentUrl(player),
-                    WotStatConsoleHistoryUrl = GetWoTStatConsolHistoryUrl(player),
+                    WotStatConsoleRecentUrl = GetWoTStatConsoleRecentUrl(player),
+                    WotStatConsoleHistoryUrl = GetWoTStatConsoleHistoryUrl(player),
                     WoTInfoOverallUrl = GetWoTInfoOverallUrl(player),
                     WoTInfoRecentUrl = GetWoTInfoRecentlUrl(player),
-                    WoTInfoHistoryUrl = GetWoTInfoHistorylUrl(player),
+                    WoTInfoHistoryUrl = GetWoTInfoHistoryUrl(player),
                 };
 
                 return View(model);
@@ -174,8 +174,7 @@ namespace Negri.Wot.Site.Controllers
 
         private static string GetWoTStatConsoleOverallUrl(Player player)
         {
-            // https://wotstatsconsole.de/player?id=1073992096&s=ps4&l=en&useTanks=1&useMedals=1&quickView=1
-            // https://wotstatsconsole.de/player?id=1763298&s=xbox&l=pt&useTanks=1&useMedals=1
+            // https://wotstatsconsole.de/player?id=938687&s=xbox&l=en
 
             string lang = GlobalHelper.Language;
             string externalLang;
@@ -190,22 +189,20 @@ namespace Negri.Wot.Site.Controllers
                 case "de":
                     externalLang = "de";
                     break;
+                case "it":
+                    externalLang = "it";
+                    break;
+                case "es":
+                    externalLang = "es";
+                    break;
                 default:
                     externalLang = "en";
                     break;
             }
 
             var url =
-                $"https://wotstatsconsole.de/player?id={player.Id}&s={GlobalHelper.PlataformTag}&l={externalLang}&useTanks=1";
-            if (GlobalHelper.IsMobile())
-            {
-                url += "&quickView=1";
-            }
-            else
-            {
-                url += "&useMedals=1";
-            }
-
+                $"https://wotstatsconsole.de/player?id={player.Id}&s={GlobalHelper.PlataformTag}&l={externalLang}";
+            
             return url;
         }
 
@@ -233,7 +230,7 @@ namespace Negri.Wot.Site.Controllers
             return url;
         }
 
-        private static string GetWoTInfoHistorylUrl(Player player)
+        private static string GetWoTInfoHistoryUrl(Player player)
         {
             // http://wotinfo.net/en/trend?playerid=1763298&server=XBOX
 
@@ -276,7 +273,7 @@ namespace Negri.Wot.Site.Controllers
             switch (player.Origin)
             {
                 case PlayerDataOrigin.WotStatConsole:
-                    url = GetWoTStatConsolRecentUrl(player);
+                    url = GetWoTStatConsoleRecentUrl(player);
                     break;
                 case PlayerDataOrigin.WotInfo:
                     url = GetWoTInfoRecentlUrl(player);
@@ -347,11 +344,11 @@ namespace Negri.Wot.Site.Controllers
                     MoEs = moes,
                     ExternalUrl = url,
                     WoTStatConsoleOverallUrl = GetWoTStatConsoleOverallUrl(player),
-                    WotStatConsoleRecentUrl = GetWoTStatConsolRecentUrl(player),
-                    WotStatConsoleHistoryUrl = GetWoTStatConsolHistoryUrl(player),
+                    WotStatConsoleRecentUrl = GetWoTStatConsoleRecentUrl(player),
+                    WotStatConsoleHistoryUrl = GetWoTStatConsoleHistoryUrl(player),
                     WoTInfoOverallUrl = GetWoTInfoOverallUrl(player),
                     WoTInfoRecentUrl = GetWoTInfoRecentlUrl(player),
-                    WoTInfoHistoryUrl = GetWoTInfoHistorylUrl(player),
+                    WoTInfoHistoryUrl = GetWoTInfoHistoryUrl(player),
                 };
 
                 return View(model);
@@ -370,19 +367,19 @@ namespace Negri.Wot.Site.Controllers
                 case PlayerDataOrigin.WotInfo:
                     return GetWoTInfoRecentlUrl(player);
                 case PlayerDataOrigin.WotStatConsole:
-                    return GetWoTStatConsolRecentUrl(player);
+                    return GetWoTStatConsoleRecentUrl(player);
                 default:
                     // As WoTInfo appears to be more stable...
                     return GetWoTInfoRecentlUrl(player);
             }
         }
 
-        private static string GetWoTStatConsolRecentUrl(Player player)
+        private static string GetWoTStatConsoleRecentUrl(Player player)
         {
             return GetWoTStatConsoleOverallUrl(player) + "#diagram";
         }
 
-        private static string GetWoTStatConsolHistoryUrl(Player player)
+        private static string GetWoTStatConsoleHistoryUrl(Player player)
         {
             return GetWoTStatConsoleOverallUrl(player) + "#history";
         }

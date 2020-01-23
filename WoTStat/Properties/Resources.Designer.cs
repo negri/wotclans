@@ -1951,6 +1951,15 @@ namespace Negri.Wot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Search by Tank.
+        /// </summary>
+        public static string SearchByTank {
+            get {
+                return ResourceManager.GetString("SearchByTank", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to See PlayStation&apos;s Clans.
         /// </summary>
         public static string SeePlayStationClans {
@@ -2455,6 +2464,24 @@ namespace Negri.Wot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Wargaming Chicago-Baltimore Discord.
+        /// </summary>
+        public static string WgChicagoDiscord {
+            get {
+                return ResourceManager.GetString("WgChicagoDiscord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wargaming Minsk Discord.
+        /// </summary>
+        public static string WgMinskDiscord {
+            get {
+                return ResourceManager.GetString("WgMinskDiscord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Win Rate.
         /// </summary>
         public static string WinRate {
@@ -2649,6 +2676,15 @@ namespace Negri.Wot.Properties {
         public static string WotClansBy {
             get {
                 return ResourceManager.GetString("WotClansBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XBOX Community Discord.
+        /// </summary>
+        public static string XboxCommunityDiscord {
+            get {
+                return ResourceManager.GetString("XboxCommunityDiscord", resourceCulture);
             }
         }
     }

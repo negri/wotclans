@@ -963,6 +963,9 @@
   <data name="DiscordBot" xml:space="preserve">
     <value>Discord Bot</value>
   </data>
+  <data name="SearchByTank" xml:space="preserve">
+    <value>Search by Tank</value>
+  </data>
   <data name="SeePlayStationClans" xml:space="preserve">
     <value>See PlayStation's Clans</value>
   </data>
@@ -978,7 +981,16 @@
   <data name="TalkToMeDiscord" xml:space="preserve">
     <value>Talk to me on Discord (English)</value>
   </data>
+  <data name="WgChicagoDiscord" xml:space="preserve">
+    <value>Wargaming Chicago-Baltimore Discord</value>
+  </data>
+  <data name="WgMinskDiscord" xml:space="preserve">
+    <value>Wargaming Minsk Discord</value>
+  </data>
   <data name="WotClansBy" xml:space="preserve">
     <value>Wot Clans by</value>
+  </data>
+  <data name="XboxCommunityDiscord" xml:space="preserve">
+    <value>XBOX Community Discord</value>
   </data>
 </root>

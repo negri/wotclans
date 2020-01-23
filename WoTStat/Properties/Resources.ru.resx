@@ -747,6 +747,9 @@
   <data name="Search" xml:space="preserve">
     <value>Поиск</value>
   </data>
+  <data name="SearchByTank" xml:space="preserve">
+    <value>Поиск по танку</value>
+  </data>
   <data name="SeePlayStationClans" xml:space="preserve">
     <value>Посмотреть кланы PlayStation</value>
   </data>
@@ -915,6 +918,12 @@
   <data name="WeightExplanation" xml:space="preserve">
     <value>Удельный вес игрока в WN8t15 клана.</value>
   </data>
+  <data name="WgChicagoDiscord" xml:space="preserve">
+    <value>Wargaming Чикаго-Балтимор Discord</value>
+  </data>
+  <data name="WgMinskDiscord" xml:space="preserve">
+    <value>Wargaming Минск Discord</value>
+  </data>
   <data name="WinRate" xml:space="preserve">
     <value>Процент побед</value>
   </data>
@@ -980,5 +989,8 @@
   </data>
   <data name="WotClansBy" xml:space="preserve">
     <value>WoT Clans по </value>
+  </data>
+  <data name="XboxCommunityDiscord" xml:space="preserve">
+    <value>XBOX Сообщество Discord</value>
   </data>
 </root>

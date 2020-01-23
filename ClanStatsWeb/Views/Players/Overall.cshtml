@@ -116,7 +116,7 @@
                 <ul>
                     <li><a @GlobalHelper.ExternalTarget href="https://console.worldoftanks.com/stats/players/@Model.Player.Id/">@Resources.Commander</a></li>
                     <li><a @GlobalHelper.ExternalTarget href="https://console.worldoftanks.com/clans/@GlobalHelper.PlataformTag/@Model.Clan.ClanTag/">@Resources.Clan</a></li>
-                    <li><a @GlobalHelper.ExternalTarget href="https://console.worldoftanks.com/news/">@Resources.News</a></li>
+                    <li><a @GlobalHelper.ExternalTarget href="https://console.worldoftanks.com/en/category/news/">@Resources.News</a></li>
                 </ul>
             </li>
         </ul>
@@ -150,13 +150,15 @@
             <li>
                 Others
                 <ul>
-                    <li><a href="http://www.vbaddict.net/tankstatistics/overall">@Resources.Equipment</a></li>
+                    <li><a href="https://wotguru.com/general-world-of-tanks-guides/world-of-tanks-equipment-guide/">@Resources.Equipment</a></li>
                     <li><a href="https://tanks.gg/list/stats">@Resources.Comparisons</a></li>
                     <li><a href="https://www.reddit.com/r/WorldofTanksConsole/">Reddit</a></li>
                     @if (GlobalHelper.Platform == Platform.XBOX)
                     {
-                        <li><a href="https://discord.gg/WcJ2BGC">Discord</a></li>
+                        <li><a href="https://discord.gg/WcJ2BGC">@Resources.XboxCommunityDiscord</a></li>
                     }
+                    <li><a href="https://discord.gg/AGbzVZz">@Resources.WgChicagoDiscord</a></li>
+                    <li><a href="https://discord.gg/wotconsole">@Resources.WgMinskDiscord</a></li>
                 </ul>
             </li>
         </ul>
@@ -172,7 +174,7 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-2">
-                        <input type="text" id="searchBox" class="form-control" placeholder="Search by Tank" />
+                        <input type="text" id="searchBox" class="form-control" placeholder="@Resources.SearchByTank" />
                         <div id="battlesButtons">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-success btn-sm btn-battles" data-battles="001" aria-label="At Least one Battle" title="At Least one Battle">
