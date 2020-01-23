@@ -149,64 +149,33 @@
 
         <hr />
         <footer>
-            @if (GlobalHelper.Language == "pt")
-            {
-                <p>
-                    &copy; 2015-@DateTime.Now.Year - WoT Clans por <a href="~/About#aboutme">JP Negri</a>.
-                </p>
-                <p>
-                    <a href="~/About">Sobre esse site</a> |
-                    <a href="~/About#aboutme">Sobre mim</a> |
-                    <a href="~/Donate" title="@Resources.DonateExplain" style="color: gold;">@Resources.Donate</a> |
-                    @if (GlobalHelper.Platform != Platform.PS)
-                    {
-                        <span>
-                            <a href="https://ps.wotclans.com.br">Veja clãs do PlayStation</a> |
-                        </span>
-                    }
-                    @if (GlobalHelper.Platform != Platform.XBOX)
-                    {
-                        <span>
-                            <a href="https://wotclans.com.br">Veja clãs do XBOX</a> |
-                        </span>
-                    }
-                    <a href="~/About#addClan">Solicite a adição de seu clã</a> |
-                    <a href="https://discord.gg/MTCMq3Q" hreflang="en" title="Converse comigo no Discord (em Inglês)">
-                        <img alt="Discord" src="~/Images/discord.svg" height="32" />
-                    </a> |
-                    <a hreflang="en" href="~/DiscordBot">Discord Bot</a> |
-                    <a hreflang="en" href="https://github.com/negri/wotclans">Código Fonte</a>
-                </p>
-            }
-            else
-            {
-                <p>
-                    &copy; 2015-@DateTime.Now.Year - WoT Clans by <a href="~/About#aboutme">JP Negri</a>.
-                </p>
-                <p>
-                    <a href="~/About">About this site</a> |
-                    <a href="~/About#addClan">Add Your Clan</a> |
-                    <a href="~/About#aboutme">About me</a> |
-                    <a href="~/Donate" title="@Resources.DonateExplain" style="color: gold;">@Resources.Donate</a> |
-                    @if (GlobalHelper.Platform != Platform.PS)
-                    {
-                        <span>
-                            <a href="https://ps.wotclans.com.br">See PlayStation Clans</a> |
-                        </span>
-                    }
-                    @if (GlobalHelper.Platform != Platform.XBOX)
-                    {
-                        <span>
-                            <a href="https://wotclans.com.br">See XBOX Clans</a> |
-                        </span>
-                    }
-                    <a href="https://discord.gg/MTCMq3Q" hreflang="en" title="Talk to me on Discord (in English)">
-                        <img alt="Discord" src="~/Images/discord.svg" height="32" />
-                    </a> |
-                    <a hreflang="en" href="~/DiscordBot">Discord Bot</a> |
-                    <a hreflang="en" href="https://github.com/negri/wotclans">Source Code</a>
-                </p>
-            }
+            <p>
+                &copy; 2015-@DateTime.Now.Year - @Resources.WotClansBy <a href="~/About#aboutme">JP Negri</a>.
+            </p>
+            <p>
+                <a href="~/About">@Resources.AboutThisSite</a> |
+                <a href="~/About#aboutme">@Resources.AboutMe</a> |
+                <a href="~/Donate" title="@Resources.DonateExplain" style="color: gold;">@Resources.Donate</a> |
+                @if (GlobalHelper.Platform != Platform.PS)
+                {
+                    <span>
+                        <a href="https://ps.wotclans.com.br">@Resources.SeePlayStationClans</a> |
+                    </span>
+                }
+                @if (GlobalHelper.Platform != Platform.XBOX)
+                {
+                    <span>
+                        <a href="https://wotclans.com.br">@Resources.SeeXboxClans</a> |
+                    </span>
+                }
+                <a href="~/About#addClan">@Resources.AddYourClan</a> |
+                <a href="https://discord.gg/MTCMq3Q" hreflang="en" title="@Resources.TalkToMeDiscord">
+                    <img alt="Discord" src="~/Images/discord.svg" height="32" />
+                </a> |
+                <a hreflang="en" href="~/DiscordBot">@Resources.DiscordBot</a> |
+                <a hreflang="en" href="https://github.com/negri/wotclans">@Resources.SourceCode</a>
+            </p>
+
         </footer>
     </div>
 

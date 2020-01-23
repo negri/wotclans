@@ -45,7 +45,7 @@
     <div class="col-md-12">
 
         <div id="filters" class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-6">
                 <a class="btn btn-info btn-xs" title="@Resources.FilterDefaultExplanation" href="@Url.Current(new {countryFilter = "", invertCountryFilter = "", minActiveSize = "", maxActiveSize = "", minWn8T15 = ""})">@Resources.FilterDefault</a>
                 <a class="btn btn-info btn-xs" title="@Resources.FilterAllExplanation" href="@Url.Current(new {minActiveSize = "0", maxActiveSize = "", minWn8T15 = 0})">@Resources.FilterAll</a>
                 <a class="btn btn-info btn-xs" title="@Resources.FilterBigExplanation" href="@Url.Current(new {minActiveSize = 15, maxActiveSize = ""})">@Resources.FilterBig</a>
@@ -59,10 +59,10 @@
                     <a title="@Resources.FilterByCountryExplanation @country" href="@Url.Current(new {countryFilter = country, invertCountryFilter = ""})"><img src="~/Images/Flags/@(country.ToLowerInvariant()).png" alt="@country"/></a>
                 }
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-2">
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon">@Resources.Search</span>
-                    <input type="text" class="form-control" placeholder="clan" id="searchBox" maxlength="5" style="text-align: center; width: 6em;"/>
+                    <input type="text" class="form-control" placeholder="@Resources.Clan" id="searchBox" maxlength="5" style="text-align: center; width: 6em;"/>
                 </div>                
             </div>
         </div>

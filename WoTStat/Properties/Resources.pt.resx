@@ -945,4 +945,31 @@
   <data name="Mercenaries" xml:space="preserve">
     <value>Mercenários</value>
   </data>
+  <data name="AboutMe" xml:space="preserve">
+    <value>Sobre mim</value>
+  </data>
+  <data name="AboutThisSite" xml:space="preserve">
+    <value>Sobre esse site</value>
+  </data>
+  <data name="AddYourClan" xml:space="preserve">
+    <value>Solicite a inclusão do seu clã</value>
+  </data>
+  <data name="DiscordBot" xml:space="preserve">
+    <value>Bot do Discord</value>
+  </data>
+  <data name="SeePlayStationClans" xml:space="preserve">
+    <value>Veja os clãs do PlayStation</value>
+  </data>
+  <data name="SeeXboxClans" xml:space="preserve">
+    <value>Veja os clãs do XBox</value>
+  </data>
+  <data name="SourceCode" xml:space="preserve">
+    <value>Código Fonte</value>
+  </data>
+  <data name="TalkToMeDiscord" xml:space="preserve">
+    <value>Fale comigo no Discord</value>
+  </data>
+  <data name="WotClansBy" xml:space="preserve">
+    <value>Wot Clans por</value>
+  </data>
 </root>

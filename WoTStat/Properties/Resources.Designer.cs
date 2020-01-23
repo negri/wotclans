@@ -70,11 +70,29 @@ namespace Negri.Wot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to About me.
+        /// </summary>
+        public static string AboutMe {
+            get {
+                return ResourceManager.GetString("AboutMe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to About.
         /// </summary>
         public static string AboutTextLink {
             get {
                 return ResourceManager.GetString("AboutTextLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to About this site.
+        /// </summary>
+        public static string AboutThisSite {
+            get {
+                return ResourceManager.GetString("AboutThisSite", resourceCulture);
             }
         }
         
@@ -147,6 +165,15 @@ namespace Negri.Wot.Properties {
         public static string ActivityExplanation {
             get {
                 return ResourceManager.GetString("ActivityExplanation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Request your clan inclusion.
+        /// </summary>
+        public static string AddYourClan {
+            get {
+                return ResourceManager.GetString("AddYourClan", resourceCulture);
             }
         }
         
@@ -678,6 +705,15 @@ namespace Negri.Wot.Properties {
         public static string Direct {
             get {
                 return ResourceManager.GetString("Direct", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord Bot.
+        /// </summary>
+        public static string DiscordBot {
+            get {
+                return ResourceManager.GetString("DiscordBot", resourceCulture);
             }
         }
         
@@ -1915,6 +1951,24 @@ namespace Negri.Wot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to See PlayStation&apos;s Clans.
+        /// </summary>
+        public static string SeePlayStationClans {
+            get {
+                return ResourceManager.GetString("SeePlayStationClans", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to See XBOX&apos;s Clans.
+        /// </summary>
+        public static string SeeXboxClans {
+            get {
+                return ResourceManager.GetString("SeeXboxClans", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shots.
         /// </summary>
         public static string Shots {
@@ -1965,6 +2019,15 @@ namespace Negri.Wot.Properties {
         public static string ShowTop15 {
             get {
                 return ResourceManager.GetString("ShowTop15", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Source Code.
+        /// </summary>
+        public static string SourceCode {
+            get {
+                return ResourceManager.GetString("SourceCode", resourceCulture);
             }
         }
         
@@ -2082,6 +2145,15 @@ namespace Negri.Wot.Properties {
         public static string SurvivalRateExplanation {
             get {
                 return ResourceManager.GetString("SurvivalRateExplanation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Talk to me on Discord (English).
+        /// </summary>
+        public static string TalkToMeDiscord {
+            get {
+                return ResourceManager.GetString("TalkToMeDiscord", resourceCulture);
             }
         }
         
@@ -2559,6 +2631,15 @@ namespace Negri.Wot.Properties {
         public static string Wn8VeryGood {
             get {
                 return ResourceManager.GetString("Wn8VeryGood", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wot Clans by.
+        /// </summary>
+        public static string WotClansBy {
+            get {
+                return ResourceManager.GetString("WotClansBy", resourceCulture);
             }
         }
     }
