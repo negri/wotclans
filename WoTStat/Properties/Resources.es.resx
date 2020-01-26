@@ -153,6 +153,9 @@
   <data name="From" xml:space="preserve">
     <value>Desde</value>
   </data>
+  <data name="Italy" xml:space="preserve">
+    <value>Italia</value>
+  </data>
   <data name="Members" xml:space="preserve">
     <value>Miembros</value>
   </data>
@@ -162,11 +165,20 @@
   <data name="Overall" xml:space="preserve">
     <value>Generales</value>
   </data>
+  <data name="Poland" xml:space="preserve">
+    <value>Polonia</value>
+  </data>
+  <data name="Premium" xml:space="preserve">
+    <value>Premium</value>
+  </data>
   <data name="Recent" xml:space="preserve">
     <value>Recientes</value>
   </data>
   <data name="Rules" xml:space="preserve">
     <value>Reglas</value>
+  </data>
+  <data name="Sweden" xml:space="preserve">
+    <value>Suecia</value>
   </data>
   <data name="Tanks" xml:space="preserve">
     <value>Tanques</value>

@@ -1159,6 +1159,15 @@ namespace Negri.Wot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Italy.
+        /// </summary>
+        public static string Italy {
+            get {
+                return ResourceManager.GetString("Italy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Japan.
         /// </summary>
         public static string Japan {
@@ -1807,6 +1816,24 @@ namespace Negri.Wot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Poland.
+        /// </summary>
+        public static string Poland {
+            get {
+                return ResourceManager.GetString("Poland", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Premium.
+        /// </summary>
+        public static string Premium {
+            get {
+                return ResourceManager.GetString("Premium", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Previous.
         /// </summary>
         public static string Previous {
@@ -2163,6 +2190,15 @@ namespace Negri.Wot.Properties {
         public static string SuspectData {
             get {
                 return ResourceManager.GetString("SuspectData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sweden.
+        /// </summary>
+        public static string Sweden {
+            get {
+                return ResourceManager.GetString("Sweden", resourceCulture);
             }
         }
         

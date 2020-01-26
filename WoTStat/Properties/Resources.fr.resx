@@ -888,4 +888,16 @@
   <data name="Mercenaries" xml:space="preserve">
     <value>Mercenaires</value>
   </data>
+  <data name="Italy" xml:space="preserve">
+    <value>Italie</value>
+  </data>
+  <data name="Poland" xml:space="preserve">
+    <value>Pologne</value>
+  </data>
+  <data name="Premium" xml:space="preserve">
+    <value>Premium</value>
+  </data>
+  <data name="Sweden" xml:space="preserve">
+    <value>Suède</value>
+  </data>
 </root>

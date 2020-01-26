@@ -993,4 +993,16 @@
   <data name="XboxCommunityDiscord" xml:space="preserve">
     <value>XBOX Community Discord</value>
   </data>
+  <data name="Italy" xml:space="preserve">
+    <value>Italy</value>
+  </data>
+  <data name="Poland" xml:space="preserve">
+    <value>Poland</value>
+  </data>
+  <data name="Premium" xml:space="preserve">
+    <value>Premium</value>
+  </data>
+  <data name="Sweden" xml:space="preserve">
+    <value>Sweden</value>
+  </data>
 </root>

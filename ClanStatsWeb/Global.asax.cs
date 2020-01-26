@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -56,7 +59,72 @@ namespace Negri.Wot.Site
             Log.Error(ex);
         }
 
+        /// <summary>
+        /// Languages that I have translations
+        /// </summary>
+        private static readonly HashSet<string> ExistingTranslations = new HashSet<string> { "en", "de", "es", "fr", "pl", "pt", "ru" };
 
+        /// <summary>
+        /// Being used to improve on ASP.Net MVC automated language and culture detection
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void Application_AcquireRequestState(object sender, EventArgs e)
+        {
+            Log.Debug($"Start Culture: {Thread.CurrentThread.CurrentCulture.Name}; UI: {Thread.CurrentThread.CurrentUICulture.Name}");
+
+            if (HttpContext.Current == null)
+            {
+                Log.Debug("No HttpContext.Current");
+                return;
+            }
+
+            var userLanguages = HttpContext.Current.Request.UserLanguages;
+            if (userLanguages == null || userLanguages.Length == 0)
+            {
+                Log.Debug("No User Language on request");
+                return;
+            }
+
+            foreach (var userLanguage in userLanguages)
+            {
+                if (string.IsNullOrWhiteSpace(userLanguage))
+                {
+                    continue;
+                }
+
+                if (userLanguage.Length < 2)
+                {
+                    continue;
+                }
+
+                var lang = userLanguage.Substring(0, 2).ToLowerInvariant();
+
+                if (ExistingTranslations.Contains(lang))
+                {
+                    if (lang == Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName)
+                    {
+                        // It's a match! But maybe automatic detection already worked...
+                        return;
+                    }
+
+                    var currentLanguageRegion = Thread.CurrentThread.CurrentCulture.NativeName;
+
+                    try
+                    {
+                        //var ci = CultureInfo.CreateSpecificCulture()
+                    }
+                    catch (CultureNotFoundException ex)
+                    {
+                        Log.Error($"Culture not found", ex);
+                        return;
+                    }
+                    
+                }
+                
+            }
+
+        }
 
     }
 }

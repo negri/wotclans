@@ -118,891 +118,891 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AboutLink" xml:space="preserve">
-    <value>О сайте</value>
+    <value>Informacje</value>
   </data>
   <data name="AboutMe" xml:space="preserve">
-    <value>Обо мне</value>
+    <value>O mnie</value>
   </data>
   <data name="AboutTextLink" xml:space="preserve">
-    <value>О сайте</value>
+    <value>Informacje</value>
   </data>
   <data name="AboutThisSite" xml:space="preserve">
-    <value>Об этом сайте</value>
+    <value>O tej stronie</value>
   </data>
   <data name="AboutTournament" xml:space="preserve">
-    <value>О турнире</value>
+    <value>O tym turnieju</value>
   </data>
   <data name="AboutTournamentsTextLink" xml:space="preserve">
-    <value>Информация о турнирах</value>
+    <value>Informacje o turniejach</value>
   </data>
   <data name="Aces" xml:space="preserve">
-    <value>Асы</value>
+    <value>Asy</value>
   </data>
   <data name="ActiveCommandersExplanation" xml:space="preserve">
-    <value>Активные игроки клана.</value>
+    <value>Aktywni dowódcy klanu.</value>
   </data>
   <data name="Actives" xml:space="preserve">
-    <value>Активные игроки</value>
+    <value>Aktywni</value>
   </data>
   <data name="ActivesExplanation" xml:space="preserve">
-    <value>Количество игроков, сыгравших не менее 21 боя за последний месяц.</value>
+    <value>Liczba członków, którzy stoczyli co najmniej 21 bitew w ostatnim miesiącu.</value>
   </data>
   <data name="Activity" xml:space="preserve">
-    <value>Активность</value>
+    <value>Aktywność</value>
   </data>
   <data name="ActivityExplanation" xml:space="preserve">
-    <value>Процент активных игроков за последний месяц.</value>
+    <value>Procent aktywnych graczy w ostatnim miesiącu</value>
   </data>
   <data name="AddYourClan" xml:space="preserve">
-    <value>Запрос вашего клана включения</value>
+    <value>Poproś o dołączenie do klanu</value>
   </data>
   <data name="All" xml:space="preserve">
-    <value>Все</value>
+    <value>Wszystkie</value>
   </data>
   <data name="Artillery" xml:space="preserve">
-    <value>САУ</value>
+    <value>Artyleria</value>
   </data>
   <data name="Assisted" xml:space="preserve">
-    <value>Огневая поддержка</value>
+    <value>Asystujące</value>
   </data>
   <data name="AssistedDamage" xml:space="preserve">
-    <value>Помощь в нанесении урона</value>
+    <value>Uszkodzenia asystujące</value>
   </data>
   <data name="AssistedDamageExplanation" xml:space="preserve">
-    <value>Помощь союзникам за бой</value>
+    <value>Uszkodzenia asystujące na bitwę</value>
   </data>
   <data name="Atack" xml:space="preserve">
-    <value>Атака</value>
+    <value>Atak</value>
   </data>
   <data name="Avg" xml:space="preserve">
-    <value>Ср.</value>
+    <value>Śr.</value>
   </data>
   <data name="AvgTier" xml:space="preserve">
-    <value>Ср. уровень</value>
+    <value>Śr. poziom</value>
   </data>
   <data name="AvgTierActives" xml:space="preserve">
-    <value>Ср. уровень активных</value>
+    <value>Śr. poziom aktywnych</value>
   </data>
   <data name="AvgTierExplanation" xml:space="preserve">
-    <value>Средний уровень техники, на которой играли</value>
+    <value>Średni poziom, którym toczono rozgrywkę</value>
   </data>
   <data name="AvgTierTop15" xml:space="preserve">
-    <value>Ср. уровень топ-15</value>
+    <value>15 najlepszych pod względem śr. poziomu</value>
   </data>
   <data name="Battles" xml:space="preserve">
-    <value>Бои</value>
+    <value>Bitwy</value>
   </data>
   <data name="BattlesExplanation" xml:space="preserve">
-    <value>Количество боёв, сыгранных активными игроками за последний месяц.</value>
+    <value>Liczba bitew rozegranych przez aktywnych graczy w ostatnim miesiącu</value>
   </data>
   <data name="BattlesStatsExplanation" xml:space="preserve">
-    <value>Количество боёв в этом наборе данных</value>
+    <value>Liczba bitew w tym zestawie danych</value>
   </data>
   <data name="BestTankersAt" xml:space="preserve">
-    <value>Лучший танкист на каждой машине, рассчитано в {0:d}.</value>
+    <value>Najlepszy dowódca każdego z pojazdów, obliczone o {0:d}.</value>
   </data>
   <data name="Blocked" xml:space="preserve">
-    <value>Заблокировано</value>
+    <value>Zablokowane</value>
   </data>
   <data name="BlockedExplanation" xml:space="preserve">
-    <value>% попаданий, заблокированных бронёй</value>
+    <value>% trafień zablokowanych przez pancerz</value>
   </data>
   <data name="Brackets" xml:space="preserve">
-    <value>Сетка</value>
+    <value>Tabele</value>
   </data>
   <data name="CalculatedAt" xml:space="preserve">
-    <value>. Рассчитано:</value>
+    <value>. Obliczane o</value>
   </data>
   <data name="Capture" xml:space="preserve">
-    <value>Захват</value>
+    <value>Zajmowanie</value>
   </data>
   <data name="CaptureExplanation" xml:space="preserve">
-    <value>Очки захвата за бой</value>
+    <value>Punkty zajęcia na bitwę</value>
   </data>
   <data name="China" xml:space="preserve">
-    <value>Китай</value>
+    <value>Chiny</value>
   </data>
   <data name="Clan" xml:space="preserve">
-    <value>Клановые</value>
+    <value>Klan</value>
   </data>
   <data name="ClanDetail" xml:space="preserve">
-    <value>Подробности для</value>
+    <value>Szczegóły</value>
   </data>
   <data name="ClanMetaDescription" xml:space="preserve">
-    <value>Статус и эволюция клана {0} в игре World of Tanks.</value>
+    <value>Status i ewolucja {0} klanu w grze World of Tanks.</value>
   </data>
   <data name="ClanRankingExplanation" xml:space="preserve">
-    <value>Клановый рейтинг (с учётом фильтра) на основе WN8t15.</value>
+    <value>Ranking klanowy (z uwzględnieniem filtrów) według WN8t15.</value>
   </data>
   <data name="Clans" xml:space="preserve">
-    <value>кланов</value>
+    <value>klany</value>
   </data>
   <data name="Combined" xml:space="preserve">
-    <value>Общий</value>
+    <value>Łączne</value>
   </data>
   <data name="CombinedDamage" xml:space="preserve">
-    <value>Общий урон</value>
+    <value>Uszkodzenia łącznie</value>
   </data>
   <data name="CombinedDamageExplanation" xml:space="preserve">
-    <value>Сумма непосредственного урона, урона союзников по разведданным и урона союзников по обездвиженной технике</value>
+    <value>Suma uszkodzeń bezpośrednich oraz asystujących poprzez unieruchomienie i wykrycie na bitwę</value>
   </data>
   <data name="CombinedDPM" xml:space="preserve">
-    <value>Общий DPM</value>
+    <value>Łączne u/min</value>
   </data>
   <data name="CombinedDPMExplanation" xml:space="preserve">
-    <value>Общий урон в минуту</value>
+    <value>Łączne uszkodzenia/minutę</value>
   </data>
   <data name="Commander" xml:space="preserve">
-    <value>Игрок</value>
+    <value>Dowódca</value>
   </data>
   <data name="CommanderRankingExplanation" xml:space="preserve">
-    <value>Рейтинг игрока в клане на основе актуального WN8.</value>
+    <value>Ranking dowódców klanu, zgodnie z najnowszym WN8.</value>
   </data>
   <data name="Commanders" xml:space="preserve">
-    <value>Игроки</value>
+    <value>Dowódcy</value>
   </data>
   <data name="CommandersStatsExplanation" xml:space="preserve">
-    <value>Количество игроков в этом наборе данных</value>
+    <value>Liczba graczy w tym zestawie danych</value>
   </data>
   <data name="Comparisons" xml:space="preserve">
-    <value>Сравнение</value>
+    <value>Porównania</value>
   </data>
   <data name="Czechoslovakia" xml:space="preserve">
-    <value>Чехословакия</value>
+    <value>Czechosłowacja</value>
   </data>
   <data name="Damage" xml:space="preserve">
-    <value>урон</value>
+    <value>Uszkodzenia</value>
   </data>
   <data name="DamageExplanation" xml:space="preserve">
-    <value>Непосредственный урон за бой</value>
+    <value>Uszkodzenia bezpośrednie na bitwę</value>
   </data>
   <data name="DamagePiercing" xml:space="preserve">
-    <value>Урон за пробитие</value>
+    <value>Uszkodzenia po przebiciu</value>
   </data>
   <data name="DamagePiercingExplanation" xml:space="preserve">
-    <value>Средний урон за пробитие</value>
+    <value>Średnie uszkodzenia po przebiciu</value>
   </data>
   <data name="DamageRatio" xml:space="preserve">
-    <value>Соотношение урона</value>
+    <value>Współczynnik uszkodzeń</value>
   </data>
   <data name="DamageRatioExplanation" xml:space="preserve">
-    <value>Отношение непосредственно нанесённого урона к полученному урону</value>
+    <value>Współczynnik zadanych uszkodzeń bezpośrednich do uszkodzeń otrzymanych</value>
   </data>
   <data name="DamageReceived" xml:space="preserve">
-    <value>Получено урона</value>
+    <value>Otrzymane uszkodzenia</value>
   </data>
   <data name="DamageReceivedExplanation" xml:space="preserve">
-    <value>Получено урона за бой</value>
+    <value>Otrzymane uszkodzenia na bitwę</value>
   </data>
   <data name="DataPermission" xml:space="preserve">
-    <value>Данные получены с разрешения</value>
+    <value>Dane pozyskane z rodzajem pozwolenia</value>
   </data>
   <data name="DataRetrievedAt" xml:space="preserve">
-    <value>Данные получены в {0:O}.</value>
+    <value>Dane pobrane o {0:O}.</value>
   </data>
   <data name="DataRetrievedAtNextAt" xml:space="preserve">
-    <value>Данные получены в {0:O}, следующее обновление ~{1:O}.</value>
+    <value>Dane pobrane o {0:O}, następna aktualizacja ~{1:O}.</value>
   </data>
   <data name="Date" xml:space="preserve">
-    <value>Дата</value>
+    <value>Data</value>
   </data>
   <data name="Day" xml:space="preserve">
-    <value>День назад.</value>
+    <value>Dane z poprzedniego dnia.</value>
   </data>
   <data name="DayAbbr" xml:space="preserve">
-    <value>Д</value>
+    <value>D</value>
   </data>
   <data name="Days" xml:space="preserve">
-    <value>дн.</value>
+    <value>dni</value>
   </data>
   <data name="DaysAgo" xml:space="preserve">
-    <value>дн. назад</value>
+    <value>Dni temu</value>
   </data>
   <data name="DaysStatsExplanation" xml:space="preserve">
-    <value>Время игры на этой машине</value>
+    <value>Czas rozgrywki danym czołgiem</value>
   </data>
   <data name="Defense" xml:space="preserve">
-    <value>Оборона</value>
+    <value>Obrona</value>
   </data>
   <data name="Delta" xml:space="preserve">
-    <value>Дельта</value>
+    <value>Delta</value>
   </data>
   <data name="DeltaExplanation" xml:space="preserve">
-    <value>Разброс значений.</value>
+    <value>Zmiana wartości.</value>
   </data>
   <data name="Direct" xml:space="preserve">
-    <value>Прямой</value>
+    <value>Bezpośrednie</value>
   </data>
   <data name="DiscordBot" xml:space="preserve">
-    <value>Дискорд Бот</value>
+    <value>Bot Discord</value>
   </data>
   <data name="Discussion" xml:space="preserve">
-    <value>Обсуждение</value>
+    <value>Dyskusja</value>
   </data>
   <data name="Donate" xml:space="preserve">
-    <value>Пожертвовать!</value>
+    <value>Wesprzyj!</value>
   </data>
   <data name="DonateCrypto" xml:space="preserve">
-    <value>Пожертвовать криптовалюту</value>
+    <value>Wesprzyj kryptowalutami</value>
   </data>
   <data name="DonateExplain" xml:space="preserve">
-    <value>Помогите нам поддерживать сайт без рекламы!</value>
+    <value>Pomóż mi utrzymać tę stronę bez reklam!</value>
   </data>
   <data name="DonatePayPal" xml:space="preserve">
-    <value>Пожертвовать через PayPal</value>
+    <value>Wesprzyj przez PayPal</value>
   </data>
   <data name="DPM" xml:space="preserve">
-    <value>DPM</value>
+    <value>U/min</value>
   </data>
   <data name="DPMExplanation" xml:space="preserve">
-    <value>Непосредственный урон в минуту</value>
+    <value>Uszkodzenia bezpośrednie na minutę</value>
   </data>
   <data name="DPMUnit" xml:space="preserve">
-    <value>ОП/мин</value>
+    <value>PW/min</value>
   </data>
   <data name="DroppedCapture" xml:space="preserve">
-    <value>Сбитый захват</value>
+    <value>Nieudane zajęcia</value>
   </data>
   <data name="DroppedCaptureExplanation" xml:space="preserve">
-    <value>Сбитые очки захвата за бой</value>
+    <value>Utracone punkty zajęcia na bitwę</value>
   </data>
   <data name="Equipment" xml:space="preserve">
-    <value>Оборудование</value>
+    <value>Wyposażenie</value>
   </data>
   <data name="Evolution" xml:space="preserve">
-    <value>Эволюция</value>
+    <value>Ewolucja</value>
   </data>
   <data name="EvolutionAxisTitle" xml:space="preserve">
-    <value>Значение WN8</value>
+    <value>Wartość WN8</value>
   </data>
   <data name="ExpectedValues" xml:space="preserve">
-    <value>Средние ожидаемые значения за бой</value>
+    <value>Średnie spodziewane wartości za bitwę</value>
   </data>
   <data name="Explanation" xml:space="preserve">
-    <value>Пояснение</value>
+    <value>Wyjaśnienie</value>
   </data>
   <data name="ExplosionHits" xml:space="preserve">
-    <value>Попадания со взрывом</value>
+    <value>Trafienia wybuchowe</value>
   </data>
   <data name="ExplosionHitsExplanation" xml:space="preserve">
-    <value>Попаданий со взрывом за бой</value>
+    <value>Trafienia wybuchowe na bitwę</value>
   </data>
   <data name="ExplosionHitsReceived" xml:space="preserve">
-    <value>Получено попаданий со взрывом</value>
+    <value>Otrzymane trafienia wybuchowe</value>
   </data>
   <data name="ExplosionHitsReceivedExplanation" xml:space="preserve">
-    <value>Получено попаданий со взрывом за бой</value>
+    <value>Otrzymane trafienia wybuchowe na bitwę</value>
   </data>
   <data name="FilterAll" xml:space="preserve">
-    <value>Показать все</value>
+    <value>Pokaż wszystkie</value>
   </data>
   <data name="FilterAllExplanation" xml:space="preserve">
-    <value>Показать все активные кланы (не менее 7 активных игроков за последний месяц).</value>
+    <value>Pokaż wszystkie aktywne (co najmniej 7 aktywnych graczy w ostatnim miesiącu) klany.</value>
   </data>
   <data name="FilterBig" xml:space="preserve">
-    <value>Большие кланы</value>
+    <value>Duże klany</value>
   </data>
   <data name="FilterBigExplanation" xml:space="preserve">
-    <value>Показать кланы, в которых не менее 15 активных игроков.</value>
+    <value>Pokaż klany posiadające co najmniej 15 aktywnych graczy.</value>
   </data>
   <data name="FilterByCountry" xml:space="preserve">
-    <value>По странам</value>
+    <value>Ze względu na kraj</value>
   </data>
   <data name="FilterByCountryExplanation" xml:space="preserve">
-    <value>Фильтр по странам</value>
+    <value>Filtruj ze względu na kraj</value>
   </data>
   <data name="FilterDefault" xml:space="preserve">
-    <value>По умолчанию</value>
+    <value>Domyślny</value>
   </data>
   <data name="FilterDefaultExplanation" xml:space="preserve">
-    <value>Сбросить все фильтры и вернуться к виду по умолчанию.</value>
+    <value>Wyczyść wszystkie filtry i wróć do widoku domyślnego.</value>
   </data>
   <data name="FilterSmall" xml:space="preserve">
-    <value>Малые кланы</value>
+    <value>Małe klany</value>
   </data>
   <data name="FilterSmallExplanation" xml:space="preserve">
-    <value>Показать кланы, в которых менее 15 активных игроков.</value>
+    <value>Pokaż klany posiadające mniej niż 15 aktywnych graczy.</value>
   </data>
   <data name="ForPs" xml:space="preserve">
-    <value>на PlayStation</value>
+    <value>na PlayStation</value>
   </data>
   <data name="ForXbox" xml:space="preserve">
-    <value>на Xbox</value>
+    <value>dla XBOX</value>
   </data>
   <data name="France" xml:space="preserve">
-    <value>Франция</value>
+    <value>Francja</value>
   </data>
   <data name="FrequencyAxisActives" xml:space="preserve">
-    <value>Число активных игроков</value>
+    <value>L. aktywnych dowódców</value>
   </data>
   <data name="FrequencyAxisBattles" xml:space="preserve">
-    <value>Число боёв</value>
+    <value>L. bitew</value>
   </data>
   <data name="From" xml:space="preserve">
-    <value>С</value>
+    <value>Od</value>
   </data>
   <data name="General" xml:space="preserve">
-    <value>Общее</value>
+    <value>Generał</value>
   </data>
   <data name="Germany" xml:space="preserve">
-    <value>Германия</value>
+    <value>Niemcy</value>
   </data>
   <data name="Heavy" xml:space="preserve">
-    <value>Тяжёлые танки</value>
+    <value>Ciężkie</value>
   </data>
   <data name="Historic" xml:space="preserve">
-    <value>История</value>
+    <value>Historyczne</value>
   </data>
   <data name="HistoricExplanation" xml:space="preserve">
-    <value>Последние 2 месяца.</value>
+    <value>Ostatnie 2 miesiące.</value>
   </data>
   <data name="History" xml:space="preserve">
-    <value>История</value>
+    <value>Historia</value>
   </data>
   <data name="HitRatio" xml:space="preserve">
-    <value>Процент попаданий</value>
+    <value>Współczynnik trafień</value>
   </data>
   <data name="HitRatioExplanation" xml:space="preserve">
-    <value>% выстрелов, поразивших цель</value>
+    <value>% strzałów, które trafiły cel</value>
   </data>
   <data name="Hits" xml:space="preserve">
-    <value>Попадания</value>
+    <value>Trafienia</value>
   </data>
   <data name="HitsExplanation" xml:space="preserve">
-    <value>Попаданий за бой</value>
+    <value>Trafienia na bitwę</value>
   </data>
   <data name="HitsReceived" xml:space="preserve">
-    <value>Получено попаданий</value>
+    <value>Otrzymane trafienia</value>
   </data>
   <data name="HitsReceivedExplanation" xml:space="preserve">
-    <value>Получено прямых попаданий за бой</value>
+    <value>Otrzymane trafienia bezpośrednie na bitwę</value>
   </data>
   <data name="Hours" xml:space="preserve">
-    <value>часов</value>
+    <value>godz.</value>
   </data>
   <data name="HP" xml:space="preserve">
-    <value>очков прочности</value>
+    <value>PW</value>
   </data>
   <data name="Italy" xml:space="preserve">
-    <value>Италия</value>
+    <value>Włochy</value>
   </data>
   <data name="Japan" xml:space="preserve">
-    <value>Япония</value>
+    <value>Japonia</value>
   </data>
   <data name="KillDeath" xml:space="preserve">
-    <value>Уничтожил/уничтожен</value>
+    <value>Zniszczonych/Straconych</value>
   </data>
   <data name="KillDeathExplanation" xml:space="preserve">
-    <value>Отношение числа уничтоженной техники к числу уничтожений машины</value>
+    <value>Liczba zniszczonych na każdy stracony czołg</value>
   </data>
   <data name="Kills" xml:space="preserve">
-    <value>Уничтожений</value>
+    <value>Zniszczonych</value>
   </data>
   <data name="KillsExplanation" xml:space="preserve">
-    <value>Уничтожений за бой</value>
+    <value>Zniszczonych na bitwę</value>
   </data>
   <data name="LastMonth" xml:space="preserve">
-    <value>Последний месяц</value>
+    <value>Ostatni miesiąc</value>
   </data>
   <data name="LastMonthExplanation" xml:space="preserve">
-    <value>Точнее, это 28 дней (4 недели).</value>
+    <value>Właściwie 28 dni, 4 tygodnie.</value>
   </data>
   <data name="LastWeek" xml:space="preserve">
-    <value>Прошлая неделя</value>
+    <value>Ostatni tydzień</value>
   </data>
   <data name="Leaderboard" xml:space="preserve">
-    <value>Таблица рейтинга</value>
+    <value>Ranking</value>
   </data>
   <data name="LeaderIfFewMoreDamage" xml:space="preserve">
-    <value>Чтобы попасть в таблицу, нанесите ещё немного урона!</value>
+    <value>Trochę więcej uszkodzeń w rankingu!</value>
   </data>
   <data name="LeaderIfFewMoreDamageExplanation" xml:space="preserve">
-    <value>&lt;p&gt;Нанесите больше &lt;b&gt;урона&lt;/b&gt; (прирост менее 5%) на следующей технике до &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;, чтобы получить шанс попасть в таблицу рейтинга:&lt;/p&gt;</value>
+    <value>&lt;p&gt;Zadaj więcej &lt;b&gt;uszkodzeń&lt;/b&gt; (mniej niż 5% wzrostu) poniższymi czołgami przed &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;, by zyskać szansę zaistnienia w rankingu:&lt;/p&gt;</value>
   </data>
   <data name="LeaderIfFewMoreGames" xml:space="preserve">
-    <value>Чтобы попасть в таблицу, сыграйте ещё несколько боёв!</value>
+    <value>Jeszcze kilka bitew do rankingu!</value>
   </data>
   <data name="LeaderIfFewMoreGamesExplanation" xml:space="preserve">
-    <value>&lt;p&gt;Сыграйте &lt;b&gt;ещё несколько&lt;/b&gt; (не больше 10) &lt;i&gt;хороших &lt;/i&gt;боёв на следующей технике до &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;, чтобы получить шанс попасть в таблицу рейтинга:&lt;/p&gt;</value>
+    <value>&lt;p&gt;Rozegraj &lt;b&gt;kilka&lt;/b&gt; (do 10) &lt;i&gt;dobrych&lt;/i&gt; bitew następującymi czołgami przed &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;, by zyskać szansę zaistnienia w rankingu:&lt;/p&gt;</value>
   </data>
   <data name="LeaderIfPlayABattle" xml:space="preserve">
-    <value>Вернитесь в таблицу рейтинга!</value>
+    <value>Powróć do rankingu!</value>
   </data>
   <data name="LeaderIfPlayABattleExplanation" xml:space="preserve">
-    <value>&lt;p&gt;Сыграйте хотя бы &lt;b&gt;один&lt;/b&gt; &lt;i&gt;хороший&lt;/i&gt; бой на следующей технике до &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;,  чтобы получить шанс &lt;b&gt;снова&lt;/b&gt; попасть в таблицу рейтинга:&lt;/p&gt;</value>
+    <value>&lt;p&gt;Rozegraj co najmniej &lt;b&gt;jedną&lt;/b&gt; &lt;i&gt;dobrą&lt;/i&gt; bitwę następującymi czołgami przed &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;, by zyskać szansę na &lt;b&gt;ponowne&lt;/b&gt; zaistnienie w rankingu:&lt;/p&gt;</value>
   </data>
   <data name="LeaderOnNextUpdate" xml:space="preserve">
-    <value>Добро пожаловать в таблицу рейтинга!</value>
+    <value>Witaj w rankingu!</value>
   </data>
   <data name="LeaderOnNextUpdateExplanation" xml:space="preserve">
-    <value>&lt;p&gt;Очень вероятно (но не гарантированно), что после очередного расчёта таблицы рейтинга в &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt; в ней появятся эти машины:&lt;/p&gt;</value>
+    <value>&lt;p&gt;Bardzo prawdopodobne (nie ma jednak pewności), że w czasie kolejnych obliczeń rankingu o &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;, te czołgi pojawią się w rankingu:&lt;/p&gt;</value>
   </data>
   <data name="Leaders" xml:space="preserve">
-    <value>Лидеры</value>
+    <value>Liderzy</value>
   </data>
   <data name="Light" xml:space="preserve">
-    <value>Лёгкие танки</value>
+    <value>Lekkie</value>
   </data>
   <data name="Links" xml:space="preserve">
-    <value>Ссылки</value>
+    <value>Linki</value>
   </data>
   <data name="MainSiteTitle" xml:space="preserve">
-    <value>Кланы World of Tanks</value>
+    <value>Klany World of Tanks</value>
   </data>
   <data name="Mark" xml:space="preserve">
-    <value>Отметка</value>
+    <value>Odznaka</value>
   </data>
   <data name="Mastery" xml:space="preserve">
-    <value>Мастерство</value>
+    <value>Mistrzostwo</value>
   </data>
   <data name="MasteryExplanation" xml:space="preserve">
-    <value>Среднее мастерство игроков: 4 — Ас.</value>
+    <value>Średnie mistrzostwo graczy: 4 to as</value>
   </data>
   <data name="Max" xml:space="preserve">
-    <value>Макс.</value>
+    <value>Maks.</value>
   </data>
   <data name="MaxKills" xml:space="preserve">
-    <value>Макс. уничтожений</value>
+    <value>Maks. zniszczonych</value>
   </data>
   <data name="MaxKillsExplanation" xml:space="preserve">
-    <value>Ср. максимум уничтожений на танкиста</value>
+    <value>Średnie maks. zniszczonych na dowódcę</value>
   </data>
   <data name="Medium" xml:space="preserve">
-    <value>Средние танки</value>
+    <value>Średnie</value>
   </data>
   <data name="Members" xml:space="preserve">
-    <value>Участники</value>
+    <value>Członkowie</value>
   </data>
   <data name="MembersExplanation" xml:space="preserve">
-    <value>Количество игроков в клане.</value>
+    <value>Liczba członków klanu.</value>
   </data>
   <data name="Mercenaries" xml:space="preserve">
-    <value>Наёмники</value>
+    <value>Mercenaries</value>
   </data>
   <data name="MetaDescription" xml:space="preserve">
-    <value>WoT Clans отслеживает статус и эволюцию кланов в игре World of Tanks: {0}.</value>
+    <value>WoT Clans pozwala śledzić ewolucję klanów w grze World of Tanks {0}.</value>
   </data>
   <data name="Metric" xml:space="preserve">
-    <value>Измерение</value>
+    <value>Miara</value>
   </data>
   <data name="Minutes" xml:space="preserve">
-    <value>мин.</value>
+    <value>min.</value>
   </data>
   <data name="MoE" xml:space="preserve">
-    <value>Отличительные отметки</value>
+    <value>Odznaki biegłości</value>
   </data>
   <data name="MoE1Mark" xml:space="preserve">
-    <value>1 отметка</value>
+    <value>1 odznaka</value>
   </data>
   <data name="MoE2Mark" xml:space="preserve">
-    <value>2 отметки</value>
+    <value>2 odznaki</value>
   </data>
   <data name="MoE3Mark" xml:space="preserve">
-    <value>3 отметки</value>
+    <value>3 odznaki</value>
   </data>
   <data name="MoEData" xml:space="preserve">
-    <value>Данные для {0:N0} машин, рассчитанные в {1:d}.</value>
+    <value>Dane dla {0:N0} czołgów, obliczone o {1:d}.</value>
   </data>
   <data name="MoEDescriptions" xml:space="preserve">
-    <value>Отличительные отметки в World of Tanks: {0}</value>
+    <value>Odznaki biegłości w World of Tanks {0}</value>
   </data>
   <data name="MoEExplanation" xml:space="preserve">
-    <value>Расчётный &lt;b&gt;общий урон&lt;/b&gt; (сумма непосредственного урона и урона, нанесённого союзниками с вашей помощью), которого вы должны достичь, чтобы получить &lt;b&gt;отличительные отметки&lt;/b&gt; на стволе орудия.</value>
+    <value>Szacunkowe &lt;b&gt;uszkodzenia łączne&lt;/b&gt; (suma uszkodzeń bezpośrednich i asystujących), które powinieneś zadać, by otrzymać &lt;b&gt;odznakę biegłości&lt;/b&gt; na lufie swojej armaty.</value>
   </data>
   <data name="MoEFilter" xml:space="preserve">
-    <value>Фильтр по танку, типу или нации:</value>
+    <value>Filtruj po czołgu, typie lub kraju:</value>
   </data>
   <data name="MoESubTitle" xml:space="preserve">
-    <value>Расчёт урона для получения отметок</value>
+    <value>Szacunkowe uszkodzenia do zdobycia odznak biegłości</value>
   </data>
   <data name="Month" xml:space="preserve">
-    <value>Месяц назад.</value>
+    <value>Dane z poprzedniego miesiąca</value>
   </data>
   <data name="MonthAbbr" xml:space="preserve">
     <value>M</value>
   </data>
   <data name="Name" xml:space="preserve">
-    <value>Имя</value>
+    <value>Imię</value>
   </data>
   <data name="Nation" xml:space="preserve">
-    <value>Нация</value>
+    <value>Kraj</value>
   </data>
   <data name="News" xml:space="preserve">
-    <value>Новости</value>
+    <value>Aktualności</value>
   </data>
   <data name="Next" xml:space="preserve">
-    <value>Вперёд</value>
+    <value>Następny</value>
   </data>
   <data name="OnLastMonth" xml:space="preserve">
-    <value>За последний месяц.</value>
+    <value>W ostatnim miesiącu.</value>
   </data>
   <data name="Origin" xml:space="preserve">
-    <value>Происхождение</value>
+    <value>Pochodzenie</value>
   </data>
   <data name="OriginExtrapolated" xml:space="preserve">
-    <value>Экстраполяция</value>
+    <value>Ekstrapolacja</value>
   </data>
   <data name="OriginSource" xml:space="preserve">
-    <value>Источник</value>
+    <value>Źródło</value>
   </data>
   <data name="OriginSurrogate" xml:space="preserve">
-    <value>Аналог</value>
+    <value>Zastępcze</value>
   </data>
   <data name="OriginSurrogateTwo" xml:space="preserve">
-    <value>2 аналога</value>
+    <value>2 zastępcze</value>
   </data>
   <data name="OriginTierType" xml:space="preserve">
-    <value>Уровень/тип</value>
+    <value>Poziom/Typ</value>
   </data>
   <data name="Overall" xml:space="preserve">
-    <value>Всего</value>
+    <value>Ogólnie</value>
   </data>
   <data name="OverallBattlesExplanation" xml:space="preserve">
-    <value>Общее число битв всех участников клана.</value>
+    <value>Ogólna liczba bitew całego klanu.</value>
   </data>
   <data name="OverallStatsForPlayer" xml:space="preserve">
-    <value>Общая статистика для {0} [{1}]</value>
+    <value>Ogólne statystyki dla {0} [{1}]</value>
   </data>
   <data name="OverallStatsForPlayerMoment" xml:space="preserve">
-    <value>&lt;p&gt;&lt;b&gt;Общие &lt;/b&gt;данные, полученные в &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;&lt;/p&gt;</value>
+    <value>&lt;p&gt;&lt;b&gt;Ogólne &lt;/b&gt; dane pobrane o &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;&lt;/p&gt;</value>
   </data>
   <data name="OverallWinRateExplanation" xml:space="preserve">
-    <value>Средневзвешенный процент побед всех игроков.</value>
+    <value>Procent zwycięstw, na podstawie średniej ważonej, osiągnięty przez wszystkich graczy.</value>
   </data>
   <data name="OverallWn8Explanation" xml:space="preserve">
-    <value>Средневзвешенный WN8 всех игроков.</value>
+    <value>WN8, na podstawie średniej ważonej, osiągnięty przez wszystkich graczy.</value>
   </data>
   <data name="PiercingRatio" xml:space="preserve">
-    <value>Процент пробитий</value>
+    <value>Współczynnik przebić</value>
   </data>
   <data name="PiercingRatioExplanation" xml:space="preserve">
-    <value>% попаданий, когда снаряд пробил броню</value>
+    <value>% trafień, które przebiły cel</value>
   </data>
   <data name="Piercings" xml:space="preserve">
-    <value>Пробитий</value>
+    <value>Przebicia</value>
   </data>
   <data name="PiercingsExplanation" xml:space="preserve">
-    <value>Пробитий за бой</value>
+    <value>Przebicia na bitwę</value>
   </data>
   <data name="PiercingShotRatio" xml:space="preserve">
-    <value>Соотношение пробитий и выстрелов</value>
+    <value>Współczynnik przebicia/strzały</value>
   </data>
   <data name="PiercingShotRatioExplanation" xml:space="preserve">
-    <value>% выстрелов, когда снаряд пробил броню</value>
+    <value>% strzałów, które przebiły cel</value>
   </data>
   <data name="PiercingsReceived" xml:space="preserve">
-    <value>Получено пробитий</value>
+    <value>Otrzymane przebicia</value>
   </data>
   <data name="PiercingsReceivedExplanation" xml:space="preserve">
-    <value>Получено пробитий за бой</value>
+    <value>Otrzymane przebicia na bitwę</value>
   </data>
   <data name="PlayersUpdatedEvery" xml:space="preserve">
-    <value>Данные игроков обновляются в среднем каждые ~{0:N0} ч</value>
+    <value>Gracze aktualizowani przeciętnie co ~{0:N0} godz.</value>
   </data>
   <data name="Points" xml:space="preserve">
-    <value>очков</value>
+    <value>punkty</value>
   </data>
   <data name="Poland" xml:space="preserve">
-    <value>Польша</value>
+    <value>Polska</value>
   </data>
   <data name="Premium" xml:space="preserve">
-    <value>Премиум</value>
+    <value>Premium</value>
   </data>
   <data name="Previous" xml:space="preserve">
-    <value>Назад</value>
+    <value>Poprzednie</value>
   </data>
   <data name="Rank" xml:space="preserve">
-    <value>Ранг</value>
+    <value>Stopień</value>
   </data>
   <data name="Rating" xml:space="preserve">
-    <value>Рейтинг</value>
+    <value>Wskaźnik</value>
   </data>
   <data name="RatingActiveExplanation" xml:space="preserve">
-    <value>Активные игроки в каждом рейтинге.</value>
+    <value>Aktywni dowódcy w każdym wskaźniku.</value>
   </data>
   <data name="RatingActiveNumberExplanation" xml:space="preserve">
-    <value>Число активных игроков в этом рейтинге.</value>
+    <value>Liczba aktywnych dowódców w tym wskaźniku.</value>
   </data>
   <data name="RatingBattleExplanation" xml:space="preserve">
-    <value>Бои активных игроков в каждом рейтинге.</value>
+    <value>Bitwy stoczone przez dowódców w każdym wskaźniku.</value>
   </data>
   <data name="RatingBattleNumberExplanation" xml:space="preserve">
-    <value>Число боёв активных игроков в этом рейтинге.</value>
+    <value>Liczba bitew stoczonych przez aktywnych dowódców w tym wskaźniku.</value>
   </data>
   <data name="RatingDistribuction" xml:space="preserve">
-    <value>Распределение рейтинга</value>
+    <value>Rozmieszczenie wskaźnika</value>
   </data>
   <data name="RatingExplanation" xml:space="preserve">
-    <value>Рейтинг WN8a.</value>
+    <value>Wskaźnik WN8a.</value>
   </data>
   <data name="RatingPercentActiveExplanation" xml:space="preserve">
-    <value>Процент активных игроков в этом рейтинге.</value>
+    <value>Procent aktywnych dowódców w tym wskaźniku.</value>
   </data>
   <data name="RatingPercentBattlesExplanation" xml:space="preserve">
-    <value>Процент боёв активных игроков в этом рейтинге.</value>
+    <value>Procent bitew stoczonych przez aktywnych dowódców w tym wskaźniku.</value>
   </data>
   <data name="Recent" xml:space="preserve">
-    <value>Недавно</value>
+    <value>Najnowsze</value>
   </data>
   <data name="RecentStatsForPlayer" xml:space="preserve">
-    <value>Недавняя статистика для {0} [{1}]</value>
+    <value>Najnowsze statystyki dla {0} [{1}]</value>
   </data>
   <data name="RecentStatsForPlayerMoment" xml:space="preserve">
-    <value>&lt;p&gt;&lt;b&gt;Недавние&lt;/b&gt; данные, полученные в &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;&lt;/p&gt;</value>
+    <value>&lt;p&gt;&lt;b&gt;Najnowsze&lt;/b&gt; dane pobrane o &lt;span class="universal-time-text"&gt;{0:O}&lt;/span&gt;&lt;/p&gt;</value>
   </data>
   <data name="Rules" xml:space="preserve">
-    <value>Правила</value>
+    <value>Zasady</value>
   </data>
   <data name="Search" xml:space="preserve">
-    <value>Поиск</value>
+    <value>Szukaj</value>
   </data>
   <data name="SearchByTank" xml:space="preserve">
-    <value>Поиск по танку</value>
+    <value>Szukaj według czołgu</value>
   </data>
   <data name="SeePlayStationClans" xml:space="preserve">
-    <value>Посмотреть кланы PlayStation</value>
+    <value>Zobacz klany PlayStation</value>
   </data>
   <data name="SeeXboxClans" xml:space="preserve">
-    <value>Посмотреть кланы XBOX</value>
+    <value>Zobacz klany XBOX</value>
   </data>
   <data name="Shots" xml:space="preserve">
-    <value>Выстрелов</value>
+    <value>Strzały</value>
   </data>
   <data name="ShotsExplanation" xml:space="preserve">
-    <value>Выстрелов в битвах</value>
+    <value>Strzały na bitwę</value>
   </data>
   <data name="ShowAll" xml:space="preserve">
-    <value>Показать все</value>
+    <value>Pokaż wszystkie</value>
   </data>
   <data name="ShowLess" xml:space="preserve">
-    <value>Показать меньше</value>
+    <value>Pokaż mniej</value>
   </data>
   <data name="ShowMore" xml:space="preserve">
-    <value>Показать больше</value>
+    <value>Pokaż więcej</value>
   </data>
   <data name="ShowTop15" xml:space="preserve">
-    <value>Показать топ-15</value>
+    <value>Pokaż 15 najlepszych</value>
   </data>
   <data name="SourceCode" xml:space="preserve">
-    <value>Исходный код</value>
+    <value>Kod źródłowy</value>
   </data>
   <data name="SpotDamage" xml:space="preserve">
-    <value>Урон по разведданным</value>
+    <value>Uszkodzenia z wykrywania</value>
   </data>
   <data name="SpotDamageExplanation" xml:space="preserve">
-    <value>Урон по разведданным за бой</value>
+    <value>Uszkodzenia z wykrywania na bitwę</value>
   </data>
   <data name="Spoted" xml:space="preserve">
-    <value>Обнаружения</value>
+    <value>Zauważono</value>
   </data>
   <data name="Spotted" xml:space="preserve">
-    <value>Обнаружения</value>
+    <value>Zauważono</value>
   </data>
   <data name="SpottedExplanation" xml:space="preserve">
-    <value>Обнаружено танков за бой</value>
+    <value>Zauważone czołgi na bitwę</value>
   </data>
   <data name="Statistics" xml:space="preserve">
-    <value>Статистика</value>
+    <value>Statystyki</value>
   </data>
   <data name="StatsBanner1" xml:space="preserve">
-    <value>Статистика для  &lt;a href="https://console.worldoftanks.com/encyclopedia/vehicles/{6}/{7}"&gt;{0}&lt;/a&gt;, {1}уровень{2}, {3}, {4}, рассчитанная в {5:d}</value>
+    <value>Statystyki dla &lt;a href="https://console.worldoftanks.com/encyclopedia/vehicles/{6}/{7}"&gt;{0}&lt;/a&gt;, {1}poziom {2}, {3}, {4}, obliczone o {5:d}</value>
   </data>
   <data name="StatsBanner2" xml:space="preserve">
-    <value>Данные пересчитываются каждую неделю на основе боёв членов клана, которые отслеживает этот сайт. Имейте в виду, что это не полная картина.</value>
+    <value>Dane są obliczane co tydzień, z wykorzystaniem bitew stoczonych przez członków klanu śledzonych przez tę stronę. Pamiętaj, że nie pokazuje to pełnego obrazu.</value>
   </data>
   <data name="StatsDesc" xml:space="preserve">
-    <value>Статистика для {0} — WoT: {1}</value>
+    <value>Statystyki dla {0} - WoT {1}</value>
   </data>
   <data name="StatsTitle" xml:space="preserve">
-    <value>Статистика для {0}</value>
+    <value>Statystyki dla {0}</value>
   </data>
   <data name="Summary" xml:space="preserve">
-    <value>Сводка</value>
+    <value>Podsumowanie</value>
   </data>
   <data name="SurvivalRate" xml:space="preserve">
-    <value>Процент выживаний</value>
+    <value>Współczynnik przeżywalności</value>
   </data>
   <data name="SurvivalRateExplanation" xml:space="preserve">
-    <value>% битв, в которых машина уцелела</value>
+    <value>% przetrwanych bitew</value>
   </data>
   <data name="SuspectData" xml:space="preserve">
-    <value>Есть командиры с подозрительными данными</value>
+    <value>Są dowódcy z podejrzanymi danymi</value>
   </data>
   <data name="Sweden" xml:space="preserve">
-    <value>Швеция</value>
+    <value>Szwecja</value>
   </data>
   <data name="TalkToMeDiscord" xml:space="preserve">
-    <value>Поговорите со мной на Discord (Английский)</value>
+    <value>Porozmawiaj ze mną na Discord (angielski)</value>
   </data>
   <data name="Tank" xml:space="preserve">
-    <value>Машина</value>
+    <value>Czołg</value>
   </data>
   <data name="TankDestroyer" xml:space="preserve">
-    <value>ПТ-САУ</value>
+    <value>NC</value>
   </data>
   <data name="Tanks" xml:space="preserve">
-    <value>Техника</value>
+    <value>Czołgi</value>
   </data>
   <data name="TargetDamage" xml:space="preserve">
-    <value>Целевой урон</value>
+    <value>Docelowe uszkodzenia</value>
   </data>
   <data name="Tier" xml:space="preserve">
-    <value>Уровень</value>
+    <value>Poziom</value>
   </data>
   <data name="Time" xml:space="preserve">
-    <value>Время</value>
+    <value>Czas</value>
   </data>
   <data name="TimePerBattle" xml:space="preserve">
-    <value>Время за бой</value>
+    <value>Czas na bitwę</value>
   </data>
   <data name="TimePerBattleExplanation" xml:space="preserve">
-    <value>Время каждого боя</value>
+    <value>Czas każdej z bitew</value>
   </data>
   <data name="TimePerPlayer" xml:space="preserve">
-    <value>Время по игрокам</value>
+    <value>Czas na gracza</value>
   </data>
   <data name="TimePerPlayerExplanation" xml:space="preserve">
-    <value>Сколько времени каждый танкист играл на этой машине</value>
+    <value>Czas, przez jaki każdy dowódca grał tym czołgiem</value>
   </data>
   <data name="Tournaments" xml:space="preserve">
-    <value>Турниры</value>
+    <value>Turnieje</value>
   </data>
   <data name="TrackDamage" xml:space="preserve">
-    <value>Урон от обездвиживания</value>
+    <value>Uszkodzenia z unieruchamiania</value>
   </data>
   <data name="TrackDamageExplanation" xml:space="preserve">
-    <value>Урон от обездвиживания за бой</value>
+    <value>Uszkodzenia z unieruchamiania na bitwę</value>
   </data>
   <data name="Tracking" xml:space="preserve">
-    <value>Отслеживаем {0:N0} игроков в {1:N0} кланах.</value>
+    <value>Śledzenie {0:N0} dowódców w {1:N0} klanach.</value>
   </data>
   <data name="TreesCut" xml:space="preserve">
-    <value>Повалено деревьев</value>
+    <value>Ścięte drzewa</value>
   </data>
   <data name="TreesCutJoke" xml:space="preserve">
-    <value>Не водите в нетрезвом состоянии</value>
+    <value>Nie jedź po alkoholu</value>
   </data>
   <data name="TreesCutUnit" xml:space="preserve">
-    <value>Деревьев за бой</value>
+    <value>Drzew/bitwę</value>
   </data>
   <data name="Type" xml:space="preserve">
-    <value>Тип</value>
+    <value>Typ</value>
   </data>
   <data name="Uk" xml:space="preserve">
-    <value>Великобритания</value>
+    <value>UK</value>
   </data>
   <data name="Unit" xml:space="preserve">
-    <value>Единицы</value>
+    <value>Jednostka</value>
   </data>
   <data name="Until" xml:space="preserve">
-    <value>по</value>
+    <value>do</value>
   </data>
   <data name="UpdatedAt" xml:space="preserve">
-    <value>Обновлено:</value>
+    <value>Aktualizowane o</value>
   </data>
   <data name="Usa" xml:space="preserve">
-    <value>США</value>
+    <value>USA</value>
   </data>
   <data name="Ussr" xml:space="preserve">
-    <value>СССР</value>
+    <value>ZSRR</value>
   </data>
   <data name="Value" xml:space="preserve">
-    <value>Значение</value>
+    <value>Wartość</value>
   </data>
   <data name="Video" xml:space="preserve">
-    <value>Видео</value>
+    <value>Grafika</value>
   </data>
   <data name="Warnings" xml:space="preserve">
-    <value>Предупреждения</value>
+    <value>Ostrzeżenia</value>
   </data>
   <data name="WarningsCall" xml:space="preserve">
-    <value>Для вас есть сообщение...</value>
+    <value>Masz wiadomość, którą powinieneś przeczytać...</value>
   </data>
   <data name="Week" xml:space="preserve">
-    <value>Неделю назад.</value>
+    <value>Dane z poprzedniego tygodnia</value>
   </data>
   <data name="WeekAbbr" xml:space="preserve">
-    <value>Н</value>
+    <value>T</value>
   </data>
   <data name="Weight" xml:space="preserve">
-    <value>Вес</value>
+    <value>Waga</value>
   </data>
   <data name="WeightExplanation" xml:space="preserve">
-    <value>Удельный вес игрока в WN8t15 клана.</value>
+    <value>Względna waga dowódcy w WN8t15 klanu.</value>
   </data>
   <data name="WgChicagoDiscord" xml:space="preserve">
-    <value>Wargaming Чикаго-Балтимор Discord</value>
+    <value>Wargaming Chicago-Baltimore Discord</value>
   </data>
   <data name="WgMinskDiscord" xml:space="preserve">
-    <value>Wargaming Минск Discord</value>
+    <value>Wargaming Mińsk Discord</value>
   </data>
   <data name="WinRate" xml:space="preserve">
-    <value>Процент побед</value>
+    <value>Procent zwycięstw</value>
   </data>
   <data name="WinRateExplanation" xml:space="preserve">
-    <value>Средневзвешенный процент побед всех активных игроков за последний месяц.</value>
+    <value>Procent zwycięstw, na podstawie średniej ważonej, osiągnięty przez wszystkich aktywnych graczy w ostatnim miesiącu.</value>
   </data>
   <data name="WinRateStatsExplanation" xml:space="preserve">
-    <value>Процент побед</value>
+    <value>Procent zwycięstw</value>
   </data>
   <data name="WN8" xml:space="preserve">
     <value>WN8</value>
   </data>
   <data name="Wn8AboveAverage" xml:space="preserve">
-    <value>Выше среднего</value>
+    <value>Powyżej średniej</value>
   </data>
   <data name="Wn8aExplanation" xml:space="preserve">
-    <value>Средневзвешенное значение WN8 всех активных игроков за последний месяц.</value>
+    <value>WN8, na podstawie średniej ważonej, osiągnięty przez wszystkich aktywnych graczy w ostatnim miesiącu.</value>
   </data>
   <data name="Wn8Average" xml:space="preserve">
-    <value>Средний</value>
+    <value>Średnio</value>
   </data>
   <data name="Wn8Bad" xml:space="preserve">
-    <value>Плохой</value>
+    <value>Źle</value>
   </data>
   <data name="Wn8BelowAverage" xml:space="preserve">
-    <value>Ниже среднего</value>
+    <value>Poniżej średniej</value>
   </data>
   <data name="WN8DataInfo" xml:space="preserve">
-    <value>Данные для {0:N0} машин из {1}, версия {2}, полученные в {3:d}.</value>
+    <value>Dane dla {0:N0} czołgów od {1}, wersja {2}, pobrane o {3:d}.</value>
   </data>
   <data name="Wn8Good" xml:space="preserve">
-    <value>Хороший</value>
+    <value>Dobrze</value>
   </data>
   <data name="Wn8Great" xml:space="preserve">
-    <value>Отличный</value>
+    <value>Świetnie</value>
   </data>
   <data name="Wn8StatsAverage" xml:space="preserve">
-    <value>Средний WN8</value>
+    <value>Średnie WN8</value>
   </data>
   <data name="WN8SubTitle" xml:space="preserve">
-    <value>Ожидаемые значения для расчёта WN8</value>
+    <value>Spodziewane wartości obliczania WN8</value>
   </data>
   <data name="Wn8SuperUnicum" xml:space="preserve">
-    <value>Супер-уникум</value>
+    <value>Super nadzwyczajnie</value>
   </data>
   <data name="Wn8t15Explanation" xml:space="preserve">
-    <value>Средневзвешенное значение WN8 топ-15 активных игроков (на основе WN8 последнего месяца) за последний месяц.</value>
+    <value>WN8, na podstawie średniej ważonej, osiągnięty przez 15 najlepszych aktywnych graczy (pod względem WN8 z ostatniego miesiąca) w ostatnim miesiącu.</value>
   </data>
   <data name="Wn8T7Explanation" xml:space="preserve">
-    <value>Средневзвешенное значение WN8 топ-7 активных игроков (на основе WN8 последнего месяца) за последний месяц.</value>
+    <value>WN8, na podstawie średniej ważonej, osiągnięty przez 7 najlepszych aktywnych graczy (pod względem WN8 z ostatniego miesiąca) w ostatnim miesiącu.</value>
   </data>
   <data name="WN8Title" xml:space="preserve">
-    <value>Ожидаемые значения WN8</value>
+    <value>Spodziewane wartości WN8</value>
   </data>
   <data name="Wn8Unicum" xml:space="preserve">
-    <value>Уникум</value>
+    <value>Nadzwyczajnie</value>
   </data>
   <data name="Wn8VeryBad" xml:space="preserve">
-    <value>Очень плохой</value>
+    <value>Bardzo źle</value>
   </data>
   <data name="Wn8VeryGood" xml:space="preserve">
-    <value>Очень хороший</value>
+    <value>Bardzo dobrze</value>
   </data>
   <data name="WotClansBy" xml:space="preserve">
-    <value>WoT Clans по </value>
+    <value>WoT Clans przez</value>
   </data>
   <data name="XboxCommunityDiscord" xml:space="preserve">
-    <value>XBOX Сообщество Discord</value>
+    <value>Społeczność XBOX Discord</value>
   </data>
 </root>
