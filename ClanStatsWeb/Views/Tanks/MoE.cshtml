@@ -9,7 +9,7 @@
 
 @section extraHeaders {
     <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css " rel="stylesheet" type="text/css" />
-    <meta name="description" content="@string.Format(Resources.MoEDescriptions, GlobalHelper.PlataformTag.ToUpperInvariant())">    
+    <meta name="description" content="@string.Format(Resources.MoEDescriptions, GlobalHelper.PlataformTag.ToUpperInvariant())">
     <style>
         #moeTable_filter {
             text-align: left;
@@ -38,42 +38,42 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-2">
-                        <input type="text" id="searchBox" class="form-control" placeholder="Search by Tank">
+                        <input type="text" id="searchBox" class="form-control" placeholder="@Resources.SearchByTank">
                     </div>
                     <div class="col-md-4" id="nationButtons">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Usa"><img src="~/Images/Nations/1.png" height="18" alt="USA" /></button>
-                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Germany"><img src="~/Images/Nations/7.png" height="18" alt="Germany" /></button>
-                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Ussr"><img src="~/Images/Nations/3.png" height="18" alt="USSR" /></button>
-                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Uk"><img src="~/Images/Nations/5.png" height="18" alt="UK" /></button>
-                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="France"><img src="~/Images/Nations/2.png" height="18" alt="France" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Usa"><img src="~/Images/Nations/1.png" height="18" alt="@Resources.Usa" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Germany"><img src="~/Images/Nations/7.png" height="18" alt="@Resources.Germany" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Ussr"><img src="~/Images/Nations/3.png" height="18" alt="@Resources.Ussr" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Uk"><img src="~/Images/Nations/5.png" height="18" alt="@Resources.Uk" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="France"><img src="~/Images/Nations/2.png" height="18" alt="@Resources.France" /></button>
                         </div>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Japan"><img src="~/Images/Nations/6.png" height="18" alt="Japan" /></button>
-                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="China"><img src="~/Images/Nations/4.png" height="18" alt="China" /></button>
-                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Czechoslovakia"><img src="~/Images/Nations/8.png" height="18" alt="Czechoslovakia" /></button>
-                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Sweden"><img src="~/Images/Nations/9.png" height="18" alt="Sweden" /></button>
-                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Poland"><img src="~/Images/Nations/10.png" height="18" alt="Poland" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Japan"><img src="~/Images/Nations/6.png" height="18" alt="@Resources.Japan" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="China"><img src="~/Images/Nations/4.png" height="18" alt="@Resources.China" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Czechoslovakia"><img src="~/Images/Nations/8.png" height="18" alt="@Resources.Czechoslovakia" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Sweden"><img src="~/Images/Nations/9.png" height="18" alt="@Resources.Sweden" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Poland"><img src="~/Images/Nations/10.png" height="18" alt="@Resources.Poland" /></button>
                         </div>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Italy"><img src="~/Images/Nations/12.png" height="18" alt="Italy" /></button>
-                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Mercenaries"><img src="~/Images/Nations/11.png" height="18" alt="Mercenaries" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Italy"><img src="~/Images/Nations/12.png" height="18" alt="@Resources.Italy" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-nation" data-nation="Mercenaries"><img src="~/Images/Nations/11.png" height="18" alt="@Resources.Mercenaries" /></button>
                         </div>
                     </div>
                     <div class="col-md-2" id="typesButtons">
 
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Light"><img src="~/Images/Types/4.svg" width="18" height="18" alt="Light" /></button>
-                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Medium"><img src="~/Images/Types/3.svg" width="18" height="18" alt="Medium" /></button>
-                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Heavy"><img src="~/Images/Types/1.svg" width="18" height="18" alt="Heavy" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Light"><img src="~/Images/Types/4.svg" width="18" height="18" alt="@Resources.Light" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Medium"><img src="~/Images/Types/3.svg" width="18" height="18" alt="@Resources.Medium" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Heavy"><img src="~/Images/Types/1.svg" width="18" height="18" alt="@Resources.Heavy" /></button>
                         </div>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="TankDestroyer"><img src="~/Images/Types/2.svg" width="18" height="18" alt="Tank Destroyer" /></button>
-                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Artillery"><img src="~/Images/Types/5.svg" width="18" height="18" alt="Arty" /></button>
-                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Premium"><img src="~/Images/Types/premium.svg" width="18" height="18" alt="Premium" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="TankDestroyer"><img src="~/Images/Types/2.svg" width="18" height="18" alt="@Resources.TankDestroyer" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Artillery"><img src="~/Images/Types/5.svg" width="18" height="18" alt="@Resources.Artillery" /></button>
+                            <button type="button" class="btn btn-default btn-sm btn-type" data-type="Premium"><img src="~/Images/Types/premium.svg" width="18" height="18" alt="@Resources.Premium" /></button>
                         </div>
 
-                    </div>                    
+                    </div>
                     <div class="col-md-3" id="tiersButtons">
                         <div class="btn-group">
                             <button type="button" class="btn btn-default btn-tier" data-tier="5" aria-label="5">V</button>
@@ -95,30 +95,30 @@
 
         <table class="data table-striped" id="moeTable">
             <thead>
-            <tr>
-                <th rowspan="2">
-                    <img alt="@Resources.Nation" title="@Resources.Nation" height="18" src="~/Images/Nations/Globe_icon.svg"/>
-                </th>
-                <th rowspan="2">
-                    <img alt="@Resources.Type" title="@Resources.Type" height="18" src="~/Images/Types/types.png" />
-                </th>
-                <th rowspan="2">
-                    <span title="@Resources.Tier">V-X</span>
-                </th>
-                <th rowspan="2">@Resources.Tank</th>
-                
-                
-
-                <th colspan="3">@Resources.CombinedDamage</th>
+                <tr>
+                    <th rowspan="2">
+                        <img alt="@Resources.Nation" title="@Resources.Nation" height="18" src="~/Images/Nations/Globe_icon.svg" />
+                    </th>
+                    <th rowspan="2">
+                        <img alt="@Resources.Type" title="@Resources.Type" height="18" src="~/Images/Types/types.png" />
+                    </th>
+                    <th rowspan="2">
+                        <span title="@Resources.Tier">V-X</span>
+                    </th>
+                    <th rowspan="2">@Resources.Tank</th>
 
 
-                <th rowspan="2">
-                    <img alt="@Resources.Battles" title="@Resources.Battles" height="18" src="~/Images/battles-fought.png"/>
-                </th>
-                <th colspan="3">@Resources.Delta %</th>
+
+                    <th colspan="3">@Resources.CombinedDamage</th>
 
 
-            </tr>
+                    <th rowspan="2">
+                        <img alt="@Resources.Battles" title="@Resources.Battles" height="18" src="~/Images/battles-fought.png" />
+                    </th>
+                    <th colspan="3">@Resources.Delta %</th>
+
+
+                </tr>
                 <tr>
 
 
@@ -166,8 +166,8 @@
                             </td>
                             <td class="text-center" data-sort="@t.Tier" data-filter="@t.Tier">@t.Tier.ToRomanNumeral()</td>
                             <td style="white-space: nowrap;" data-sort="@t.Name.RemoveDiacritics().ToLowerInvariant()" data-filter="@t.Name.RemoveDiacritics().ToLowerInvariant() @t.FullName.RemoveDiacritics().ToLowerInvariant()">
-                                <a href="~/Tanks/@t.TankId"><span class="@t.PremiumClass" title="@t.FullName" >@t.Name</span></a>
-                            </td>                                                        
+                                <a href="~/Tanks/@t.TankId"><span class="@t.PremiumClass" title="@t.FullName">@t.Name</span></a>
+                            </td>
                             <td class="number-integer">@t.Moe1Dmg.ToString("N0")</td>
                             <td class="number-integer">@t.Moe2Dmg.ToString("N0")</td>
                             <td class="number-integer">@t.Moe3Dmg.ToString("N0")</td>
@@ -198,13 +198,53 @@
                 <li>Se uma linha <spam style="color: red;">está em vermelho</spam> então eu tenho poucos dados para o tanque: os números podem estar muito errados.</li>
                 <li>Se você não achou um tanque então ele é muito novo e eu ainda não tenho dados suficientes para calcular; ou ele não mais é jogado.</li>
             }
+            else if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es")
+            {
+                <li>Estas son <bold>estimaciones</bold></li>
+                <li>Una vez más: ¡Estas son <bold>estimaciones</bold>! Wargaming no reveló el método exacto que utilizan para calcular el dañado combinado de pie.</li>
+                <li>Daño combinado es la suma de Daño Asistido (por Radio y por Inmovilización) y Daño Directo..</li>
+                <li>Si una línea <spam style="color: red;">está en rojo</spam> entonces tengo muy pocos datos en ese tanque: los números pueden estar muy lejos.</li>
+                <li>Si no puedes encontrar un tanque, entonces es bastante nuevo y no tengo suficientes datos sobre él; o ya no se juega.</li>
+            }
+            else if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "fr")
+            {
+                <li>Ce sont <bold>estimations</bold>!</li>
+                <li>Encore une fois: Ce sont <bold>estimations</bold>! Wargaming n'a pas révélé la méthode exacte qu'ils utilisent pour calculer les dégâts combinés permanents.</li>
+                <li> Les dommages combinés sont la somme des dommages assistés (par radio et par immobilisation) et des dommages directs.</li>
+                <li>Si une ligne <spam style="color: red;">est en rouge</spam> alors j'ai très peu de données sur ce réservoir: les chiffres peuvent être loin.</li>
+                <li>Si vous ne trouvez pas de char, c'est assez nouveau et je n'ai pas assez de données dessus; ou il n'est plus joué </li>
+            }
+            else if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "de")
+            {
+                <li>Das sind <bold>Schätzungen</bold>!</li>
+                <li>Wieder: Das sind <bold>Schätzungen</bold>! Wargaming gab nicht die genaue Methode bekannt, mit der sie den stehenden kombinierten Schaden berechnen.</li>
+                <li>Kombinierter Schaden ist die Summe des unterstützten Schadens (durch Radio und durch Immobilisierung) und des direkten Schadens.</li>
+                <li>Wenn eine Zeile <spam style="color: red;">in Rotistigist</spam> dann habe ich nur sehr wenige Daten auf diesem Tank: Die Zahlen können weit weg sein.</li>
+                <li>Wenn du keinen Panzer finden kannst, dann ist er ziemlich neu und ich habe nicht genug Daten darauf; oder er wird nicht mehr gespielt.</li>
+            }
+            else if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "pl")
+            {
+                <li>Są to <bold>szacunki</bold>!</li>
+                <li>Again: Są to <bold>szacunki</bold>! Wargaming nie ujawnił dokładnej metody, której używają do obliczenia stojących kombinowanych uszkodzeń.</li>
+                <li>Połączone obrażenia to suma obrażeń wspomaganych (przez radio i unieruchomienie) i bezpośrednie obrażenia.</li>
+                <li>Jeśli linia <spam style="color: red;">jest na czerwono</spam> to mam bardzo mało danych na temat tego zbiornika: liczby mogą być daleko.</li>
+                <li>Jeśli nie możesz znaleźć czołgu, to jest całkiem nowy i nie mam na nim wystarczających danych; lub nie jest już grany.</li>
+            }
+            else if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ru")
+            {
+                <li>Это <bold>оценки</bold></li>
+                <li>Опять: Это <bold>оценки</bold>! Компания Wargaming не раскрыла точный метод, который они используют для расчета стоящего комбинированного повреждения.</li>
+                <li>Комбинированный ущерб - это сумма вспомогательного ущерба (по радио и путем иммобилизации) и прямого ущерба.</li>
+                <li>Если линия <spam style="color: red;">в красном</spam> то у меня очень мало данных о том, что танк: цифры могут быть далеко.</li>
+                <li>Если вы не можете найти танк, то это довольно новый, и у меня нет достаточно данных о нем; или это не играл больше.</li>
+            }
             else
             {
                 <li>These are <bold>estimates</bold>!</li>
-                <li>Again: These are <bold>estimates</bold>! Wargaming did'nt disclosed the exact method they use to compute the standing combined damage.</li>
-                <li>Combined Damage is the sum of Radio Assisted Damage, Tracking Assisted Damage and Direct Damage.</li>
+                <li>Again: These are <bold>estimates</bold>! Wargaming didn't disclosed the exact method they use to compute the standing combined damage.</li>
+                <li>Combined Damage is the sum of Assisted Damage (by Radio and by Tracking and by Immobilization) and Direct Damage.</li>
                 <li>If a line <spam style="color: red;">is in Red</spam> then I have very few data on that tank: the numbers may be way off.</li>
-                <li>If you can't find a tank then it's pretty new and I don't have enought data on it; or it's not played at all.</li>
+                <li>If you can't find a tank then it's pretty new and I don't have enough data on it; or it's not played anymore.</li>
             }
         </ol>
     </div>
@@ -264,7 +304,7 @@
                 info: false,
                 searching: true,
                 columnDefs: [
-                    { type: "numeric-flex", targets: [4, 5, 6, 7, 8, 9, 10] },                    
+                    { type: "numeric-flex", targets: [4, 5, 6, 7, 8, 9, 10] },
                     { orderable: false, targets: [] },
                     { searchable: false, targets: [4, 5, 6, 7, 8, 9, 10] }
                 ],
@@ -288,7 +328,7 @@
 
                 oTable.columns(0).search("");
                 oTable.columns(1).search("");
-                oTable.columns(2).search("");                
+                oTable.columns(2).search("");
                 oTable.search("").draw();
             });
 
