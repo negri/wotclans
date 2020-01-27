@@ -483,6 +483,9 @@
   <data name="HP" xml:space="preserve">
     <value>очков прочности</value>
   </data>
+  <data name="Information" xml:space="preserve">
+    <value>Информация</value>
+  </data>
   <data name="Italy" xml:space="preserve">
     <value>Италия</value>
   </data>

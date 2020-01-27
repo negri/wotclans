@@ -153,6 +153,9 @@
   <data name="From" xml:space="preserve">
     <value>Desde</value>
   </data>
+  <data name="Information" xml:space="preserve">
+    <value>Información</value>
+  </data>
   <data name="Italy" xml:space="preserve">
     <value>Italia</value>
   </data>

@@ -1159,6 +1159,15 @@ namespace Negri.Wot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Information.
+        /// </summary>
+        public static string Information {
+            get {
+                return ResourceManager.GetString("Information", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Italy.
         /// </summary>
         public static string Italy {

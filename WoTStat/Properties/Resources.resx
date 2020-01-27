@@ -1005,4 +1005,7 @@
   <data name="Sweden" xml:space="preserve">
     <value>Sweden</value>
   </data>
+  <data name="Information" xml:space="preserve">
+    <value>Information</value>
+  </data>
 </root>

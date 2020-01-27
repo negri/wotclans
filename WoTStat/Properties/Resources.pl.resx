@@ -483,6 +483,9 @@
   <data name="HP" xml:space="preserve">
     <value>PW</value>
   </data>
+  <data name="Information" xml:space="preserve">
+    <value>Informacji</value>
+  </data>
   <data name="Italy" xml:space="preserve">
     <value>Włochy</value>
   </data>
