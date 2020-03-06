@@ -34,7 +34,7 @@ namespace UtilityProgram
         {
             try
             {
-                ExportResString();
+                MapPs4NewIds(args);
             }
             catch (Exception ex)
             {
@@ -43,6 +43,68 @@ namespace UtilityProgram
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// At 2020-03-05 WG, in preparation to cross-play, changed 
+        /// </summary>
+        private static void MapPs4NewIds(string[] args)
+        {
+            var inFile = args[0];
+            var all = File.ReadAllLines(inFile, Encoding.UTF8);
+            var clans = new List<ClanData>(all.Length);
+            clans.AddRange(all.Select(ClanData.FromString));
+
+            var cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
+            var fetcher = new Fetcher(cacheDirectory)
+            {
+                WebCacheAge = TimeSpan.FromMinutes(15),
+                WebFetchInterval = TimeSpan.FromSeconds(1),
+                ApplicationId = ConfigurationManager.AppSettings["WgApi"]
+            };
+
+            foreach (var clan in clans)
+            {
+                var c = fetcher.FindClan(Platform.PS, clan.Tag, true);
+                if (c != null)
+                {
+                    clan.NewClanId = c.ClanId;
+                }
+            }
+
+            var sb = new StringBuilder();
+            foreach (var clan in clans)
+            {
+                sb.AppendLine(clan.ToString());
+            }
+
+            var outFile = args[1];
+            File.WriteAllText(outFile, sb.ToString(), Encoding.UTF8);
+        }
+
+        private class ClanData
+        {
+            public long OldClanId { get; set; }
+            public string Tag { get; set; }
+            public string Name { get; set; }
+            public long NewClanId { get; set; } = -1;
+
+            public static ClanData FromString(string s)
+            {
+                var f = s.Split('\t');
+
+                return new ClanData
+                {
+                    OldClanId = long.Parse(f[0]),
+                    Tag = f[1],
+                    Name = f[2]
+                };
+            }
+
+            public override string ToString()
+            {
+                return $"{OldClanId}\t{Tag}\t{Name}\t{NewClanId}";
+            }
         }
 
         /// <summary>
