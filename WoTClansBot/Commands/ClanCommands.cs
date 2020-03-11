@@ -231,14 +231,14 @@ namespace Negri.Wot.Bot
                 return;
             }
 
-            var waitMsg = await ctx.RespondAsync($"Please wait as data for {players.Count} tankers is being retrieved, {ctx.User.Mention}...");
+            var waitMsg = await ctx.RespondAsync($"Please wait as data for {players.Count} tankers is being retrieved, {ctx.User.Mention}, it may take a while...");
 
             var playerCommands = new PlayerCommands();
 
             var fullPlayers = new ConcurrentBag<Player>();
             var tasks = players.Select(async p => 
             {
-                var player = await playerCommands.GetPlayer(ctx, ((p.Plataform == Platform.XBOX) ? "x." : "ps.") + p.Name);
+                var player = await playerCommands.GetPlayer(ctx, ((p.Plataform == Platform.XBOX) ? "x." : "ps.") + p.Name, false);
                 if (player == null)
                 {
                     await ctx.RespondAsync($"Sorry, could not get updated information for player `{p.Name}`, {ctx.User.Mention}.");

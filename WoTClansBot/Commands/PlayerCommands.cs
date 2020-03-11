@@ -34,7 +34,7 @@ namespace Negri.Wot.Bot
         /// <summary>
         ///     Retrieves a player from database, or only WG API
         /// </summary>
-        public async Task<Player> GetPlayer(CommandContext ctx, string gamerTag)
+        public async Task<Player> GetPlayer(CommandContext ctx, string gamerTag, bool showStatus = true)
         {
             try
             {
@@ -84,6 +84,7 @@ namespace Negri.Wot.Bot
                         if (willTryApiMessage != null)
                         {
                             await willTryApiMessage.DeleteAsync("Information updated.");
+                            willTryApiMessage = null;
                         }
 
                         await ctx.RespondAsync(
@@ -122,6 +123,7 @@ namespace Negri.Wot.Bot
                     if (willTryApiMessage != null)
                     {
                         await willTryApiMessage.DeleteAsync("Information updated.");
+                        willTryApiMessage = null;
                     }
 
                     return apiPlayer;
@@ -137,8 +139,11 @@ namespace Negri.Wot.Bot
 
                 if (player.Age.TotalHours > 1)
                 {
-                    willTryApiMessage = await ctx.RespondAsync($"Data for  `{player.Name}` on `{player.Plataform}` " +
-                                                               $"is more than {player.Age.TotalHours:N0}h old, {ctx.User.Mention}. Retrieving fresh data, please wait...");
+                    if (showStatus)
+                    {
+                        willTryApiMessage = await ctx.RespondAsync($"Data for  `{player.Name}` on `{player.Plataform}` " +
+                                                                   $"is more than {player.Age.TotalHours:N0}h old, {ctx.User.Mention}. Retrieving fresh data, please wait...");
+                    }
 
                     var tanks = fetcher.GetTanksForPlayer(player.Plataform, player.Id);
                     var allTanks = provider.GetTanks(player.Plataform).ToDictionary(t => t.TankId);
@@ -194,6 +199,7 @@ namespace Negri.Wot.Bot
                 if (willTryApiMessage != null)
                 {
                     await willTryApiMessage.DeleteAsync("Information updated.");
+                    willTryApiMessage = null;
                 }
 
                 return player;
