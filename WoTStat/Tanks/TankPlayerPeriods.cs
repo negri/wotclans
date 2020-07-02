@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Negri.Wot.WgApi;
 using Newtonsoft.Json;
@@ -8,7 +7,7 @@ using Newtonsoft.Json;
 namespace Negri.Wot.Tanks
 {
     /// <summary>
-    /// Os valores jogados por um jogador no periodo total, mês (28 dias) e 7 dias
+    /// Os valores jogados por um jogador no período total, mês (28 dias) e 7 dias
     /// </summary>
     public class TankPlayerPeriods
     {        
@@ -137,66 +136,66 @@ namespace Negri.Wot.Tanks
             return tanks.ToArray();
         }
 
-        public IEnumerable<TankPlayerStatistics> GetTopTanks(ReferencePeriod period = ReferencePeriod.All, int minNumberOfTanks = 5, int minTier = 1, int maxTier = 10, bool includePremiums = false)
+        public IEnumerable<TankPlayerStatistics> GetTopTanks(ReferencePeriod period = ReferencePeriod.All, int minNumberOfTanks = 5, int minTier = 1, int maxTier = 10, PremiumSelection includePremiums = PremiumSelection.OnlyRegular)
         {
             
             var all = GetTanks(period, minTier, maxTier).ToArray();
 
-            var top = all.Where(t => t.Battles >= 2500 && (!t.IsPremium || includePremiums)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
+            var top = all.Where(t => t.Battles >= 2500 && includePremiums.Filter(t.IsPremium)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
             if (top.Length >= minNumberOfTanks)
             {
                 return top;
             }
 
-            top = all.Where(t => t.Battles >= 1000 && (!t.IsPremium || includePremiums)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
+            top = all.Where(t => t.Battles >= 1000 && includePremiums.Filter(t.IsPremium)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
             if (top.Length >= minNumberOfTanks)
             {
                 return top;
             }
 
-            top = all.Where(t => t.Battles >= 500 && (!t.IsPremium || includePremiums)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
+            top = all.Where(t => t.Battles >= 500 && includePremiums.Filter(t.IsPremium)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
             if (top.Length >= minNumberOfTanks)
             {
                 return top;
             }
 
-            top = all.Where(t => t.Battles >= 250 && (!t.IsPremium || includePremiums)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
+            top = all.Where(t => t.Battles >= 250 && includePremiums.Filter(t.IsPremium)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
             if (top.Length >= minNumberOfTanks)
             {
                 return top;
             }
 
-            top = all.Where(t => t.Battles >= 100 && (!t.IsPremium || includePremiums)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
+            top = all.Where(t => t.Battles >= 100 && includePremiums.Filter(t.IsPremium)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
             if (top.Length >= minNumberOfTanks)
             {
                 return top;
             }
 
-            top = all.Where(t => t.Battles >= 50 && (!t.IsPremium || includePremiums)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
+            top = all.Where(t => t.Battles >= 50 && includePremiums.Filter(t.IsPremium)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
             if (top.Length >= minNumberOfTanks)
             {
                 return top;
             }
 
-            top = all.Where(t => t.Battles >= 25 && (!t.IsPremium || includePremiums)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
+            top = all.Where(t => t.Battles >= 25 && includePremiums.Filter(t.IsPremium)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
             if (top.Length >= minNumberOfTanks)
             {
                 return top;
             }
 
-            top = all.Where(t => t.Battles >= 10 && (!t.IsPremium || includePremiums)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
+            top = all.Where(t => t.Battles >= 10 && includePremiums.Filter(t.IsPremium)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
             if (top.Length >= minNumberOfTanks)
             {
                 return top;
             }
 
-            top = all.Where(t => t.Battles >= 5 && (!t.IsPremium || includePremiums)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
+            top = all.Where(t => t.Battles >= 5 && includePremiums.Filter(t.IsPremium)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
             if (top.Length >= minNumberOfTanks)
             {
                 return top;
             }
 
-            top = all.Where(t => t.Battles >= 1 && (!t.IsPremium || includePremiums)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
+            top = all.Where(t => t.Battles >= 1 && includePremiums.Filter(t.IsPremium)).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
             if (top.Length >= minNumberOfTanks)
             {
                 return top;
@@ -208,13 +207,13 @@ namespace Negri.Wot.Tanks
             }
 
             // new player, very few higher tiers
-            top = GetTanks(period, 1, 10).Where(t => t.Battles >= 1).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();                        
+            top = GetTanks(period).Where(t => t.Battles >= 1).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();                        
             return top;
         }
 
         public TankPlayerStatistics GetBestTank(ReferencePeriod period = ReferencePeriod.All)
         {
-            return GetTopTanks(period, 25, 5, 10, false).FirstOrDefault() ?? All.Values.OrderByDescending(t => t.Wn8).FirstOrDefault();            
+            return GetTopTanks(period, 25, 5).FirstOrDefault() ?? All.Values.OrderByDescending(t => t.Wn8).FirstOrDefault();            
         }
 
         public void PurgeMedals()
@@ -236,13 +235,7 @@ namespace Negri.Wot.Tanks
         /// <summary>
         /// <c>True</c> if Achievements are present on tanks
         /// </summary>
-        public bool HasMedals
-        {
-            get
-            {
-                return IsMedalsPopulated(All) || IsMedalsPopulated(Month) || IsMedalsPopulated(Week);
-            }
-        }
+        public bool HasMedals => IsMedalsPopulated(All) || IsMedalsPopulated(Month) || IsMedalsPopulated(Week);
 
         private static bool IsMedalsPopulated(Dictionary<long, TankPlayerStatistics> tanks)
         {

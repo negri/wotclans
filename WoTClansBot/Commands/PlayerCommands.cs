@@ -84,7 +84,6 @@ namespace Negri.Wot.Bot
                         if (willTryApiMessage != null)
                         {
                             await willTryApiMessage.DeleteAsync("Information updated.");
-                            willTryApiMessage = null;
                         }
 
                         await ctx.RespondAsync(
@@ -123,7 +122,6 @@ namespace Negri.Wot.Bot
                     if (willTryApiMessage != null)
                     {
                         await willTryApiMessage.DeleteAsync("Information updated.");
-                        willTryApiMessage = null;
                     }
 
                     return apiPlayer;
@@ -199,7 +197,6 @@ namespace Negri.Wot.Bot
                 if (willTryApiMessage != null)
                 {
                     await willTryApiMessage.DeleteAsync("Information updated.");
-                    willTryApiMessage = null;
                 }
 
                 return player;
@@ -739,7 +736,7 @@ namespace Negri.Wot.Bot
                 }
                 else
                 {
-                    await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. The value `{maxDate}` is not valid. If the gamer tag has spaces, sorround it with quotes. Valid values to restrict the history are `all`, `recente`, ou a data on the `yyyy-MM-dd` format.");
+                    await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. The value `{maxDate}` is not valid. If the gamer tag has spaces, surround it with quotes. Valid values to restrict the history are `all`, `recente`, ou a data on the `yyyy-MM-dd` format.");
                     return;
                 }
 
@@ -837,8 +834,8 @@ namespace Negri.Wot.Bot
             [Description("The *gamer tag* or *PSN Name*")] string gamerTag,
             [Description("Minimum tier")] int minTier = 5,
             [Description("Maximum tier")] int maxTier = 10,
-            [Description("Include premiums tanks. Use *true* or *false*.")]
-            bool includePremiums = false)
+            [Description("Include premiums tanks or not. Use *true*, *false* or *premium*.")]
+            string includePremiums = "false")
         {
             if (!await CanExecute(ctx, Features.Players))
             {
@@ -854,6 +851,13 @@ namespace Negri.Wot.Bot
 
             Log.Debug($"Requesting {nameof(TankerTop)}({gamerTag}, {minTier}, {maxTier}, {includePremiums})...");
 
+            if (!includePremiums.TryParse(out var premiumSelection))
+            {
+                await ctx.RespondAsync(
+                    $"The *includePremiums* parameter, {ctx.User.Mention}, should be *true*, *false* or *premium*.");
+                return;
+            }
+
             try
             {
                 var player = await GetPlayer(ctx, gamerTag);
@@ -863,7 +867,7 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
-                var top = player.Performance.GetTopTanks(ReferencePeriod.All, 25, minTier, maxTier, includePremiums)
+                var top = player.Performance.GetTopTanks(ReferencePeriod.All, 25, minTier, maxTier, premiumSelection)
                     .ToArray();
                 if (!top.Any())
                 {

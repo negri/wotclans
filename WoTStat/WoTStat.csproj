@@ -146,6 +146,8 @@
     <Compile Include="Sql\KeyStore.cs" />
     <Compile Include="Tanks\Histogram.cs" />
     <Compile Include="Tanks\Leader.cs" />
+    <Compile Include="Tanks\PremiumSelection.cs" />
+    <Compile Include="Tanks\PremiumSelectionExtensions.cs" />
     <Compile Include="Tanks\ReferencePeriod.cs" />
     <Compile Include="Tanks\Tank.cs" />
     <Compile Include="Tanks\TankMoe.cs" />
