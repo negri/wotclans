@@ -138,6 +138,28 @@ namespace Negri.Wot.Tanks
 
         private static TankPlayerStatistics[] FilterTopTanks(TankPlayerStatistics[] all, int minNumberOfTanks, PremiumSelection includePremiums, Func<TankPlayerStatistics, double> orderBy)
         {
+            if (all.Length <= 0)
+            {
+                return Array.Empty<TankPlayerStatistics>();
+            }
+
+            if (all.Length == 1)
+            {
+                return all;
+            }
+
+            if (all.Length < minNumberOfTanks)
+            {
+                // arredonda para o múltiplo de 5 inferior
+                minNumberOfTanks = ((all.Length) / 5) * 5;
+
+                if (minNumberOfTanks <= 0)
+                {
+                    // fazer o quê?
+                    minNumberOfTanks = all.Length;
+                }
+            }
+
             var battlesRanges = new[] { 2500, 1000, 500, 250, 100, 50, 25, 10, 5, 1 };
 
             foreach (var minBattles in battlesRanges)
