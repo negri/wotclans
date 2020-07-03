@@ -150,8 +150,8 @@ namespace Negri.Wot.Tanks
 
             if (all.Length < minNumberOfTanks)
             {
-                // arredonda para o múltiplo de 5 inferior
-                minNumberOfTanks = ((all.Length) / 5) * 5;
+                // arredonda para o múltiplo de 5 2x inferior
+                minNumberOfTanks = (all.Length / 5 - 1) * 5;
 
                 if (minNumberOfTanks <= 0)
                 {
