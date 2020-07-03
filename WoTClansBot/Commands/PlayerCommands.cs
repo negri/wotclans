@@ -827,6 +827,104 @@ namespace Negri.Wot.Bot
             }
         }
 
+        [Command("TankerTopKD")]
+        [Description("The top tanks of a player by Kills/Deaths ratio")]
+        public async Task TankerTopKillDeathRatio(CommandContext ctx,
+            [Description("The *gamer tag* or *PSN Name*")] string gamerTag,
+            [Description("Minimum tier")] int minTier = 5,
+            [Description("Maximum tier")] int maxTier = 10,
+            [Description("Include premiums tanks or not. Use *true*, *false* or *premium*.")]
+            string includePremiums = "false")
+        {
+            if (!await CanExecute(ctx, Features.Players))
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(gamerTag))
+            {
+                await ctx.RespondAsync(
+                    $"Please specify the *Gamer Tag*, {ctx.User.Mention}. Something like `!w tanker {ctx.User.Username.RemoveDiacritics()}`, for example.");
+                return;
+            }
+
+            Log.Debug($"Requesting {nameof(TankerTopKillDeathRatio)}({gamerTag}, {minTier}, {maxTier}, {includePremiums})...");
+
+            if (!includePremiums.TryParse(out var premiumSelection))
+            {
+                await ctx.RespondAsync(
+                    $"The *includePremiums* parameter, {ctx.User.Mention}, should be *true*, *false* or *premium*.");
+                return;
+            }
+
+            try
+            {
+                var player = await GetPlayer(ctx, gamerTag);
+                if (player == null)
+                {
+                    Log.Debug($"Not found player '{gamerTag}'.");
+                    return;
+                }
+
+                var top = player.Performance.GetTopTanksByKillDeathRatio(ReferencePeriod.All, 25, minTier, maxTier, premiumSelection)
+                    .ToArray();
+                if (!top.Any())
+                {
+                    await ctx.RespondAsync(
+                        $"Sorry, {ctx.User.Mention}. There are not enough tanks with the specified filters.");
+                }
+
+                var sb = new StringBuilder();
+                if (string.IsNullOrWhiteSpace(player.ClanTag))
+                {
+                    sb.AppendLine($"*{player.Name}* Top Tanks by Kill/Death, {ctx.User.Mention}:");
+                }
+                else
+                {
+                    sb.AppendLine($"*{player.Name}* [{Formatter.MaskedUrl(player.ClanTag, new Uri(player.ClanUrl))}] " +
+                                  $"Top Tanks by K/D ratio, {ctx.User.Mention}:");
+                }
+
+                sb.AppendLine();
+                sb.AppendLine("```");
+                sb.AppendLine("Tank            Battles  K/D");
+                foreach (var t in top)
+                {
+                    var kds = double.IsPositiveInfinity(t.KillDeathRatio) ? "∞" : t.KillDeathRatio.ToString("N3");
+                    sb.AppendLine($"{t.Name,-15} {t.Battles,7:N0} {kds,6}");
+                }
+
+                sb.AppendLine("```");
+
+                var color = top.First().Wn8.ToColor();
+                var platformPrefix = player.Plataform == Platform.PS ? "ps." : string.Empty;
+
+                var embed = new DiscordEmbedBuilder
+                {
+                    Title = player.Name,
+                    Description = sb.ToString(),
+                    Color = new DiscordColor(color.R, color.G, color.B),
+                    Url = player.PlayerOverallUrl,
+                    Author = new DiscordEmbedBuilder.EmbedAuthor
+                    {
+                        Name = "WoTClans",
+                        Url = $"https://{platformPrefix}wotclans.com.br"
+                    },
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = $"Calculated at {player.Moment:yyyy-MM-dd HH:mm} UTC."
+                    }
+                };
+
+                await ctx.RespondAsync("", embed: embed);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"{nameof(TankerTopKillDeathRatio)}({gamerTag}, {minTier}, {maxTier}, {includePremiums})", ex);
+                await ctx.RespondAsync(
+                    $"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
+            }
+        }
 
         [Command("TankerTop")]
         [Description("The top tanks of a player")]

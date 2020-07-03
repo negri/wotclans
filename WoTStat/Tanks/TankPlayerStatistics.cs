@@ -199,7 +199,7 @@ namespace Negri.Wot.Tanks
         /// XP per Battle
         /// </summary>
         /// <remarks>
-        /// As of 2018-06-21 the WG API accumulattes the base XP including the Premium Time multiplier. 
+        /// As of 2018-06-21 the WG API accumulates the base XP including the Premium Time multiplier. 
         /// So, this number is only reliable to people that only plays with Premium or only plays withot Premium.
         /// </remarks>
         [JsonIgnore]
@@ -210,6 +210,28 @@ namespace Negri.Wot.Tanks
         /// </summary>
         [JsonIgnore]
         public double XPPerHour => 1.0 * XP / BattleLifeTime.TotalHours;
+
+        /// <summary>
+        /// XP/h
+        /// </summary>
+        [JsonIgnore]
+        public double KillDeathRatio
+        {
+            get
+            {
+                if (Kills <= 0)
+                {
+                    return 0.0;
+                }
+
+                if (Deaths <= 0)
+                {
+                    return double.PositiveInfinity;
+                }
+
+                return Kills / (double)Deaths;
+            }
+        }
 
         /// <summary>
         /// Ribbons on the tank

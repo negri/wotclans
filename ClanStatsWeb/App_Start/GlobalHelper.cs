@@ -32,7 +32,7 @@ namespace Negri.Wot.Site
         public static int CacheMinutes { get; set; }
 
         /// <summary>
-        /// The default data provider to direct players seaching for details
+        /// The default data provider to direct players searching for details
         /// </summary>
         public static PlayerDataOrigin DefaultPlayerDetails { get; set; } = PlayerDataOrigin.WotInfo;
 

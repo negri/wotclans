@@ -41,6 +41,8 @@ namespace Negri.Wot.Tanks
 
             switch (s.ToLowerInvariant())
             {
+                case "f":
+                case "0":
                 case "r":
                 case "regular":
                 case "tree":
@@ -53,6 +55,8 @@ namespace Negri.Wot.Tanks
                     premiumSelection = PremiumSelection.OnlyPremium;
                     break;
 
+                case "t":
+                case "1":
                 case "a":
                 case "all":
                 case "b":
