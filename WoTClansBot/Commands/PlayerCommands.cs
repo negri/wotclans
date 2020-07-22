@@ -25,10 +25,12 @@ namespace Negri.Wot.Bot
         private static readonly ILog Log = LogManager.GetLogger(typeof(PlayerCommands));
 
         private readonly string _connectionString;
+        private readonly bool _isReadOnly;
 
         public PlayerCommands()
         {
             _connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            _isReadOnly = (ConfigurationManager.AppSettings["DbReadOnly"] ?? "0") == "1";
         }
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace Negri.Wot.Bot
                 var platform = GetPlatform(gamerTag, cfg.Plataform, out gamerTag);
 
                 var provider = new DbProvider(_connectionString);
-                var recorder = new DbRecorder(_connectionString);
+                var recorder = _isReadOnly ? null : new DbRecorder(_connectionString);
 
                 DiscordMessage willTryApiMessage = null;
 
@@ -146,7 +148,7 @@ namespace Negri.Wot.Bot
                     var tanks = fetcher.GetTanksForPlayer(player.Plataform, player.Id);
                     var allTanks = provider.GetTanks(player.Plataform).ToDictionary(t => t.TankId);
                     var validTanks = tanks.Where(t => allTanks.ContainsKey(t.TankId)).ToArray();
-                    recorder.Set(validTanks);
+                    recorder?.Set(validTanks);
 
                     var played = provider.GetWn8RawStatsForPlayer(player.Plataform, player.Id, true);
                     player.Performance = played;
@@ -165,8 +167,8 @@ namespace Negri.Wot.Bot
 
                     if (player.CanSave())
                     {
-                        recorder.Set(player);
-                        if (!player.IsPatched)
+                        recorder?.Set(player);
+                        if (!player.IsPatched && !_isReadOnly)
                         {
 
                             _ =Task.Run(() =>

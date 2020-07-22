@@ -17,7 +17,7 @@
         }
 
         /// <summary>
-        /// Codigo do Erro
+        /// Código do Erro
         /// </summary>
         public int Code { get; set; }
 

@@ -150,75 +150,6 @@ namespace Negri.Wot
             return ev;
         }
 
-        public async Task<Player> GetPlayerWn8Async(Player player)
-        {
-            Log.DebugFormat("Obtendo WN8 do jogador {0}@{1}...", player.Id, player.Plataform);
-
-            string url =
-                $"https://wotstatsconsole.de/api/rest?request=playerdata&id={player.Id}&sys={(player.Plataform == Platform.PS ? "ps4" : "xbox")}";
-            var content =
-                await
-                    GetContent($"WotStatsConsole.{player.Plataform}.{player.Id}.json", url, WebCacheAge, false,
-                        Encoding.UTF8);
-            var json = content.Content;
-
-            try
-            {
-                var j = JObject.Parse(json);
-                var d = j["data"];
-                var overall = d["statistics"];
-                var month = d["month"];
-
-                try
-                {
-                    player.TotalBattles = (int)overall["allBattles"];
-                    player.TotalWinRate = (double)overall["winRate"];
-                    player.TotalWn8 = (double)overall["wn8"];
-                }
-                catch
-                {
-                    // Indica que o cidadão nunca jogou
-                    Log.Debug($"Player {player.Plataform}.{player.Id}.{player.Name} never played a single game!");
-                    return null;
-                }
-
-                // Se é a primeira vez do cidadão nesse site os mensais voltam zerados
-                try
-                {
-                    player.MonthBattles = (int)month["allBattles"];
-                    player.MonthWinRate = (double)month["allwins"] / (double)month["allBattles"];
-                    player.MonthWn8 = (double)month["wn8"];
-                }
-                catch
-                {
-                    Log.Debug(
-                        $"Mensais de {player.Plataform}.{player.Id}.{player.Name} estão zeradas. 1ª vez no site. Extrapolando.");
-
-                    DateTime playsFrom = ((long)d["overall"]["created_at"]).ToDateTime();
-                    var daysInGame = (DateTime.UtcNow - playsFrom).TotalDays;
-                    var monthsInGame = daysInGame / 28.0;
-
-                    player.MonthBattles = (int)(player.TotalBattles / monthsInGame);
-                    player.MonthWinRate = player.TotalWinRate;
-                    player.MonthWn8 = player.TotalWn8;
-                    player.IsPatched = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Warn($"Erro no JSON de {player.Plataform}.{player.Id}.{player.Name}", ex);
-                return null;
-            }
-
-            player.Moment = DateTime.UtcNow;
-            player.Origin = PlayerDataOrigin.WotStatConsole;
-
-            Log.Debug(
-                $"Retornando {player.Plataform}.{player.Id}.{player.Name}: {player.MonthBattles}; {player.MonthWn8}");
-
-            return player;
-        }
-
         public IEnumerable<TankPlayer> GetTanksForPlayer(Platform platform, long playerId, long? tankId = null, bool includeMedals = true)
         {
             Log.DebugFormat("Obtendo tanques do jogador {0}@{1}...", playerId, platform);
@@ -227,10 +158,10 @@ namespace Negri.Wot
             switch (platform)
             {
                 case Platform.XBOX:
-                    server = "api-xbox-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 case Platform.PS:
-                    server = "api-ps4-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
@@ -318,10 +249,10 @@ namespace Negri.Wot
             switch (platform)
             {
                 case Platform.XBOX:
-                    server = "api-xbox-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 case Platform.PS:
-                    server = "api-ps4-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
@@ -408,10 +339,10 @@ namespace Negri.Wot
             switch (platform)
             {
                 case Platform.XBOX:
-                    server = "api-xbox-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 case Platform.PS:
-                    server = "api-ps4-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 case Platform.PC:
                     return GetPcTanks(tankId);
@@ -454,10 +385,10 @@ namespace Negri.Wot
             switch (platform)
             {
                 case Platform.XBOX:
-                    server = "api-xbox-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 case Platform.PS:
-                    server = "api-ps4-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
@@ -966,10 +897,10 @@ namespace Negri.Wot
             switch (platform)
             {
                 case Platform.XBOX:
-                    server = "api-xbox-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 case Platform.PS:
-                    server = "api-ps4-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
@@ -1026,10 +957,10 @@ namespace Negri.Wot
             switch (platform)
             {
                 case Platform.XBOX:
-                    server = "api-xbox-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 case Platform.PS:
-                    server = "api-ps4-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
@@ -1124,10 +1055,10 @@ namespace Negri.Wot
             switch (platform)
             {
                 case Platform.XBOX:
-                    server = "api-xbox-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 case Platform.PS:
-                    server = "api-ps4-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
@@ -1178,10 +1109,10 @@ namespace Negri.Wot
             switch (platform)
             {
                 case Platform.XBOX:
-                    server = "api-xbox-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 case Platform.PS:
-                    server = "api-ps4-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
@@ -1259,10 +1190,10 @@ namespace Negri.Wot
             switch (platform)
             {
                 case Platform.XBOX:
-                    server = "api-xbox-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 case Platform.PS:
-                    server = "api-ps4-console.worldoftanks.com";
+                    server = "api-console.worldoftanks.com";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);

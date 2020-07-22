@@ -23,6 +23,11 @@ namespace Negri.Wot
         /// <summary>
         /// PC
         /// </summary>
-        PC = 3
+        PC = 3,
+
+        /// <summary>
+        /// XBOX and PS4 together
+        /// </summary>
+        Console = 4
     }
 }
