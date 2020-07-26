@@ -20,9 +20,6 @@ namespace Negri.Wot.WgApi
         /// </summary>
         public DateTime Moment { get; set; }
 
-        /// <summary>
-        /// A plataforma
-        /// </summary>
         public Platform Plataform { get; set; }
 
         /// <summary>

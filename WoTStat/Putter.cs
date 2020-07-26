@@ -14,28 +14,13 @@ namespace Negri.Wot
     public class Putter
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Putter));
-        private readonly string _apiKey;
-        private readonly string _baseUrl;
-        
-        public Putter(Platform platform, string apiKey)
-        {
-            switch (platform)
-            {
-                case Platform.XBOX:
-                    _baseUrl = "https://wotclans.com.br";
-                    break;
-                case Platform.PS:
-                    _baseUrl = "https://ps.wotclans.com.br";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(platform), platform, "Not supported.");
-            }            
-            _apiKey = apiKey;
-        }
 
-        public Putter(string baseUrl, string apiKey)
+        public string BaseUrl { get; set; } = "https://wotclans.com.br";
+
+        private readonly string _apiKey;
+        
+        public Putter(string apiKey)
         {
-            _baseUrl = baseUrl;
             _apiKey = apiKey;
         }
 
@@ -88,7 +73,7 @@ namespace Negri.Wot
                 {
                     var client = new HttpClient
                     {
-                        BaseAddress = new Uri(_baseUrl)
+                        BaseAddress = new Uri(BaseUrl)
                     };
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/bson"));
@@ -126,7 +111,7 @@ namespace Negri.Wot
 
                 var client = new HttpClient
                 {
-                    BaseAddress = new Uri(_baseUrl)
+                    BaseAddress = new Uri(BaseUrl)
                 };
                 var res = client.DeleteAsync($"api/admin/CleanDataFolders?apiAdminKey={_apiKey}").Result;
                
@@ -154,7 +139,7 @@ namespace Negri.Wot
 
             var client = new HttpClient
             {
-                BaseAddress = new Uri(_baseUrl)
+                BaseAddress = new Uri(BaseUrl)
             };
             var res = client.DeleteAsync($"api/admin/DeleteClan?apiAdminKey={_apiKey}&clanTag={clanTag}").Result;
 

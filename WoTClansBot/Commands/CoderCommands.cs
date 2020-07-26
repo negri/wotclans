@@ -229,7 +229,7 @@ namespace Negri.Wot.Bot
 
             try
             {
-                var putter = new Putter(platform, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                var putter = new Putter(ConfigurationManager.AppSettings["ApiAdminKey"]);
                 putter.DeleteClan(clanTag);
 
                 await ctx.RespondAsync(
@@ -247,8 +247,7 @@ namespace Negri.Wot.Bot
 
         [Command("site")]
         [Description("Retrieve the site status.")]
-        public async Task GetSiteStatus(CommandContext ctx, [Description("The site to query, *PS* or *XBOX*")]
-            string platformString = "XBOX")
+        public async Task GetSiteStatus(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
 
@@ -269,9 +268,6 @@ namespace Negri.Wot.Bot
                 return;
             }
 
-            var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-            var platform = GetPlatform(platformString + ".", cfg.Plataform, out _);
-
             try
             {
                 var cacheDirectory = ConfigurationManager.AppSettings["CacheDir"] ?? Path.GetTempPath();
@@ -280,12 +276,13 @@ namespace Negri.Wot.Bot
 
                 var fetcher = new Fetcher(cacheDirectory)
                 {
-                    ApplicationId = appId,
+                    WargamingApplicationId = appId,
                     WebCacheAge = webCacheAge,
-                    WebFetchInterval = TimeSpan.FromSeconds(1)
+                    WebFetchInterval = TimeSpan.FromSeconds(1),
+                    WotClansAdminApiKey = ConfigurationManager.AppSettings["ApiAdminKey"]
                 };
 
-                var s = fetcher.GetSiteDiagnostic(platform, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                var s = fetcher.GetSiteDiagnostic();
 
                 var sb = new StringBuilder();
                 sb.AppendLine($"Data Age Minutes: {s.DataAgeMinutes:N0}");
@@ -296,17 +293,15 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"Clans With Players Updated On Last Hour: {s.ClansWithPlayersUpdatedOnLastHour:N0}");
                 sb.AppendLine($"Since Started Load: {s.AveragedProcessCpuUsage.SinceStartedLoad:P1}");
 
-                var platformPrefix = platform == Platform.PS ? "ps." : string.Empty;
-
                 var embed = new DiscordEmbedBuilder
                 {
-                    Title = $"Site Status - {platform.ToString().ToUpperInvariant()}",
+                    Title = "Site Status",
                     Description = sb.ToString(),
                     Color = DiscordColor.Goldenrod,
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{platformPrefix}wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -392,7 +387,7 @@ namespace Negri.Wot.Bot
 
                 var fetcher = new Fetcher(cacheDirectory)
                 {
-                    ApplicationId = appId,
+                    WargamingApplicationId = appId,
                     WebCacheAge = webCacheAge,
                     WebFetchInterval = TimeSpan.FromSeconds(1)
                 };
@@ -481,7 +476,7 @@ namespace Negri.Wot.Bot
                         recorder.DisableClan(clan.Plataform, clan.ClanId, DisabledReason.Banned);
 
                         // Also deletes from the remote site
-                        var putter = new Putter(clan.Plataform, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                        var putter = new Putter(ConfigurationManager.AppSettings["ApiAdminKey"]);
                         putter.DeleteClan(clan.ClanTag);
 
                         await ctx.RespondAsync(

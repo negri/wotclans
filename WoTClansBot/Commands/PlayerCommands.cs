@@ -68,7 +68,7 @@ namespace Negri.Wot.Bot
 
                 var fetcher = new Fetcher(cacheDirectory)
                 {
-                    ApplicationId = appId,
+                    WargamingApplicationId = appId,
                     WebCacheAge = webCacheAge,
                     WebFetchInterval = TimeSpan.FromSeconds(1)
                 };
@@ -104,7 +104,7 @@ namespace Negri.Wot.Bot
                 if (player == null && apiPlayer != null)
                 {
                     // Not on my database, but on the API Let's work with overall data!
-                    var tanks = fetcher.GetTanksForPlayer(apiPlayer.Plataform, apiPlayer.Id).ToArray();
+                    var tanks = fetcher.GetTanksForPlayer(apiPlayer.Id).ToArray();
                     foreach (var t in tanks)
                     {
                         t.All.TreesCut = t.TreesCut;
@@ -145,7 +145,7 @@ namespace Negri.Wot.Bot
                                                                    $"is more than {player.Age.TotalHours:N0}h old, {ctx.User.Mention}. Retrieving fresh data, please wait...");
                     }
 
-                    var tanks = fetcher.GetTanksForPlayer(player.Plataform, player.Id);
+                    var tanks = fetcher.GetTanksForPlayer(player.Id);
                     var allTanks = provider.GetTanks(player.Plataform).ToDictionary(t => t.TankId);
                     var validTanks = tanks.Where(t => allTanks.ContainsKey(t.TankId)).ToArray();
                     recorder?.Set(validTanks);
@@ -175,7 +175,7 @@ namespace Negri.Wot.Bot
                               {
                                   try
                                   {
-                                      var putter = new Putter(player.Plataform, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                                      var putter = new Putter(ConfigurationManager.AppSettings["ApiAdminKey"]);
                                       putter.Put(player);
                                   }
                                   catch (Exception ex)

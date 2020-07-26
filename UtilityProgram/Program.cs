@@ -60,7 +60,7 @@ namespace UtilityProgram
             {
                 WebCacheAge = TimeSpan.FromMinutes(15),
                 WebFetchInterval = TimeSpan.FromSeconds(1),
-                ApplicationId = ConfigurationManager.AppSettings["WgApi"]
+                WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
 
             foreach (var clan in clans)
@@ -117,7 +117,7 @@ namespace UtilityProgram
             {
                 WebCacheAge = TimeSpan.FromMinutes(15),
                 WebFetchInterval = TimeSpan.FromSeconds(1),
-                ApplicationId = ConfigurationManager.AppSettings["WgApi"]
+                WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
 
             var gameMedals = fetcher.GetMedals(Platform.XBOX).ToDictionary(m => m.Code);
@@ -132,65 +132,7 @@ namespace UtilityProgram
             recorder.Set(gameMedals.Values);
 
         }
-    
-
-        /// <summary>
-        /// The rate a particular medal is won
-        /// </summary>
-        private static void CheckChiselMedalRate(string medalCode, long playerId)
-        {
-            var cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
-            var fetcher = new Fetcher(cacheDirectory)
-            {
-                WebCacheAge = TimeSpan.FromMinutes(15),
-                WebFetchInterval = TimeSpan.FromSeconds(1),
-                ApplicationId = ConfigurationManager.AppSettings["WgApi"]
-            };
-
-            var player = fetcher.GetTanksForPlayer(Platform.XBOX, playerId, null, true).ToDictionary(t => t.TankId);
-            var tanks = fetcher.GetTanks(Platform.XBOX).ToList();
-
-            var eligibleTanks = tanks
-                .Where(t => (t.Tier >= 8) && ((t.Type == TankType.Heavy) || (t.Type == TankType.Medium)) &&
-                            ((t.Nation == Nation.Uk) || (t.Nation == Nation.Usa) || (t.Nation == Nation.Mercenaries)))
-                .ToList();
-
-            Log.Debug($"Stats for player {playerId} on the medal {medalCode}:");
-
-            foreach (var tank in eligibleTanks.OrderBy(t => t.Tier).ThenBy(t => t.Type).ThenBy(t => t.Nation))
-            {
-                if (!player.TryGetValue(tank.TankId, out var tankPlayer))
-                {
-                    continue;
-                }
-
-                if (!tankPlayer.All.Achievements.TryGetValue(medalCode, out var numberOfDuelists))
-                {
-                    continue;
-                }
-
-                if (numberOfDuelists > 0)
-                {
-                    var rate = numberOfDuelists / (double)tankPlayer.All.Battles;
-                    Log.Debug($"{tank.ShortName.PadRight(15, '.')}: {rate.ToString("P1").PadLeft(5)}, {numberOfDuelists.ToString("N0").PadLeft(5)} in {tankPlayer.All.Battles.ToString("N0").PadLeft(5)} battles");
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// The rate a particular medal is won
-        /// </summary>
-        private static void CheckChiselDuelistMedalRate(long playerId)
-        {
-            CheckChiselMedalRate("duelist", playerId);
-        }
-
-        private static void CheckChiselHighCaliberMedalRate(long playerId)
-        {
-            CheckChiselMedalRate("mainGun", playerId);
-        }
-
+        
 
         private static void PutPlayer(long playerId)
         {
@@ -199,7 +141,10 @@ namespace UtilityProgram
             var player = provider.GetPlayer(playerId, true);
             player.Calculate(provider.GetWn8ExpectedValues(player.Plataform));
 
-            var putter = new Putter("http://localhost:6094/", ConfigurationManager.AppSettings["ApiAdminKey"]);
+            var putter = new Putter(ConfigurationManager.AppSettings["ApiAdminKey"])
+            {
+                BaseUrl = "http://localhost:6094/"
+            };
             putter.Put(player);
 
             var ks = new KeyStore(connectionString);
@@ -247,7 +192,7 @@ namespace UtilityProgram
             {
                 WebCacheAge = TimeSpan.FromMinutes(15),
                 WebFetchInterval = TimeSpan.FromSeconds(1),
-                ApplicationId = ConfigurationManager.AppSettings["WgApi"]
+                WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
 
             var tanks = fetcher.GetTanks(Platform.PC).ToArray();
@@ -340,10 +285,10 @@ namespace UtilityProgram
         /// </summary>
         private static void DeleteOldFileOnServer()
         {
-            var cleanerXbox = new Putter(Platform.XBOX, ConfigurationManager.AppSettings["ApiAdminKey"]);
+            var cleanerXbox = new Putter(ConfigurationManager.AppSettings["ApiAdminKey"]);
             cleanerXbox.CleanFiles();
 
-            var cleanerPs = new Putter(Platform.PS, ConfigurationManager.AppSettings["ApiAdminKey"]);
+            var cleanerPs = new Putter(ConfigurationManager.AppSettings["ApiAdminKey"]);
             cleanerPs.CleanFiles();
         }
 
@@ -538,9 +483,10 @@ namespace UtilityProgram
             {
                 WebCacheAge = webCacheAge,
                 WebFetchInterval = TimeSpan.FromSeconds(1),
-                ApplicationId = ConfigurationManager.AppSettings["WgApi"]
+                WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"],
+                WotClansAdminApiKey = ConfigurationManager.AppSettings["ApiAdminKey"]
             };
-            var si = fetcher.GetSiteDiagnostic("https://wotclans.com.br/api/status", ConfigurationManager.AppSettings["ApiAdminKey"]);
+            var si = fetcher.GetSiteDiagnostic();
         }
 
         #region Valores Esperados de WN8
@@ -558,7 +504,7 @@ namespace UtilityProgram
             {
                 WebCacheAge = webCacheAge,
                 WebFetchInterval = TimeSpan.FromSeconds(1),
-                ApplicationId = ConfigurationManager.AppSettings["WgApi"]
+                WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
 
             var data = provider.EnumTanks(Platform.XBOX).ToArray();
@@ -634,115 +580,6 @@ namespace UtilityProgram
 
         #endregion
 
-        #region Pegar dados de Tanques
-
-        private static void GetAllTanks(string[] args)
-        {
-            var fetcher = new Fetcher(ConfigurationManager.AppSettings["CacheDirectory"])
-            {
-                WebFetchInterval = TimeSpan.FromSeconds(5),
-                ApplicationId = ConfigurationManager.AppSettings["WgApi"]
-            };
-
-            var topCount = 20;
-            if (args.Length >= 1)
-            {
-                topCount = int.Parse(args[0]);
-            }
-
-            Log.InfoFormat("Top Count: {0}", topCount);
-
-            var dir = "c:\\Projects\\wotclans\\TopTanks";
-            if (args.Length >= 2)
-            {
-                dir = args[2];
-            }
-
-            Log.InfoFormat("Directory: {0}", dir);
-
-            // Obtem todos os tanques do jogo       
-            Log.Debug("Obtendo todos os tanques do jogo...");
-            var allTanks = fetcher.GetTanks(Platform.XBOX).ToDictionary(t => t.TankId);
-            var sb = new StringBuilder();
-            foreach (var tank in allTanks.Values)
-            {
-                sb.Append(
-                    $"{tank.TankId}\t{tank.Name}\t{tank.Images["big_icon"]}\t{tank.IsPremium}\t{tank.NationString}\t{tank.ShortName}\t{tank.Tag}\t{tank.Tier}\t{tank.TypeString}\r\n");
-            }
-
-            var tanksFile = $"{dir}\\AllTanks.{DateTime.Today:yyyy-MM-dd}.txt";
-            File.WriteAllText(tanksFile, sb.ToString(), Encoding.UTF8);
-            Log.InfoFormat("Salvos {0} tanques em {1}", allTanks.Count, tanksFile);
-
-            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            var provider = new DbProvider(connectionString);
-
-            // Lista todos os clas XBOX
-            var allClans =
-                provider.GetClans().Where(c => c.Plataform == Platform.XBOX).Select(cp => provider.GetClan(cp))
-                    .OrderByDescending(c => c.Top15Wn8).ToArray();
-            Log.InfoFormat("Obtidos {0} clas.", allClans.Length);
-
-            // Seleciona a amostragem
-            var topClans = allClans.Take(topCount).ToArray();
-            var topPlayersCount = topClans.Sum(c => c.Active);
-
-            var i = allClans.Length - 1;
-            var bottonClans = new List<Clan>();
-            while (bottonClans.Sum(c => c.Active) < topPlayersCount && i >= 0)
-            {
-                bottonClans.Add(allClans[i--]);
-            }
-
-
-            var clanTags = new[]
-            {
-                "ETBR", "UNOT", "BOPBR", "BK", "FERAS", "BR", "VIS", "171BS", "GDAB3", "TCF",
-                "DV", "TOPBR", "OWS", "AR-15", "DBD", "NT", "ITA", "13RCM", "BOPE", "-RSA-"
-            };
-            foreach (var clanTag in topClans)
-            {
-                Console.WriteLine(@"cla {0}...", clanTag.Name);
-                File.Delete($"{dir}\\AllStats.{clanTag}.{DateTime.Today:yyyy-MM-dd}.txt");
-
-                var cc = clanTag;
-
-                foreach (var player in cc.Players)
-                {
-                    sb = new StringBuilder();
-
-
-                    Console.WriteLine(@"    Jogador {0}.{1}@{2}...", player.Id, player.Name, clanTag);
-
-                    var tanksTask = fetcher.GetTanksForPlayerAsync(Platform.XBOX, player.Id);
-                    tanksTask.Wait();
-                    var tanks = tanksTask.Result.ToArray();
-                    foreach (var t in tanks)
-                    {
-                        if (!allTanks.TryGetValue(t.TankId, out var td))
-                        {
-                            td = new Tank { ShortName = "???", Tier = 0, TypeString = "???" };
-                        }
-
-                        sb.Append(
-                            $"{cc.ClanId}\t{cc.ClanTag}\t{cc.Top15Wn8}\t{player.Id}\t{player.Name}\t{player.Rank}\t{player.MonthWinRate}\t{player.MonthWn8}\t{player.MonthBattles}\t");
-                        sb.Append($"{t.TankId}\t{td.ShortName}\t{td.Tier}\t{td.Type}\t");
-                        sb.Append(
-                            $"{t.BattleLifeTime.TotalMinutes:0}\t{t.LastBattle:yyyy-MM-dd}\t{t.MaxFrags}\t{t.MarkOfMastery}\t");
-                        sb.Append(
-                            $"{t.All.Battles}\t{t.All.Wins}\t{t.All.Kills}\t{t.All.SurvivedBattles}\t{t.All.DamageDealt}\t{t.All.DamageAssisted}\t{t.All.DamageReceived}");
-                        sb.AppendLine();
-
-                        //Console.WriteLine(@"        Tanque {0}.{1}...", t.TankId, td.ShortName);
-                    }
-
-                    File.AppendAllText($"{dir}\\AllStats.{clanTag}.{DateTime.Today:yyyy-MM-dd}.txt", sb.ToString(),
-                        Encoding.UTF8);
-                }
-            }
-        }
-
-        #endregion
 
         #region Pegar dados de clas
 
@@ -751,7 +588,7 @@ namespace UtilityProgram
             var fetcher = new Fetcher(@"C:\Projects\wotclans\Cache")
             {
                 WebFetchInterval = TimeSpan.FromSeconds(1),
-                ApplicationId = ConfigurationManager.AppSettings["WgApi"]
+                WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
             var clans = fetcher.GetClans(Platform.XBOX, size).ToArray();
 

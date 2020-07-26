@@ -19,7 +19,6 @@ using Negri.Wot.WgApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tank = Negri.Wot.WgApi.Tank;
-using Type = Negri.Wot.Achievements.Type;
 
 namespace Negri.Wot
 {
@@ -60,7 +59,12 @@ namespace Negri.Wot
         /// <remarks>
         /// The <c>Demo</c> api key does not work anymore
         /// </remarks>
-        public string ApplicationId { set; private get; } = "demo";
+        public string WargamingApplicationId { set; private get; } = "demo";
+
+        /// <summary>
+        /// Administrative API key for the WoTClans site
+        /// </summary>
+        public string WotClansAdminApiKey { set; private get; } = "nope";
 
         /// <summary>
         /// Cache Age
@@ -91,26 +95,21 @@ namespace Negri.Wot
             return false;
         }
 
-        public SiteDiagnostic GetSiteDiagnostic(Platform platform, string apiKey)
-        {
-            var platformPrefix = platform == Platform.PS ? "ps." : string.Empty;
-            string url = $"https://{platformPrefix}wotclans.com.br/api/status";
-            return GetSiteDiagnostic(url, apiKey);
-        }
-
-        public SiteDiagnostic GetSiteDiagnostic(string apiUrl, string apiKey)
+        /// <summary>
+        /// Get Diagnostics on the WoTClans website
+        /// </summary>
+        /// <returns></returns>
+        public SiteDiagnostic GetSiteDiagnostic()
         {
             Log.Debug("Obtendo o diagnostico do site remoto");
-            var content = GetContent($"SiteDiagnostic.{DateTime.UtcNow:yyyy-MM-dd.HHmmss}.json", $"{apiUrl}?apiAdminKey={apiKey}", WebCacheAge,
+
+            const string url = "https://wotclans.com.br/api/status";
+
+            var content = GetContent($"SiteDiagnostic.{DateTime.UtcNow:yyyy-MM-dd.HHmmss}.json", $"{url}?apiAdminKey={WotClansAdminApiKey}", WebCacheAge,
                 false, Encoding.UTF8).Result;
             var json = content.Content;
             var siteDiagnostic = JsonConvert.DeserializeObject<SiteDiagnostic>(json);
             return siteDiagnostic;
-        }
-
-        public Tank GetTank(Platform platform, long tankId)
-        {
-            return GetTanks(platform, tankId).FirstOrDefault();
         }
 
         public IEnumerable<Tank> GetTanks(Platform platform)
@@ -130,10 +129,14 @@ namespace Negri.Wot
             var j = JObject.Parse(json);
             var h = j["header"];
 
+            Debug.Assert(h != null, nameof(h) + " != null");
+
             ev.Source = (string)h["source"];
             ev.Version = (string)h["version"];
 
             var d = j["data"];
+            Debug.Assert(d != null, nameof(d) + " != null");
+
             foreach (var dd in d.Children())
             {
                 ev.Add(new Wn8TankExpectedValues
@@ -150,32 +153,19 @@ namespace Negri.Wot
             return ev;
         }
 
-        public IEnumerable<TankPlayer> GetTanksForPlayer(Platform platform, long playerId, long? tankId = null, bool includeMedals = true)
+        public IEnumerable<TankPlayer> GetTanksForPlayer(long playerId, long? tankId = null, bool includeMedals = true)
         {
-            Log.DebugFormat("Obtendo tanques do jogador {0}@{1}...", playerId, platform);
+            Log.DebugFormat("Obtendo tanques do jogador {0}...", playerId);
 
-            string server;
-            switch (platform)
-            {
-                case Platform.XBOX:
-                    server = "api-console.worldoftanks.com";
-                    break;
-                case Platform.PS:
-                    server = "api-console.worldoftanks.com";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
-            }
-
-            string requestUrl =
-                $"https://{server}/wotx/tanks/stats/?application_id={ApplicationId}&account_id={playerId}";
+            var requestUrl =
+                $"https://api-console.worldoftanks.com/wotx/tanks/stats/?application_id={WargamingApplicationId}&account_id={playerId}";
             if (tankId.HasValue)
             {
                 requestUrl += $"&tank_id={tankId.Value}";
             }
 
             var content =
-                    GetContent($"TanksStats.{platform}.{playerId}.json", requestUrl, WebCacheAge, false,
+                    GetContent($"TanksStats.{playerId}.json", requestUrl, WebCacheAge, false,
                         Encoding.UTF8).Result;
             var json = content.Content;
             var response = JsonConvert.DeserializeObject<TanksStatsResponse>(json);
@@ -192,8 +182,11 @@ namespace Negri.Wot
                 {
                     foreach (var tankPlayer in tankPlayers)
                     {
-                        tankPlayer.Plataform = platform;
-                        list.Add(tankPlayer.TankId, tankPlayer);
+                        // Tanks with zero XP should be ignored, as very likely it's WG returning only the win rate
+                        if (tankPlayer.All.XP > 0.0)
+                        {
+                            list.Add(tankPlayer.TankId, tankPlayer);
+                        }
                     }
                 }
             }
@@ -205,13 +198,13 @@ namespace Negri.Wot
 
             // Retrieve also the medals
             requestUrl =
-                $"https://{server}/wotx/tanks/achievements/?application_id={ApplicationId}&account_id={playerId}";
+                $"https://api-console.worldoftanks.com/wotx/tanks/achievements/?application_id={WargamingApplicationId}&account_id={playerId}";
             if (tankId.HasValue)
             {
                 requestUrl += $"&tank_id={tankId.Value}";
             }
 
-            content = GetContent($"TanksAchievements.{platform}.{playerId}.json", requestUrl, WebCacheAge, false, Encoding.UTF8).Result;
+            content = GetContent($"TanksAchievements.{playerId}.json", requestUrl, WebCacheAge, false, Encoding.UTF8).Result;
             json = content.Content;
             var achievementsResponse = JsonConvert.DeserializeObject<TanksAchievementsResponse>(json);
             if (achievementsResponse.IsError)
@@ -240,59 +233,6 @@ namespace Negri.Wot
             return list.Values;
         }
 
-        public async Task<IEnumerable<TankPlayer>> GetTanksForPlayerAsync(Platform platform, long playerId,
-            long? tankId = null)
-        {
-            Log.DebugFormat("Obtendo tanques do jogador {0}@{1}...", playerId, platform);
-
-            string server;
-            switch (platform)
-            {
-                case Platform.XBOX:
-                    server = "api-console.worldoftanks.com";
-                    break;
-                case Platform.PS:
-                    server = "api-console.worldoftanks.com";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
-            }
-
-            string requestUrl =
-                $"https://{server}/wotx/tanks/stats/?application_id={ApplicationId}&account_id={playerId}";
-            if (tankId.HasValue)
-            {
-                requestUrl += $"&tank_id={tankId.Value}";
-            }
-
-            var content =
-                await
-                    GetContent($"TanksStats.{platform}.{playerId}.json", requestUrl, WebCacheAge, false,
-                        Encoding.UTF8);
-            var json = content.Content;
-            var response = JsonConvert.DeserializeObject<TanksStatsResponse>(json);
-            if (response.IsError)
-            {
-                Log.Error(response.Error);
-                return Enumerable.Empty<TankPlayer>();
-            }
-
-            var list = new List<TankPlayer>();
-            foreach (var tankPlayers in response.Players.Values)
-            {
-                if (tankPlayers != null)
-                {
-                    foreach (var tankPlayer in tankPlayers)
-                    {
-                        tankPlayer.Plataform = platform;
-                        list.Add(tankPlayer);
-                    }
-                }
-            }
-
-            return list;
-        }
-
         /// <summary>
         ///     Because the PC API has pagination
         /// </summary>
@@ -300,11 +240,11 @@ namespace Negri.Wot
         {
             var tanks = new List<Tank>();
 
-            int page = 1, totalPages = 0;
+            int page = 1, totalPages;
             do
             {
                 var url =
-                    $"https://api.worldoftanks.com/wot/encyclopedia/vehicles/?application_id={ApplicationId}&fields=tank_id%2Ctier%2Ctype%2Cshort_name%2Ctag%2Cis_premium%2Cnation%2Cname&page_no={page}&limit=100";
+                    $"https://api.worldoftanks.com/wot/encyclopedia/vehicles/?application_id={WargamingApplicationId}&fields=tank_id%2Ctier%2Ctype%2Cshort_name%2Ctag%2Cis_premium%2Cnation%2Cname&page_no={page}&limit=100";
                 if (tankId.HasValue)
                 {
                     url += $"&tank_id={tankId.Value}";
@@ -321,7 +261,7 @@ namespace Negri.Wot
                 tanks.AddRange(response.Data.Values);
 
                 totalPages = response.Meta.PageTotal;
-                page = page + 1;
+                page += 1;
             } while (page <= totalPages);
 
             foreach (var tank in tanks)
@@ -338,10 +278,7 @@ namespace Negri.Wot
             string server;
             switch (platform)
             {
-                case Platform.XBOX:
-                    server = "api-console.worldoftanks.com";
-                    break;
-                case Platform.PS:
+                case Platform.Console:
                     server = "api-console.worldoftanks.com";
                     break;
                 case Platform.PC:
@@ -351,7 +288,7 @@ namespace Negri.Wot
             }
 
             string requestUrl =
-                $"https://{server}/wotx/encyclopedia/vehicles/?application_id={ApplicationId}&fields=tank_id%2Cname%2Cshort_name%2Cis_premium%2Ctier%2Ctag%2Ctype%2Cimages%2Cnation";
+                $"https://{server}/wotx/encyclopedia/vehicles/?application_id={WargamingApplicationId}&fields=tank_id%2Cname%2Cshort_name%2Cis_premium%2Ctier%2Ctag%2Ctype%2Cimages%2Cnation";
             if (tankId != null)
             {
                 requestUrl += $"&tank_id={tankId.Value}";
@@ -395,7 +332,7 @@ namespace Negri.Wot
             }
 
             string requestUrl =
-                $"https://{server}/wotx/clans/list/?application_id={ApplicationId}&search={clanTag}&limit=1";
+                $"https://{server}/wotx/clans/list/?application_id={WargamingApplicationId}&search={clanTag}&limit=1";
 
             var json =
                 GetContentSync($"FindClan.{platform}.{clanTag}.json", requestUrl, TimeSpan.FromMinutes(1), false,
@@ -909,7 +846,7 @@ namespace Negri.Wot
             for (int pageNumber = 1, currentCount = 100; currentCount > 0; ++pageNumber)
             {
                 string lisUrl =
-                    $"https://{server}/wotx/clans/list/?application_id={ApplicationId}&fields=clan_id%2Ctag%2Cmembers_count&page_no={pageNumber}";
+                    $"https://{server}/wotx/clans/list/?application_id={WargamingApplicationId}&fields=clan_id%2Ctag%2Cmembers_count&page_no={pageNumber}";
 
                 var json =
                     GetContentSync($"ListClans.{platform}.{pageNumber}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", lisUrl,
@@ -970,7 +907,7 @@ namespace Negri.Wot
 
             // Verifica se algum dos clãs foi encerrado
             string disbandedUrl =
-                $"https://{server}/wotx/clans/info/?application_id={ApplicationId}&fields=clan_id%2Cis_clan_disbanded&clan_id={string.Join("%2C", requestedClans.Select(id => id.ToString()))}";
+                $"https://{server}/wotx/clans/info/?application_id={WargamingApplicationId}&fields=clan_id%2Cis_clan_disbanded&clan_id={string.Join("%2C", requestedClans.Select(id => id.ToString()))}";
             var json =
                 GetContentSync($"DisbandedClan.{platform}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", disbandedUrl,
                     WebCacheAge, false, Encoding.UTF8).Content;
@@ -990,7 +927,7 @@ namespace Negri.Wot
             requestedClans.ExceptWith(disbandedClans);
 
             // Pega os dados normais
-            string requestUrl = $"https://{server}/wotx/clans/info/?application_id={ApplicationId}&clan_id=" +
+            string requestUrl = $"https://{server}/wotx/clans/info/?application_id={WargamingApplicationId}&clan_id=" +
                                 $"{string.Join("%2C", requestedClans.Select(id => id.ToString()))}&fields=clan_id%2Ctag%2Cname%2Cmembers_count%2Ccreated_at%2Cis_clan_disbanded" +
                                 "%2Cmembers%2Cmembers.role%2Cmembers.account_name&extra=members";
 
@@ -1065,7 +1002,7 @@ namespace Negri.Wot
             }
 
             string url =
-                $"https://{server}/wotx/account/info/?application_id={ApplicationId}&account_id={id}&fields=nickname";
+                $"https://{server}/wotx/account/info/?application_id={WargamingApplicationId}&account_id={id}&fields=nickname";
             var json = GetContentSync($"GamerTagById.{platform}.{id}.json", url, WebCacheAge, false, Encoding.UTF8)
                 .Content;
 
@@ -1118,7 +1055,7 @@ namespace Negri.Wot
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
-            string url = $"https://{server}/wotx/account/list/?application_id={ApplicationId}&search={gamerTag}";
+            string url = $"https://{server}/wotx/account/list/?application_id={WargamingApplicationId}&search={gamerTag}";
             var json =
                 GetContentSync($"AccountList.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8)
                     .Content;
@@ -1156,7 +1093,7 @@ namespace Negri.Wot
 
             // Acho o clã do cidadão
             url =
-                $"https://{server}/wotx/clans/accountinfo/?application_id={ApplicationId}&account_id={player.Id}&extra=clan";
+                $"https://{server}/wotx/clans/accountinfo/?application_id={WargamingApplicationId}&account_id={player.Id}&extra=clan";
             json =
                 GetContentSync($"ClansAccountinfo.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8)
                     .Content;
@@ -1199,7 +1136,7 @@ namespace Negri.Wot
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
-            var url = $"https://{server}/wotx/encyclopedia/achievements/?application_id={ApplicationId}";
+            var url = $"https://{server}/wotx/encyclopedia/achievements/?application_id={WargamingApplicationId}";
             var json = GetContentSync($"Achievements.{platform}.json", url, WebCacheAge, false, Encoding.UTF8).Content;
 
             var o = JObject.Parse(json);

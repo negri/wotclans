@@ -48,15 +48,14 @@ namespace Negri.Wot.Mail
         /// <summary>
         ///     Manda e-mail de status
         /// </summary>
-        /// <param name="xboxSite">Status do Site</param>
-        /// <param name="psSite"></param>
-        /// <param name="dd">Status do BD</param>
+        /// <param name="siteDiagnostic">Status do Site</param>
+        /// <param name="dataDiagnostic">Status do BD</param>
         /// <param name="minPerDay">Mínimo de Players por Dia</param>
         /// <param name="maxPerDay">Máximo de Players por Dia</param>
         /// <param name="calculationTime"></param>
         /// <param name="doneCount"></param>
         /// <param name="timedOut"></param>
-        public void SendStatusMessage(SiteDiagnostic xboxSite, SiteDiagnostic psSite, DataDiagnostic dd, int minPerDay,
+        public void SendStatusMessage(SiteDiagnostic siteDiagnostic, DataDiagnostic dataDiagnostic, int minPerDay,
             int maxPerDay, TimeSpan calculationTime, int doneCount, bool timedOut)
         {
             var encoding = Encoding.GetEncoding("iso-8859-1");
@@ -70,7 +69,8 @@ namespace Negri.Wot.Mail
                 SubjectEncoding = encoding,
                 HeadersEncoding = encoding,
                 To = {To},
-                Body = GetStatusMessageBody(xboxSite, psSite, dd, minPerDay, maxPerDay, calculationTime, doneCount, timedOut,
+                Body = GetStatusMessageBody(siteDiagnostic, dataDiagnostic, minPerDay, maxPerDay, calculationTime,
+                    doneCount, timedOut,
                     out var mailPriority)
             };
 
@@ -101,7 +101,7 @@ namespace Negri.Wot.Mail
             Send(mailMessage);
         }
 
-        private static string GetStatusMessageBody(SiteDiagnostic xboxSite, SiteDiagnostic psSite, DataDiagnostic dd,
+        private static string GetStatusMessageBody(SiteDiagnostic sd, DataDiagnostic dd,
             int minPerDay, int maxPerDay, TimeSpan calculationTime, int doneCount, bool timedOut,
             out MailPriority mailPriority)
         {
@@ -110,17 +110,15 @@ namespace Negri.Wot.Mail
 
             var sb = new StringBuilder();
 
-            sb.AppendLine($"Calculados {doneCount} clãs em {calculationTime}. {calculationTime.TotalSeconds / doneCount:N0}s/clã");
-            if (timedOut)
-            {
-                sb.AppendLine("Tempo de Execução Esgotado antes do fim!");
-            }
-            sb.AppendLine();            
+            sb.AppendLine(
+                $"Calculados {doneCount} clãs em {calculationTime}. {calculationTime.TotalSeconds / doneCount:N0}s/clã");
+            if (timedOut) sb.AppendLine("Tempo de Execução Esgotado antes do fim!");
+            sb.AppendLine();
 
-            sb.AppendLine("No Servidor Remoto de XBOX:");
+            sb.AppendLine("No Servidor do Site:");
 
-            sb.AppendFormat("Idade dos dados: {0}min", xboxSite.DataAgeMinutes);
-            if (xboxSite.DataAgeMinutes > 30)
+            sb.AppendFormat("Idade dos dados: {0}min", sd.DataAgeMinutes);
+            if (sd.DataAgeMinutes > 30)
             {
                 sb.AppendLine(" !");
                 mailPriority = Max(mailPriority, MailPriority.Normal);
@@ -130,62 +128,29 @@ namespace Negri.Wot.Mail
                 sb.AppendLine();
             }
 
-            sb.AppendFormat("Clãs:      {0:N0}", xboxSite.ClansCount); sb.AppendLine();
-            sb.AppendFormat("Jogadores: {0:N0}", xboxSite.PlayersCount); sb.AppendLine();
-            sb.AppendFormat("Data MoE:     {0:yyyy-MM-dd}", xboxSite.TanksMoELastDate); sb.AppendLine();
-            sb.AppendFormat("Data Leaders: {0:yyyy-MM-dd}", xboxSite.TankLeadersLastDate); sb.AppendLine();
-            sb.AppendFormat("Clãs de jog. at. na últ hora:    {0:0}", xboxSite.ClansWithPlayersUpdatedOnLastHour); sb.AppendLine();
-            sb.AppendFormat("Clãs com alguma at. na últ hora: {0:0}", xboxSite.ClansWithAnyUpdatedOnLastHour); sb.AppendLine();
-
-            sb.AppendFormat("CPU: {0:N2}%; Memória: {1:N0}MB; Threads: {2}",
-                xboxSite.AveragedProcessCpuUsage.SinceStartedLoad * 100.0,
-                xboxSite.ProcessMemoryUsage.WorkingSetkB / 1024,
-                xboxSite.ProcessMemoryUsage.ThreadCount);
-            if (xboxSite.AveragedProcessCpuUsage.SinceStartedLoad > 0.20)
-            {
-                sb.AppendLine(" !!!");
-                mailPriority = Max(mailPriority, MailPriority.High);
-            }
-            else if (xboxSite.ProcessMemoryUsage.WorkingSetMB >= (256*3))
-            {
-                sb.AppendLine(" !!!");
-                mailPriority = Max(mailPriority, MailPriority.High);
-            }
-            else
-            {
-                sb.AppendLine();
-            }
+            sb.AppendFormat("Clãs:      {0:N0}", sd.ClansCount);
+            sb.AppendLine();
+            sb.AppendFormat("Jogadores: {0:N0}", sd.PlayersCount);
+            sb.AppendLine();
+            sb.AppendFormat("Data MoE:     {0:yyyy-MM-dd}", sd.TanksMoELastDate);
+            sb.AppendLine();
+            sb.AppendFormat("Data Leaders: {0:yyyy-MM-dd}", sd.TankLeadersLastDate);
+            sb.AppendLine();
+            sb.AppendFormat("Clãs de jog. at. na últ hora:    {0:0}", sd.ClansWithPlayersUpdatedOnLastHour);
+            sb.AppendLine();
+            sb.AppendFormat("Clãs com alguma at. na últ hora: {0:0}", sd.ClansWithAnyUpdatedOnLastHour);
             sb.AppendLine();
 
-            sb.AppendLine("No Servidor Remoto de PS:");
-
-            sb.AppendFormat("Idade dos dados: {0}min", psSite.DataAgeMinutes);
-            if (psSite.DataAgeMinutes > 30)
-            {
-                sb.AppendLine(" !");
-                mailPriority = Max(mailPriority, MailPriority.Normal);
-            }
-            else
-            {
-                sb.AppendLine();
-            }
-
-            sb.AppendFormat("Clãs:      {0:N0}", psSite.ClansCount); sb.AppendLine();
-            sb.AppendFormat("Jogadores: {0:N0}", psSite.PlayersCount); sb.AppendLine();
-            sb.AppendFormat("Data MoE:     {0:yyyy-MM-dd}", psSite.TanksMoELastDate); sb.AppendLine();
-            sb.AppendFormat("Data Leaders: {0:yyyy-MM-dd}", psSite.TankLeadersLastDate); sb.AppendLine();
-            sb.AppendFormat("Clãs de jog. at. na últ hora:    {0:0}", psSite.ClansWithPlayersUpdatedOnLastHour); sb.AppendLine();
-            sb.AppendFormat("Clãs com alguma at. na últ hora: {0:0}", psSite.ClansWithAnyUpdatedOnLastHour); sb.AppendLine();
-
             sb.AppendFormat("CPU: {0:N2}%; Memória: {1:N0}MB; Threads: {2}",
-                psSite.AveragedProcessCpuUsage.SinceStartedLoad * 100.0, psSite.ProcessMemoryUsage.WorkingSetkB / 1024,
-                psSite.ProcessMemoryUsage.ThreadCount);
-            if (psSite.AveragedProcessCpuUsage.SinceStartedLoad > 0.20)
+                sd.AveragedProcessCpuUsage.SinceStartedLoad * 100.0,
+                sd.ProcessMemoryUsage.WorkingSetkB / 1024,
+                sd.ProcessMemoryUsage.ThreadCount);
+            if (sd.AveragedProcessCpuUsage.SinceStartedLoad > 0.20)
             {
                 sb.AppendLine(" !!!");
                 mailPriority = Max(mailPriority, MailPriority.High);
             }
-            else if (psSite.ProcessMemoryUsage.WorkingSetMB >= 512)
+            else if (sd.ProcessMemoryUsage.WorkingSetMB >= (256 * 3))
             {
                 sb.AppendLine(" !!!");
                 mailPriority = Max(mailPriority, MailPriority.High);
@@ -194,10 +159,12 @@ namespace Negri.Wot.Mail
             {
                 sb.AppendLine();
             }
+
             sb.AppendLine();
+
 
             // Geral dos servidores
-            var minDataAgeMinutes = Math.Min(xboxSite.DataAgeMinutes, psSite.DataAgeMinutes);
+            var minDataAgeMinutes = sd.DataAgeMinutes;
             if (minDataAgeMinutes > 70)
             {
                 sb.AppendFormat("Idade mínima dos dados: {0}min !!!", minDataAgeMinutes);
@@ -205,10 +172,10 @@ namespace Negri.Wot.Mail
                 mailPriority = Max(mailPriority, MailPriority.High);
             }
 
-            var maxClansUpdatedOnLastHour = psSite.ClansWithPlayersUpdatedOnLastHour + xboxSite.ClansWithPlayersUpdatedOnLastHour;
+            var maxClansUpdatedOnLastHour = sd.ClansWithPlayersUpdatedOnLastHour;
             if (maxClansUpdatedOnLastHour < 4)
             {
-                sb.AppendFormat("Clãs atualizados na última hora (XBOX + PS): {0}", maxClansUpdatedOnLastHour);
+                sb.AppendFormat("Clãs atualizados na última hora: {0}", maxClansUpdatedOnLastHour);
                 sb.AppendLine();
                 mailPriority = Max(mailPriority, MailPriority.High);
             }
@@ -216,9 +183,11 @@ namespace Negri.Wot.Mail
             var playersPerHour = (maxPerDay + minPerDay) / 2 / 24;
 
             sb.AppendLine("No Banco de Dados");
-            sb.AppendFormat("Jogadores:          {0:N0}", dd.TotalPlayers); sb.AppendLine();
+            sb.AppendFormat("Jogadores:          {0:N0}", dd.TotalPlayers);
+            sb.AppendLine();
 
-            sb.AppendFormat("Jogadores na fila:  {0:N0} ({1:P1})", dd.PlayersQueueLenght, dd.PlayersQueueLenght*1.0/dd.TotalPlayers);
+            sb.AppendFormat("Jogadores na fila:  {0:N0} ({1:P1})", dd.PlayersQueueLenght,
+                dd.PlayersQueueLenght * 1.0 / dd.TotalPlayers);
             if (dd.PlayersQueueLenght > playersPerHour + 120)
             {
                 mailPriority = Max(mailPriority, MailPriority.Normal);
@@ -229,9 +198,11 @@ namespace Negri.Wot.Mail
                 mailPriority = Max(mailPriority, MailPriority.High);
                 sb.Append(" !!!!");
             }
+
             sb.AppendLine();
 
-            sb.AppendFormat("Membership na fila: {0:N0} ({1:P1})", dd.MembershipQueueLenght, dd.MembershipQueueLenght*1.0/dd.TotalEnabledClans);
+            sb.AppendFormat("Membership na fila: {0:N0} ({1:P1})", dd.MembershipQueueLenght,
+                dd.MembershipQueueLenght * 1.0 / dd.TotalEnabledClans);
             if (dd.MembershipQueueLenght > 100 * 4 * 2)
             {
                 sb.AppendLine(" !!!");
@@ -248,8 +219,9 @@ namespace Negri.Wot.Mail
             }
 
 
-            sb.AppendFormat("Cálculos na fila:   {0:N0} ({1:P1})", dd.CalculateQueueLenght, dd.CalculateQueueLenght * 1.0 / dd.TotalEnabledClans);
-            if (dd.CalculateQueueLenght > (dd.TotalEnabledClans/2))
+            sb.AppendFormat("Cálculos na fila:   {0:N0} ({1:P1})", dd.CalculateQueueLenght,
+                dd.CalculateQueueLenght * 1.0 / dd.TotalEnabledClans);
+            if (dd.CalculateQueueLenght > (dd.TotalEnabledClans / 2))
             {
                 sb.AppendLine(" !!!");
                 mailPriority = Max(mailPriority, MailPriority.High);
@@ -339,6 +311,7 @@ namespace Negri.Wot.Mail
                 sb.Append(" !!");
                 mailPriority = Max(mailPriority, MailPriority.Normal);
             }
+
             sb.AppendLine();
 
             return sb.ToString();
@@ -373,29 +346,22 @@ namespace Negri.Wot.Mail
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 Credentials = new NetworkCredential(_userName, _password)
             };
-            if (_useSsl)
-            {
-                client.EnableSsl = true;
-            }
+            if (_useSsl) client.EnableSsl = true;
 
             if (async)
-            {
                 Task.Run(() => Execute(() =>
                 {
                     Log.Debug("Sending async mail...");
                     client.Send(message);
-                    Log.Debug("Sended async mail.");
+                    Log.Debug("Sent async mail.");
                 }));
-            }
             else
-            {
                 Execute(() =>
                 {
                     Log.Debug("Sending sync mail...");
                     client.Send(message);
-                    Log.Debug("Sended sync mail.");
+                    Log.Debug("Sent sync mail.");
                 });
-            }
         }
 
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
@@ -403,7 +369,6 @@ namespace Negri.Wot.Mail
         {
             Exception lastException = null;
             for (var i = 0; i < maxTries; ++i)
-            {
                 try
                 {
                     action();
@@ -421,13 +386,11 @@ namespace Negri.Wot.Mail
                     {
                         Log.Error(ex);
                     }
+
                     lastException = ex;
                 }
-            }
-            if (lastException != null && throwOnFinalError)
-            {
-                throw lastException;
-            }
+
+            if (lastException != null && throwOnFinalError) throw lastException;
         }
     }
 }

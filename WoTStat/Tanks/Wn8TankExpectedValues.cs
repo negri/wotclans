@@ -8,7 +8,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 namespace Negri.Wot.Tanks
 {
     /// <summary>
-    /// Os valores experados para o calculo de WN8, em um tanque
+    /// Os valores esperados para o calculo de WN8, em um tanque
     /// </summary>
     public class Wn8TankExpectedValues : Tank
     {
@@ -76,7 +76,7 @@ namespace Negri.Wot.Tanks
         /// <returns>The target Damage</returns>
         public double GetTargetDamage(Wn8Rating rating)
         {            
-            double damage = GetTargetDamage((int)rating);
+            var damage = GetTargetDamage((int)rating);
 
             // round on 10...
             damage = Math.Round(damage / 10.0) * 10.0;

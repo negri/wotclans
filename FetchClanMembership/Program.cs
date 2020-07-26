@@ -43,7 +43,7 @@ namespace Negri.Wot
                 {
                     WebCacheAge = TimeSpan.FromHours(ageHours - 1),
                     WebFetchInterval = webFetchInterval,
-                    ApplicationId = ConfigurationManager.AppSettings["WgApi"]
+                    WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"]
                 };
                 var recorder = new DbRecorder(connectionString);
 
@@ -144,7 +144,7 @@ namespace Negri.Wot
                     {
                         recorder.DisableClan(disbandedClan.Plataform, disbandedClan.ClanId, DisabledReason.Disbanded);
 
-                        var putter = new Putter(disbandedClan.Plataform, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                        var putter = new Putter(ConfigurationManager.AppSettings["ApiAdminKey"]);
                         putter.DeleteClan(disbandedClan.ClanTag);
                     }
 

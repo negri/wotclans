@@ -97,7 +97,7 @@ namespace Negri.Wot
                     {
                         WebCacheAge = webCacheAge,
                         WebFetchInterval = TimeSpan.FromSeconds(1),
-                        ApplicationId = ConfigurationManager.AppSettings["WgApi"]
+                        WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"]
                     };
                     fetchers.Enqueue(fetcher);
                 }                
@@ -124,7 +124,7 @@ namespace Negri.Wot
                 var lockObject = new object();
 
                 // To save on players on the remote server (Same remote DB, so the plataform doesn't matter)
-                var putter = putPlayers ? new Putter(Platform.PS, ConfigurationManager.AppSettings["ApiAdminKey"]) : null;
+                var putter = putPlayers ? new Putter(ConfigurationManager.AppSettings["ApiAdminKey"]) : null;
 
                 var cts = new CancellationTokenSource();
                 var po = new ParallelOptions
@@ -250,7 +250,7 @@ namespace Negri.Wot
             Wn8ExpectedValues wn8Expected, Putter putter)
         {
                         
-            var tanks = fetcher.GetTanksForPlayer(player.Plataform, player.Id);
+            var tanks = fetcher.GetTanksForPlayer(player.Id);
             var validTanks = tanks.Where(t => allTanks.ContainsKey(t.TankId)).ToArray();
             recorder.Set(validTanks);
             

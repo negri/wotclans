@@ -15,13 +15,11 @@ using Negri.Wot.Mail;
 using Negri.Wot.Sql;
 using Negri.Wot.Tanks;
 using Newtonsoft.Json;
-using Tank = Negri.Wot.WgApi.Tank;
 
 namespace Negri.Wot
 {
     internal class Program
     {
-
         private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
 
         private static int Main(string[] args)
@@ -30,16 +28,16 @@ namespace Negri.Wot
             {
                 ParseParams(args, out var ageHours, out var maxRunMinutes,
                     out var hourToDeleteOldFiles, out var daysToKeepOnDelete, out var calculateMoe,
-                    out var calculateReference, out var playersPerMinute, out var utcShiftToCalculate, out var waitForRemote);
+                    out var calculateReference, out var playersPerMinute, out var utcShiftToCalculate,
+                    out var waitForRemote);
 
-                var resultDirectoryXbox = ConfigurationManager.AppSettings["ResultDirectory"];
-                var resultDirectoryPs = ConfigurationManager.AppSettings["PsResultDirectory"];
+                var resultDirectory = ConfigurationManager.AppSettings["ResultDirectory"];
 
                 Log.Info("------------------------------------------------------------------------------------");
                 Log.Info("CalculateClanStats iniciando...");
                 Log.InfoFormat(
-                    "ageHours: {0}; maxRunMinutes: {1}; resultDirectory: {2}; resultDirectoryPs: {3}; utcShiftToCalculate: {4}; waitForRemote: {5}",
-                    ageHours, maxRunMinutes, resultDirectoryXbox, resultDirectoryPs, utcShiftToCalculate, waitForRemote);
+                    "ageHours: {0}; maxRunMinutes: {1}; resultDirectory: {2}; utcShiftToCalculate: {3}; waitForRemote: {4}",
+                    ageHours, maxRunMinutes, resultDirectory, utcShiftToCalculate, waitForRemote);
 
                 var sw = Stopwatch.StartNew();
 
@@ -56,13 +54,9 @@ namespace Negri.Wot
 
                 var recorder = new DbRecorder(connectionString);
 
-                var putterXbox = new FtpPutter(ConfigurationManager.AppSettings["FtpFolder"],
+                var putter = new FtpPutter(ConfigurationManager.AppSettings["FtpFolder"],
                     ConfigurationManager.AppSettings["FtpUser"],
-                    ConfigurationManager.AppSettings["FtpPassworld"]);
-
-                var putterPs = new FtpPutter(ConfigurationManager.AppSettings["PsFtpFolder"],
-                    ConfigurationManager.AppSettings["PsFtpUser"],
-                    ConfigurationManager.AppSettings["PsFtpPassworld"]);
+                    ConfigurationManager.AppSettings["FtpPassword"]);
 
                 var mailSender = new MailSender(ConfigurationManager.AppSettings["SmtpHost"],
                     int.Parse(ConfigurationManager.AppSettings["SmtpPort"]),
@@ -79,189 +73,134 @@ namespace Negri.Wot
                 {
                     WebCacheAge = webCacheAge,
                     WebFetchInterval = TimeSpan.FromSeconds(1),
-                    ApplicationId = ConfigurationManager.AppSettings["WgApi"]
+                    WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"],
+                    WotClansAdminApiKey = ConfigurationManager.AppSettings["ApiAdminKey"]
                 };
 
                 // Obtém o status, por causa da data dos MoE, para disparar o cálculo assíncrono
-                DateTime lastMoeXbox, lastMoePs, lastReferencesXbox, lastReferencesPs;
-                SiteDiagnostic siteStatusXbox, siteStatusPs;
+                DateTime lastMoe, lastTankLeadersDate;
+                SiteDiagnostic siteDiagnostic;
                 try
                 {
-                    siteStatusXbox = fetcher.GetSiteDiagnostic(
-                        ConfigurationManager.AppSettings["RemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
-                    siteStatusPs = fetcher.GetSiteDiagnostic(
-                        ConfigurationManager.AppSettings["PsRemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
+                    siteDiagnostic = fetcher.GetSiteDiagnostic();
 
-                    lastMoeXbox = siteStatusXbox.TanksMoELastDate;
-                    lastMoePs = siteStatusPs.TanksMoELastDate;
-                    lastReferencesXbox = siteStatusXbox.TankLeadersLastDate;
-                    lastReferencesPs = siteStatusPs.TankLeadersLastDate;
+                    lastMoe = siteDiagnostic.TanksMoELastDate;
+                    lastTankLeadersDate = siteDiagnostic.TankLeadersLastDate;
                 }
                 catch (Exception ex)
                 {
                     Log.Error("Error getting initial site diagnostics", ex);
 
                     // Since the site id offline...
-                    siteStatusXbox = siteStatusPs = new SiteDiagnostic(null);
-                    GetLastDatesFromFiles(resultDirectoryXbox, out lastMoeXbox, out lastReferencesXbox);
-                    GetLastDatesFromFiles(resultDirectoryPs, out lastMoePs, out lastReferencesPs);
+                    GetLastDatesFromFiles(resultDirectory, out lastMoe, out lastTankLeadersDate);
                 }
-                
-                Log.Info($"lastMoeXbox: {lastMoeXbox:yyyy-MM-dd}");
-                Log.Info($"lastMoePs: {lastMoePs:yyyy-MM-dd}");
 
-                Log.Info($"lastReferencesXbox: {lastReferencesXbox:yyyy-MM-dd}");
-                Log.Info($"lastReferencesPs: {lastReferencesPs:yyyy-MM-dd}");
+                Log.Info($"last MoE: {lastMoe:yyyy-MM-dd}");
+                Log.Info($"last References : {lastTankLeadersDate:yyyy-MM-dd}");
 
                 // Dispara as tarefas de calculo gerais
-                var calculationTask = Task.Run(() => RunCalculations(calculateReference, calculateMoe,
-                    lastMoeXbox, lastMoePs, lastReferencesXbox, lastReferencesPs, provider, recorder, mailSender,
-                    resultDirectoryXbox, resultDirectoryPs,
-                    putterXbox, putterPs, fetcher, utcShiftToCalculate));
+                var calculationTask = Task.Run(() => RunCalculations(calculateReference, calculateMoe, lastMoe,
+                    lastTankLeadersDate, provider, recorder, mailSender, resultDirectory, putter, fetcher,
+                    utcShiftToCalculate));
 
                 // Dispara a tarefa de apagar arquivos antigos dos servidores
                 var deleteTask = Task.Run(() =>
                 {
-                    if (DateTime.UtcNow.Hour != hourToDeleteOldFiles || daysToKeepOnDelete < 28)
-                    {
-                        return;
-                    }
+                    if (DateTime.UtcNow.Hour != hourToDeleteOldFiles || daysToKeepOnDelete < 28) return;
 
                     // Apaga arquivos com a API administrativa
-                    var cleanXBox = Task.Run(() =>
+                    var cleanTask = Task.Run(() =>
                     {
                         try
                         {
-                            var cleaner = new Putter(Platform.XBOX, ConfigurationManager.AppSettings["ApiAdminKey"]);
+                            var cleaner = new Putter(ConfigurationManager.AppSettings["ApiAdminKey"]);
                             cleaner.CleanFiles();
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Erro cleaning XBOX", ex);
+                            Log.Error("Erro cleaning Remote Site", ex);
                         }
                     });
 
-                    var cleanPs = Task.Run(() =>
-                    {
-                        try
-                        {
-                            var cleaner = new Putter(Platform.PS, ConfigurationManager.AppSettings["ApiAdminKey"]);
-                            cleaner.CleanFiles();
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error("Erro cleaning XBOX", ex);
-                        }
-                    });
-
-                    if (waitForRemote)
-                    {
-                        Task.WhenAll(cleanXBox, cleanPs);
-                    }
-
+                    if (waitForRemote) Task.WhenAll(cleanTask);
                 });
 
                 // Calcula cada clã
                 var doneCount = 0;
                 var timedOut = false;
-                Parallel.For(0, clans.Length, new ParallelOptions { MaxDegreeOfParallelism = 2 }, i =>
-                  {
-                      if (sw.Elapsed.TotalMinutes > maxRunMinutes)
-                      {
-                          timedOut = true;
-                          return;
-                      }
+                Parallel.For(0, clans.Length, new ParallelOptions {MaxDegreeOfParallelism = 2}, i =>
+                {
+                    if (sw.Elapsed.TotalMinutes > maxRunMinutes)
+                    {
+                        timedOut = true;
+                        return;
+                    }
 
-                      var clan = clans[i];
+                    var clan = clans[i];
 
-                      Log.InfoFormat("Processando clã {0} de {1}: {2}@{3}...", i + 1, clans.Length, clan.ClanTag,
-                          clan.Plataform);
-                      var csw = Stopwatch.StartNew();
+                    Log.InfoFormat("Processando clã {0} de {1}: {2}@{3}...", i + 1, clans.Length, clan.ClanTag,
+                        clan.Plataform);
+                    var csw = Stopwatch.StartNew();
 
-                      var cc = CalculateClan(clan, provider, recorder);
+                    var cc = CalculateClan(clan, provider, recorder);
 
-                      Log.InfoFormat("Calculado clã {0} de {1}: {2}@{3} em {4:N1}s...",
-                          i + 1, clans.Length, clan.ClanTag, clan.Plataform, csw.Elapsed.TotalSeconds);
+                    Log.InfoFormat("Calculado clã {0} de {1}: {2}@{3} em {4:N1}s...",
+                        i + 1, clans.Length, clan.ClanTag, clan.Plataform, csw.Elapsed.TotalSeconds);
 
-                      if (cc != null)
-                      {
-                          var fsw = Stopwatch.StartNew();
-                          switch (cc.Plataform)
-                          {
-                              case Platform.XBOX:
-                                  {
-                                      var fileName = cc.ToFile(resultDirectoryXbox);
-                                      Log.InfoFormat("Arquivo de resultado escrito em '{0}'", fileName);
+                    if (cc != null)
+                    {
+                        var fsw = Stopwatch.StartNew();
+                        switch (cc.Plataform)
+                        {
+                            case Platform.Console:
+                            {
+                                var fileName = cc.ToFile(resultDirectory);
+                                Log.InfoFormat("Arquivo de resultado escrito em '{0}'", fileName);
 
-                                      var putTask = Task.Run(() =>
-                                      {
-                                          try
-                                          {
-                                              putterXbox.PutClan(fileName);
-                                          }
-                                          catch (Exception ex)
-                                          {
-                                              Log.Error($"Error putting XBOX clan file for {cc.ClanTag}", ex);
-                                          }
-                                      });
+                                var putTask = Task.Run(() =>
+                                {
+                                    try
+                                    {
+                                        putter.PutClan(fileName);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log.Error($"Error putting console clan file for {cc.ClanTag}", ex);
+                                    }
+                                });
 
-                                      if (waitForRemote)
-                                      {
-                                          putTask.Wait();
-                                      }
+                                if (waitForRemote) putTask.Wait();
+                            }
+                                break;
 
-                                  }
-                                  break;
-                              case Platform.PS:
-                                  {
-                                      var fileName = cc.ToFile(resultDirectoryPs);
-                                      Log.InfoFormat("Arquivo de resultado escrito em '{0}'", fileName);
+                            case Platform.Virtual:
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
 
-                                      var putTask = Task.Run(() =>
-                                      {
-                                          try
-                                          {
-                                              putterPs.PutClan(fileName);
-                                          }
-                                          catch (Exception ex)
-                                          {
-                                              Log.Error($"Error putting PS clan file for {cc.ClanTag}", ex);
-                                          }
-                                      });
+                        Log.InfoFormat("Upload do clã {0} de {1}: {2}@{3} em {4:N1}s...",
+                            i + 1, clans.Length, clan.ClanTag, clan.Plataform, fsw.Elapsed.TotalSeconds);
+                    }
 
-                                      if (waitForRemote)
-                                      {
-                                          putTask.Wait();
-                                      }
-                                  }
-                                  break;
-                              case Platform.Virtual:
-                                  break;
-                              default:
-                                  throw new ArgumentOutOfRangeException();
-                          }
-                          Log.InfoFormat("Upload do clã {0} de {1}: {2}@{3} em {4:N1}s...",
-                              i + 1, clans.Length, clan.ClanTag, clan.Plataform, fsw.Elapsed.TotalSeconds);
-                      }
-                      Interlocked.Increment(ref doneCount);
-                      Log.InfoFormat("Processado clã {0} de {1}: {2}@{3} em {4:N1}s. {5} totais.",
-                          i + 1, clans.Length, clan.ClanTag, clan.Plataform, csw.Elapsed.TotalSeconds, doneCount);
-                  });
+                    Interlocked.Increment(ref doneCount);
+                    Log.InfoFormat("Processado clã {0} de {1}: {2}@{3} em {4:N1}s. {5} totais.",
+                        i + 1, clans.Length, clan.ClanTag, clan.Plataform, csw.Elapsed.TotalSeconds, doneCount);
+                });
                 var calculationTime = sw.Elapsed;
 
                 // Envia o e-mail de status
 
                 try
                 {
-                    siteStatusXbox = fetcher.GetSiteDiagnostic(ConfigurationManager.AppSettings["RemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
-                    siteStatusPs = fetcher.GetSiteDiagnostic(ConfigurationManager.AppSettings["PsRemoteSiteStatusApi"], ConfigurationManager.AppSettings["ApiAdminKey"]);
+                    siteDiagnostic = fetcher.GetSiteDiagnostic();
                 }
                 catch (Exception ex)
                 {
                     Log.Error("Error getting final site diagnostics", ex);
 
                     // The site is offline...
-                    siteStatusXbox = siteStatusPs = new SiteDiagnostic(null);
+                    siteDiagnostic = new SiteDiagnostic(null);
                 }
 
                 Log.Debug("Obtendo informações do BD...");
@@ -275,13 +214,11 @@ namespace Negri.Wot
                     dd.AvgPlayersPerHourLastHour);
 
                 Log.Debug("Enviando e-mail...");
-                mailSender.SendStatusMessage(siteStatusXbox, siteStatusPs, dd, minPerDay, maxPerDay,
+                mailSender.SendStatusMessage(siteDiagnostic, dd, minPerDay, maxPerDay,
                     calculationTime, doneCount, timedOut);
 
                 if (dd.ScheduledPlayersPerDay < minPerDay || dd.ScheduledPlayersPerDay > maxPerDay)
-                {
                     recorder.BalanceClanSchedule(minPerDay, maxPerDay);
-                }
 
                 Log.DebugFormat(
                     "DateTime.UtcNow: {0:o}; hourToDeleteOldFiles: {1}; daysToKeepOnDelete: {2}",
@@ -344,19 +281,15 @@ namespace Negri.Wot
         }
 
 
-        private static void RunCalculations(bool calculateReference, bool calculateMoe, DateTime? moeLastDateXbox, DateTime? moeLastDatePs, 
-            DateTime? lastReferencesXbox, DateTime? lastReferencesPs, DbProvider provider, DbRecorder recorder, MailSender mailSender, 
-            string resultDirectory, string resultDirectoryPs, FtpPutter ftpPutterXbox, FtpPutter ftpPutterPs, 
-            Fetcher fetcher, int utcShiftToCalculate)
+        private static void RunCalculations(bool calculateReference, bool calculateMoe, DateTime? moeLastDate,
+            DateTime? lastReferences, DbProvider provider, DbRecorder recorder, MailSender mailSender,
+            string resultDirectory, FtpPutter putter, Fetcher fetcher, int utcShiftToCalculate)
         {
             Debug.Assert(mailSender != null);
 
             // Obtém os valores esperados de WN8
             if ((DateTime.UtcNow.Hour % 4) == 1)
-            {
-                HandleWn8ExpectedValues(Platform.XBOX, provider, resultDirectory, ftpPutterXbox, recorder, fetcher);
-                HandleWn8ExpectedValues(Platform.PS,   provider, resultDirectoryPs, ftpPutterPs, recorder, fetcher);
-            }
+                HandleWn8ExpectedValues(provider, resultDirectory, putter, recorder, fetcher);
 
             // 2nd hour of every day retrieve PC Tanks
             if (DateTime.UtcNow.Hour == 2)
@@ -366,23 +299,20 @@ namespace Negri.Wot
                 Log.Debug("PC Tanks saved on Database");
             }
 
-            if (calculateMoe)
-            {
-                CalculateMoE(moeLastDateXbox, moeLastDatePs, provider, recorder, mailSender, resultDirectory, resultDirectoryPs, 
-                    ftpPutterXbox, ftpPutterPs, utcShiftToCalculate);
-            }
-
-
             if (calculateReference)
             {
-                CalculateTanksReferences(lastReferencesXbox, lastReferencesPs, provider, recorder, mailSender, resultDirectory, resultDirectoryPs, 
-                    ftpPutterXbox, ftpPutterPs, utcShiftToCalculate);
+                CalculateTanksReferences(lastReferences, provider, recorder, mailSender, resultDirectory, putter, utcShiftToCalculate);
+            }
+
+            if (calculateMoe)
+            {
+                CalculateMoE(moeLastDate, provider, recorder, mailSender, resultDirectory, putter, utcShiftToCalculate);
             }
         }
 
-        private static void CalculateTanksReferences(DateTime? lastReferencesXbox, DateTime? lastReferencesPs,
-            DbProvider provider, DbRecorder recorder, MailSender mailSender, string resultDirectoryXbox,
-            string resultDirectoryPs, FtpPutter ftpPutterXbox, FtpPutter ftpPutterPs, int utcShiftToCalculate)
+        private static void CalculateTanksReferences(DateTime? lastReferences,
+            DbProvider provider, DbRecorder recorder, MailSender mailSender, string resultDirectory,
+            FtpPutter ftpPutter, int utcShiftToCalculate)
         {
             var csw = Stopwatch.StartNew();
             recorder.CalculateReference(utcShiftToCalculate);
@@ -390,24 +320,17 @@ namespace Negri.Wot
             Log.Debug($"Cálculo das Referências de Tanques feito em {csw.Elapsed.TotalSeconds:N0}.");
 
             if (csw.Elapsed.TotalMinutes > 1)
-            {
                 mailSender.Send("Cálculo das Referências de Tanques",
                     $"Cálculo das Referências de Tanques feito em {csw.Elapsed.TotalSeconds:N0}.");
-            }
 
-            if (lastReferencesXbox.HasValue)
-            {
-                PutTanksReferencesOnPlataform(Platform.XBOX, lastReferencesXbox, provider, mailSender, resultDirectoryXbox, ftpPutterXbox, utcShiftToCalculate);
-            }
-
-            if (lastReferencesPs.HasValue)
-            {
-                PutTanksReferencesOnPlataform(Platform.PS, lastReferencesPs, provider, mailSender, resultDirectoryPs, ftpPutterPs, utcShiftToCalculate);
-            }
+            if (lastReferences.HasValue)
+                PutTanksReferencesOnPlatform(Platform.Console, lastReferences, provider, mailSender, resultDirectory,
+                    ftpPutter, utcShiftToCalculate);
         }
 
-        private static void PutTanksReferencesOnPlataform(Platform platform, DateTime? lastReferences,
-            DbProvider provider, MailSender mailSender, string resultDirectory, FtpPutter ftpPutter, int utcShiftToCalculate)
+        private static void PutTanksReferencesOnPlatform(Platform platform, DateTime? lastReferences,
+            DbProvider provider, MailSender mailSender, string resultDirectory, FtpPutter ftpPutter,
+            int utcShiftToCalculate)
         {
             Debug.Assert(lastReferences != null, nameof(lastReferences) + " != null");
             Log.Debug($"Referências no site {platform}: {lastReferences.Value:yyyy-MM-dd ddd}");
@@ -415,40 +338,34 @@ namespace Negri.Wot
             var previousMonday = cd.PreviousDayOfWeek(DayOfWeek.Monday);
             Log.Debug($"Segunda-Feira anterior: {previousMonday:yyyy-MM-dd ddd}; Current: {cd:o}");
 
-            if (previousMonday <= lastReferences.Value)
-            {
-                return;
-            }
+            if (previousMonday <= lastReferences.Value) return;
 
             // Preciso gerar referências e subir
             var references = provider
                 .GetTanksReferences(platform, previousMonday).ToArray();
             var referencesDir = Path.Combine(resultDirectory, "Tanks");
             var leaders = new ConcurrentBag<Leader>();
-            Parallel.For(0, references.Length, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (i) =>
-              {
-                  var r = references[i];
-                  var tankFile = r.Save(referencesDir);
+            Parallel.For(0, references.Length, new ParallelOptions {MaxDegreeOfParallelism = 4}, i =>
+            {
+                var r = references[i];
+                var tankFile = r.Save(referencesDir);
 
-                  _ = Task.Run(() =>
-                  {
-                      try
-                      {
-                          ftpPutter.PutTankReference(tankFile);
-                      }
-                      catch (Exception ex)
-                      {
-                          Log.Error($"Error putting tank reference files for {platform} and tank {r.Name}", ex);
-                      }
-                  });
+                _ = Task.Run(() =>
+                {
+                    try
+                    {
+                        ftpPutter.PutTankReference(tankFile);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error($"Error putting tank reference files for {platform} and tank {r.Name}", ex);
+                    }
+                });
 
-                  Log.Info($"Escrito e feito upload da referência {tankFile}");
+                Log.Info($"Escrito e feito upload da referência {tankFile}");
 
-                  foreach (var leader in r.Leaders)
-                  {
-                      leaders.Add(leader);
-                  }
-              });
+                foreach (var leader in r.Leaders) leaders.Add(leader);
+            });
 
             var json = JsonConvert.SerializeObject(leaders.ToArray(), Formatting.Indented);
             var leadersFile = Path.Combine(referencesDir, $"{previousMonday:yyyy-MM-dd}.Leaders.json");
@@ -467,12 +384,12 @@ namespace Negri.Wot
             });
 
             mailSender.Send($"Upload das Referências {platform} para {previousMonday:yyyy-MM-dd} Ok",
-                $"Leaderboard: https://{(platform == Platform.PS ? "ps." : "")}wotclans.com.br/Leaderboard/All");
+                "Leaderboard: https://wotclans.com.br/Leaderboard/All");
         }
 
-        private static void CalculateMoE(DateTime? moeLastDateXbox, DateTime? moeLastDatePs, DbProvider provider,
-            DbRecorder recorder, MailSender mailSender, string resultDirectoryXbox, string resultDirectoryPs,
-            FtpPutter ftpPutterXbox, FtpPutter ftpPutterPs, int utcShiftToCalculate)
+        private static void CalculateMoE(DateTime? moeLastDate, DbProvider provider,
+            DbRecorder recorder, MailSender mailSender, string resultDirectory,
+            FtpPutter ftpPutter, int utcShiftToCalculate)
         {
             var csw = Stopwatch.StartNew();
             recorder.CalculateMoE(utcShiftToCalculate);
@@ -480,24 +397,14 @@ namespace Negri.Wot
             Log.Debug($"Cálculo das MoE feito em {csw.Elapsed.TotalSeconds:N0}.");
 
             if (csw.Elapsed.TotalMinutes > 1)
-            {
                 mailSender.Send("Cálculo das MoE", $"Cálculo das MoE feito em {csw.Elapsed.TotalSeconds:N0}.");
-            }
 
-            if (moeLastDateXbox.HasValue)
-            {
-                PutMoEOnPlataform(Platform.XBOX, moeLastDateXbox, provider, mailSender, resultDirectoryXbox, ftpPutterXbox);
-            }
-
-            if (moeLastDatePs.HasValue)
-            {
-                PutMoEOnPlataform(Platform.PS, moeLastDatePs, provider, mailSender, resultDirectoryPs, ftpPutterPs);
-            }
+            if (moeLastDate.HasValue)
+                PutMoEOnPlatform(Platform.Console, moeLastDate, provider, mailSender, resultDirectory, ftpPutter);
         }
 
-        private static void PutMoEOnPlataform(Platform platform, DateTime? moeLastDate,
-            DbProvider provider, MailSender mailSender,
-            string resultDirectory, FtpPutter ftpPutter)
+        private static void PutMoEOnPlatform(Platform platform, DateTime? moeLastDate, DbProvider provider,
+            MailSender mailSender, string resultDirectory, FtpPutter ftpPutter)
         {
             Log.Debug($"Verificando atualização de MoE em {platform}");
 
@@ -511,11 +418,11 @@ namespace Negri.Wot
             while (date <= dbDate)
             {
                 Log.InfoFormat("Calculando e fazendo upload para {0:yyyy-MM-dd}...", date);
-                var moes = provider.GetMoe(platform, date).ToDictionary(t => t.TankId);
+                var tankMarks = provider.GetMoe(platform, date).ToDictionary(t => t.TankId);
 
-                if (moes.Count > 0)
+                if (tankMarks.Count > 0)
                 {
-                    var json = JsonConvert.SerializeObject(moes, Formatting.Indented);
+                    var json = JsonConvert.SerializeObject(tankMarks, Formatting.Indented);
                     var file = Path.Combine(resultDirectory, "MoE", $"{date:yyyy-MM-dd}.moe.json");
                     File.WriteAllText(file, json, Encoding.UTF8);
                     Log.DebugFormat("Salvo o MoE em '{0}'", file);
@@ -532,15 +439,15 @@ namespace Negri.Wot
                         }
                     });
 
-                    Log.Debug("Feito uploado do MoE");
+                    Log.Debug("Done MoE upload.");
 
                     mailSender.Send($"Upload das MoE {platform} para {date:yyyy-MM-dd} Ok",
-                        $"MoE: https://{(platform == Platform.PS ? "ps." : "")}wotclans.com.br/Tanks/MoE");
+                        "MoE: https://wotclans.com.br/Tanks/MoE");
                 }
                 else
                 {
                     Log.ErrorFormat("Os MoEs para {0:yyyy-MM-dd} retornaram 0 tanques!", date);
-                }                
+                }
 
                 date = date.AddDays(1);
             }
@@ -548,17 +455,18 @@ namespace Negri.Wot
             Log.Debug($"Verificação do MoE completa para {platform}.");
         }
 
-        private static void HandleWn8ExpectedValues(Platform platform, DbProvider provider, string resultDirectory, FtpPutter ftpPutter, DbRecorder recorder, Fetcher fetcher)
+        private static void HandleWn8ExpectedValues(DbProvider provider, string resultDirectory,
+            FtpPutter ftpPutter, DbRecorder recorder, Fetcher fetcher)
         {
             // Aproveito e pego e salvo os dados de WN8
             if ((recorder != null) && (fetcher != null))
             {
-                Log.Info($"Pegando dados de WN8 para {platform}...");
+                Log.Info("Pegando dados de WN8...");
                 recorder.Set(fetcher.GetXvmWn8ExpectedValuesAsync().Result);
                 Log.Info("Dados de WN8 obtidos e salvos.");
             }
 
-            var wn8 = provider.GetWn8ExpectedValues(platform);
+            var wn8 = provider.GetWn8ExpectedValues(Platform.Console);
             if (wn8 != null)
             {
                 var json = JsonConvert.SerializeObject(wn8, Formatting.Indented);
@@ -570,20 +478,20 @@ namespace Negri.Wot
                 {
                     try
                     {
-                        ftpPutter.PutMoe(file);
+                        ftpPutter.PutExpectedWn8(file);
                     }
                     catch (Exception ex)
                     {
-                        Log.Error($"Error putting WN8 on {platform}", ex);
+                        Log.Error("Error putting WN8.", ex);
                     }
                 });
 
-                Log.Debug($"Feito upload do WN8 para {platform}");
+                Log.Debug("Feito upload do WN8.");
             }
         }
 
 
-        private static void ParseParams(string[] args, out int ageHours, out int maxRunMinutes,
+        private static void ParseParams(IReadOnlyList<string> args, out int ageHours, out int maxRunMinutes,
             out int hourToDeleteOldFiles, out int daysToKeepOnDelete, out bool calculateMoe,
             out bool calculateReference, out int playersPerMinute, out int utcShiftToCalculate, out bool waitForRemote)
         {
@@ -598,7 +506,7 @@ namespace Negri.Wot
             utcShiftToCalculate = 0;
             waitForRemote = true;
 
-            for (var i = 2; i < args.Length; ++i)
+            for (var i = 2; i < args.Count; ++i)
             {
                 var arg = args[i];
 
@@ -629,10 +537,7 @@ namespace Negri.Wot
                 else if (arg.Contains("DaysToKeepOnDelete:"))
                 {
                     daysToKeepOnDelete = int.Parse(arg.Substring("DaysToKeepOnDelete:".Length));
-                    if (daysToKeepOnDelete < 28)
-                    {
-                        daysToKeepOnDelete = 28;
-                    }
+                    if (daysToKeepOnDelete < 28) daysToKeepOnDelete = 28;
                 }
             }
         }
