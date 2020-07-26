@@ -622,7 +622,7 @@ namespace Negri.Wot.Sql
 
         private static void CalculateMoE(int utcShiftToCalculate, SqlTransaction t)
         {
-            using (var cmd = new SqlCommand("Performance.MoECalculatePercentile", t.Connection, t))
+            using (var cmd = new SqlCommand("Performance.CalculateMoEPercentile", t.Connection, t))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 50 * 60; // pode ser bastante lento!
