@@ -1569,12 +1569,12 @@ namespace Negri.Wot.Sql
             return medals;
         }
 
-        public Wn8ExpectedValues GetWn8ExpectedValues(Platform platform)
+        public Wn8ExpectedValues GetWn8ExpectedValues()
         {
-            return Get(t => GetWn8ExpectedValues(platform, t));
+            return Get(GetWn8ExpectedValues);
         }
 
-        private static Wn8ExpectedValues GetWn8ExpectedValues(Platform platform, SqlTransaction t)
+        private static Wn8ExpectedValues GetWn8ExpectedValues(SqlTransaction t)
         {
             const string sql = "SELECT [TankId], [ShortName], [Tier], [TypeId], [NationId], [IsPremium], [Tag], [Name], " +
                                "[Def], [Frag], [Spot], [Damage], [WinRate], " +
@@ -1605,7 +1605,7 @@ namespace Negri.Wot.Sql
 
                         tvs.Add(new Wn8TankExpectedValues
                         {
-                            Plataform = platform,
+                            Plataform = Platform.Console,
 
                             TankId = reader.GetNonNullValue<long>(0),
                             Name = reader.GetNonNullValue<string>(1),

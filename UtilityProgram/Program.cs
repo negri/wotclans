@@ -139,7 +139,7 @@ namespace UtilityProgram
             var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
             var provider = new DbProvider(connectionString);
             var player = provider.GetPlayer(playerId, true);
-            player.Calculate(provider.GetWn8ExpectedValues(player.Plataform));
+            player.Calculate(provider.GetWn8ExpectedValues());
 
             var putter = new Putter(ConfigurationManager.AppSettings["ApiAdminKey"])
             {
@@ -185,22 +185,7 @@ namespace UtilityProgram
             File.WriteAllText(@"c:\temp\Translation.txt", sb.ToString(), Encoding.UTF8);
         }
 
-        private static void GetAllTanks(Platform platform)
-        {
-            var cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
-            var fetcher = new Fetcher(cacheDirectory)
-            {
-                WebCacheAge = TimeSpan.FromMinutes(15),
-                WebFetchInterval = TimeSpan.FromSeconds(1),
-                WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"]
-            };
 
-            var tanks = fetcher.GetTanks(Platform.PC).ToArray();
-
-            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            var recorder = new DbRecorder(connectionString);
-            recorder.Set(tanks);
-        }
 
         private static void CalculateAverageWn8OfAllTanks()
         {
@@ -227,7 +212,7 @@ namespace UtilityProgram
         {
             var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
             var provider = new DbProvider(connectionString);
-            var expected = provider.GetWn8ExpectedValues(Platform.XBOX);
+            var expected = provider.GetWn8ExpectedValues();
 
             var fakePlayed = new Dictionary<long, TankPlayerStatistics>();
             foreach (var e in expected.AllTanks)
@@ -306,7 +291,7 @@ namespace UtilityProgram
 
             var resultDirectory = ConfigurationManager.AppSettings["PsResultDirectory"];
 
-            var wn8 = provider.GetWn8ExpectedValues(Platform.PS);
+            var wn8 = provider.GetWn8ExpectedValues();
             if (wn8 != null)
             {
                 var json = JsonConvert.SerializeObject(wn8, Formatting.Indented);

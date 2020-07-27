@@ -104,20 +104,20 @@ namespace Negri.Wot
 
                 Log.Debug("Obtendo todos os tanques em XBOX...");
                 var f = fetchers.Dequeue();
-                recorder.Set(f.GetTanks(Platform.XBOX));
+                recorder.Set(Platform.XBOX, f.GetTanks(Platform.XBOX));
                 var allTanksXbox = provider.GetTanks(Platform.XBOX).ToDictionary(t => t.TankId);
                 fetchers.Enqueue(f);
                 Log.InfoFormat("Obtidos {0} tanques para XBOX.", allTanksXbox.Count);
 
                 Log.Debug("Obtendo todos os tanques em PS...");
                 f = fetchers.Dequeue();
-                recorder.Set(f.GetTanks(Platform.PS));
+                recorder.Set(Platform.PS, f.GetTanks(Platform.PS));
                 var allTanksPs = provider.GetTanks(Platform.PS).ToDictionary(t => t.TankId);
                 fetchers.Enqueue(f);
                 Log.InfoFormat("Obtidos {0} tanques para PS.", allTanksPs.Count);
 
                 // Ambas as plataformas usam os mesmos valores de referência
-                var wn8Expected = provider.GetWn8ExpectedValues(Platform.XBOX);
+                var wn8Expected = provider.GetWn8ExpectedValues();
                 
                 var idealInterval = (maxRunMinutes.Value * 60.0 - sw.Elapsed.TotalSeconds) / players.Length;
                 double threadInterval = idealInterval*maxParallel*0.80;

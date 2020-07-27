@@ -99,7 +99,7 @@ namespace Negri.Wot.Bot
 
                 var player = provider.GetPlayer(playerId.Value, true, true);
 
-                var wn8Expected = provider.GetWn8ExpectedValues(player?.Plataform ?? apiPlayer?.Plataform ?? Platform.XBOX);
+                var wn8Expected = provider.GetWn8ExpectedValues();
 
                 if (player == null && apiPlayer != null)
                 {

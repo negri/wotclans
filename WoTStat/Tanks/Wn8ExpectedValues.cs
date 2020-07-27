@@ -223,5 +223,10 @@ namespace Negri.Wot.Tanks
         {
             return _values.ContainsKey(tankId);
         }
+
+        public void Remove(long tankId)
+        {
+            _values.Remove(tankId);
+        }
     }
 }

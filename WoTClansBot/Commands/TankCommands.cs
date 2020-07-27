@@ -240,7 +240,7 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
-                var wn8Expected = provider.GetWn8ExpectedValues(player.Plataform);
+                var wn8Expected = provider.GetWn8ExpectedValues();
 
                 foreach (var h in hist)
                 {

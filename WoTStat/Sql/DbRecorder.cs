@@ -242,7 +242,7 @@ namespace Negri.Wot.Sql
                 cmd.ExecuteNonQuery();
             }
 
-            using (var cmd = new SqlCommand("Tanks.SetWn8ExpectedValues", t.Connection, t))
+            using (var cmd = new SqlCommand("Tanks.SetWn8PcExpectedValues", t.Connection, t))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
@@ -266,7 +266,7 @@ namespace Negri.Wot.Sql
             }
 
             // Dispara o completamento da tabela
-            using (var cmd = new SqlCommand("Tanks.CompleteWn8Expected", t.Connection, t))
+            using (var cmd = new SqlCommand("Tanks.[CalculateWn8ConsoleExpectedFromXvm]", t.Connection, t))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
@@ -522,24 +522,36 @@ namespace Negri.Wot.Sql
             }
         }
 
-        public void Set(IEnumerable<Tank> tanks)
+        public void Set(Platform platform, IEnumerable<Tank> tanks)
         {
-            Log.DebugFormat("Salvando tanques no BD...");
+            Log.Debug($"Saving {platform} tanks on DB...");
             var sw = Stopwatch.StartNew();
-            Execute(transaction => { Set(tanks.ToArray(), transaction); });
-            Log.DebugFormat("Salvos tanques no BD em {0}.", sw.Elapsed);
+            Execute(transaction => { Set(platform, tanks.ToArray(), transaction); });
+            Log.Debug($"Saved {platform} tanks in {sw.Elapsed}.");
         }
 
-        private static void Set(IEnumerable<Tank> tanks, SqlTransaction t)
+        private static void Set(Platform platform, IEnumerable<Tank> tanks, SqlTransaction t)
         {
-            using (var cmd = new SqlCommand("Tanks.SetTank", t.Connection, t))
+            string procedure;
+            switch (platform)
+            {
+                case Platform.PC:
+                    procedure = "Tanks.SetPcTank";
+                    break;
+                case Platform.Console:
+                    procedure = "Tanks.SetTank";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
+            }
+
+            using (var cmd = new SqlCommand(procedure, t.Connection, t))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
                 foreach (var tank in tanks)
                 {
                     cmd.Parameters.Clear();
-                    cmd.Parameters.AddWithValue("@plataformId", (int) tank.Plataform);
                     cmd.Parameters.AddWithValue("@tankId", tank.TankId);
                     cmd.Parameters.AddWithValue("@name", tank.Name);
                     cmd.Parameters.AddWithValue("@shortName", tank.ShortName);
@@ -985,5 +997,9 @@ namespace Negri.Wot.Sql
                 
             }
         }
+
+        
+
+     
     }
 }

@@ -106,7 +106,7 @@ namespace Negri.Wot
             const string url = "https://wotclans.com.br/api/status";
 
             var content = GetContent($"SiteDiagnostic.{DateTime.UtcNow:yyyy-MM-dd.HHmmss}.json", $"{url}?apiAdminKey={WotClansAdminApiKey}", WebCacheAge,
-                false, Encoding.UTF8).Result;
+                false, Encoding.UTF8);
             var json = content.Content;
             var siteDiagnostic = JsonConvert.DeserializeObject<SiteDiagnostic>(json);
             return siteDiagnostic;
@@ -117,11 +117,11 @@ namespace Negri.Wot
             return GetTanks(platform, null);
         }
 
-        public async Task<Wn8ExpectedValues> GetXvmWn8ExpectedValuesAsync()
+        public Wn8ExpectedValues GetXvmWn8ExpectedValues()
         {
             Log.Debug("Obtendo os WN8 da XVM");
             const string url = "https://static.modxvm.com/wn8-data-exp/json/wn8exp.json";
-            var content = await GetContent("Wn8XVM.json", url, WebCacheAge, false, Encoding.UTF8);
+            var content = GetContent("Wn8XVM.json", url, WebCacheAge, false, Encoding.UTF8);
             var json = content.Content;
 
             var ev = new Wn8ExpectedValues();
@@ -166,7 +166,7 @@ namespace Negri.Wot
 
             var content =
                     GetContent($"TanksStats.{playerId}.json", requestUrl, WebCacheAge, false,
-                        Encoding.UTF8).Result;
+                        Encoding.UTF8);
             var json = content.Content;
             var response = JsonConvert.DeserializeObject<TanksStatsResponse>(json);
             if (response.IsError)
@@ -204,7 +204,7 @@ namespace Negri.Wot
                 requestUrl += $"&tank_id={tankId.Value}";
             }
 
-            content = GetContent($"TanksAchievements.{playerId}.json", requestUrl, WebCacheAge, false, Encoding.UTF8).Result;
+            content = GetContent($"TanksAchievements.{playerId}.json", requestUrl, WebCacheAge, false, Encoding.UTF8);
             json = content.Content;
             var achievementsResponse = JsonConvert.DeserializeObject<TanksAchievementsResponse>(json);
             if (achievementsResponse.IsError)
@@ -250,7 +250,7 @@ namespace Negri.Wot
                     url += $"&tank_id={tankId.Value}";
                 }
 
-                var json = GetContentSync($"Vehicles.{Platform.PC}.{DateTime.UtcNow:yyyyMMddHH}.{page}.json", url, WebCacheAge, false, Encoding.UTF8).Content;
+                var json = GetContent($"Vehicles.{Platform.PC}.{DateTime.UtcNow:yyyyMMddHH}.{page}.json", url, WebCacheAge, false, Encoding.UTF8).Content;
                 var response = JsonConvert.DeserializeObject<VehiclesResponse>(json);
                 if (response.IsError)
                 {
@@ -295,7 +295,7 @@ namespace Negri.Wot
             }
 
             var json =
-                GetContentSync($"Vehicles.{platform}.{DateTime.UtcNow:yyyyMMddHH}.json", requestUrl, WebCacheAge,
+                GetContent($"Vehicles.{platform}.{DateTime.UtcNow:yyyyMMddHH}.json", requestUrl, WebCacheAge,
                     false,
                     Encoding.UTF8).Content;
 
@@ -335,7 +335,7 @@ namespace Negri.Wot
                 $"https://{server}/wotx/clans/list/?application_id={WargamingApplicationId}&search={clanTag}&limit=1";
 
             var json =
-                GetContentSync($"FindClan.{platform}.{clanTag}.json", requestUrl, TimeSpan.FromMinutes(1), false,
+                GetContent($"FindClan.{platform}.{clanTag}.json", requestUrl, TimeSpan.FromMinutes(1), false,
                     Encoding.UTF8).Content;
 
             var response = JsonConvert.DeserializeObject<ClansListResponse>(json);
@@ -390,7 +390,7 @@ namespace Negri.Wot
             var statFile = $"WoTInfo.{player.Id}.txt";
 
             var moment = DateTime.UtcNow;
-            var content = GetContentSync(statFile, statUrl, WebCacheAge, false, Encoding.UTF8).Content;
+            var content = GetContent(statFile, statUrl, WebCacheAge, false, Encoding.UTF8).Content;
 
             for (var i = 0; i < MaxTry; ++i)
             {
@@ -416,7 +416,7 @@ namespace Negri.Wot
 
                 DeleteFromCache(statFile);
 
-                var fullContent = GetContentSync(statFile, statUrl, WebCacheAge, true, Encoding.UTF8);
+                var fullContent = GetContent(statFile, statUrl, WebCacheAge, true, Encoding.UTF8);
                 content = fullContent.Content;
                 moment = fullContent.Moment;
             }
@@ -429,15 +429,7 @@ namespace Negri.Wot
             return player;
         }
 
-        private WebContent GetContentSync(string cacheFileTitle, string url, TimeSpan maxCacheAge, bool noWait,
-            Encoding encoding = null)
-        {
-            var task = GetContent(cacheFileTitle, url, maxCacheAge, noWait, encoding);
-            task.Wait();
-            return task.Result;
-        }
-
-        private async Task<WebContent> GetContent(string cacheFileTitle, string url, TimeSpan maxCacheAge, bool noWait,
+        private WebContent GetContent(string cacheFileTitle, string url, TimeSpan maxCacheAge, bool noWait,
             Encoding encoding = null)
         {
             Log.DebugFormat("Obtendo '{0}' ...", url);
@@ -448,7 +440,7 @@ namespace Negri.Wot
             if (!File.Exists(cacheFileName))
             {
                 Log.Debug("...nunca pego antes...");
-                return await GetContentFromWeb(cacheFileName, url, noWait, encoding);
+                return GetContentFromWeb(cacheFileName, url, noWait, encoding);
             }
 
             var fi = new FileInfo(cacheFileName);
@@ -459,15 +451,14 @@ namespace Negri.Wot
                 Log.DebugFormat("...arquivo de cache em '{0}' de {1:yyyy-MM-dd HH:mm} expirado com {2:N0}h...",
                     cacheFileTitle, moment, age.TotalHours);
 
-                return await GetContentFromWeb(cacheFileName, url, noWait, encoding);
+                return GetContentFromWeb(cacheFileName, url, noWait, encoding);
             }
 
             Log.Debug("...Obtido do cache.");
             return new WebContent(File.ReadAllText(cacheFileName, encoding)) { Moment = moment };
         }
 
-        private async Task<WebContent> GetContentFromWeb(string cacheFileName, string url, bool noWait,
-            Encoding encoding)
+        private WebContent GetContentFromWeb(string cacheFileName, string url, bool noWait, Encoding encoding)
         {
             var timeSinceLastFetch = DateTime.UtcNow - _lastWebFetch;
             var waitTime = WebFetchInterval - timeSinceLastFetch;
@@ -490,7 +481,7 @@ namespace Negri.Wot
                     var webClient = new WebClient();
                     webClient.Headers.Add("user-agent",
                         "GetClanStats (WoTClansBrCollector) by JP Negri at negrijp _at_ gmail.com");
-                    var bytes = await webClient.DownloadDataTaskAsync(url);
+                    var bytes = webClient.DownloadDataTaskAsync(url).Result;
                     var webTime = sw.ElapsedMilliseconds;
 
                     var content = Encoding.UTF8.GetString(bytes);
@@ -849,7 +840,7 @@ namespace Negri.Wot
                     $"https://{server}/wotx/clans/list/?application_id={WargamingApplicationId}&fields=clan_id%2Ctag%2Cmembers_count&page_no={pageNumber}";
 
                 var json =
-                    GetContentSync($"ListClans.{platform}.{pageNumber}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", lisUrl,
+                    GetContent($"ListClans.{platform}.{pageNumber}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", lisUrl,
                         WebCacheAge, false, Encoding.UTF8).Content;
                 var response = JsonConvert.DeserializeObject<ClansListResponse>(json);
                 if (response.IsError)
@@ -909,7 +900,7 @@ namespace Negri.Wot
             string disbandedUrl =
                 $"https://{server}/wotx/clans/info/?application_id={WargamingApplicationId}&fields=clan_id%2Cis_clan_disbanded&clan_id={string.Join("%2C", requestedClans.Select(id => id.ToString()))}";
             var json =
-                GetContentSync($"DisbandedClan.{platform}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", disbandedUrl,
+                GetContent($"DisbandedClan.{platform}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", disbandedUrl,
                     WebCacheAge, false, Encoding.UTF8).Content;
             var response = JsonConvert.DeserializeObject<ClansInfoResponse>(json);
             if (response.IsError)
@@ -931,7 +922,7 @@ namespace Negri.Wot
                                 $"{string.Join("%2C", requestedClans.Select(id => id.ToString()))}&fields=clan_id%2Ctag%2Cname%2Cmembers_count%2Ccreated_at%2Cis_clan_disbanded" +
                                 "%2Cmembers%2Cmembers.role%2Cmembers.account_name&extra=members";
 
-            json = GetContentSync($"InfoClan.{platform}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", requestUrl,
+            json = GetContent($"InfoClan.{platform}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", requestUrl,
                 WebCacheAge, false, Encoding.UTF8).Content;
 
             response = JsonConvert.DeserializeObject<ClansInfoResponse>(json);
@@ -1003,7 +994,7 @@ namespace Negri.Wot
 
             string url =
                 $"https://{server}/wotx/account/info/?application_id={WargamingApplicationId}&account_id={id}&fields=nickname";
-            var json = GetContentSync($"GamerTagById.{platform}.{id}.json", url, WebCacheAge, false, Encoding.UTF8)
+            var json = GetContent($"GamerTagById.{platform}.{id}.json", url, WebCacheAge, false, Encoding.UTF8)
                 .Content;
 
             var result = JObject.Parse(json);
@@ -1057,7 +1048,7 @@ namespace Negri.Wot
 
             string url = $"https://{server}/wotx/account/list/?application_id={WargamingApplicationId}&search={gamerTag}";
             var json =
-                GetContentSync($"AccountList.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8)
+                GetContent($"AccountList.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8)
                     .Content;
             var result = JObject.Parse(json);
             if ((string) result["status"] == "error")
@@ -1095,7 +1086,7 @@ namespace Negri.Wot
             url =
                 $"https://{server}/wotx/clans/accountinfo/?application_id={WargamingApplicationId}&account_id={player.Id}&extra=clan";
             json =
-                GetContentSync($"ClansAccountinfo.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8)
+                GetContent($"ClansAccountinfo.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8)
                     .Content;
             result = JObject.Parse(json);
             count = (int)result["meta"]["count"];
@@ -1137,7 +1128,7 @@ namespace Negri.Wot
             }
 
             var url = $"https://{server}/wotx/encyclopedia/achievements/?application_id={WargamingApplicationId}";
-            var json = GetContentSync($"Achievements.{platform}.json", url, WebCacheAge, false, Encoding.UTF8).Content;
+            var json = GetContent($"Achievements.{platform}.json", url, WebCacheAge, false, Encoding.UTF8).Content;
 
             var o = JObject.Parse(json);
 

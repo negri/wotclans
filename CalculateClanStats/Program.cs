@@ -295,7 +295,7 @@ namespace Negri.Wot
             if (DateTime.UtcNow.Hour == 2)
             {
                 Log.Info("Retrieving PC Tanks...");
-                recorder.Set(fetcher.GetTanks(Platform.PC));
+                recorder.Set(Platform.PC, fetcher.GetTanks(Platform.PC));
                 Log.Debug("PC Tanks saved on Database");
             }
 
@@ -462,11 +462,11 @@ namespace Negri.Wot
             if ((recorder != null) && (fetcher != null))
             {
                 Log.Info("Pegando dados de WN8...");
-                recorder.Set(fetcher.GetXvmWn8ExpectedValuesAsync().Result);
+                recorder.Set(fetcher.GetXvmWn8ExpectedValues());
                 Log.Info("Dados de WN8 obtidos e salvos.");
             }
 
-            var wn8 = provider.GetWn8ExpectedValues(Platform.Console);
+            var wn8 = provider.GetWn8ExpectedValues();
             if (wn8 != null)
             {
                 var json = JsonConvert.SerializeObject(wn8, Formatting.Indented);
