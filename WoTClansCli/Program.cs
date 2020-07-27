@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Configuration;
+using System.IO;
 using System.Threading.Tasks;
 using CliFx;
 using log4net;
+using log4net.Config;
 using Microsoft.Extensions.DependencyInjection;
 using Negri.Wot.Sql;
 
@@ -10,12 +12,15 @@ namespace Negri.Wot
 {
     class Program
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
 
-        public static async Task<int> Main()
+        
+        public static int Main(string[] args)
         {
-            Log.Debug("Starting up...");
-
+            if (File.Exists("log4net.config"))
+            {
+                XmlConfigurator.Configure(new FileInfo("log4net.config"));
+            }
+            
             var services = new ServiceCollection();
 
             var webCacheAge = TimeSpan.FromMinutes(1);
@@ -44,7 +49,7 @@ namespace Negri.Wot
 
             var resultDirectory = ConfigurationManager.AppSettings["ResultDirectory"];
 
-            services.AddTransient<ImportXvmCommand>(p =>
+            services.AddTransient(p =>
                 new ImportXvmCommand(
                     p.GetService<Fetcher>(),
                     p.GetService<FtpPutter>(),
@@ -55,11 +60,13 @@ namespace Negri.Wot
 
             var serviceProvider = services.BuildServiceProvider();
 
-            return await new CliApplicationBuilder()
+            var cab= new CliApplicationBuilder()
                 .AddCommandsFromThisAssembly()
                 .UseTypeActivator(serviceProvider.GetService)
                 .Build()
                 .RunAsync();
+
+            return cab.Result;
         }
     }
 }

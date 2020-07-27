@@ -73,7 +73,7 @@ namespace Negri.Wot
             var json = JsonConvert.SerializeObject(wn8, Formatting.Indented);
             var file = Path.Combine(_resultDirectory, "MoE", $"{wn8.Date:yyyy-MM-dd}.WN8.json");
             File.WriteAllText(file, json, Encoding.UTF8);
-            Log.Debug("Saved WN8 Expected at '{file}'");
+            Log.Debug($"Saved WN8 Expected at '{file}'");
 
             _ftpPutter.PutExpectedWn8(file);
 
