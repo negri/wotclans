@@ -731,12 +731,10 @@ namespace Negri.Wot.Sql
 
         public IEnumerable<Player> GetPlayersUpdateOrder(int maxPlayers, int ageHours)
         {
-            return Get(transaction => GetPlayersUpdateOrder(maxPlayers, ageHours, null, null, transaction).ToArray());
+            return Get(transaction => GetPlayersUpdateOrder(maxPlayers, ageHours, null, transaction).ToArray());
         }
 
-        private static IEnumerable<Player> GetPlayersUpdateOrder(int maxPlayers, int ageHours, int? minAgeHours,
-            bool? shouldPurgePriorityPlayers,
-            SqlTransaction t)
+        private static IEnumerable<Player> GetPlayersUpdateOrder(int maxPlayers, int ageHours, int? minAgeHours, SqlTransaction t)
         {
             using (var cmd = new SqlCommand("Main.GetPlayerUpdateOrder", t.Connection, t))
             {
@@ -749,11 +747,6 @@ namespace Negri.Wot.Sql
                     cmd.Parameters.AddWithValue("@minAgeHours", minAgeHours.Value);
                 }
 
-                if (shouldPurgePriorityPlayers.HasValue)
-                {
-                    cmd.Parameters.AddWithValue("@shouldPurgePriorityPlayers", shouldPurgePriorityPlayers.Value);
-                }
-
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -763,12 +756,12 @@ namespace Negri.Wot.Sql
                             {
                                 Id = reader.GetNonNullValue<long>(0),
                                 Name = reader.GetNonNullValue<string>(1),
-                                Plataform = reader.GetNonNullValue<Platform>(2),
-                                ClanTag = reader.GetValueOrDefault<string>(3),
-                                AdjustedAgeHours = reader.GetValueOrDefault<double>(4),
-                                ClanId = reader.GetValueOrDefault<long?>(6),
-                                ClanDelay = reader.GetValueOrDefault<double?>(8) ?? 1.0,
-                                Delay = reader.GetValueOrDefault<double?>(9) ?? 1.0
+                                ClanTag = reader.GetValueOrDefault<string>(2),
+                                AdjustedAgeHours = reader.GetValueOrDefault<double>(3),
+                                ClanId = reader.GetValueOrDefault<long?>(5),
+                                ClanDelay = reader.GetValueOrDefault<double?>(7) ?? 1.0,
+                                Delay = reader.GetValueOrDefault<double?>(8) ?? 1.0,
+                                Platform = reader.GetNonNullValue<Platform>(11)
                             };
                     }
                 }
@@ -791,8 +784,8 @@ namespace Negri.Wot.Sql
                 {
                     while (reader.Read())
                     {
-                        yield return new ClanBaseInformation(reader.GetNonNullValue<long>(1),
-                            reader.GetNonNullValue<string>(2));
+                        yield return new ClanBaseInformation(reader.GetNonNullValue<long>(0),
+                            reader.GetNonNullValue<string>(1));
                     }
                 }
             }
@@ -951,28 +944,27 @@ namespace Negri.Wot.Sql
 
                 if (includePerformance && (player != null))
                 {
-                    player.Performance = GetWn8RawStatsForPlayer(player.Plataform, id, transaction);
+                    player.Performance = GetWn8RawStatsForPlayer(id, transaction);
                 }
 
                 if (includeMedals && (player?.Performance != null))
                 {
-                    FillMedals(player.Plataform, id, player.Performance, transaction);
+                    FillMedals(id, player.Performance, transaction);
                 }
 
                 return player;
             });
         }
 
-        private void FillMedals(Platform plataform, long id, TankPlayerPeriods performance, SqlTransaction t)
+        private void FillMedals(long id, TankPlayerPeriods performance, SqlTransaction t)
         {
             const string sql = "select p.TankId, m.CategoryId, p.MedalCode, p.[Count] " +
-                               "from Achievements.PlayerMedal p inner join Achievements.Medal m on (p.PlataformId = m.PlataformId) and (p.MedalCode = m.MedalCode) " +
-                               "where (p.PlataformId = @PlataformId) and (p.PlayerId = @PlayerId);";
+                               "from Achievements.PlayerMedal p inner join Achievements.Medal m on (p.MedalCode = m.MedalCode) " +
+                               "where (p.PlayerId = @PlayerId);";
 
             using (var cmd = new SqlCommand(sql, t.Connection, t))
             {
                 cmd.CommandType = CommandType.Text;
-                cmd.Parameters.AddWithValue("@PlataformId", plataform);
                 cmd.Parameters.AddWithValue("@PlayerId", id);
 
                 using (var r = cmd.ExecuteReader())
@@ -1055,7 +1047,7 @@ namespace Negri.Wot.Sql
                             Tier10TotalWn8 = reader.GetNonNullValue<double>(15),
                             Tier10MonthWn8 = reader.GetNonNullValue<double>(16),
                             Name = reader.GetNonNullValue<string>(17),
-                            Plataform = reader.GetNonNullValue<Platform>(18),
+                            Platform = reader.GetNonNullValue<Platform>(18),
                             Delay = reader.GetNonNullValue<double>(19),
                             ClanId = reader.GetValueOrDefault<long?>(20),
                             ClanTag = reader.GetValueOrDefault<string>(21) ?? string.Empty,
@@ -1123,7 +1115,7 @@ namespace Negri.Wot.Sql
                         return new Player
                         {
                             Id = id,
-                            Plataform = reader.GetNonNullValue<Platform>(0),
+                            Platform = reader.GetNonNullValue<Platform>(0),
                             Name = reader.GetNonNullValue<string>(1),
                             ClanTag = reader.GetValueOrDefault<string>(2),
                             Rank = reader.GetValueOrDefault<Rank>(3),
@@ -1192,7 +1184,7 @@ namespace Negri.Wot.Sql
                 }
             }
 
-            diagnostic.PlayersQueueLenght = GetPlayersUpdateOrder(int.MaxValue, 24, 24, false, t).Count();
+            diagnostic.PlayersQueueLenght = GetPlayersUpdateOrder(int.MaxValue, 24, 24, t).Count();
             diagnostic.MembershipQueueLenght = GetClanMembershipUpdateOrder(int.MaxValue, 12, t).Count();
             diagnostic.CalculateQueueLenght = GetClanCalculateOrder(24, t).Count();
 
@@ -1237,9 +1229,20 @@ namespace Negri.Wot.Sql
 
         private static IEnumerable<Tank> GetTanks(Platform platform, SqlTransaction t)
         {
-            const string sql = "select TankId, [Name], ShortName, NationId, Tier, TypeId, Tag, IsPremium " +
-                               "from Tanks.Tank " +
-                               "where PlataformId = @plataformId;";
+            string table;
+            switch (platform)
+            {
+                case Platform.PC:
+                    table = "PcTank";
+                    break;
+                case Platform.Console:
+                    table = "Tank";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
+            }
+
+            var sql = $"select TankId, [Name], ShortName, NationId, Tier, TypeId, Tag, IsPremium from Tanks.{table};";
 
             var list = new List<Tank>();
 
@@ -1247,8 +1250,7 @@ namespace Negri.Wot.Sql
             {
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 5 * 60;
-                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
-
+                
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -1336,21 +1338,21 @@ namespace Negri.Wot.Sql
             return null;
         }
 
-        public TankPlayerPeriods GetWn8RawStatsForPlayer(Platform platform, long playerId, bool includeMedals = false)
+        public TankPlayerPeriods GetWn8RawStatsForPlayer(long playerId, bool includeMedals = false)
         {
             return Get(t =>
             {
-                var performance = GetWn8RawStatsForPlayer(platform, playerId, t);
+                var performance = GetWn8RawStatsForPlayer(playerId, t);
                 if ((performance != null) && includeMedals)
                 {
-                    FillMedals(platform, playerId, performance, t);
+                    FillMedals(playerId, performance, t);
                 }
 
                 return performance;
             });
         }
 
-        private static TankPlayerPeriods GetWn8RawStatsForPlayer(Platform platform, long playerId, SqlTransaction t)
+        private static TankPlayerPeriods GetWn8RawStatsForPlayer(long playerId, SqlTransaction t)
         {
             var tp = new TankPlayerPeriods();
 
@@ -1359,13 +1361,12 @@ namespace Negri.Wot.Sql
                                   "DamageAssistedTrack, DamageAssistedRadio, Shots, Hits, Piercings, ExplosionHits, CapturePoints, Losses, " +
                                   "DamageReceived, SurvivedBattles, NoDamageDirectHitsReceived, DirectHitsReceived, ExplosionHitsReceived, PiercingsReceived, " +
                                   "LastBattle, TreesCut, MaxFrags, MarkOfMastery, BattleLifeTimeSeconds, XP " +
-                                  "from Performance.GetTanksStatsForWn8(@plataformId, @playerId, @date);";
+                                  "from Performance.GetTanksStatsForWn8(@playerId, @date);";
             using (var cmd = new SqlCommand(allSql, t.Connection, t))
             {
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 5 * 60;
 
-                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
                 cmd.Parameters.AddWithValue("@playerId", playerId);
                 cmd.Parameters.AddWithValue("@date", DBNull.Value);
 
@@ -1413,7 +1414,7 @@ namespace Negri.Wot.Sql
                 "DamageAssistedTrack, DamageAssistedRadio, Shots, Hits, Piercings, ExplosionHits, CapturePoints, Losses, " +
                 "DamageReceived, SurvivedBattles, NoDamageDirectHitsReceived, DirectHitsReceived, ExplosionHitsReceived, PiercingsReceived, " +
                 "LastBattle, TreesCut, MaxFrags, MarkOfMastery, BattleLifeTimeSeconds, PreviousLastBattle " +
-                "from Performance.GetTanksDeltaStatsForWn8(@plataformId, @playerId, @deltaDays);";
+                "from Performance.GetTanksDeltaStatsForWn8(@playerId, @deltaDays);";
 
             // Month
             using (var cmd = new SqlCommand(periodSql, t.Connection, t))
@@ -1421,7 +1422,6 @@ namespace Negri.Wot.Sql
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 5 * 60;
 
-                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
                 cmd.Parameters.AddWithValue("@playerId", playerId);
                 cmd.Parameters.AddWithValue("@deltaDays", 28);
 
@@ -1471,7 +1471,6 @@ namespace Negri.Wot.Sql
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 5 * 60;
 
-                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
                 cmd.Parameters.AddWithValue("@playerId", playerId);
                 cmd.Parameters.AddWithValue("@deltaDays", 7);
 

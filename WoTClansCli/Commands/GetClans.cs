@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,10 +10,10 @@ using Negri.Wot.Sql;
 
 namespace Negri.Wot.Commands
 {
-    [Command("FetchClanMembership", Description = "Fetch clans membership, add clans and so on.")]
-    public class FetchClanMembership : ICommand
+    [Command("GetClans", Description = "Fetch clans membership, add clans and so on.")]
+    public class GetClans : ICommand
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(CalculateStats));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(GetClans));
 
         private readonly Fetcher _fetcher;
         private readonly FtpPutter _ftpPutter;
@@ -23,7 +22,7 @@ namespace Negri.Wot.Commands
         private readonly DbRecorder _recorder;
         private readonly string _resultDirectory;
 
-        public FetchClanMembership(Fetcher fetcher, FtpPutter ftpPutter, Putter putter, DbProvider provider,
+        public GetClans(Fetcher fetcher, FtpPutter ftpPutter, Putter putter, DbProvider provider,
             DbRecorder recorder, string resultDirectory)
         {
             _fetcher = fetcher;
@@ -54,10 +53,10 @@ namespace Negri.Wot.Commands
 
         public ValueTask ExecuteAsync(IConsole console)
         {
-            console.Output.WriteLine($"Starting {nameof(FetchClanMembership)}...");
+            console.Output.WriteLine($"Starting {nameof(GetClans)}...");
 
             Log.Info("------------------------------------------------------------------------------------");
-            Log.Info("FetchClanMembership iniciando...");
+            Log.Info("GetClans iniciando...");
             Log.InfoFormat("ageHours: {0}; maxClans: {1}; webFetchInterval:{2}",
                 AgeHours, MaxClans, WebFetchInterval);
 

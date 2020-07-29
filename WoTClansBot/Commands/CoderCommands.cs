@@ -133,12 +133,12 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
-                await ctx.RespondAsync($"The id `{playerId}` corresponds to the tanker `{player.Name}` on the `{player.Plataform}`...");
+                await ctx.RespondAsync($"The id `{playerId}` corresponds to the tanker `{player.Name}` on the `{player.Platform}`...");
 
                 var recorder = new DbRecorder(_connectionString);
                 recorder.PurgePlayer(playerId);
 
-                await ctx.RespondAsync($"The tanker `{player.Name}` on `{player.Plataform}` was purged from the database. Rip.");
+                await ctx.RespondAsync($"The tanker `{player.Name}` on `{player.Platform}` was purged from the database. Rip.");
             }
             catch (Exception ex)
             {
@@ -181,7 +181,7 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
-                await ctx.RespondAsync($"The id `{playerId}` corresponds to the tanker `{player.Name}` on the `{player.Plataform}`.");
+                await ctx.RespondAsync($"The id `{playerId}` corresponds to the tanker `{player.Name}` on the `{player.Platform}`.");
             }
             catch (Exception ex)
             {

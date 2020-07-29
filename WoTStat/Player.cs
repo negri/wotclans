@@ -26,11 +26,11 @@ namespace Negri.Wot
         {
             Id = playerId;
             Name = name;
-            Plataform = platform;
+            Platform = platform;
             Moment = DateTime.UtcNow;
         }
 
-        public Platform Plataform { get; set; } = Platform.XBOX;
+        public Platform Platform { get; set; } = Platform.XBOX;
 
         /// <summary>
         ///     Referencia (que é comum ser nula) ao clã do jogador
@@ -233,7 +233,7 @@ namespace Negri.Wot
                 {
                     return string.Empty;
                 }
-                return $"https://{(Plataform == Platform.PS ? "ps." : "")}wotclans.com.br/Clan/{ClanTag}";
+                return $"https://{(Platform == Platform.PS ? "ps." : "")}wotclans.com.br/Clan/{ClanTag}";
             }
         }
 
@@ -247,7 +247,7 @@ namespace Negri.Wot
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Plataform == other.Plataform && Id == other.Id;
+            return Platform == other.Platform && Id == other.Id;
         }
 
         public override bool Equals(object obj)
@@ -263,7 +263,7 @@ namespace Negri.Wot
         {
             unchecked
             {
-                return ((int) Plataform*397) ^ Id.GetHashCode();
+                return ((int) Platform*397) ^ Id.GetHashCode();
             }
         }
 

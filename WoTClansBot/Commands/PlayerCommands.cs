@@ -141,16 +141,16 @@ namespace Negri.Wot.Bot
                 {
                     if (showStatus)
                     {
-                        willTryApiMessage = await ctx.RespondAsync($"Data for  `{player.Name}` on `{player.Plataform}` " +
+                        willTryApiMessage = await ctx.RespondAsync($"Data for  `{player.Name}` on `{player.Platform}` " +
                                                                    $"is more than {player.Age.TotalHours:N0}h old, {ctx.User.Mention}. Retrieving fresh data, please wait...");
                     }
 
                     var tanks = fetcher.GetTanksForPlayer(player.Id);
-                    var allTanks = provider.GetTanks(player.Plataform).ToDictionary(t => t.TankId);
+                    var allTanks = provider.GetTanks(player.Platform).ToDictionary(t => t.TankId);
                     var validTanks = tanks.Where(t => allTanks.ContainsKey(t.TankId)).ToArray();
                     recorder?.Set(validTanks);
 
-                    var played = provider.GetWn8RawStatsForPlayer(player.Plataform, player.Id, true);
+                    var played = provider.GetWn8RawStatsForPlayer(player.Id, true);
                     player.Performance = played;
                     player.Calculate(wn8Expected);
                     player.Moment = DateTime.UtcNow;
@@ -161,7 +161,7 @@ namespace Negri.Wot.Bot
                     {
                         if (player.Check(previous, true))
                         {
-                            Log.Warn($"Player {player.Name}.{player.Id}@{player.Plataform} was patched.");
+                            Log.Warn($"Player {player.Name}.{player.Id}@{player.Platform} was patched.");
                         }
                     }
 
@@ -188,7 +188,7 @@ namespace Negri.Wot.Bot
                     }
                     else
                     {
-                        Log.Warn($"Player {player.Name}.{player.Id}@{player.Plataform} has to much zero data.");
+                        Log.Warn($"Player {player.Name}.{player.Id}@{player.Platform} has to much zero data.");
                     }
                 }
                 else
@@ -503,7 +503,7 @@ namespace Negri.Wot.Bot
                 #region medal
 
                 var provider = new DbProvider(_connectionString);
-                var medals = provider.GetMedals(player.Plataform).Where(m => m.Category == Achievements.Category.Achievements).ToArray();
+                var medals = provider.GetMedals(player.Platform).Where(m => m.Category == Achievements.Category.Achievements).ToArray();
 
                 var originalMedal = medal;
                 medal = medal.RemoveDiacritics().ToLowerInvariant();
@@ -628,7 +628,7 @@ namespace Negri.Wot.Bot
 
                 sb.Append("```");
 
-                var platformPrefix = player.Plataform == Platform.PS ? "ps." : string.Empty;
+                var platformPrefix = player.Platform == Platform.PS ? "ps." : string.Empty;
 
                 var color = player.MonthWn8.ToColor();
 
@@ -797,7 +797,7 @@ namespace Negri.Wot.Bot
                 var averageOnPeriod = monthlyValues ? playerHist.Average(p => p.MonthWn8) : playerHist.Average(p => p.TotalWn8);
                 sb.AppendLine($"WN8 average over {days:N0} days ({battles:N0} battles): {averageOnPeriod:N0}");
 
-                var platformPrefix = player.Plataform == Platform.PS ? "ps." : string.Empty;
+                var platformPrefix = player.Platform == Platform.PS ? "ps." : string.Empty;
 
                 var color = player.MonthWn8.ToColor();
 
@@ -899,7 +899,7 @@ namespace Negri.Wot.Bot
                 sb.AppendLine("```");
 
                 var color = top.First().Wn8.ToColor();
-                var platformPrefix = player.Plataform == Platform.PS ? "ps." : string.Empty;
+                var platformPrefix = player.Platform == Platform.PS ? "ps." : string.Empty;
 
                 var embed = new DiscordEmbedBuilder
                 {
@@ -998,7 +998,7 @@ namespace Negri.Wot.Bot
                 sb.AppendLine("```");
 
                 var color = top.First().Wn8.ToColor();
-                var platformPrefix = player.Plataform == Platform.PS ? "ps." : string.Empty;
+                var platformPrefix = player.Platform == Platform.PS ? "ps." : string.Empty;
 
                 var embed = new DiscordEmbedBuilder
                 {
@@ -1061,7 +1061,7 @@ namespace Negri.Wot.Bot
                 var lastBattle = player.Performance.All.Values.Max(t => t.LastBattle);
 
                 var color = player.TotalWn8.ToColor();
-                var platformPrefix = player.Plataform == Platform.PS ? "ps." : string.Empty;
+                var platformPrefix = player.Platform == Platform.PS ? "ps." : string.Empty;
 
                 var sb = new StringBuilder();
                 if (string.IsNullOrWhiteSpace(player.ClanTag))
@@ -1208,7 +1208,7 @@ namespace Negri.Wot.Bot
                 Debug.Assert(player != null);
 
                 await ctx.RespondAsync(
-                    $"{ctx.User?.Mention}, as far as I know your {(player.Plataform == Platform.PS ? "PSN Name" : "Gamer Tag")} is `{player.Name}`.");
+                    $"{ctx.User?.Mention}, as far as I know your {(player.Platform == Platform.PS ? "PSN Name" : "Gamer Tag")} is `{player.Name}`.");
             }
             catch (Exception ex)
             {
@@ -1407,7 +1407,7 @@ namespace Negri.Wot.Bot
                     "if you *always* plays with Premium, or *always* plays *without* Premium. If you mix, take these number with great reserve.");
 
                 var color = tanks.First().Wn8.ToColor();
-                var platformPrefix = player.Plataform == Platform.PS ? "ps." : string.Empty;
+                var platformPrefix = player.Platform == Platform.PS ? "ps." : string.Empty;
 
                 var embed = new DiscordEmbedBuilder
                 {

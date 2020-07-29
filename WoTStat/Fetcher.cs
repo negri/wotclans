@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -24,30 +25,31 @@ namespace Negri.Wot
     /// <summary>
     ///     Retrieve information from the web (and APIs)
     /// </summary>
-    public class Fetcher : IDisposable
+    public class Fetcher 
     {
         private const int MaxTry = 10;
 
         private static readonly ILog Log = LogManager.GetLogger(typeof(Fetcher));
 
-        private readonly string _cacheDirectory;
-        private readonly WebClient _webClient;
+        /// <summary>
+        /// The only and only HTTP Client
+        /// </summary>
+        private static readonly HttpClient HttpClient;
 
+        private readonly string _cacheDirectory;
+        
         private DateTime _lastWebFetch = DateTime.MinValue;
+
+        static Fetcher()
+        {
+            HttpClient = new HttpClient();
+            HttpClient.DefaultRequestHeaders.Clear();
+            HttpClient.DefaultRequestHeaders.Add("user-agent", "WoTClansBr by JP Negri at negrijp _at_ gmail.com");
+        }
 
         public Fetcher(string cacheDirectory = null)
         {
             _cacheDirectory = cacheDirectory ?? Path.GetTempPath();
-
-            WebFetchInterval = TimeSpan.FromSeconds(30);
-            WebCacheAge = TimeSpan.FromDays(1) - TimeSpan.FromHours(1);
-
-            ServicePointManager.ServerCertificateValidationCallback =
-                ServerCertificateValidationCallback;
-
-            _webClient = new WebClient();
-            _webClient.Headers.Add("user-agent",
-                "GetClanStats (WoTClansBrCollector) by JP Negri at negrijp _at_ gmail.com");
         }
 
         /// <summary>
@@ -66,26 +68,13 @@ namespace Negri.Wot
         /// <summary>
         ///     Cache Age
         /// </summary>
-        public TimeSpan WebCacheAge { set; private get; }
+        public TimeSpan WebCacheAge { set; private get; } = TimeSpan.FromHours(23);
 
         /// <summary>
         ///     Min interval between external web calls
         /// </summary>
-        public TimeSpan WebFetchInterval { set; private get; }
+        public TimeSpan WebFetchInterval { set; private get; } = TimeSpan.Zero;
 
-        private static bool ServerCertificateValidationCallback(object s, X509Certificate certificate, X509Chain chain,
-            SslPolicyErrors sslPolicyErrors)
-        {
-            if (sslPolicyErrors == SslPolicyErrors.None) return true;
-
-            var expDateString = certificate.GetExpirationDateString();
-            var expDate = DateTime.Parse(expDateString, CultureInfo.CurrentCulture);
-            if (expDate < DateTime.Now)
-                // Expired certificates are not big issues (I hope)
-                return true;
-
-            return false;
-        }
 
         /// <summary>
         ///     Get Diagnostics on the WoTClans website
@@ -122,8 +111,8 @@ namespace Negri.Wot
 
             Debug.Assert(h != null, nameof(h) + " != null");
 
-            ev.Source = (string)h["source"];
-            ev.Version = (string)h["version"];
+            ev.Source = (string) h["source"];
+            ev.Version = (string) h["version"];
 
             var d = j["data"];
             Debug.Assert(d != null, nameof(d) + " != null");
@@ -131,12 +120,12 @@ namespace Negri.Wot
             foreach (var dd in d.Children())
                 ev.Add(new Wn8TankExpectedValues
                 {
-                    TankId = (long)dd["IDNum"],
-                    Def = (double)dd["expDef"],
-                    Frag = (double)dd["expFrag"],
-                    Spot = (double)dd["expSpot"],
-                    Damage = (double)dd["expDamage"],
-                    WinRate = (double)dd["expWinRate"] / 100.0
+                    TankId = (long) dd["IDNum"],
+                    Def = (double) dd["expDef"],
+                    Frag = (double) dd["expFrag"],
+                    Spot = (double) dd["expSpot"],
+                    Damage = (double) dd["expDamage"],
+                    WinRate = (double) dd["expWinRate"] / 100.0
                 });
 
             return ev;
@@ -325,7 +314,7 @@ namespace Negri.Wot
                 return null;
             }
 
-            return new Clan(found.ClanId, found.Tag) { AllMembersCount = found.MembersCount };
+            return new Clan(found.ClanId, found.Tag) {AllMembersCount = found.MembersCount};
         }
 
 
@@ -362,8 +351,8 @@ namespace Negri.Wot
         {
             var timeSinceLastFetch = DateTime.UtcNow - _lastWebFetch;
             var waitTime = WebFetchInterval - timeSinceLastFetch;
-            var waitTimeMs = Math.Max((int)waitTime.TotalMilliseconds, 0);
-            if (!noWait & (waitTimeMs > 0))
+            var waitTimeMs = Math.Max((int) waitTime.TotalMilliseconds, 0);
+            if (!noWait & (waitTimeMs > 100))
             {
                 Log.DebugFormat("...waiting {0:N1}s to use the web...", waitTimeMs / 1000.0);
                 Thread.Sleep(waitTimeMs);
@@ -377,16 +366,16 @@ namespace Negri.Wot
                     var moment = DateTime.UtcNow;
                     var sw = Stopwatch.StartNew();
 
+                    var content = HttpClient.GetStringAsync(url).Result;
 
-                    var bytes = _webClient.DownloadDataTaskAsync(url).Result;
+                    if (!noWait) _lastWebFetch = moment;
                     var webTime = sw.ElapsedMilliseconds;
-
-                    var content = Encoding.UTF8.GetString(bytes);
 
                     // Escreve em cache
                     sw.Restart();
 
                     for (var j = 0; j < MaxTry; ++j)
+                    {
                         try
                         {
                             File.WriteAllText(cacheFileName, content, encoding);
@@ -405,11 +394,9 @@ namespace Negri.Wot
                                 Log.Error(ex);
                             }
                         }
-
+                    }
 
                     var cacheWriteTime = sw.ElapsedMilliseconds;
-
-                    if (!noWait) _lastWebFetch = moment;
 
                     Log.DebugFormat("...retrieved from web in {0}ms and wrote to cache in {1}ms.", webTime, cacheWriteTime);
                     return content;
@@ -436,7 +423,7 @@ namespace Negri.Wot
         }
 
         /// <summary>
-        /// Retrieve basic information about clans in the game
+        ///     Retrieve basic information about clans in the game
         /// </summary>
         /// <param name="minNumberOfPlayers">The minimum number of players to return</param>
         /// <returns></returns>
@@ -466,7 +453,7 @@ namespace Negri.Wot
                     yield break;
                 }
 
-                currentCount = (int)response.Meta.Count;
+                currentCount = (int) response.Meta.Count;
 
                 // Os clãs vem em ordem de tamanho, então se o primeiro já for menor, paramos
                 if (response.Clans[0].MembersCount < minNumberOfPlayers)
@@ -477,7 +464,7 @@ namespace Negri.Wot
                 }
 
                 foreach (var clan in response.Clans.Where(c => c.MembersCount >= minNumberOfPlayers))
-                    yield return new Clan(clan.ClanId, clan.Tag) { AllMembersCount = clan.MembersCount };
+                    yield return new Clan(clan.ClanId, clan.Tag) {AllMembersCount = clan.MembersCount};
             }
         }
 
@@ -502,7 +489,7 @@ namespace Negri.Wot
         }
 
         /// <summary>
-        /// Get All information about the clans
+        ///     Get All information about the clans
         /// </summary>
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public IEnumerable<Clan> GetClansInternal(IEnumerable<ClanBaseInformation> clans)
@@ -539,9 +526,10 @@ namespace Negri.Wot
             requestedClans.ExceptWith(disbandedClans);
 
             // Pega os dados normais
-            var requestUrl = $"https://api-console.worldoftanks.com/wotx/clans/info/?application_id={WargamingApplicationId}&clan_id=" +
-                             $"{string.Join("%2C", requestedClans.Select(id => id.ToString()))}&fields=clan_id%2Ctag%2Cname%2Cmembers_count%2Ccreated_at%2Cis_clan_disbanded" +
-                             "%2Cmembers%2Cmembers.role%2Cmembers.account_name&extra=members";
+            var requestUrl =
+                $"https://api-console.worldoftanks.com/wotx/clans/info/?application_id={WargamingApplicationId}&clan_id=" +
+                $"{string.Join("%2C", requestedClans.Select(id => id.ToString()))}&fields=clan_id%2Ctag%2Cname%2Cmembers_count%2Ccreated_at%2Cis_clan_disbanded" +
+                "%2Cmembers%2Cmembers.role%2Cmembers.account_name&extra=members";
 
             json = GetContent($"InfoClan.{DateTime.UtcNow:yyyy-MM-dd.HHmmss}.json", requestUrl,
                 WebCacheAge, false, Encoding.UTF8);
@@ -577,7 +565,7 @@ namespace Negri.Wot
                         {
                             Id = memberKv.Key,
                             Rank = memberKv.Value.Rank,
-                            Plataform = pn.platform,
+                            Platform = pn.platform,
                             Name = pn.name
                         });
                     }
@@ -639,23 +627,23 @@ namespace Negri.Wot
 
             var result = JObject.Parse(json);
 
-            if ((string)result["status"] != "ok")
+            if ((string) result["status"] != "ok")
             {
                 var error = result["error"];
-                var code = (int)error["code"];
-                var msg = (string)error["message"];
+                var code = (int) error["code"];
+                var msg = (string) error["message"];
                 Log.ErrorFormat("Erro de API {0}, '{1}' chamando {2}", code, msg, url);
                 return null;
             }
 
-            var count = (int)result["meta"]["count"];
+            var count = (int) result["meta"]["count"];
             if (count < 1)
             {
                 Log.WarnFormat("Não achado ninguém com id '{0}'.", id);
                 return null;
             }
 
-            var name = (string)result["data"][$"{id}"]["nickname"];
+            var name = (string) result["data"][$"{id}"]["nickname"];
             Log.DebugFormat("...achado '{0}'.", name);
             return name;
         }
@@ -681,13 +669,13 @@ namespace Negri.Wot
             var json =
                 GetContent($"AccountList.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8);
             var result = JObject.Parse(json);
-            if ((string)result["status"] == "error")
+            if ((string) result["status"] == "error")
             {
-                Log.WarnFormat("Erro na busca: {0}", (string)result["error"]["message"]);
+                Log.WarnFormat("Erro na busca: {0}", (string) result["error"]["message"]);
                 return null;
             }
 
-            var count = (int)result["meta"]["count"];
+            var count = (int) result["meta"]["count"];
             if (count < 1)
             {
                 Log.WarnFormat("Não achado ninguém com gamer tag '{0}'.", gamerTag);
@@ -696,7 +684,7 @@ namespace Negri.Wot
 
             if (count >= 1)
             {
-                var suggested = (string)result["data"][0]["nickname"];
+                var suggested = (string) result["data"][0]["nickname"];
                 if (!suggested.Equals(gamerTag, StringComparison.InvariantCultureIgnoreCase))
                 {
                     Log.WarnFormat("Há {0} resultados para a gamer tag '{1}', mas o 1º é '{2}'.", count, gamerTag,
@@ -707,10 +695,10 @@ namespace Negri.Wot
 
             var player = new Player
             {
-                Id = (long)result["data"][0]["account_id"],
+                Id = (long) result["data"][0]["account_id"],
                 Name = gamerTag,
                 Moment = DateTime.UtcNow,
-                Plataform = platform
+                Platform = platform
             };
 
             // Acho o clã do cidadão
@@ -719,12 +707,12 @@ namespace Negri.Wot
             json =
                 GetContent($"ClansAccountinfo.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8);
             result = JObject.Parse(json);
-            count = (int)result["meta"]["count"];
+            count = (int) result["meta"]["count"];
             if (count == 1)
                 try
                 {
-                    player.ClanId = (long)result["data"][player.Id.ToString()]["clan_id"];
-                    player.ClanTag = (string)result["data"][player.Id.ToString()]["clan"]["tag"];
+                    player.ClanId = (long) result["data"][player.Id.ToString()]["clan_id"];
+                    player.ClanTag = (string) result["data"][player.Id.ToString()]["clan"]["tag"];
                 }
                 catch
                 {
@@ -739,34 +727,23 @@ namespace Negri.Wot
         /// <summary>
         ///     Get all medals on the game
         /// </summary>
-        public IEnumerable<Medal> GetMedals(Platform platform)
+        public IEnumerable<Medal> GetMedals()
         {
-            Log.DebugFormat("Fetching medals on platform {0}...", platform);
-            string server;
-            switch (platform)
-            {
-                case Platform.XBOX:
-                    server = "api-console.worldoftanks.com";
-                    break;
-                case Platform.PS:
-                    server = "api-console.worldoftanks.com";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
-            }
+            Log.Debug("Fetching medals on platform...");
+            
 
-            var url = $"https://{server}/wotx/encyclopedia/achievements/?application_id={WargamingApplicationId}";
-            var json = GetContent($"Achievements.{platform}.json", url, WebCacheAge, false, Encoding.UTF8);
+            var url = $"https://api-console.worldoftanks.com/wotx/encyclopedia/achievements/?application_id={WargamingApplicationId}";
+            var json = GetContent($"Achievements.json", url, WebCacheAge, false, Encoding.UTF8);
 
             var o = JObject.Parse(json);
 
-            var status = (string)o["status"];
+            var status = (string) o["status"];
             if (status != "ok")
             {
                 var error = o["error"];
-                Log.Error($"Error: {(string)error["code"]} - {(string)error["message"]}");
+                Log.Error($"Error: {(string) error["code"]} - {(string) error["message"]}");
                 throw new ApplicationException(
-                    $"Error calling WG API: {(string)error["code"]} - {(string)error["message"]}");
+                    $"Error calling WG API: {(string) error["code"]} - {(string) error["message"]}");
             }
 
             var medals = new List<Medal>();
@@ -778,26 +755,21 @@ namespace Negri.Wot
 
                 var medal = new Medal
                 {
-                    Platform = platform,
+                    Platform = Platform.Console,
                     Code = t.Name,
-                    Category = CategoryExtensions.Parse((string)ti["category"]),
-                    Name = (string)ti["name"],
-                    Section = SectionExtensions.Parse((string)ti["section"]),
-                    Type = TypeExtensions.Parse((string)ti["type"]),
-                    Description = (string)ti["description"],
-                    HeroInformation = (string)ti["hero_info"],
-                    Condition = (string)ti["condition"]
+                    Category = CategoryExtensions.Parse((string) ti["category"]),
+                    Name = (string) ti["name"],
+                    Section = SectionExtensions.Parse((string) ti["section"]),
+                    Type = TypeExtensions.Parse((string) ti["type"]),
+                    Description = (string) ti["description"],
+                    HeroInformation = (string) ti["hero_info"],
+                    Condition = (string) ti["condition"]
                 };
 
                 medals.Add(medal);
             }
 
             return medals;
-        }
-
-        public void Dispose()
-        {
-            _webClient?.Dispose();
         }
     }
 }

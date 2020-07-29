@@ -296,7 +296,6 @@ namespace Negri.Wot.Sql
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
-                cmd.Parameters.AddWithValue("@plataformId", tps[0].Plataform);
                 cmd.Parameters.AddWithValue("@playerId", tps[0].PlayerId);
                 firstTime = (int) cmd.ExecuteScalar() == 0;
             }
@@ -315,7 +314,6 @@ namespace Negri.Wot.Sql
 
                         DateTime anchorMoment = tp.LastBattle.AddYears(-1).AddMonths(-1);
 
-                        cmd.Parameters.AddWithValue("@PlataformId", (int)tp.Plataform);
                         cmd.Parameters.AddWithValue("@PlayerId", tp.PlayerId);
                         cmd.Parameters.AddWithValue("@Date", anchorMoment.Date);
                         cmd.Parameters.AddWithValue("@Moment", tp.Moment);
@@ -362,7 +360,6 @@ namespace Negri.Wot.Sql
                 {
                     cmd.Parameters.Clear();
 
-                    cmd.Parameters.AddWithValue("@PlataformId", (int) tp.Plataform);
                     cmd.Parameters.AddWithValue("@PlayerId", tp.PlayerId);
                     cmd.Parameters.AddWithValue("@Date", tp.Date);
                     cmd.Parameters.AddWithValue("@Moment", tp.Moment);
@@ -421,12 +418,9 @@ namespace Negri.Wot.Sql
 
         }
 
-        private static DataTable CreateMedalsTable(TankPlayer[] tanks)
+        private static DataTable CreateMedalsTable(IEnumerable<TankPlayer> tanks)
         {
             var t = new DataTable("TankMedal");
-
-            var dc1 = new DataColumn("PlataformId", typeof(int));
-            t.Columns.Add(dc1);
 
             var dc2 = new DataColumn("PlayerId", typeof(long));
             t.Columns.Add(dc2);
@@ -449,7 +443,7 @@ namespace Negri.Wot.Sql
                 {
                     foreach (var medal in tank.All.Achievements)
                     {
-                        t.Rows.Add((int) tank.Plataform, tank.PlayerId, tank.TankId, medal.Key, medal.Value, tank.All.Battles);
+                        t.Rows.Add(tank.PlayerId, tank.TankId, medal.Key, medal.Value, tank.All.Battles);
                     }
                 }
 
@@ -457,7 +451,7 @@ namespace Negri.Wot.Sql
                 {
                     foreach (var medal in tank.All.Ribbons)
                     {
-                        t.Rows.Add((int)tank.Plataform, tank.PlayerId, tank.TankId, medal.Key, medal.Value, tank.All.Battles);
+                        t.Rows.Add(tank.PlayerId, tank.TankId, medal.Key, medal.Value, tank.All.Battles);
                     }
                 }
             }
@@ -690,7 +684,7 @@ namespace Negri.Wot.Sql
 
             if (player.Name.Length > 25)
             {
-                Log.WarnFormat("Jogador {0}.{1}@{2} terá o nome truncado!", player.Id, player.Name, player.Plataform);
+                Log.WarnFormat("Jogador {0}.{1}@{2} terá o nome truncado!", player.Id, player.Name, player.Platform);
                 player.Name = player.Name.Substring(0, 25);
             }
 
@@ -704,7 +698,7 @@ namespace Negri.Wot.Sql
                     cmd.CommandTimeout = 5 * 60;
                     cmd.Parameters.AddWithValue("@playerId", player.Id);
                     cmd.Parameters.AddWithValue("@gamerTag", player.Name);
-                    cmd.Parameters.AddWithValue("@plataformId", (int) player.Plataform);
+                    cmd.Parameters.AddWithValue("@plataformId", (int) player.Platform);
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -941,7 +935,6 @@ namespace Negri.Wot.Sql
                 {
                     cmd.Parameters.Clear();
 
-                    cmd.Parameters.AddWithValue("@PlataformId", (int) medal.Platform);
                     cmd.Parameters.AddWithValue("@MedalCode", medal.Code);
                     cmd.Parameters.AddWithValue("@Name", medal.Name);
                     cmd.Parameters.AddWithValue("@Description", (object) medal.Description ?? DBNull.Value);

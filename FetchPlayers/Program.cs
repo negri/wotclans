@@ -24,7 +24,7 @@ namespace Negri.Wot
             {
                 var sw = Stopwatch.StartNew();
 
-                ParseParans(args, out var ageHours, out var maxPlayers, out var maxRunMinutes,
+                ParseParams(args, out var ageHours, out var maxPlayers, out var maxRunMinutes,
                     out var webCacheAge, out var kp, out var ki, out var kd, out var maxParallel, out var putPlayers);
 
                 var cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
@@ -100,7 +100,7 @@ namespace Negri.Wot
                         WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"]
                     };
                     fetchers.Enqueue(fetcher);
-                }                
+                }
 
                 Log.Debug("Obtendo todos os tanques em XBOX...");
                 var f = fetchers.Dequeue();
@@ -159,7 +159,7 @@ namespace Negri.Wot
                         var player = players[i];
 
                         var swPlayer = Stopwatch.StartNew();
-                        var allTanks = player.Plataform == Platform.XBOX ? allTanksXbox : allTanksPs;
+                        var allTanks = player.Platform == Platform.XBOX ? allTanksXbox : allTanksPs;
                         RetrievePlayer(player, wg, provider, recorder, allTanks, wn8Expected, putter);
                         swPlayer.Stop();
                         
@@ -198,7 +198,7 @@ namespace Negri.Wot
                                     threadInterval = 30;
                                 }
 
-                                Log.Info($"i: {i:0000}; {player.Id:00000000000}@{player.Plataform.ToString().PadRight(4)}; Count: {count:0000}; " +
+                                Log.Info($"i: {i:0000}; {player.Id:00000000000}@{player.Platform.ToString().PadRight(4)}; Count: {count:0000}; " +
                                          $"TI: {threadInterval:00.00}; Actual: {actualInterval:00.00}; Ideal: {idealInterval:00.00}; " +
                                          $"out: {output:+00.000;-00.000}; dt: {dt:000.000}; rt: {swPlayer.Elapsed.TotalSeconds:000.000}; Target: {maxRunMinutes*60.0/actualInterval:0000}; ");
 
@@ -206,7 +206,7 @@ namespace Negri.Wot
                             }
                             else
                             {
-                                Log.Info($"i: {i:0000}; {player.Id:00000000000}@{player.Plataform.ToString().PadRight(4)}; Count: {count:0000}; " +
+                                Log.Info($"i: {i:0000}; {player.Id:00000000000}@{player.Platform.ToString().PadRight(4)}; Count: {count:0000}; " +
                                          $"TI: {threadInterval:00.00}; Actual: {actualInterval:00.00}; Ideal: {idealInterval:00.00}; " +
                                          $"out: {0.0:+00.000;-00.000}; dt: {dt:000.000}; rt: {swPlayer.Elapsed.TotalSeconds:000.000}; Target: {maxRunMinutes * 60.0 / actualInterval:0000}; ");
                             }
@@ -254,7 +254,7 @@ namespace Negri.Wot
             var validTanks = tanks.Where(t => allTanks.ContainsKey(t.TankId)).ToArray();
             recorder.Set(validTanks);
             
-            var played = provider.GetWn8RawStatsForPlayer(player.Plataform, player.Id);
+            var played = provider.GetWn8RawStatsForPlayer(player.Id);
             player.Performance = played;
             player.Calculate(wn8Expected);
             player.Moment = DateTime.UtcNow;
@@ -265,7 +265,7 @@ namespace Negri.Wot
             {
                 if (player.Check(previous, true))
                 {
-                    Log.Warn($"Player {player.Name}.{player.Id}@{player.Plataform} was patched.");
+                    Log.Warn($"Player {player.Name}.{player.Id}@{player.Platform} was patched.");
                 }
             }
             
@@ -289,12 +289,12 @@ namespace Negri.Wot
             }
             else
             {
-                Log.Warn($"Player {player.Name}.{player.Id}@{player.Plataform} has to much zero data.");
+                Log.Warn($"Player {player.Name}.{player.Id}@{player.Platform} has to much zero data.");
             }
             
         }
         
-        private static void ParseParans(IEnumerable<string> args, out int ageHours, out int? maxPlayers,
+        private static void ParseParams(IEnumerable<string> args, out int ageHours, out int? maxPlayers,
             out int? maxRunMinutes, out TimeSpan webCacheAge,
             out double kp, out double ki, out double kd, out int maxParallel, out bool putPlayers)
         {

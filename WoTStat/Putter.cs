@@ -2,7 +2,6 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
-using System.Net.Http.Headers;
 using System.Threading;
 using log4net;
 
@@ -15,9 +14,21 @@ namespace Negri.Wot
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Putter));
 
+        /// <summary>
+        /// The only and only HTTP Client
+        /// </summary>
+        private static readonly HttpClient HttpClient;
+
         public string BaseUrl { get; set; } = "https://wotclans.com.br";
 
         private readonly string _apiKey;
+
+        static Putter()
+        {
+            HttpClient = new HttpClient();
+            HttpClient.DefaultRequestHeaders.Clear();
+            HttpClient.DefaultRequestHeaders.Add("user-agent", "WoTClansBr by JP Negri at negrijp _at_ gmail.com");
+        }
         
         public Putter(string apiKey)
         {
@@ -71,13 +82,7 @@ namespace Negri.Wot
             {
                 Execute(() =>
                 {
-                    var client = new HttpClient
-                    {
-                        BaseAddress = new Uri(BaseUrl)
-                    };
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/bson"));
-
+                    
                     var req = new PutDataRequest
                     {
                         ApiKey = _apiKey,
@@ -86,7 +91,7 @@ namespace Negri.Wot
                     req.SetObject(copy);
 
                     var bsonFormatter = new BsonMediaTypeFormatter();
-                    var res = client.PutAsync("api/admin/Data", req, bsonFormatter).Result;
+                    var res = HttpClient.PutAsync($"{BaseUrl}/api/admin/Data", req, bsonFormatter).Result;
                     res.EnsureSuccessStatusCode();
                 }, 5);
 
@@ -109,11 +114,7 @@ namespace Negri.Wot
             {
                 Log.Debug("Calling CleanFiles API...");
 
-                var client = new HttpClient
-                {
-                    BaseAddress = new Uri(BaseUrl)
-                };
-                var res = client.DeleteAsync($"api/admin/CleanDataFolders?apiAdminKey={_apiKey}").Result;
+                var res = HttpClient.DeleteAsync($"{BaseUrl}/api/admin/CleanDataFolders?apiAdminKey={_apiKey}").Result;
                
                 if (res.StatusCode == HttpStatusCode.OK)
                 {

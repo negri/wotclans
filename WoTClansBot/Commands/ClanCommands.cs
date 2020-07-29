@@ -238,7 +238,7 @@ namespace Negri.Wot.Bot
             var fullPlayers = new ConcurrentBag<Player>();
             var tasks = players.Select(async p => 
             {
-                var player = await playerCommands.GetPlayer(ctx, ((p.Plataform == Platform.XBOX) ? "x." : "ps.") + p.Name, false);
+                var player = await playerCommands.GetPlayer(ctx, ((p.Platform == Platform.XBOX) ? "x." : "ps.") + p.Name, false);
                 if (player == null)
                 {
                     await ctx.RespondAsync($"Sorry, could not get updated information for player `{p.Name}`, {ctx.User.Mention}.");

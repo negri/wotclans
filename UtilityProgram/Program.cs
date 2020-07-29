@@ -120,7 +120,7 @@ namespace UtilityProgram
                 WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
 
-            var gameMedals = fetcher.GetMedals(Platform.XBOX).ToDictionary(m => m.Code);
+            var gameMedals = fetcher.GetMedals().ToDictionary(m => m.Code);
             var maxCode = gameMedals.Values.Max(m => m.Code.Length);
             var maxName = gameMedals.Values.Max(m => m.Name.Length);
             var maxDescription = gameMedals.Values.Max(m => m.Description.Length);

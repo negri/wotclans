@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using CliFx;
 using log4net;
@@ -21,7 +25,10 @@ namespace Negri.Wot
             {
                 XmlConfigurator.Configure(new FileInfo("log4net.config"));
             }
-            
+
+            // To accept expired certificates
+            ServicePointManager.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
+
             var services = new ServiceCollection();
 
             var webCacheAge = TimeSpan.FromMinutes(1);
@@ -71,13 +78,21 @@ namespace Negri.Wot
                 ));
 
             services.AddTransient(p =>
-                new FetchClanMembership(
+                new GetClans(
                     p.GetService<Fetcher>(),
                     p.GetService<FtpPutter>(),
                     p.GetService<Putter>(),
                     p.GetService<DbProvider>(),
                     p.GetService<DbRecorder>(),
                     resultDirectory
+                ));
+
+            services.AddTransient(p =>
+                new GetPlayers(
+                    p.GetService<Fetcher>(),
+                    p.GetService<Putter>(),
+                    p.GetService<DbProvider>(),
+                    p.GetService<DbRecorder>()
                 ));
 
             var serviceProvider = services.BuildServiceProvider();
@@ -89,6 +104,20 @@ namespace Negri.Wot
                 .RunAsync();
 
             return cab.Result;
+        }
+
+        private static bool ServerCertificateValidationCallback(object s, X509Certificate certificate, X509Chain chain,
+            SslPolicyErrors sslPolicyErrors)
+        {
+            if (sslPolicyErrors == SslPolicyErrors.None) return true;
+
+            var expDateString = certificate.GetExpirationDateString();
+            var expDate = DateTime.Parse(expDateString, CultureInfo.CurrentCulture);
+            if (expDate < DateTime.Now)
+                // Expired certificates are not big issues (I hope)
+                return true;
+
+            return false;
         }
     }
 }

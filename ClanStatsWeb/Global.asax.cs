@@ -39,7 +39,7 @@ namespace Negri.Wot.Site
 
             GlobalHelper.DataFolder = ConfigurationManager.AppSettings["ClanResultsFolder"];
             GlobalHelper.Platform =
-                (Platform) Enum.Parse(typeof(Platform), ConfigurationManager.AppSettings["Plataform"]);
+                (Platform) Enum.Parse(typeof(Platform), ConfigurationManager.AppSettings["Platform"]);
             GlobalHelper.CacheMinutes = int.Parse(ConfigurationManager.AppSettings["CacheMinutes"] ?? "0");
             GlobalHelper.DefaultPlayerDetails = (PlayerDataOrigin) Enum.Parse(typeof(PlayerDataOrigin),
                 ConfigurationManager.AppSettings["DefaultPlayerDetails"] ?? PlayerDataOrigin.WotInfo.ToString());

@@ -217,7 +217,7 @@ namespace Negri.Wot.Bot
                 }
                 gamerTag = player.Name;
 
-                var tank = FindTank(player.Plataform, tankName, out _);
+                var tank = FindTank(player.Platform, tankName, out _);
 
                 if (tank == null)
                 {
@@ -233,7 +233,7 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
-                var hist = provider.GetPlayerHistoryByTank(player.Plataform, player.Id, tank.TankId).ToArray();
+                var hist = provider.GetPlayerHistoryByTank(player.Platform, player.Id, tank.TankId).ToArray();
                 if (!hist.Any())
                 {
                     await ctx.RespondAsync($"Sorry, there is no tank statistics history for the `{tank.Name}` for the player `{gamerTag}`, {ctx.User.Mention}.");
