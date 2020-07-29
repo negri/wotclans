@@ -783,7 +783,6 @@ namespace Negri.Wot.Sql
                 cmd.CommandTimeout = 5 * 60;
 
                 cmd.Parameters.AddWithValue("@ClanId", clan.ClanId);
-                cmd.Parameters.AddWithValue("@ClanTag", clan.ClanTag);
                 cmd.Parameters.AddWithValue("@Date", clan.MembershipMoment.Date);
 
                 cmd.Parameters.AddWithValue("@CalculationMoment", DateTime.UtcNow);

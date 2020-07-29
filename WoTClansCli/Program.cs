@@ -88,6 +88,14 @@ namespace Negri.Wot
                 ));
 
             services.AddTransient(p =>
+                new CalculateClans(
+                    p.GetService<FtpPutter>(),
+                    p.GetService<DbProvider>(),
+                    p.GetService<DbRecorder>(),
+                    resultDirectory
+                ));
+
+            services.AddTransient(p =>
                 new GetPlayers(
                     p.GetService<Fetcher>(),
                     p.GetService<Putter>(),

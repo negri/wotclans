@@ -156,6 +156,9 @@ namespace Negri.Wot
             get { return Top15Players.Sum(p => p.MonthBattles); }
         }
 
+        /// <summary>
+        /// The Last Month WN8t15 on the site, the main stats for clans
+        /// </summary>
         public double Top15Wn8
         {
             get

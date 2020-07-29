@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\CalculateClans.cs" />
     <Compile Include="Commands\CalculateStats.cs" />
     <Compile Include="Commands\GetClans.cs" />
     <Compile Include="Commands\GetPlayers.cs" />
