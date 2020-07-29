@@ -139,18 +139,18 @@ namespace Negri.Wot
                     var clan = clans[i];
 
                     Log.InfoFormat("Processando clã {0} de {1}: {2}@{3}...", i + 1, clans.Length, clan.ClanTag,
-                        clan.Plataform);
+                        clan.Platform);
                     var csw = Stopwatch.StartNew();
 
                     var cc = CalculateClan(clan, provider, recorder);
 
                     Log.InfoFormat("Calculado clã {0} de {1}: {2}@{3} em {4:N1}s...",
-                        i + 1, clans.Length, clan.ClanTag, clan.Plataform, csw.Elapsed.TotalSeconds);
+                        i + 1, clans.Length, clan.ClanTag, clan.Platform, csw.Elapsed.TotalSeconds);
 
                     if (cc != null)
                     {
                         var fsw = Stopwatch.StartNew();
-                        switch (cc.Plataform)
+                        switch (cc.Platform)
                         {
                             case Platform.Console:
                             {
@@ -180,12 +180,12 @@ namespace Negri.Wot
                         }
 
                         Log.InfoFormat("Upload do clã {0} de {1}: {2}@{3} em {4:N1}s...",
-                            i + 1, clans.Length, clan.ClanTag, clan.Plataform, fsw.Elapsed.TotalSeconds);
+                            i + 1, clans.Length, clan.ClanTag, clan.Platform, fsw.Elapsed.TotalSeconds);
                     }
 
                     Interlocked.Increment(ref doneCount);
                     Log.InfoFormat("Processado clã {0} de {1}: {2}@{3} em {4:N1}s. {5} totais.",
-                        i + 1, clans.Length, clan.ClanTag, clan.Plataform, csw.Elapsed.TotalSeconds, doneCount);
+                        i + 1, clans.Length, clan.ClanTag, clan.Platform, csw.Elapsed.TotalSeconds, doneCount);
                 });
                 var calculationTime = sw.Elapsed;
 
@@ -249,12 +249,12 @@ namespace Negri.Wot
             lastLeader = getter.GetTankLeaders().FirstOrDefault()?.Date ?? new DateTime(2017, 03, 25);
         }
 
-        private static Clan CalculateClan(ClanPlataform clan, DbProvider provider,
+        private static Clan CalculateClan(ClanBaseInformation clan, DbProvider provider,
             DbRecorder recorder)
         {
-            Log.DebugFormat("Calculando clã {0}@{1}...", clan.ClanTag, clan.Plataform);
+            Log.DebugFormat("Calculando clã {0}@{1}...", clan.ClanTag, clan.Platform);
 
-            var cc = provider.GetClan(clan.Plataform, clan.ClanId);
+            var cc = provider.GetClan(clan.ClanId);
 
             if (cc == null)
             {
@@ -269,7 +269,7 @@ namespace Negri.Wot
             }
 
             Log.InfoFormat("------------------------------------------------------------------");
-            Log.InfoFormat("Clã:                     {0}@{1}.{2}", cc.ClanTag, cc.Plataform, cc.ClanId);
+            Log.InfoFormat("Clã:                     {0}@{1}.{2}", cc.ClanTag, cc.Platform, cc.ClanId);
             Log.InfoFormat("# Membros:               {0};{1};{2} - Patched: {3}", cc.Count, cc.Active, 0,
                 cc.NumberOfPatchedPlayers);
             Log.InfoFormat("Batalhas:                T:{0:N0};A:{1:N0};W:{2:N0}", cc.TotalBattles, cc.ActiveBattles,

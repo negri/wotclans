@@ -6,6 +6,7 @@ using CliFx;
 using log4net;
 using log4net.Config;
 using Microsoft.Extensions.DependencyInjection;
+using Negri.Wot.Commands;
 using Negri.Wot.Sql;
 
 namespace Negri.Wot
@@ -36,6 +37,8 @@ namespace Negri.Wot
                 WotClansAdminApiKey = wotClansAdminApiKey
             });
 
+            services.AddTransient(p => new Putter(wotClansAdminApiKey));
+
             var ftpFolder = ConfigurationManager.AppSettings["FtpFolder"];
             var ftpUser = ConfigurationManager.AppSettings["FtpUser"];
             var ftpPassword = ConfigurationManager.AppSettings["FtpPassword"];
@@ -50,9 +53,28 @@ namespace Negri.Wot
             var resultDirectory = ConfigurationManager.AppSettings["ResultDirectory"];
 
             services.AddTransient(p =>
-                new ImportXvmCommand(
+                new ImportXvm(
                     p.GetService<Fetcher>(),
                     p.GetService<FtpPutter>(),
+                    p.GetService<DbProvider>(),
+                    p.GetService<DbRecorder>(),
+                    resultDirectory
+                ));
+
+            services.AddTransient(p =>
+                new CalculateStats(
+                    p.GetService<Fetcher>(),
+                    p.GetService<FtpPutter>(),
+                    p.GetService<DbProvider>(),
+                    p.GetService<DbRecorder>(),
+                    resultDirectory
+                ));
+
+            services.AddTransient(p =>
+                new FetchClanMembership(
+                    p.GetService<Fetcher>(),
+                    p.GetService<FtpPutter>(),
+                    p.GetService<Putter>(),
                     p.GetService<DbProvider>(),
                     p.GetService<DbRecorder>(),
                     resultDirectory

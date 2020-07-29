@@ -68,7 +68,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ImportXvmCommand.cs" />
+    <Compile Include="Commands\CalculateStats.cs" />
+    <Compile Include="Commands\FetchClanMembership.cs" />
+    <Compile Include="Commands\ImportXvm.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -92,5 +94,6 @@
       <Name>WoTStat</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

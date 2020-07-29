@@ -9,12 +9,12 @@ using log4net;
 using Negri.Wot.Sql;
 using Newtonsoft.Json;
 
-namespace Negri.Wot
+namespace Negri.Wot.Commands
 {
     [Command("ImportXvm", Description = "Import Expected WN8 values from XVM")]
-    public class ImportXvmCommand : ICommand
+    public class ImportXvm : ICommand
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ImportXvmCommand));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ImportXvm));
 
         private readonly Fetcher _fetcher;
         private readonly FtpPutter _ftpPutter;
@@ -22,7 +22,7 @@ namespace Negri.Wot
         private readonly DbRecorder _recorder;
         private readonly string _resultDirectory;
 
-        public ImportXvmCommand(Fetcher fetcher, FtpPutter ftpPutter, DbProvider provider, DbRecorder recorder, string resultDirectory)
+        public ImportXvm(Fetcher fetcher, FtpPutter ftpPutter, DbProvider provider, DbRecorder recorder, string resultDirectory)
         {
             _fetcher = fetcher;
             _provider = provider;
@@ -31,12 +31,12 @@ namespace Negri.Wot
             _ftpPutter = ftpPutter;
         }
 
-        [CommandOption("WebCacheAge", 'a', Description = "Maximum age for data retrieved from the web")]
+        [CommandOption("WebCacheAge",  Description = "Maximum age for data retrieved from the web")]
         public TimeSpan WebCacheAge { get; set; } = TimeSpan.FromHours(1);
 
         public ValueTask ExecuteAsync(IConsole console)
         {
-            Log.Info($"Staring {nameof(ImportXvmCommand)}...");
+            Log.Info($"Starting {nameof(ImportXvm)}...");
 
             _fetcher.WebCacheAge = WebCacheAge;
 
@@ -78,7 +78,8 @@ namespace Negri.Wot
             _ftpPutter.PutExpectedWn8(file);
 
             console.Output.WriteLine("Done!");
-            Log.Info($"Done {nameof(ImportXvmCommand)}.");
+            Log.Info($"Done {nameof(ImportXvm)}.");
+
             return default;
         }
     }

@@ -102,7 +102,7 @@ namespace Negri.Wot.Bot
 
                 var sb = new StringBuilder();
 
-                sb.Append($"Information about `{clan.ClanTag}`'s {inactives.Length} inactives tankers on the {clan.Plataform}, {ctx.User.Mention}:");
+                sb.Append($"Information about `{clan.ClanTag}`'s {inactives.Length} inactives tankers on the {clan.Platform}, {ctx.User.Mention}:");
                 sb.AppendLine();
 
                 var maxNameLength = inactives.Max(p => p.Name.Length);
@@ -116,7 +116,7 @@ namespace Negri.Wot.Bot
                 sb.AppendLine("```");
 
                 var color = clan.InactivesWn8.ToColor();
-                var platformPrefix = clan.Plataform == Platform.PS ? "ps." : string.Empty;
+                var platformPrefix = clan.Platform == Platform.PS ? "ps." : string.Empty;
 
                 var embed = new DiscordEmbedBuilder
                 {
@@ -269,7 +269,7 @@ namespace Negri.Wot.Bot
             sb.AppendLine("This command is a **Premium** feature on the bot. For now it's free to use this command, but be advised that on the near future access will be restricted to Premium subscribers.");
 
             var color = clan.Top15Wn8.ToColor();
-            var platformPrefix = clan.Plataform == Platform.PS ? "ps." : string.Empty;
+            var platformPrefix = clan.Platform == Platform.PS ? "ps." : string.Empty;
 
             var embed = new DiscordEmbedBuilder
             {
@@ -344,7 +344,7 @@ namespace Negri.Wot.Bot
                 }
             }
 
-            var platformPrefix = clan.Plataform == Platform.PS ? "ps." : string.Empty;
+            var platformPrefix = clan.Platform == Platform.PS ? "ps." : string.Empty;
 
             var sb = new StringBuilder();
 
@@ -366,7 +366,7 @@ namespace Negri.Wot.Bot
                 {
                     sb.Append($" ({clan.Country.ToUpperInvariant()})");
                 }
-                sb.AppendLine($", on the {clan.Plataform}, {ctx.User.Mention}:");
+                sb.AppendLine($", on the {clan.Platform}, {ctx.User.Mention}:");
                 
                 sb.AppendLine("```");
 
@@ -387,7 +387,7 @@ namespace Negri.Wot.Bot
                 {
                     sb.Append($" ({clan.Country.ToUpperInvariant()})");
                 }
-                sb.AppendLine($", on the {clan.Plataform}, {ctx.User.Mention}:");
+                sb.AppendLine($", on the {clan.Platform}, {ctx.User.Mention}:");
 
                 if (!clan.Enabled)
                 {
@@ -447,7 +447,7 @@ namespace Negri.Wot.Bot
                     }
                 };
 
-                Log.Debug($"Returned {nameof(Clan)}({clan.Plataform}.{clan.ClanTag})");
+                Log.Debug($"Returned {nameof(Clan)}({clan.Platform}.{clan.ClanTag})");
 
                 await ctx.RespondAsync("", embed: embed);
             }
@@ -476,7 +476,7 @@ namespace Negri.Wot.Bot
                         sb.Append($" ({clan.Country.ToUpperInvariant()})");
                     }
 
-                    sb.AppendLine($", on the {clan.Plataform}:");
+                    sb.AppendLine($", on the {clan.Platform}:");
                     sb.AppendLine();
 
                     foreach (var p in allPlayers.Skip(currentPage*pageSize).Take(pageSize))

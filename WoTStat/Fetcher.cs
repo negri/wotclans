@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -8,9 +9,7 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using log4net;
 using Negri.Wot.Achievements;
 using Negri.Wot.Diagnostics;
@@ -25,20 +24,14 @@ namespace Negri.Wot
     /// <summary>
     ///     Retrieve information from the web (and APIs)
     /// </summary>
-    public class Fetcher
+    public class Fetcher : IDisposable
     {
         private const int MaxTry = 10;
 
         private static readonly ILog Log = LogManager.GetLogger(typeof(Fetcher));
 
-        private static readonly Regex RegexWotInfoPlayerStat =
-            new Regex("<div class=\"col-xs-4 col-sm-4.*?>\\s+([\\d,\\.]*)",
-                RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-        private static readonly Regex RegexWotInfoPlayerTotal = new Regex("<strong>\\s*([\\d,\\.]*)",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
         private readonly string _cacheDirectory;
+        private readonly WebClient _webClient;
 
         private DateTime _lastWebFetch = DateTime.MinValue;
 
@@ -51,52 +44,51 @@ namespace Negri.Wot
 
             ServicePointManager.ServerCertificateValidationCallback =
                 ServerCertificateValidationCallback;
+
+            _webClient = new WebClient();
+            _webClient.Headers.Add("user-agent",
+                "GetClanStats (WoTClansBrCollector) by JP Negri at negrijp _at_ gmail.com");
         }
 
         /// <summary>
         ///     WG App ID
         /// </summary>
         /// <remarks>
-        /// The <c>Demo</c> api key does not work anymore
+        ///     The <c>Demo</c> api key does not work anymore
         /// </remarks>
         public string WargamingApplicationId { set; private get; } = "demo";
 
         /// <summary>
-        /// Administrative API key for the WoTClans site
+        ///     Administrative API key for the WoTClans site
         /// </summary>
         public string WotClansAdminApiKey { set; private get; } = "nope";
 
         /// <summary>
-        /// Cache Age
+        ///     Cache Age
         /// </summary>
         public TimeSpan WebCacheAge { set; private get; }
 
         /// <summary>
-        /// Min interval between external web calls
+        ///     Min interval between external web calls
         /// </summary>
         public TimeSpan WebFetchInterval { set; private get; }
 
         private static bool ServerCertificateValidationCallback(object s, X509Certificate certificate, X509Chain chain,
             SslPolicyErrors sslPolicyErrors)
         {
-            if (sslPolicyErrors == SslPolicyErrors.None)
-            {
-                return true;
-            }
+            if (sslPolicyErrors == SslPolicyErrors.None) return true;
 
-            string expDateString = certificate.GetExpirationDateString();
-            DateTime expDate = DateTime.Parse(expDateString, CultureInfo.CurrentCulture);
+            var expDateString = certificate.GetExpirationDateString();
+            var expDate = DateTime.Parse(expDateString, CultureInfo.CurrentCulture);
             if (expDate < DateTime.Now)
-            {
                 // Expired certificates are not big issues (I hope)
                 return true;
-            }
 
             return false;
         }
 
         /// <summary>
-        /// Get Diagnostics on the WoTClans website
+        ///     Get Diagnostics on the WoTClans website
         /// </summary>
         /// <returns></returns>
         public SiteDiagnostic GetSiteDiagnostic()
@@ -105,9 +97,9 @@ namespace Negri.Wot
 
             const string url = "https://wotclans.com.br/api/status";
 
-            var content = GetContent($"SiteDiagnostic.{DateTime.UtcNow:yyyy-MM-dd.HHmmss}.json", $"{url}?apiAdminKey={WotClansAdminApiKey}", WebCacheAge,
+            var json = GetContent($"SiteDiagnostic.{DateTime.UtcNow:yyyy-MM-dd.HHmmss}.json",
+                $"{url}?apiAdminKey={WotClansAdminApiKey}", WebCacheAge,
                 false, Encoding.UTF8);
-            var json = content.Content;
             var siteDiagnostic = JsonConvert.DeserializeObject<SiteDiagnostic>(json);
             return siteDiagnostic;
         }
@@ -121,8 +113,7 @@ namespace Negri.Wot
         {
             Log.Debug("Obtendo os WN8 da XVM");
             const string url = "https://static.modxvm.com/wn8-data-exp/json/wn8exp.json";
-            var content = GetContent("Wn8XVM.json", url, WebCacheAge, false, Encoding.UTF8);
-            var json = content.Content;
+            var json = GetContent("Wn8XVM.json", url, WebCacheAge, false, Encoding.UTF8);
 
             var ev = new Wn8ExpectedValues();
 
@@ -138,7 +129,6 @@ namespace Negri.Wot
             Debug.Assert(d != null, nameof(d) + " != null");
 
             foreach (var dd in d.Children())
-            {
                 ev.Add(new Wn8TankExpectedValues
                 {
                     TankId = (long)dd["IDNum"],
@@ -148,7 +138,6 @@ namespace Negri.Wot
                     Damage = (double)dd["expDamage"],
                     WinRate = (double)dd["expWinRate"] / 100.0
                 });
-            }
 
             return ev;
         }
@@ -159,15 +148,11 @@ namespace Negri.Wot
 
             var requestUrl =
                 $"https://api-console.worldoftanks.com/wotx/tanks/stats/?application_id={WargamingApplicationId}&account_id={playerId}";
-            if (tankId.HasValue)
-            {
-                requestUrl += $"&tank_id={tankId.Value}";
-            }
+            if (tankId.HasValue) requestUrl += $"&tank_id={tankId.Value}";
 
-            var content =
-                    GetContent($"TanksStats.{playerId}.json", requestUrl, WebCacheAge, false,
-                        Encoding.UTF8);
-            var json = content.Content;
+            var json =
+                GetContent($"TanksStats.{playerId}.json", requestUrl, WebCacheAge, false,
+                    Encoding.UTF8);
             var response = JsonConvert.DeserializeObject<TanksStatsResponse>(json);
             if (response.IsError)
             {
@@ -177,35 +162,20 @@ namespace Negri.Wot
 
             var list = new Dictionary<long, TankPlayer>();
             foreach (var tankPlayers in response.Players.Values)
-            {
                 if (tankPlayers != null)
-                {
                     foreach (var tankPlayer in tankPlayers)
-                    {
                         // Tanks with zero XP should be ignored, as very likely it's WG returning only the win rate
                         if (tankPlayer.All.XP > 0.0)
-                        {
                             list.Add(tankPlayer.TankId, tankPlayer);
-                        }
-                    }
-                }
-            }
 
-            if (!includeMedals)
-            {
-                return list.Values;
-            }
+            if (!includeMedals) return list.Values;
 
             // Retrieve also the medals
             requestUrl =
                 $"https://api-console.worldoftanks.com/wotx/tanks/achievements/?application_id={WargamingApplicationId}&account_id={playerId}";
-            if (tankId.HasValue)
-            {
-                requestUrl += $"&tank_id={tankId.Value}";
-            }
+            if (tankId.HasValue) requestUrl += $"&tank_id={tankId.Value}";
 
-            content = GetContent($"TanksAchievements.{playerId}.json", requestUrl, WebCacheAge, false, Encoding.UTF8);
-            json = content.Content;
+            json = GetContent($"TanksAchievements.{playerId}.json", requestUrl, WebCacheAge, false, Encoding.UTF8);
             var achievementsResponse = JsonConvert.DeserializeObject<TanksAchievementsResponse>(json);
             if (achievementsResponse.IsError)
             {
@@ -222,13 +192,11 @@ namespace Negri.Wot
             }
 
             foreach (var ta in tanksAchievements)
-            {
                 if (list.TryGetValue(ta.TankId, out var tankPlayer))
                 {
                     tankPlayer.All.Ribbons = ta.Ribbons;
                     tankPlayer.All.Achievements = ta.Achievements;
                 }
-            }
 
             return list.Values;
         }
@@ -236,6 +204,7 @@ namespace Negri.Wot
         /// <summary>
         ///     Because the PC API has pagination
         /// </summary>
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
         private IEnumerable<Tank> GetPcTanks(long? tankId)
         {
             var tanks = new List<Tank>();
@@ -245,12 +214,10 @@ namespace Negri.Wot
             {
                 var url =
                     $"https://api.worldoftanks.com/wot/encyclopedia/vehicles/?application_id={WargamingApplicationId}&fields=tank_id%2Ctier%2Ctype%2Cshort_name%2Ctag%2Cis_premium%2Cnation%2Cname&page_no={page}&limit=100";
-                if (tankId.HasValue)
-                {
-                    url += $"&tank_id={tankId.Value}";
-                }
+                if (tankId.HasValue) url += $"&tank_id={tankId.Value}";
 
-                var json = GetContent($"Vehicles.{Platform.PC}.{DateTime.UtcNow:yyyyMMddHH}.{page}.json", url, WebCacheAge, false, Encoding.UTF8).Content;
+                var json = GetContent($"Vehicles.{Platform.PC}.{DateTime.UtcNow:yyyyMMddHH}.{page}.json", url,
+                    WebCacheAge, false, Encoding.UTF8);
                 var response = JsonConvert.DeserializeObject<VehiclesResponse>(json);
                 if (response.IsError)
                 {
@@ -264,14 +231,12 @@ namespace Negri.Wot
                 page += 1;
             } while (page <= totalPages);
 
-            foreach (var tank in tanks)
-            {
-                tank.Plataform = Platform.PC;
-            }
+            foreach (var tank in tanks) tank.Plataform = Platform.PC;
 
             return tanks;
         }
 
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
         private IEnumerable<Tank> GetTanks(Platform platform, long? tankId)
         {
             Log.DebugFormat("Procurando dados de tanques para {0}...", platform);
@@ -287,17 +252,14 @@ namespace Negri.Wot
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
-            string requestUrl =
+            var requestUrl =
                 $"https://{server}/wotx/encyclopedia/vehicles/?application_id={WargamingApplicationId}&fields=tank_id%2Cname%2Cshort_name%2Cis_premium%2Ctier%2Ctag%2Ctype%2Cimages%2Cnation";
-            if (tankId != null)
-            {
-                requestUrl += $"&tank_id={tankId.Value}";
-            }
+            if (tankId != null) requestUrl += $"&tank_id={tankId.Value}";
 
             var json =
                 GetContent($"Vehicles.{platform}.{DateTime.UtcNow:yyyyMMddHH}.json", requestUrl, WebCacheAge,
                     false,
-                    Encoding.UTF8).Content;
+                    Encoding.UTF8);
 
             var response = JsonConvert.DeserializeObject<VehiclesResponse>(json);
             if (response.IsError)
@@ -306,10 +268,7 @@ namespace Negri.Wot
                 return Enumerable.Empty<Tank>();
             }
 
-            foreach (var tank in response.Data.Values)
-            {
-                tank.Plataform = platform;
-            }
+            foreach (var tank in response.Data.Values) tank.Plataform = platform;
 
             return response.Data.Values;
         }
@@ -331,12 +290,12 @@ namespace Negri.Wot
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
-            string requestUrl =
+            var requestUrl =
                 $"https://{server}/wotx/clans/list/?application_id={WargamingApplicationId}&search={clanTag}&limit=1";
 
             var json =
                 GetContent($"FindClan.{platform}.{clanTag}.json", requestUrl, TimeSpan.FromMinutes(1), false,
-                    Encoding.UTF8).Content;
+                    Encoding.UTF8);
 
             var response = JsonConvert.DeserializeObject<ClansListResponse>(json);
             if (response.IsError)
@@ -366,80 +325,21 @@ namespace Negri.Wot
                 return null;
             }
 
-            return new Clan(platform, found.ClanId, found.Tag) { AllMembersCount = found.MembersCount };
+            return new Clan(found.ClanId, found.Tag) { AllMembersCount = found.MembersCount };
         }
 
-        public Player GetPlayer(Player player)
-        {
-            Log.DebugFormat("Obtendo jogador {0}.{1}, @{2}, do clan '{3}'...", player.Name, player.Id, player.Plataform,
-                player.ClanTag ?? string.Empty);
 
-            var statUrl = $"http://wotinfo.net/en/recent?playerid={player.Id}&server=";
-            switch (player.Plataform)
-            {
-                case Platform.XBOX:
-                    statUrl += "xbox";
-                    break;
-                case Platform.PS:
-                    statUrl += "ps4";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(player.Plataform));
-            }
-
-            var statFile = $"WoTInfo.{player.Id}.txt";
-
-            var moment = DateTime.UtcNow;
-            var content = GetContent(statFile, statUrl, WebCacheAge, false, Encoding.UTF8).Content;
-
-            for (var i = 0; i < MaxTry; ++i)
-            {
-                if (ParsePlayerStatsPage(player, content, out var parsePlayerError))
-                {
-                    break;
-                }
-
-                Log.WarnFormat("Erro de parsing na página do jogador {0}.{1}@{2}. Motivo: {3}. Arquivo: {4}", player.Id,
-                    player.Name, player.Plataform, parsePlayerError, statFile);
-                if (parsePlayerError == ParsePlayerError.WgApiIsDown)
-                {
-                    // Não adianta tentar novamente agora
-                    DeleteFromCache(statFile);
-                    return player;
-                }
-
-                var secondsWait = 5 + 2 * i;
-                Log.WarnFormat(
-                    "...sem dados na página do WoTInfo para o jogador {0}@{2}. Esperando {1}s antes de tentar novamente.",
-                    player.Name, secondsWait, player.Plataform);
-                Thread.Sleep(TimeSpan.FromSeconds(secondsWait));
-
-                DeleteFromCache(statFile);
-
-                var fullContent = GetContent(statFile, statUrl, WebCacheAge, true, Encoding.UTF8);
-                content = fullContent.Content;
-                moment = fullContent.Moment;
-            }
-
-            player.Moment = moment;
-            player.Origin = PlayerDataOrigin.WotInfo;
-
-            Log.DebugFormat("  Batalhas: {0:N0}; WN8a: {1:r}", player.MonthBattles, player.MonthWn8);
-
-            return player;
-        }
-
-        private WebContent GetContent(string cacheFileTitle, string url, TimeSpan maxCacheAge, bool noWait,
+        private string GetContent(string cacheFileTitle, string url, TimeSpan maxCacheAge, bool noWait,
             Encoding encoding = null)
         {
-            Log.DebugFormat("Obtendo '{0}' ...", url);
+            Log.DebugFormat("Getting '{0}' with cache key {1}...", url, cacheFileTitle);
 
             encoding = encoding ?? Encoding.UTF8;
 
             var cacheFileName = Path.Combine(_cacheDirectory, cacheFileTitle);
             if (!File.Exists(cacheFileName))
             {
-                Log.Debug("...nunca pego antes...");
+                Log.Debug("...not on cache...");
                 return GetContentFromWeb(cacheFileName, url, noWait, encoding);
             }
 
@@ -448,40 +348,37 @@ namespace Negri.Wot
             var age = DateTime.UtcNow - moment;
             if (age > maxCacheAge)
             {
-                Log.DebugFormat("...arquivo de cache em '{0}' de {1:yyyy-MM-dd HH:mm} expirado com {2:N0}h...",
+                Log.DebugFormat("...cache file '{0}' from {1:yyyy-MM-dd HH:mm} expired with {2:N1}h...",
                     cacheFileTitle, moment, age.TotalHours);
 
                 return GetContentFromWeb(cacheFileName, url, noWait, encoding);
             }
 
-            Log.Debug("...Obtido do cache.");
-            return new WebContent(File.ReadAllText(cacheFileName, encoding)) { Moment = moment };
+            Log.Debug("...retrieved from cache.");
+            return File.ReadAllText(cacheFileName, encoding);
         }
 
-        private WebContent GetContentFromWeb(string cacheFileName, string url, bool noWait, Encoding encoding)
+        private string GetContentFromWeb(string cacheFileName, string url, bool noWait, Encoding encoding)
         {
             var timeSinceLastFetch = DateTime.UtcNow - _lastWebFetch;
             var waitTime = WebFetchInterval - timeSinceLastFetch;
             var waitTimeMs = Math.Max((int)waitTime.TotalMilliseconds, 0);
             if (!noWait & (waitTimeMs > 0))
             {
-                Log.DebugFormat("...esperando {0:N1}s para usar a web...", waitTimeMs / 1000.0);
+                Log.DebugFormat("...waiting {0:N1}s to use the web...", waitTimeMs / 1000.0);
                 Thread.Sleep(waitTimeMs);
             }
 
-            Exception lastException = new ApplicationException("Erro no controle de fluxo!");
+            Exception lastException = new ApplicationException("Code flow error!");
 
             for (var i = 0; i < MaxTry; ++i)
-            {
                 try
                 {
                     var moment = DateTime.UtcNow;
                     var sw = Stopwatch.StartNew();
 
-                    var webClient = new WebClient();
-                    webClient.Headers.Add("user-agent",
-                        "GetClanStats (WoTClansBrCollector) by JP Negri at negrijp _at_ gmail.com");
-                    var bytes = webClient.DownloadDataTaskAsync(url).Result;
+
+                    var bytes = _webClient.DownloadDataTaskAsync(url).Result;
                     var webTime = sw.ElapsedMilliseconds;
 
                     var content = Encoding.UTF8.GetString(bytes);
@@ -489,8 +386,7 @@ namespace Negri.Wot
                     // Escreve em cache
                     sw.Restart();
 
-                    for (int j = 0; j < MaxTry; ++j)
-                    {
+                    for (var j = 0; j < MaxTry; ++j)
                         try
                         {
                             File.WriteAllText(cacheFileName, content, encoding);
@@ -500,7 +396,7 @@ namespace Negri.Wot
                         {
                             if (j < MaxTry - 1)
                             {
-                                Log.Warn("...esperando antes de tentar novamente.");
+                                Log.Warn("...waiting before retry...");
                                 Thread.Sleep(TimeSpan.FromSeconds(j * j * 0.1));
                             }
                             else
@@ -509,18 +405,14 @@ namespace Negri.Wot
                                 Log.Error(ex);
                             }
                         }
-                    }
 
 
                     var cacheWriteTime = sw.ElapsedMilliseconds;
 
-                    if (!noWait)
-                    {
-                        _lastWebFetch = moment;
-                    }
+                    if (!noWait) _lastWebFetch = moment;
 
-                    Log.DebugFormat("...Obtido da web em {0}ms e escrito em cache em {1}ms.", webTime, cacheWriteTime);
-                    return new WebContent(content) { Moment = moment };
+                    Log.DebugFormat("...retrieved from web in {0}ms and wrote to cache in {1}ms.", webTime, cacheWriteTime);
+                    return content;
                 }
                 catch (WebException ex)
                 {
@@ -528,320 +420,39 @@ namespace Negri.Wot
                     if (ex.Status == WebExceptionStatus.ProtocolError)
                     {
                         var response = ex.Response as HttpWebResponse;
-                        if (response?.StatusCode == HttpStatusCode.NotFound)
-                        {
-                            throw;
-                        }
+                        if (response?.StatusCode == HttpStatusCode.NotFound) throw;
                     }
 
                     if (i < MaxTry - 1)
                     {
-                        Log.Warn("...esperando antes de tentar novamente.");
+                        Log.Warn("...waiting before retry.");
                         Thread.Sleep(TimeSpan.FromSeconds(i * i * 2));
                     }
 
                     lastException = ex;
                 }
-            }
 
             throw lastException;
         }
 
-        private void DeleteFromCache(string contentFileName)
+        /// <summary>
+        /// Retrieve basic information about clans in the game
+        /// </summary>
+        /// <param name="minNumberOfPlayers">The minimum number of players to return</param>
+        /// <returns></returns>
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
+        public IEnumerable<Clan> GetClans(int minNumberOfPlayers = 7)
         {
-            var cacheFileFullPath = Path.Combine(_cacheDirectory, contentFileName);
-            File.Delete(cacheFileFullPath);
-        }
-
-        private static bool ParsePlayerStatsPage(Player player, string statsPageContent, out ParsePlayerError error)
-        {
-            if (statsPageContent.Length < 1024)
-            {
-                // Não tem como ter uma resposta válida com menos de 1k
-                Log.WarnFormat("...conteúdo da página com apenas {0} bytes.", statsPageContent.Length);
-                error = ParsePlayerError.SmallPage;
-                return false;
-            }
-
-            var ci = CultureInfo.InvariantCulture;
-
-            {
-                #region Obter Estatisticas Gerais
-
-                var count = 1;
-                foreach (Match match in RegexWotInfoPlayerStat.Matches(statsPageContent))
-                {
-                    var row = (count - 1) / 3;
-                    var column = count % 3;
-                    var s = match.Groups[1].Value;
-                    var d = 0.0;
-                    if (!string.IsNullOrWhiteSpace(s))
-                    {
-                        try
-                        {
-                            d = double.Parse(s, NumberStyles.Any, ci);
-                        }
-                        catch (Exception)
-                        {
-                            d = 0;
-                        }
-                    }
-
-                    switch (row)
-                    {
-                        case 0:
-                            switch (column)
-                            {
-                                case 0:
-                                    player.TotalBattles = (int)d;
-                                    break;
-                                case 1:
-                                    //player.WeekBattles = (int) d;
-                                    break;
-                                case 2:
-                                    player.MonthBattles = (int)d;
-                                    break;
-                            }
-
-                            break;
-                        case 1:
-                            switch (column)
-                            {
-                                case 0:
-                                    player.TotalWinRate = d / 100.0;
-                                    break;
-                                case 1:
-                                    //player.WeekWinRate = d/100.0;
-                                    break;
-                                case 2:
-                                    player.MonthWinRate = d / 100.0;
-                                    break;
-                            }
-
-                            break;
-                        case 2:
-                            switch (column)
-                            {
-                                case 0:
-                                    //player.TotalAvgDmg = d;
-                                    break;
-                                case 1:
-                                    //player.WeekAvgDmg = d;
-                                    break;
-                                case 2:
-                                    //player.MonthAvgDmg = d;
-                                    break;
-                            }
-
-                            break;
-                        case 3:
-                            switch (column)
-                            {
-                                case 0:
-                                    //player.TotalAvgRatio = d;
-                                    break;
-                                case 1:
-                                    //player.WeekAvgRatio = d;
-                                    break;
-                                case 2:
-                                    //player.MonthAvgRatio = d;
-                                    break;
-                            }
-
-                            break;
-                        case 4:
-                            switch (column)
-                            {
-                                case 0:
-                                    //player.TotalAvgDestroyed = d;
-                                    break;
-                                case 1:
-                                    //player.WeekAvgDestroyed = d;
-                                    break;
-                                case 2:
-                                    //player.MonthAvgDestroyed = d;
-                                    break;
-                            }
-
-                            break;
-                        case 8:
-                            switch (column)
-                            {
-                                case 0:
-                                    //player.TotalSurvived = d/100.0;
-                                    break;
-                                case 1:
-                                    //player.WeekSurvived = d/100.0;
-                                    break;
-                                case 2:
-                                    //player.MonthSurvived = d/100.0;
-                                    break;
-                            }
-
-                            break;
-                        case 9:
-                            switch (column)
-                            {
-                                case 0:
-                                    //player.TotalKillRatio = d;
-                                    break;
-                                case 1:
-                                    //player.WeekKillRatio = d;
-                                    break;
-                                case 2:
-                                    //player.MonthKillRatio = d;
-                                    break;
-                            }
-
-                            break;
-                        case 10:
-                            switch (column)
-                            {
-                                case 0:
-                                    //player.TotalAvgTier = d;
-                                    break;
-                                case 1:
-                                    //player.WeekAvgTier = d;
-                                    break;
-                                case 2:
-                                    //player.MonthAvgTier = d;
-                                    break;
-                            }
-
-                            break;
-                    }
-
-                    ++count;
-                }
-
-                #endregion
-
-                if (count == 1)
-                {
-                    // A API do WoT pode estar com problema, as vezes transiente
-                    if (statsPageContent.Contains("WOT API is down"))
-                    {
-                        error = ParsePlayerError.WgApiIsDown;
-                        return false;
-                    }
-                }
-
-                #region Obter Os Totalizadores
-
-                count = 1;
-                foreach (Match match in RegexWotInfoPlayerTotal.Matches(statsPageContent))
-                {
-                    var row = (count - 1) / 3;
-                    var column = count % 3;
-                    var s = match.Groups[1].Value;
-                    var d = 0.0;
-                    if (!string.IsNullOrWhiteSpace(s))
-                    {
-                        try
-                        {
-                            d = double.Parse(s, NumberStyles.Any, ci);
-                        }
-                        catch (Exception)
-                        {
-                            d = 0;
-                        }
-                    }
-
-                    switch (row)
-                    {
-                        case 0:
-                            switch (column)
-                            {
-                                case 0:
-                                    //player.TotalEfficiency = d;
-                                    break;
-                                case 1:
-                                    //player.WeekEfficiency = d;
-                                    break;
-                                case 2:
-                                    //player.MonthEfficiency = d;
-                                    break;
-                            }
-
-                            break;
-                        case 1:
-                            switch (column)
-                            {
-                                case 0:
-                                    //player.TotalWn7 = d;
-                                    break;
-                                case 1:
-                                    //player.WeekWn7 = d;
-                                    break;
-                                case 2:
-                                    //player.MonthWn7 = d;
-                                    break;
-                            }
-
-                            break;
-                        case 2:
-                            switch (column)
-                            {
-                                case 0:
-                                    player.TotalWn8 = d;
-                                    break;
-                                case 1:
-                                    //player.WeekWn8 = d;
-                                    break;
-                                case 2:
-                                    player.MonthWn8 = d;
-                                    break;
-                            }
-
-                            break;
-                    }
-
-                    ++count;
-                }
-
-                #endregion
-            }
-
-            error = ParsePlayerError.NoError;
-            return true;
-        }
-
-        public void DeleteCacheForPlayer(long playerId)
-        {
-            DeleteFromCache($"WoTInfo.{playerId}.txt");
-        }
-
-        public IEnumerable<Clan> GetClans(Platform platform, int minNumberOfPlayers = 15)
-        {
-            if (minNumberOfPlayers < 4)
-            {
-                throw new ArgumentOutOfRangeException(nameof(minNumberOfPlayers), minNumberOfPlayers,
-                    @"No mínimo 4 membros!");
-            }
-
-            Log.DebugFormat("Listando clãs na plataforma {0} com pelo menos {1} membros...", platform,
-                minNumberOfPlayers);
-            string server;
-            switch (platform)
-            {
-                case Platform.XBOX:
-                    server = "api-console.worldoftanks.com";
-                    break;
-                case Platform.PS:
-                    server = "api-console.worldoftanks.com";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
-            }
+            Log.DebugFormat("Listing clans with at least {0} members...", minNumberOfPlayers);
 
             for (int pageNumber = 1, currentCount = 100; currentCount > 0; ++pageNumber)
             {
-                string lisUrl =
-                    $"https://{server}/wotx/clans/list/?application_id={WargamingApplicationId}&fields=clan_id%2Ctag%2Cmembers_count&page_no={pageNumber}";
+                var lisUrl =
+                    $"https://api-console.worldoftanks.com/wotx/clans/list/?application_id={WargamingApplicationId}&fields=clan_id%2Ctag%2Cmembers_count&page_no={pageNumber}";
 
                 var json =
-                    GetContent($"ListClans.{platform}.{pageNumber}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", lisUrl,
-                        WebCacheAge, false, Encoding.UTF8).Content;
+                    GetContent($"ListClans.{pageNumber}.{DateTime.UtcNow:yyyy-MM-dd}.json", lisUrl,
+                        WebCacheAge, false, Encoding.UTF8);
                 var response = JsonConvert.DeserializeObject<ClansListResponse>(json);
                 if (response.IsError)
                 {
@@ -851,7 +462,7 @@ namespace Negri.Wot
 
                 if (response.Meta.Count <= 0)
                 {
-                    Log.DebugFormat("listagem de clãs encerrada na página {0}.", pageNumber);
+                    Log.DebugFormat("Clans listing finished on page {0}.", pageNumber);
                     yield break;
                 }
 
@@ -860,48 +471,58 @@ namespace Negri.Wot
                 // Os clãs vem em ordem de tamanho, então se o primeiro já for menor, paramos
                 if (response.Clans[0].MembersCount < minNumberOfPlayers)
                 {
-                    Log.DebugFormat("Página {0} inicia com apenas {1} membros.", pageNumber,
+                    Log.DebugFormat("Page {0} starts with clans having {1} members.", pageNumber,
                         response.Clans[0].MembersCount);
                     yield break;
                 }
 
                 foreach (var clan in response.Clans.Where(c => c.MembersCount >= minNumberOfPlayers))
-                {
-                    yield return new Clan(platform, clan.ClanId, clan.Tag) { AllMembersCount = clan.MembersCount };
-                }
+                    yield return new Clan(clan.ClanId, clan.Tag) { AllMembersCount = clan.MembersCount };
             }
         }
 
-        private IEnumerable<Clan> GetClans(Platform platform, IEnumerable<ClanPlataform> clans)
+        public IEnumerable<Clan> GetClans(IEnumerable<ClanBaseInformation> clans)
         {
-            var clanPlatforms = clans as ClanPlataform[] ?? clans.ToArray();
-            if (!clanPlatforms.Any())
+            var c = clans.ToArray();
+            if (c.Length <= 100)
+            {
+                return GetClansInternal(c);
+            }
+
+            // Page calls to API in 100 ids
+            var r = new List<Clan>(c.Length);
+            var pages = c.Length / 100 + 1;
+            for (var p = 0; p < pages; ++p)
+            {
+                var call = c.Skip(p * 100).Take(100);
+                r.AddRange(GetClansInternal(call));
+            }
+
+            return r;
+        }
+
+        /// <summary>
+        /// Get All information about the clans
+        /// </summary>
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
+        public IEnumerable<Clan> GetClansInternal(IEnumerable<ClanBaseInformation> clans)
+        {
+            var clanArray = clans as ClanBaseInformation[] ?? clans.ToArray();
+            if (!clanArray.Any())
             {
                 yield break;
             }
 
-            Log.DebugFormat("Procurando dados na plataforma {0}...", platform);
-            string server;
-            switch (platform)
-            {
-                case Platform.XBOX:
-                    server = "api-console.worldoftanks.com";
-                    break;
-                case Platform.PS:
-                    server = "api-console.worldoftanks.com";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
-            }
+            Log.Debug($"Searching {clanArray.Length} clan's details...");
 
-            var requestedClans = new HashSet<long>(clanPlatforms.Select(c => c.ClanId));
+            var requestedClans = new HashSet<long>(clanArray.Select(c => c.ClanId));
 
             // Verifica se algum dos clãs foi encerrado
-            string disbandedUrl =
-                $"https://{server}/wotx/clans/info/?application_id={WargamingApplicationId}&fields=clan_id%2Cis_clan_disbanded&clan_id={string.Join("%2C", requestedClans.Select(id => id.ToString()))}";
+            var disbandedUrl =
+                $"https://api-console.worldoftanks.com/wotx/clans/info/?application_id={WargamingApplicationId}&fields=clan_id%2Cis_clan_disbanded&clan_id={string.Join("%2C", requestedClans.Select(id => id.ToString()))}";
             var json =
-                GetContent($"DisbandedClan.{platform}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", disbandedUrl,
-                    WebCacheAge, false, Encoding.UTF8).Content;
+                GetContent($"DisbandedClan.{DateTime.UtcNow:yyyy-MM-dd.HHmmss}.json", disbandedUrl,
+                    WebCacheAge, false, Encoding.UTF8);
             var response = JsonConvert.DeserializeObject<ClansInfoResponse>(json);
             if (response.IsError)
             {
@@ -912,18 +533,18 @@ namespace Negri.Wot
 
             var disbandedClans =
                 new HashSet<long>(response.Clans.Where(apiClanKv => apiClanKv.Value.IsDisbanded).Select(kv => kv.Key));
-            Log.WarnFormat("{0} Clãs foram desfeitos.", disbandedClans.Count);
+            Log.WarnFormat("{0} clans where disbanded.", disbandedClans.Count);
 
-            // Tira os debandados para não dar pau na serialização
+            // Clear the disbanded so deserialization works
             requestedClans.ExceptWith(disbandedClans);
 
             // Pega os dados normais
-            string requestUrl = $"https://{server}/wotx/clans/info/?application_id={WargamingApplicationId}&clan_id=" +
-                                $"{string.Join("%2C", requestedClans.Select(id => id.ToString()))}&fields=clan_id%2Ctag%2Cname%2Cmembers_count%2Ccreated_at%2Cis_clan_disbanded" +
-                                "%2Cmembers%2Cmembers.role%2Cmembers.account_name&extra=members";
+            var requestUrl = $"https://api-console.worldoftanks.com/wotx/clans/info/?application_id={WargamingApplicationId}&clan_id=" +
+                             $"{string.Join("%2C", requestedClans.Select(id => id.ToString()))}&fields=clan_id%2Ctag%2Cname%2Cmembers_count%2Ccreated_at%2Cis_clan_disbanded" +
+                             "%2Cmembers%2Cmembers.role%2Cmembers.account_name&extra=members";
 
-            json = GetContent($"InfoClan.{platform}.{DateTime.UtcNow:yyyy-MM-dd.HHmm}.json", requestUrl,
-                WebCacheAge, false, Encoding.UTF8).Content;
+            json = GetContent($"InfoClan.{DateTime.UtcNow:yyyy-MM-dd.HHmmss}.json", requestUrl,
+                WebCacheAge, false, Encoding.UTF8);
 
             response = JsonConvert.DeserializeObject<ClansInfoResponse>(json);
             if (response.IsError && response.Error?.Code == 504)
@@ -937,40 +558,60 @@ namespace Negri.Wot
             {
                 if (apiClanKv.Value.IsDisbanded)
                 {
-                    Log.WarnFormat("Clã id {0} foi desfeito.", apiClanKv.Key);
+                    Log.WarnFormat("Clan id {0} was disbanded.", apiClanKv.Key);
                     continue;
                 }
 
-                var clan = new Clan(platform, apiClanKv.Key, apiClanKv.Value.Tag, apiClanKv.Value.Name)
+                var clan = new Clan(apiClanKv.Key, apiClanKv.Value.Tag, apiClanKv.Value.Name)
                 {
                     CreatedAtUtc = apiClanKv.Value.CreatedAtUtc,
                     MembershipMoment = DateTime.UtcNow
                 };
 
                 if (apiClanKv.Value.Members.Any())
-                {
                     foreach (var memberKv in apiClanKv.Value.Members)
                     {
+                        var pn = NormalizeNickname(memberKv.Value.Name);
+
                         clan.Add(new Player
                         {
                             Id = memberKv.Key,
                             Rank = memberKv.Value.Rank,
-                            Plataform = platform,
-                            Name = memberKv.Value.Name
+                            Plataform = pn.platform,
+                            Name = pn.name
                         });
                     }
-                }
 
                 yield return clan;
             }
 
             foreach (var id in disbandedClans)
             {
-                yield return new Clan(platform, id, string.Empty)
+                yield return new Clan(id, string.Empty)
                 {
                     IsDisbanded = true
                 };
             }
+        }
+
+        private static (Platform platform, string name) NormalizeNickname(string nickname)
+        {
+            if (string.IsNullOrWhiteSpace(nickname))
+            {
+                return (Platform.Console, string.Empty);
+            }
+
+            if (nickname.EndsWith("-p"))
+            {
+                return (Platform.PS, nickname.Substring(0, nickname.Length - 2));
+            }
+
+            if (nickname.EndsWith("-x"))
+            {
+                return (Platform.XBOX, nickname.Substring(0, nickname.Length - 2));
+            }
+
+            return (Platform.Console, nickname);
         }
 
         /// <summary>
@@ -992,18 +633,17 @@ namespace Negri.Wot
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
-            string url =
+            var url =
                 $"https://{server}/wotx/account/info/?application_id={WargamingApplicationId}&account_id={id}&fields=nickname";
-            var json = GetContent($"GamerTagById.{platform}.{id}.json", url, WebCacheAge, false, Encoding.UTF8)
-                .Content;
+            var json = GetContent($"GamerTagById.{platform}.{id}.json", url, WebCacheAge, false, Encoding.UTF8);
 
             var result = JObject.Parse(json);
 
             if ((string)result["status"] != "ok")
             {
                 var error = result["error"];
-                int code = (int)error["code"];
-                string msg = (string)error["message"];
+                var code = (int)error["code"];
+                var msg = (string)error["message"];
                 Log.ErrorFormat("Erro de API {0}, '{1}' chamando {2}", code, msg, url);
                 return null;
             }
@@ -1020,16 +660,7 @@ namespace Negri.Wot
             return name;
         }
 
-        public IEnumerable<Clan> GetClans(IEnumerable<ClanPlataform> clans)
-        {
-            var clanPlataforms = clans as ClanPlataform[] ?? clans.ToArray();
-
-            var xboxClans = clanPlataforms.Where(c => c.Plataform == Platform.XBOX);
-            var psClans = clanPlataforms.Where(c => c.Plataform == Platform.PS);
-
-            return GetClans(Platform.XBOX, xboxClans).Concat(GetClans(Platform.PS, psClans));
-        }
-
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public Player GetPlayerByGamerTag(Platform platform, string gamerTag)
         {
             Log.DebugFormat("Procurando dados na plataforma {0}...", platform);
@@ -1046,16 +677,16 @@ namespace Negri.Wot
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
 
-            string url = $"https://{server}/wotx/account/list/?application_id={WargamingApplicationId}&search={gamerTag}";
+            var url = $"https://{server}/wotx/account/list/?application_id={WargamingApplicationId}&search={gamerTag}";
             var json =
-                GetContent($"AccountList.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8)
-                    .Content;
+                GetContent($"AccountList.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8);
             var result = JObject.Parse(json);
-            if ((string) result["status"] == "error")
+            if ((string)result["status"] == "error")
             {
                 Log.WarnFormat("Erro na busca: {0}", (string)result["error"]["message"]);
                 return null;
             }
+
             var count = (int)result["meta"]["count"];
             if (count < 1)
             {
@@ -1086,12 +717,10 @@ namespace Negri.Wot
             url =
                 $"https://{server}/wotx/clans/accountinfo/?application_id={WargamingApplicationId}&account_id={player.Id}&extra=clan";
             json =
-                GetContent($"ClansAccountinfo.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8)
-                    .Content;
+                GetContent($"ClansAccountinfo.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8);
             result = JObject.Parse(json);
             count = (int)result["meta"]["count"];
             if (count == 1)
-            {
                 try
                 {
                     player.ClanId = (long)result["data"][player.Id.ToString()]["clan_id"];
@@ -1103,13 +732,12 @@ namespace Negri.Wot
                     player.ClanId = null;
                     player.ClanTag = string.Empty;
                 }
-            }
 
             return player;
         }
 
         /// <summary>
-        /// Get all medals on the game
+        ///     Get all medals on the game
         /// </summary>
         public IEnumerable<Medal> GetMedals(Platform platform)
         {
@@ -1128,16 +756,17 @@ namespace Negri.Wot
             }
 
             var url = $"https://{server}/wotx/encyclopedia/achievements/?application_id={WargamingApplicationId}";
-            var json = GetContent($"Achievements.{platform}.json", url, WebCacheAge, false, Encoding.UTF8).Content;
+            var json = GetContent($"Achievements.{platform}.json", url, WebCacheAge, false, Encoding.UTF8);
 
             var o = JObject.Parse(json);
 
-            var status = (string) o["status"];
+            var status = (string)o["status"];
             if (status != "ok")
             {
                 var error = o["error"];
                 Log.Error($"Error: {(string)error["code"]} - {(string)error["message"]}");
-                throw new ApplicationException($"Error calling WG API: {(string)error["code"]} - {(string)error["message"]}");
+                throw new ApplicationException(
+                    $"Error calling WG API: {(string)error["code"]} - {(string)error["message"]}");
             }
 
             var medals = new List<Medal>();
@@ -1151,48 +780,24 @@ namespace Negri.Wot
                 {
                     Platform = platform,
                     Code = t.Name,
-                    Category = CategoryExtensions.Parse((string) ti["category"]),
-                    Name = (string) ti["name"],
-                    Section = SectionExtensions.Parse((string) ti["section"]),
-                    Type = TypeExtensions.Parse((string) ti["type"]),
+                    Category = CategoryExtensions.Parse((string)ti["category"]),
+                    Name = (string)ti["name"],
+                    Section = SectionExtensions.Parse((string)ti["section"]),
+                    Type = TypeExtensions.Parse((string)ti["type"]),
                     Description = (string)ti["description"],
                     HeroInformation = (string)ti["hero_info"],
                     Condition = (string)ti["condition"]
                 };
 
                 medals.Add(medal);
-                
             }
 
             return medals;
         }
 
-        private enum ParsePlayerError
+        public void Dispose()
         {
-            NoError = 0,
-            SmallPage = 2,
-            WgApiIsDown = 3
+            _webClient?.Dispose();
         }
-
-        /// <summary>
-        ///     Content retrieved from the web
-        /// </summary>
-        private class WebContent
-        {
-            public WebContent(string content)
-            {
-                Content = content;
-                Moment = DateTime.UtcNow;
-            }
-
-            public string Content { get; }
-
-            /// <summary>
-            ///     Time it was retrieved 
-            /// </summary>
-            public DateTime Moment { get; set; }
-        }
-
-        
     }
 }

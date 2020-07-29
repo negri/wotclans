@@ -34,7 +34,7 @@ namespace UtilityProgram
         {
             try
             {
-                MapPs4NewIds(args);
+                TestGetClan();
             }
             catch (Exception ex)
             {
@@ -131,6 +131,13 @@ namespace UtilityProgram
             var recorder = new DbRecorder(connectionString);
             recorder.Set(gameMedals.Values);
 
+        }
+
+        private static void TestGetClan()
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var provider = new DbProvider(connectionString);
+            var clan = provider.GetClan(208);
         }
         
 
@@ -360,35 +367,35 @@ namespace UtilityProgram
                   var clan = clans[i];
 
                   var done = false;
-                  if (clan.Plataform == Platform.XBOX)
+                  if (clan.Platform == Platform.XBOX)
                   {
                       done = already.Contains(clan.ClanTag);
                   }
-                  else if (clan.Plataform == Platform.PS)
+                  else if (clan.Platform == Platform.PS)
                   {
                       done = alreadyPs.Contains(clan.ClanTag);
                   }
 
                   if (done)
                   {
-                      Log.InfoFormat("cla {0} de {1}: {2}@{3} feito anteriormente.", i + 1, clans.Length, clan.ClanTag, clan.Plataform);
+                      Log.InfoFormat("cla {0} de {1}: {2}@{3} feito anteriormente.", i + 1, clans.Length, clan.ClanTag, clan.Platform);
                       Interlocked.Increment(ref doneCount);
                       return;
                   }
 
                   Log.InfoFormat("Processando cla {0} de {1}: {2}@{3}...", i + 1, clans.Length, clan.ClanTag,
-                      clan.Plataform);
+                      clan.Platform);
                   var csw = Stopwatch.StartNew();
 
                   var cc = CalculateClan(clan, provider, recorder);
 
                   Log.InfoFormat("Calculado cla {0} de {1}: {2}@{3} em {4:N1}s...",
-                      i + 1, clans.Length, clan.ClanTag, clan.Plataform, csw.Elapsed.TotalSeconds);
+                      i + 1, clans.Length, clan.ClanTag, clan.Platform, csw.Elapsed.TotalSeconds);
 
                   if (cc != null)
                   {
                       var fsw = Stopwatch.StartNew();
-                      switch (cc.Plataform)
+                      switch (cc.Platform)
                       {
                           case Platform.XBOX:
                               {
@@ -419,22 +426,22 @@ namespace UtilityProgram
                       }
 
                       Log.InfoFormat("Upload do cla {0} de {1}: {2}@{3} em {4:N1}s...",
-                          i + 1, clans.Length, clan.ClanTag, clan.Plataform, fsw.Elapsed.TotalSeconds);
+                          i + 1, clans.Length, clan.ClanTag, clan.Platform, fsw.Elapsed.TotalSeconds);
                   }
 
                   Interlocked.Increment(ref doneCount);
                   Log.InfoFormat("Processado cla {0} de {1}: {2}@{3} em {4:N1}s. {5} totais.",
-                      i + 1, clans.Length, clan.ClanTag, clan.Plataform, csw.Elapsed.TotalSeconds, doneCount);
+                      i + 1, clans.Length, clan.ClanTag, clan.Platform, csw.Elapsed.TotalSeconds, doneCount);
               });
             var calculationTime = sw.Elapsed;
         }
 
-        private static Clan CalculateClan(ClanPlataform clan, DbProvider provider,
+        private static Clan CalculateClan(ClanBaseInformation clan, DbProvider provider,
             DbRecorder recorder)
         {
-            Log.DebugFormat("Calculando cla {0}@{1}...", clan.ClanTag, clan.Plataform);
+            Log.DebugFormat("Calculando cla {0}@{1}...", clan.ClanTag, clan.Platform);
 
-            var cc = provider.GetClan(clan.Plataform, clan.ClanId);
+            var cc = provider.GetClan(clan.ClanId);
 
             if (cc == null)
             {
@@ -449,7 +456,7 @@ namespace UtilityProgram
             }
 
             Log.InfoFormat("------------------------------------------------------------------");
-            Log.InfoFormat("cla:                     {0}@{1}", cc.ClanTag, cc.Plataform);
+            Log.InfoFormat("cla:                     {0}@{1}", cc.ClanTag, cc.Platform);
             Log.InfoFormat("# Membros:               {0};{1};{2} - Patched: {3}", cc.Count, cc.Active, 0,
                 cc.NumberOfPatchedPlayers);
             Log.InfoFormat("Batalhas:                T:{0:N0};A:{1:N0};W:{2:N0}", cc.TotalBattles, cc.ActiveBattles,
@@ -575,7 +582,7 @@ namespace UtilityProgram
                 WebFetchInterval = TimeSpan.FromSeconds(1),
                 WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
-            var clans = fetcher.GetClans(Platform.XBOX, size).ToArray();
+            var clans = fetcher.GetClans(size).ToArray();
 
             var provider = new DbProvider(ConfigurationManager.ConnectionStrings["Main"].ConnectionString);
 

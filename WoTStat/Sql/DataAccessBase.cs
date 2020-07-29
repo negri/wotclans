@@ -40,7 +40,25 @@ namespace Negri.Wot.Sql
                     Log.Warn(ex);
                     if (ex.Number == 2627)
                     {
-                        // FK errada não adianta tentar
+                        // FK violation
+                        throw;
+                    }
+
+                    if (ex.Number == 207)
+                    {
+                        // Wrong column name
+                        throw;
+                    }
+
+                    if (ex.Number == 8114)
+                    {
+                        // Wrong type
+                        throw;
+                    }
+
+                    if (ex.Number == 102)
+                    {
+                        // Syntax
                         throw;
                     }
 

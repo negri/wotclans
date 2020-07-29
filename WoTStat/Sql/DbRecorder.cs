@@ -31,21 +31,21 @@ namespace Negri.Wot.Sql
         /// </summary>
         public void Set(Clan clan, bool onlyMembership = false)
         {
-            Log.DebugFormat("Setando clã {0}@{1} no BD...", clan.ClanTag, clan.Plataform);
+            Log.DebugFormat("Setting clan [{0}] in DB...", clan.ClanTag);
             var sw = Stopwatch.StartNew();
             Execute(transaction => { Set(clan, onlyMembership, transaction); });
-            Log.DebugFormat("Salvo no BD clã {0}@{1} em {2}.", clan.ClanTag, clan.Plataform, sw.Elapsed);
+            Log.DebugFormat("Set clan [{0}] in {1}.", clan.ClanTag, sw.Elapsed);
         }
 
         private static void Set(Clan clan, bool onlyMembership, SqlTransaction t)
         {
             var date = clan.Date;
 
-            var databaseClanTag = GetClanTag(clan.Plataform, clan.ClanId, t);
+            var databaseClanTag = GetClanTag(clan.ClanId, t);
             if (string.IsNullOrWhiteSpace(databaseClanTag))
             {
                 throw new ApplicationException(
-                    $"Já deveria existir em Main.Clan o clã {clan.ClanId}.{clan.ClanTag}@{clan.Plataform}!");
+                    $"Should exist in Main.Clan the clan {clan.ClanId}.{clan.ClanTag}!");
             }
 
             if (databaseClanTag != clan.ClanTag)
@@ -53,12 +53,11 @@ namespace Negri.Wot.Sql
                 // verifica se o novo nome não vai conflitar com algo que ainda não tenha sido refletido.
                 long? otherClanId = null;
                 const string sqlCheckName =
-                    "select ClanId from Main.Clan where (ClanTag = @clanTag) and (PlataformId = @plataformId);";
+                    "select ClanId from Main.Clan where (ClanTag = @clanTag);";
                 using (var cmd = new SqlCommand(sqlCheckName, t.Connection, t))
                 {
                     cmd.CommandTimeout = 5 * 60;
                     cmd.Parameters.AddWithValue("@clanTag", clan.ClanTag);
-                    cmd.Parameters.AddWithValue("@plataformId", (int) clan.Plataform);
                     var o = cmd.ExecuteScalar();
                     if (o != null)
                     {
@@ -67,8 +66,7 @@ namespace Negri.Wot.Sql
                         {
                             // O novo nome colide com algum outro...
                             otherClanId = existingId;
-                            Log.WarnFormat("O novo tag de {0}.{1}.{2} colide com {0}.{1}.{3}...",
-                                clan.ClanTag, clan.Plataform, clan.ClanId, existingId);
+                            Log.WarnFormat("The new tag of {0}.{1}.{2} crashes with {0}.{1}.{3}...", clan.ClanTag, clan.Platform, clan.ClanId, existingId);
                         }
                     }
                 }
@@ -78,24 +76,23 @@ namespace Negri.Wot.Sql
                     // O novo nome colide com algum outro no BD. É um clã ativo?
                     bool isEnabled;
                     const string sqlIsEnabled =
-                        "select [Enabled] from Main.Clan where (ClanId = @clanId) and (PlataformId = @plataformId);";
+                        "select [Enabled] from Main.Clan where (ClanId = @clanId);";
                     using (var cmd = new SqlCommand(sqlIsEnabled, t.Connection, t))
                     {
                         cmd.CommandTimeout = 5 * 60;
                         cmd.Parameters.AddWithValue("@clanId", otherClanId.Value);
-                        cmd.Parameters.AddWithValue("@plataformId", (int) clan.Plataform);
                         isEnabled = (bool) cmd.ExecuteScalar();
                     }
                     if (isEnabled)
                     {
                         // Basta esperar que o anterior seja atualizado para seja lá o que for
-                        Log.Warn("O clã ainda está ativo, basta esperar que seja atualizado para evitar o conflito");
+                        Log.Warn("The conflicted tag is still in use. Just wait until it get changed.");
                         return;
                     }
 
                     // Troca o tag do antigo para algo que não dê conflito
                     const string sqlChangeDisabled =
-                        "update Main.Clan set ClanTag = @clanTag where (ClanId = @clanId) and (PlataformId = @plataformId);";
+                        "update Main.Clan set ClanTag = @clanTag where (ClanId = @clanId);";
                     using (var cmd = new SqlCommand(sqlChangeDisabled, t.Connection, t))
                     {
                         cmd.CommandTimeout = 5 * 60;
@@ -103,40 +100,38 @@ namespace Negri.Wot.Sql
                         var rand = new Random();
                         var disabledName = "+" + rand.Next(0, 10000).ToString(CultureInfo.InvariantCulture);
 
-                        Log.WarnFormat("Trocando o tag do clã inativo {0}.{1}.{2} para {3}",
-                            clan.ClanTag, clan.Plataform, otherClanId.Value, disabledName);
+                        Log.WarnFormat("Changing tag of innactive clan {0}.{2} to {2}",
+                            clan.ClanTag, otherClanId.Value, disabledName);
 
                         cmd.Parameters.AddWithValue("@clanTag", disabledName);
                         cmd.Parameters.AddWithValue("@clanId", otherClanId.Value);
-                        cmd.Parameters.AddWithValue("@plataformId", (int) clan.Plataform);
+                        
                         cmd.ExecuteNonQuery();
                     }
                 }
 
                 // O clã mudou de tag...
                 const string sqlUpdClan =
-                    "update Main.Clan set ClanTag = @clanTag where (ClanId = @clanId) and (PlataformId = @plataformId);";
+                    "update Main.Clan set ClanTag = @clanTag where (ClanId = @clanId);";
                 using (var cmd = new SqlCommand(sqlUpdClan, t.Connection, t))
                 {
                     cmd.CommandTimeout = 5 * 60;
                     cmd.Parameters.AddWithValue("@clanTag", clan.ClanTag);
                     cmd.Parameters.AddWithValue("@clanId", clan.ClanId);
-                    cmd.Parameters.AddWithValue("@plataformId", (int) clan.Plataform);
                     cmd.ExecuteNonQuery();
                 }
 
-                // Isso será util para renomear os arquivos, posteriormente.
+                // This will be useful to propagate the change to the site latter...
                 clan.OldTag = databaseClanTag;
             }
 
             const string sqlSetClanName =
-                "update Main.Clan set Name = @name where (ClanId = @clanId) and (PlataformId = @plataformId);";
+                "update Main.Clan set Name = @name where (ClanId = @clanId);";
             using (var cmd = new SqlCommand(sqlSetClanName, t.Connection, t))
             {
                 cmd.CommandTimeout = 5 * 60;
                 cmd.Parameters.AddWithValue("@name", clan.Name);
                 cmd.Parameters.AddWithValue("@clanId", clan.ClanId);
-                cmd.Parameters.AddWithValue("@plataformId", (int) clan.Plataform);
                 cmd.ExecuteNonQuery();
             }
 
@@ -145,9 +140,7 @@ namespace Negri.Wot.Sql
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
 
-                cmd.Parameters.AddWithValue("@PlataformId", (int) clan.Plataform);
                 cmd.Parameters.AddWithValue("@ClanId", clan.ClanId);
-                cmd.Parameters.AddWithValue("@ClanTag", clan.ClanTag);
                 cmd.Parameters.AddWithValue("@Date", date);
                 cmd.Parameters.AddWithValue("@MembershipMoment", clan.MembershipMoment);
                 cmd.ExecuteNonQuery();
@@ -159,25 +152,23 @@ namespace Negri.Wot.Sql
             }
 
             // Apaga os jogadores para inserir novamente
-            const string delHistSql = "delete from Main.ClanDatePlayer where (PlataformId = @PlataformId) and (ClanTag = @ClanTag) and ([Date] = @Date);";
+            const string delHistSql = "delete from Main.ClanDatePlayer where (ClanId = @ClanId) and ([Date] = @Date);";
             using (var cmd = new SqlCommand(delHistSql, t.Connection, t))
             {
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 5 * 60;
 
-                cmd.Parameters.AddWithValue("@PlataformId", (int)clan.Plataform);
-                cmd.Parameters.AddWithValue("@ClanTag", clan.ClanTag);
+                cmd.Parameters.AddWithValue("@ClanId", clan.ClanId);
                 cmd.Parameters.AddWithValue("@Date", date);
                 cmd.ExecuteNonQuery();
             }
 
-            const string delCurrSql = "delete from [Current].ClanPlayer where (PlataformId = @PlataformId) and (ClanId = @ClanId);";
-            using (var cmd = new SqlCommand(delCurrSql, t.Connection, t))
+            const string delCurrentSql = "delete from [Current].ClanPlayer where (ClanId = @ClanId);";
+            using (var cmd = new SqlCommand(delCurrentSql, t.Connection, t))
             {
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 5 * 60;
 
-                cmd.Parameters.AddWithValue("@PlataformId", (int)clan.Plataform);
                 cmd.Parameters.AddWithValue("@ClanId", clan.ClanId);
                 cmd.ExecuteNonQuery();
             }
@@ -186,13 +177,12 @@ namespace Negri.Wot.Sql
             {
                 // Associa o jogador ao clã na data corrente
                 const string sqlInsDatePlayer =
-                    "insert into Main.ClanDatePlayer (PlataformId, ClanTag, [Date], PlayerId, RankId) " +
-                    "values (@plataformId, @clanTag, @date, @playerId, @rankId);";
+                    "insert into Main.ClanDatePlayer ([Date], PlayerId, RankId, ClanId) " +
+                    "values (@date, @playerId, @rankId, @clanId);";
                 using (var cmd = new SqlCommand(sqlInsDatePlayer, t.Connection, t))
                 {
                     cmd.CommandTimeout = 5 * 60;
-                    cmd.Parameters.AddWithValue("@plataformId", (int) player.Plataform);
-                    cmd.Parameters.AddWithValue("@clanTag", clan.ClanTag);
+                    cmd.Parameters.AddWithValue("@clanId", clan.ClanId);
                     cmd.Parameters.AddWithValue("@date", date);
                     cmd.Parameters.AddWithValue("@playerId", player.Id);
                     cmd.Parameters.AddWithValue("@rankId", (int) player.Rank);
@@ -200,12 +190,11 @@ namespace Negri.Wot.Sql
                 }
 
                 const string sqlInsPlayer =
-                    "insert into [Current].ClanPlayer (PlataformId, ClanId, PlayerId, RankId) " +
-                    "values (@PlataformId, @ClanId, @PlayerId, @RankId);";
+                    "insert into [Current].ClanPlayer (ClanId, PlayerId, RankId) " +
+                    "values (@ClanId, @PlayerId, @RankId);";
                 using (var cmd = new SqlCommand(sqlInsPlayer, t.Connection, t))
                 {
                     cmd.CommandTimeout = 5 * 60;
-                    cmd.Parameters.AddWithValue("@PlataformId", (int)player.Plataform);
                     cmd.Parameters.AddWithValue("@ClanId", clan.ClanId);
                     cmd.Parameters.AddWithValue("@PlayerId", player.Id);
                     cmd.Parameters.AddWithValue("@RankId", (int)player.Rank);
@@ -413,12 +402,11 @@ namespace Negri.Wot.Sql
             var medals = CreateMedalsTable(tps);
             if (medals.Rows.Count > 0)
             {
-                const string delSql = "delete Achievements.PlayerMedal where (PlataformId = @plataformId) and (PlayerId = @playerId);";
+                const string delSql = "delete Achievements.PlayerMedal where (PlayerId = @playerId);";
                 using (var cmd = new SqlCommand(delSql, t.Connection, t))
                 {
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandTimeout = 5 * 60;
-                    cmd.Parameters.AddWithValue("@plataformId", tps[0].Plataform);
                     cmd.Parameters.AddWithValue("@playerId", tps[0].PlayerId);
                     cmd.ExecuteNonQuery();
                 }
@@ -493,22 +481,21 @@ namespace Negri.Wot.Sql
             }
         }
 
-        public void SetClanFlag(Platform platform, long clanId, string flagCode)
+        public void SetClanFlag(long clanId, string flagCode)
         {
-            Execute(transaction => { SetClanFlag(platform, clanId, flagCode, transaction); });
+            Execute(transaction => { SetClanFlag(clanId, flagCode, transaction); });
         }
 
-        private static void SetClanFlag(Platform platform, long clanId, string flagCode, SqlTransaction t)
+        private static void SetClanFlag(long clanId, string flagCode, SqlTransaction t)
         {
             const string sql =
-                "update Main.Clan set FlagCode = @flagCode where (ClanId = @clanId) and (PlataformId = @plataformId);";
+                "update Main.Clan set FlagCode = @flagCode where (ClanId = @clanId);";
             using (var cmd = new SqlCommand(sql, t.Connection, t))
             {
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 5 * 60;
 
                 cmd.Parameters.AddWithValue("@clanId", clanId);
-                cmd.Parameters.AddWithValue("@plataformId", (int)platform);
                 if (string.IsNullOrWhiteSpace(flagCode))
                 {
                     cmd.Parameters.AddWithValue("@flagCode", DBNull.Value);
@@ -590,14 +577,13 @@ namespace Negri.Wot.Sql
         /// <summary>
         ///     Retorna o nome do clã, ou nulo caso ele não exista
         /// </summary>
-        private static string GetClanTag(Platform platform, long clanId, SqlTransaction t)
+        private static string GetClanTag(long clanId, SqlTransaction t)
         {
             const string sql =
-                "select ClanTag from Main.Clan where (PlataformId = @plataformId) and (ClanId = @clanId);";
+                "select ClanTag from Main.Clan where (ClanId = @clanId);";
             using (var cmd = new SqlCommand(sql, t.Connection, t))
             {
                 cmd.CommandTimeout = 5 * 60;
-                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
                 cmd.Parameters.AddWithValue("@clanId", clanId);
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -690,6 +676,7 @@ namespace Negri.Wot.Sql
             Log.DebugFormat("Salvo player {0}.{1} no BD em {2}.", player.Name, player.Id, sw.Elapsed);
         }
 
+        [SuppressMessage("ReSharper", "StringLiteralTypo", Justification = "The database has platform misspelled.")]
         private static void Set(Player player, SqlTransaction t, bool updateStatistics)
         {
             var databaseGamerTag = GetGamerTag(player.Id, t);
@@ -783,12 +770,10 @@ namespace Negri.Wot.Sql
 
         public void SetClanCalculation(Clan clan)
         {
-            Log.DebugFormat("Salvando calculos do clã {0}@{1} no BD em {2:yyyy-MM-dd}...", clan.ClanTag, clan.Plataform,
-                clan.Date);
+            Log.DebugFormat("Salvando calculos do clã {0} no BD em {1:yyyy-MM-dd}...", clan.ClanTag, clan.Date);
             var sw = Stopwatch.StartNew();
             Execute(transaction => { SetClanCalculation(clan, transaction); });
-            Log.DebugFormat("Salvos calculos do clã {0}@{1} no BD em {2:yyyy-MM-dd} em {3}.", clan.ClanTag,
-                clan.Plataform, clan.Date, sw.Elapsed);
+            Log.DebugFormat("Salvos calculos do clã {0} no BD em {1:yyyy-MM-dd} em {2}.", clan.ClanTag, clan.Date, sw.Elapsed);
         }
 
         private static void SetClanCalculation(Clan clan, SqlTransaction t)
@@ -803,7 +788,6 @@ namespace Negri.Wot.Sql
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
 
-                cmd.Parameters.AddWithValue("@PlataformId", (int)clan.Plataform);
                 cmd.Parameters.AddWithValue("@ClanId", clan.ClanId);
                 cmd.Parameters.AddWithValue("@ClanTag", clan.ClanTag);
                 cmd.Parameters.AddWithValue("@Date", clan.MembershipMoment.Date);
@@ -837,12 +821,10 @@ namespace Negri.Wot.Sql
         /// </summary>
         public void Add(Clan clan)
         {
-            Log.DebugFormat("Adicionando clã {3}.{0}@{1} no BD em {2:yyyy-MM-dd}...", clan.ClanTag, clan.Plataform,
-                clan.Date, clan.ClanId);
+            Log.DebugFormat("Adicionando clã {2}.{0} no BD em {1:yyyy-MM-dd}...", clan.ClanTag, clan.Date, clan.ClanId);
             var sw = Stopwatch.StartNew();
             Execute(t => Add(clan, t));
-            Log.DebugFormat("Adicionado clã {4}.{0}@{1} no BD em {2:yyyy-MM-dd} em {3}.", clan.ClanTag, clan.Plataform,
-                clan.Date, sw.Elapsed, clan.ClanId);
+            Log.DebugFormat("Adicionado clã {3}.{0} no BD em {1:yyyy-MM-dd} em {2}.", clan.ClanTag, clan.Date, sw.Elapsed, clan.ClanId);
         }
 
         private static void Add(Clan clan, SqlTransaction t)
@@ -851,7 +833,6 @@ namespace Negri.Wot.Sql
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
-                cmd.Parameters.AddWithValue("@plataformId", (int) clan.Plataform);
                 cmd.Parameters.AddWithValue("@clanId", clan.ClanId);
                 cmd.Parameters.AddWithValue("@clanTag", clan.ClanTag);
                 cmd.Parameters.AddWithValue("@country",
@@ -861,55 +842,33 @@ namespace Negri.Wot.Sql
             }
         }
 
-        /// <summary>
-        ///     Limpa a fila de clãs a serem adicionados ao sistema
-        /// </summary>
-        public void ClearClansToAddQueue()
+        public void EnableClan(long clanId)
         {
-            Log.Debug("Limpando a fila de clãs a serem adicionados no BD...");
+            Log.DebugFormat("Enabling clan {0}...", clanId);
             var sw = Stopwatch.StartNew();
-            Execute(ClearClansToAddQueue);
-            Log.DebugFormat("Limpada a fila de clãs a serem adicionados no BD em {0}.", sw.Elapsed);
+            Execute(t => EnableDisableClan(clanId, true, DisabledReason.NotDisabled, t));
+            Log.DebugFormat("Enabled clan {0} in {1}.", clanId, sw.Elapsed);
         }
 
-        private static void ClearClansToAddQueue(SqlTransaction t)
+        public void DisableClan(long clanId, DisabledReason disabledReason)
         {
-            const string sql = "delete from Main.ClanRequest;";
-            using (var cmd = new SqlCommand(sql, t.Connection, t))
-            {
-                cmd.CommandType = CommandType.Text;
-                cmd.ExecuteNonQuery();
-            }
-        }
-
-        public void EnableClan(Platform platform, long clanId)
-        {
-            Log.DebugFormat("Habilitando clã {0}.{1} no BD...", clanId, platform);
+            Log.DebugFormat("Disabing clan {0} for reason {1}...", clanId, disabledReason);
             var sw = Stopwatch.StartNew();
-            Execute(t => EnableDisableClan(platform, clanId, true, DisabledReason.NotDisabled, t));
-            Log.DebugFormat("Habilitado clã {0}.{1} no BD em {2}.", clanId, platform, sw.Elapsed);
+            Execute(t => EnableDisableClan(clanId, false, disabledReason, t));
+            Log.DebugFormat("Disabled clan {0} in {1}.", clanId, sw.Elapsed);
         }
 
-        public void DisableClan(Platform platform, long clanId, DisabledReason disabledReason)
-        {
-            Log.DebugFormat("Desabilitando clã {0}.{1} no BD por motivo {2}...", clanId, platform, disabledReason);
-            var sw = Stopwatch.StartNew();
-            Execute(t => EnableDisableClan(platform, clanId, false, disabledReason, t));
-            Log.DebugFormat("Desabilitado clã {0}.{1} no BD em {2}.", clanId, platform, sw.Elapsed);
-        }
-
-        private static void EnableDisableClan(Platform platform, long clanId, bool enable,
+        private static void EnableDisableClan(long clanId, bool enable,
             DisabledReason disabledReason, SqlTransaction t)
         {
             const string sql =
-                "update Main.Clan set [Enabled] = @enableDisable, DisabledReason = @disabledReason where (ClanId = @clanId) and (PlataformId = @plataformId);";
+                "update Main.Clan set [Enabled] = @enableDisable, DisabledReason = @disabledReason where (ClanId = @clanId);";
             using (var cmd = new SqlCommand(sql, t.Connection, t))
             {
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 5 * 60;
 
                 cmd.Parameters.AddWithValue("@clanId", clanId);
-                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
                 cmd.Parameters.AddWithValue("@enableDisable", enable);
                 cmd.Parameters.AddWithValue("@disabledReason", (int) disabledReason);
 

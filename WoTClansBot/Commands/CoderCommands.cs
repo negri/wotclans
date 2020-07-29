@@ -464,7 +464,7 @@ namespace Negri.Wot.Bot
                         return;
                     }
 
-                    recorder.EnableClan(clanOnSite.Plataform, clanOnSite.ClanId);
+                    recorder.EnableClan(clanOnSite.ClanId);
                     await ctx.RespondAsync(
                         $"The clan `{clanTag}` on `{platform}` disabled for `{clan.DisabledReason}` is enabled again.");
                     Log.Info($"Enabled {platform}.{clanTag}");
@@ -473,7 +473,7 @@ namespace Negri.Wot.Bot
                 {
                     if (isBan)
                     {
-                        recorder.DisableClan(clan.Plataform, clan.ClanId, DisabledReason.Banned);
+                        recorder.DisableClan(clan.ClanId, DisabledReason.Banned);
 
                         // Also deletes from the remote site
                         var putter = new Putter(ConfigurationManager.AppSettings["ApiAdminKey"]);
@@ -485,7 +485,7 @@ namespace Negri.Wot.Bot
                     }
                     else
                     {
-                        recorder.DisableClan(clan.Plataform, clan.ClanId, DisabledReason.Unknow);
+                        recorder.DisableClan(clan.ClanId, DisabledReason.Unknow);
                         await ctx.RespondAsync(
                             $"The clan `{clanTag}` ({clan.ClanId}) on `{platform}` was **disabled** from the site.");
                         Log.Warn($"Disabled {platform}.{clanTag}");
@@ -496,7 +496,7 @@ namespace Negri.Wot.Bot
                 flagCode = flagCode ?? string.Empty;
                 if (!string.Equals(flagCode, clan.Country ?? string.Empty, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    recorder.SetClanFlag(clan.Plataform, clan.ClanId, flagCode.ToLowerInvariant());
+                    recorder.SetClanFlag(clan.ClanId, flagCode.ToLowerInvariant());
                     await ctx.RespondAsync(
                         $"The flag of the clan `{clanTag}` on `{platform}` was changed to `{flagCode}`.");
                     Log.Info($"Flag changed on {platform}.{clanTag} to {flagCode}.");
