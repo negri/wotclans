@@ -256,7 +256,7 @@ namespace Negri.Wot.Bot
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
                     Name = "WoTClans",
-                    Url = $"https://wotclans.com.br"
+                    Url = "https://wotclans.com.br"
                 },
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
@@ -291,9 +291,6 @@ namespace Negri.Wot.Bot
 
             Log.Debug($"Requesting {nameof(Clan)}({clanTag}, {all})...");
 
-            var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-            var platform = GetPlatform(clanTag, cfg.Plataform, out clanTag);
-
             clanTag = clanTag.Trim('[', ']');
             clanTag = clanTag.ToUpperInvariant();
 
@@ -308,8 +305,6 @@ namespace Negri.Wot.Bot
             var clan = provider.GetClan(clanTag);
             if (clan == null)
             {
-                platform = platform == Platform.PS ? Platform.XBOX : Platform.PS;
-
                 clan = provider.GetClan(clanTag);
                 if (clan == null)
                 {
@@ -318,8 +313,6 @@ namespace Negri.Wot.Bot
                     return;
                 }
             }
-
-            var platformPrefix = clan.Platform == Platform.PS ? "ps." : string.Empty;
 
             var sb = new StringBuilder();
 
@@ -341,7 +334,7 @@ namespace Negri.Wot.Bot
                 {
                     sb.Append($" ({clan.Country.ToUpperInvariant()})");
                 }
-                sb.AppendLine($", on the {clan.Platform}, {ctx.User.Mention}:");
+                sb.AppendLine($", {ctx.User.Mention}:");
                 
                 sb.AppendLine("```");
 
@@ -362,7 +355,7 @@ namespace Negri.Wot.Bot
                 {
                     sb.Append($" ({clan.Country.ToUpperInvariant()})");
                 }
-                sb.AppendLine($", on the {clan.Platform}, {ctx.User.Mention}:");
+                sb.AppendLine($", {ctx.User.Mention}:");
 
                 if (!clan.Enabled)
                 {
@@ -410,11 +403,11 @@ namespace Negri.Wot.Bot
                     Title = title,
                     Description = sb.ToString(),
                     Color = new DiscordColor(color.R, color.G, color.B),
-                    Url = $"https://{platformPrefix}wotclans.com.br/Clan/{clan.ClanTag}",
+                    Url = $"https://wotclans.com.br/Clan/{clan.ClanTag}",
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{platform}wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -422,7 +415,7 @@ namespace Negri.Wot.Bot
                     }
                 };
 
-                Log.Debug($"Returned {nameof(Clan)}({clan.Platform}.{clan.ClanTag})");
+                Log.Debug($"Returned {nameof(Clan)}({clan.ClanTag})");
 
                 await ctx.RespondAsync("", embed: embed);
             }
@@ -451,7 +444,7 @@ namespace Negri.Wot.Bot
                         sb.Append($" ({clan.Country.ToUpperInvariant()})");
                     }
 
-                    sb.AppendLine($", on the {clan.Platform}:");
+                    sb.AppendLine(":");
                     sb.AppendLine();
 
                     foreach (var p in allPlayers.Skip(currentPage*pageSize).Take(pageSize))
@@ -464,11 +457,11 @@ namespace Negri.Wot.Bot
                         Title = title,
                         Description = sb.ToString(),
                         Color = new DiscordColor(color.R, color.G, color.B),
-                        Url = $"https://{platformPrefix}wotclans.com.br/Clan/{clan.ClanTag}",
+                        Url = $"https://wotclans.com.br/Clan/{clan.ClanTag}",
                         Author = new DiscordEmbedBuilder.EmbedAuthor
                         {
                             Name = "WoTClans",
-                            Url = $"https://{platform}wotclans.com.br"
+                            Url = "https://wotclans.com.br"
                         },
                         Footer = new DiscordEmbedBuilder.EmbedFooter
                         {
