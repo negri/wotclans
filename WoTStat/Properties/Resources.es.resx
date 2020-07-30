@@ -150,6 +150,9 @@
   <data name="FilterSmall" xml:space="preserve">
     <value>Clanes Pequeños</value>
   </data>
+  <data name="ForConsole" xml:space="preserve">
+    <value>para Consolas</value>
+  </data>
   <data name="From" xml:space="preserve">
     <value>Desde</value>
   </data>

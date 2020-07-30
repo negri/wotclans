@@ -7,13 +7,13 @@
 @model ClansPage
 @section extraHeaders {
     <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css " rel="stylesheet" type="text/css" />
-    <meta name="description" content="@string.Format(Resources.MetaDescription, GlobalHelper.ForPlataform)">    
+    <meta name="description" content="@string.Format(Resources.MetaDescription, GlobalHelper.ForPlatform)">    
 }
 
 @section lead {
     <section class="jumbotron top-banner">
         <h1>@Resources.MainSiteTitle</h1>
-        <h2>@GlobalHelper.ForPlataform</h2>
+        <h2>@GlobalHelper.ForPlatform</h2>
         <p>
             @string.Format(Resources.Tracking, Model.Players, Model.Count)
             @Resources.UpdatedAt <span id="last-update-time">@Model.Moment.ToString("O")</span>.

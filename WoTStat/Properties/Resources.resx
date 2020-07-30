@@ -487,7 +487,7 @@
     <value>Data for {0:N0} tanks calculated at {1:d}.</value>
   </data>
   <data name="MoEDescriptions" xml:space="preserve">
-    <value>Marks of Excellence for World of Tanks {0}</value>
+    <value>Marks of Excellence for World of Tanks</value>
   </data>
   <data name="MoEFilter" xml:space="preserve">
     <value>Filter by Tank, Type or Nation:</value>
@@ -661,7 +661,7 @@
     <value>Data is computed every week, using the battles of the clan's members that this site tracks. This is not the whole picture, be advised.</value>
   </data>
   <data name="StatsDesc" xml:space="preserve">
-    <value>Statistics for the {0} - WoT {1}</value>
+    <value>Statistics for the {0}</value>
   </data>
   <data name="StatsTitle" xml:space="preserve">
     <value>Statistics for the {0}</value>
@@ -991,7 +991,7 @@
     <value>Wot Clans by</value>
   </data>
   <data name="XboxCommunityDiscord" xml:space="preserve">
-    <value>XBOX Community Discord</value>
+    <value>Community Discord</value>
   </data>
   <data name="Italy" xml:space="preserve">
     <value>Italy</value>
@@ -1007,5 +1007,8 @@
   </data>
   <data name="Information" xml:space="preserve">
     <value>Information</value>
+  </data>
+  <data name="ForConsole" xml:space="preserve">
+    <value>for Console</value>
   </data>
 </root>

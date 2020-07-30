@@ -38,8 +38,6 @@ namespace Negri.Wot.Site
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
             GlobalHelper.DataFolder = ConfigurationManager.AppSettings["ClanResultsFolder"];
-            GlobalHelper.Platform =
-                (Platform) Enum.Parse(typeof(Platform), ConfigurationManager.AppSettings["Platform"]);
             GlobalHelper.CacheMinutes = int.Parse(ConfigurationManager.AppSettings["CacheMinutes"] ?? "0");
             GlobalHelper.DefaultPlayerDetails = (PlayerDataOrigin) Enum.Parse(typeof(PlayerDataOrigin),
                 ConfigurationManager.AppSettings["DefaultPlayerDetails"] ?? PlayerDataOrigin.WotInfo.ToString());
@@ -51,8 +49,8 @@ namespace Negri.Wot.Site
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            Log.InfoFormat("App started for {0}, on data folder {1}, using {2}min of cache time.",
-                GlobalHelper.Platform, GlobalHelper.DataFolder, GlobalHelper.CacheMinutes);
+            Log.InfoFormat("App started on data folder {0}, using {1}min of cache time.",
+                GlobalHelper.DataFolder, GlobalHelper.CacheMinutes);
         }
 
         protected void Application_Error(object sender, EventArgs e)
@@ -136,16 +134,11 @@ namespace Negri.Wot.Site
                         newLanguageRegion += region;
                     }
 
-                    var newCi = CreateCulture(newLanguageRegion);
-                    if (newCi == null)
-                    {
-                        // The combination of language and region didn't worked... just the language should work
-                        newCi = CreateCulture(lang);
-                    }
+                    var newCi = CreateCulture(newLanguageRegion) ?? CreateCulture(lang);
 
                     if (newCi == null)
                     {
-                        Log.Warn($"Can't create culture for language and region... fall back to next...");
+                        Log.Warn("Can't create culture for language and region... fall back to next...");
                         continue;
                     }
 

@@ -979,6 +979,15 @@ namespace Negri.Wot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to for Console.
+        /// </summary>
+        public static string ForConsole {
+            get {
+                return ResourceManager.GetString("ForConsole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to for PlayStation.
         /// </summary>
         public static string ForPs {
@@ -1528,7 +1537,7 @@ namespace Negri.Wot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Marks of Excellence for World of Tanks {0}.
+        ///   Looks up a localized string similar to Marks of Excellence for World of Tanks.
         /// </summary>
         public static string MoEDescriptions {
             get {
@@ -2149,7 +2158,7 @@ namespace Negri.Wot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Statistics for the {0} - WoT {1}.
+        ///   Looks up a localized string similar to Statistics for the {0}.
         /// </summary>
         public static string StatsDesc {
             get {
@@ -2725,7 +2734,7 @@ namespace Negri.Wot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to XBOX Community Discord.
+        ///   Looks up a localized string similar to Community Discord.
         /// </summary>
         public static string XboxCommunityDiscord {
             get {

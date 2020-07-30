@@ -423,6 +423,9 @@
   <data name="FilterSmallExplanation" xml:space="preserve">
     <value>Pokaż klany posiadające mniej niż 15 aktywnych graczy.</value>
   </data>
+  <data name="ForConsole" xml:space="preserve">
+    <value>na konsole</value>
+  </data>
   <data name="ForPs" xml:space="preserve">
     <value>na PlayStation</value>
   </data>
@@ -607,7 +610,7 @@
     <value>Dane dla {0:N0} czołgów, obliczone o {1:d}.</value>
   </data>
   <data name="MoEDescriptions" xml:space="preserve">
-    <value>Odznaki biegłości w World of Tanks {0}</value>
+    <value>Odznaki biegłości w World of Tanks</value>
   </data>
   <data name="MoEExplanation" xml:space="preserve">
     <value>Szacunkowe &lt;b&gt;uszkodzenia łączne&lt;/b&gt; (suma uszkodzeń bezpośrednich i asystujących), które powinieneś zadać, by otrzymać &lt;b&gt;odznakę biegłości&lt;/b&gt; na lufie swojej armaty.</value>
@@ -814,7 +817,7 @@
     <value>Dane są obliczane co tydzień, z wykorzystaniem bitew stoczonych przez członków klanu śledzonych przez tę stronę. Pamiętaj, że nie pokazuje to pełnego obrazu.</value>
   </data>
   <data name="StatsDesc" xml:space="preserve">
-    <value>Statystyki dla {0} - WoT {1}</value>
+    <value>Statystyki dla {0}</value>
   </data>
   <data name="StatsTitle" xml:space="preserve">
     <value>Statystyki dla {0}</value>
@@ -1006,6 +1009,6 @@
     <value>WoT Clans przez</value>
   </data>
   <data name="XboxCommunityDiscord" xml:space="preserve">
-    <value>Społeczność XBOX Discord</value>
+    <value>Społeczność Discord</value>
   </data>
 </root>

@@ -200,8 +200,10 @@ namespace Negri.Wot.Site.Controllers
                     break;
             }
 
+            var p = player.Platform == Platform.PS ? "ps4" : "xbox";
+
             var url =
-                $"https://wotcstat.info/player?id={player.Id}&s={GlobalHelper.PlataformTag}&l={externalLang}";
+                $"https://wotcstat.info/player?id={player.Id}&s={p}&l={externalLang}";
             
             return url;
         }
@@ -226,7 +228,9 @@ namespace Negri.Wot.Site.Controllers
                     break;
             }
 
-            var url = $"http://wotinfo.net/{externalLang}/efficiency?playername={player.Name.Replace(' ', '+')}&playerid={player.Id}&server={GlobalHelper.PlataformTag.ToUpperInvariant()}";
+            var p = player.Platform == Platform.PS ? "PS4" : "XBOX";
+
+            var url = $"http://wotinfo.net/{externalLang}/efficiency?playername={player.Name.Replace(' ', '+')}&playerid={player.Id}&server={p}";
             return url;
         }
 
@@ -249,7 +253,9 @@ namespace Negri.Wot.Site.Controllers
                     break;
             }
 
-            return $"http://wotinfo.net/{externalLang}/trend?playerid={player.Id}&server={GlobalHelper.PlataformTag.ToUpperInvariant()}";
+            var p = player.Platform == Platform.PS ? "PS4" : "XBOX";
+
+            return $"http://wotinfo.net/{externalLang}/trend?playerid={player.Id}&server={p}";
         }
 
         public ActionResult Recent(string clanName, long playerId)
@@ -403,7 +409,9 @@ namespace Negri.Wot.Site.Controllers
                     break;
             }
 
-            var url = $"http://wotinfo.net/{externalLang}/recent?playerid={player.Id}&server={GlobalHelper.PlataformTag.ToUpperInvariant()}";
+            var p = player.Platform == Platform.PS ? "PS4" : "XBOX";
+
+            var url = $"http://wotinfo.net/{externalLang}/recent?playerid={player.Id}&server={p}";
             return url;
         }
     }
