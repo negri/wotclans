@@ -342,7 +342,7 @@ namespace Negri.Wot
 
             // Preciso gerar referências e subir
             var references = provider
-                .GetTanksReferences(platform, previousMonday).ToArray();
+                .GetTanksReferences(previousMonday).ToArray();
             var referencesDir = Path.Combine(resultDirectory, "Tanks");
             var leaders = new ConcurrentBag<Leader>();
             Parallel.For(0, references.Length, new ParallelOptions {MaxDegreeOfParallelism = 4}, i =>
@@ -411,14 +411,14 @@ namespace Negri.Wot
             Debug.Assert(moeLastDate != null, nameof(moeLastDate) + " != null");
             Log.DebugFormat("Site Date: {0:yyyy-MM-dd}", moeLastDate.Value);
 
-            var dbDate = provider.GetMoe(platform).First().Date;
+            var dbDate = provider.GetMoe().First().Date;
             Log.DebugFormat("DB Date: {0:yyyy-MM-dd}", dbDate);
 
             var date = moeLastDate.Value.AddDays(1);
             while (date <= dbDate)
             {
                 Log.InfoFormat("Calculando e fazendo upload para {0:yyyy-MM-dd}...", date);
-                var tankMarks = provider.GetMoe(platform, date).ToDictionary(t => t.TankId);
+                var tankMarks = provider.GetMoe(date).ToDictionary(t => t.TankId);
 
                 if (tankMarks.Count > 0)
                 {

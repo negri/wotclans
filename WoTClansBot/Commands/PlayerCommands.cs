@@ -13,6 +13,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using log4net;
+using Negri.Wot.Achievements;
 using Negri.Wot.Sql;
 using Negri.Wot.Tanks;
 using Negri.Wot.WgApi;
@@ -52,6 +53,11 @@ namespace Negri.Wot.Bot
                 if (gamerTag.EqualsCiAi("me"))
                 {
                     playerId = provider.GetPlayerIdByDiscordId((long)ctx.User.Id);
+                    if (playerId == null)
+                    {
+                        await ctx.RespondAsync("You used the `me` shortcut, but I don't know who you are. Use the command `!w SetWhoIAm \"Your GT Here\"` to configure it.");
+                        return null;
+                    }
                 }
 
                 playerId = playerId ?? provider.GetPlayerIdByName(platform, gamerTag);
@@ -63,7 +69,7 @@ namespace Negri.Wot.Bot
                 }
 
                 var cacheDirectory = ConfigurationManager.AppSettings["CacheDir"] ?? Path.GetTempPath();
-                var webCacheAge = TimeSpan.FromHours(4);
+                var webCacheAge = TimeSpan.FromHours(4); 
                 var appId = ConfigurationManager.AppSettings["WgAppId"] ?? "demo";
 
                 var fetcher = new Fetcher(cacheDirectory)
@@ -146,7 +152,7 @@ namespace Negri.Wot.Bot
                     }
 
                     var tanks = fetcher.GetTanksForPlayer(player.Id);
-                    var allTanks = provider.GetTanks(player.Platform).ToDictionary(t => t.TankId);
+                    var allTanks = provider.GetTanks(Platform.Console).ToDictionary(t => t.TankId);
                     var validTanks = tanks.Where(t => allTanks.ContainsKey(t.TankId)).ToArray();
                     recorder?.Set(validTanks);
 
@@ -215,6 +221,7 @@ namespace Negri.Wot.Bot
         [Command("TankerMedalRate")]
         [Aliases("MedalRate", "GamerMedalRate")]
         [Description("The rate at witch a tanker gets a particular medal with his tanks")]
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public async Task TankerMedalRate(CommandContext ctx,
             [Description("The *gamer tag* or *PSN Name*")] string gamerTag,
             [Description("The medal name")] string medal,
@@ -503,24 +510,16 @@ namespace Negri.Wot.Bot
                 #region medal
 
                 var provider = new DbProvider(_connectionString);
-                var medals = provider.GetMedals(player.Platform).Where(m => m.Category == Achievements.Category.Achievements).ToArray();
+                var medals = provider.GetMedals().Where(m => m.Category == Category.Achievements).ToArray();
 
                 var originalMedal = medal;
                 medal = medal.RemoveDiacritics().ToLowerInvariant();
 
-                var targetMedal = medals.FirstOrDefault(m => m.Code.EqualsCiAi(medal));
-                if (targetMedal == null)
-                {
-                    targetMedal = medals.FirstOrDefault(m => m.Name.RemoveDiacritics().ToLowerInvariant().EqualsCiAi(medal));
-                }
-                if (targetMedal == null)
-                {
-                    targetMedal = medals.FirstOrDefault(m => m.Name.RemoveDiacritics().ToLowerInvariant().StartsWith(medal));
-                }
-                if (targetMedal == null)
-                {
-                    targetMedal = medals.FirstOrDefault(m => m.Name.RemoveDiacritics().ToLowerInvariant().Contains(medal));
-                }
+                var targetMedal = ((medals.FirstOrDefault(m => m.Code.EqualsCiAi(medal)) ??
+                                    medals.FirstOrDefault(m => m.Name.RemoveDiacritics().ToLowerInvariant().EqualsCiAi(medal))) ??
+                                   medals.FirstOrDefault(m => m.Name.RemoveDiacritics().ToLowerInvariant().StartsWith(medal))) ??
+                                  medals.FirstOrDefault(m => m.Name.RemoveDiacritics().ToLowerInvariant().Contains(medal));
+                
                 if (targetMedal == null)
                 {
                     medal = medal.GetFlatString();
@@ -538,7 +537,7 @@ namespace Negri.Wot.Bot
                 {
                     await ctx.RespondAsync(
                         $"Sorry, could not find a medal named **{originalMedal}**, {ctx.User.Mention}. " +
-                        $"Check the game guide at https://console.worldoftanks.com/en/content/guide/achievements/ to see medal's names.");
+                        "Check the game guide at https://console.worldoftanks.com/en/content/guide/achievements/ to see medal's names.");
                     return;
                 }
 
@@ -619,16 +618,14 @@ namespace Negri.Wot.Bot
 
                 var maxTankName = tanksWithMedal.Max(t => t.Name.Length);
 
-                sb.AppendLine($"{"Tank".PadRight(maxTankName)} {"Battles".PadLeft(7)} {"Medals".PadLeft(7)}  {"⚔/🎖".PadLeft(7)}");
+                sb.AppendLine($"{"Tank".PadRight(maxTankName)} {"Battles",7} {"Medals",7}  {"⚔/🎖",7}");
                 foreach(var t in tanksWithMedal)
                 {
-                    sb.AppendLine($"{t.Name.PadRight(maxTankName)} {t.Battles.ToString("N0").PadLeft(7)} {t.Achievements[targetMedal.Code].ToString("N0").PadLeft(7)}  " +
-                                  $"{((double) t.Battles / t.Achievements[targetMedal.Code]).ToString("N0").PadLeft(7)}");
+                    _ = sb.AppendLine($"{t.Name.PadRight(maxTankName)} {t.Battles,7:N0} {t.Achievements[targetMedal.Code],7:N0}  " +
+                                  $"{(double)t.Battles / t.Achievements[targetMedal.Code],7:N0}");
                 }
 
                 sb.Append("```");
-
-                var platformPrefix = player.Platform == Platform.PS ? "ps." : string.Empty;
 
                 var color = player.MonthWn8.ToColor();
 
@@ -641,7 +638,7 @@ namespace Negri.Wot.Bot
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{platformPrefix}wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -766,7 +763,7 @@ namespace Negri.Wot.Bot
                         periodBattles = p.TotalBattles;
                         wn8 = p.TotalWn8;
                     }
-                    sb.AppendLine($"{p.Date:yyyy-MM-dd} {(p.ClanTag ?? string.Empty).PadLeft(5)} {periodBattles.ToString("N0").PadLeft(7)} {wn8.ToString("N0").PadLeft(6)}");
+                    sb.AppendLine($"{p.Date:yyyy-MM-dd} {p.ClanTag ?? string.Empty,5} {periodBattles,7:N0} {wn8,6:N0}");
                 }
 
                 sb.AppendLine("```");
@@ -797,8 +794,6 @@ namespace Negri.Wot.Bot
                 var averageOnPeriod = monthlyValues ? playerHist.Average(p => p.MonthWn8) : playerHist.Average(p => p.TotalWn8);
                 sb.AppendLine($"WN8 average over {days:N0} days ({battles:N0} battles): {averageOnPeriod:N0}");
 
-                var platformPrefix = player.Platform == Platform.PS ? "ps." : string.Empty;
-
                 var color = player.MonthWn8.ToColor();
 
                 var embed = new DiscordEmbedBuilder
@@ -810,7 +805,7 @@ namespace Negri.Wot.Bot
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{platformPrefix}wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -835,8 +830,8 @@ namespace Negri.Wot.Bot
             [Description("The *gamer tag* or *PSN Name*")] string gamerTag,
             [Description("Minimum tier")] int minTier = 5,
             [Description("Maximum tier")] int maxTier = 10,
-            [Description("Include premiums tanks or not. Use *true*, *false* or *premium*.")]
-            string includePremiums = "false")
+            [Description("Include premiums tanks or not. Use *true*, *false* or *premium*.")] string includePremiums = "false",
+            [Description("The minimum number of battles on the tank")] int minBattles = 1)
         {
             if (!await CanExecute(ctx, Features.Players))
             {
@@ -846,11 +841,11 @@ namespace Negri.Wot.Bot
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
                 await ctx.RespondAsync(
-                    $"Please specify the *Gamer Tag*, {ctx.User.Mention}. Something like `!w tanker {ctx.User.Username.RemoveDiacritics()}`, for example.");
+                    $"Please specify the *Gamer Tag*, {ctx.User.Mention}. Something like `!w TankerTopKD {ctx.User.Username.RemoveDiacritics()}`, for example.");
                 return;
             }
 
-            Log.Debug($"Requesting {nameof(TankerTopKillDeathRatio)}({gamerTag}, {minTier}, {maxTier}, {includePremiums})...");
+            Log.Debug($"Requesting {nameof(TankerTopKillDeathRatio)}({gamerTag}, {minTier}, {maxTier}, {includePremiums}, {minBattles})...");
 
             if (!includePremiums.TryParse(out var premiumSelection))
             {
@@ -868,7 +863,7 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
-                var top = player.Performance.GetTopTanksByKillDeathRatio(ReferencePeriod.All, 25, minTier, maxTier, premiumSelection)
+                var top = player.Performance.GetTopTanksByKillDeathRatio(ReferencePeriod.All, 25, minTier, maxTier, premiumSelection, minBattles)
                     .ToArray();
                 if (!top.Any())
                 {
@@ -899,8 +894,7 @@ namespace Negri.Wot.Bot
                 sb.AppendLine("```");
 
                 var color = top.First().Wn8.ToColor();
-                var platformPrefix = player.Platform == Platform.PS ? "ps." : string.Empty;
-
+                
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = player.Name,
@@ -910,7 +904,7 @@ namespace Negri.Wot.Bot
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{platformPrefix}wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -945,7 +939,7 @@ namespace Negri.Wot.Bot
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
                 await ctx.RespondAsync(
-                    $"Please specify the *Gamer Tag*, {ctx.User.Mention}. Something like `!w tanker {ctx.User.Username.RemoveDiacritics()}`, for example.");
+                    $"Please specify the *Gamer Tag*, {ctx.User.Mention}. Something like `!w TankerTop {ctx.User.Username.RemoveDiacritics()}`, for example.");
                 return;
             }
 
@@ -992,14 +986,13 @@ namespace Negri.Wot.Bot
                 foreach (var t in top)
                 {
                     sb.AppendLine(
-                        $"{t.Name.PadRight(15)} {t.Battles.ToString("N0").PadLeft(7)} {t.Wn8.ToString("N0").PadLeft(6)}");
+                        $"{t.Name,-15} {t.Battles,7:N0} {t.Wn8,6:N0}");
                 }
 
                 sb.AppendLine("```");
 
                 var color = top.First().Wn8.ToColor();
-                var platformPrefix = player.Platform == Platform.PS ? "ps." : string.Empty;
-
+                
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = player.Name,
@@ -1009,7 +1002,7 @@ namespace Negri.Wot.Bot
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{platformPrefix}wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -1061,8 +1054,7 @@ namespace Negri.Wot.Bot
                 var lastBattle = player.Performance.All.Values.Max(t => t.LastBattle);
 
                 var color = player.TotalWn8.ToColor();
-                var platformPrefix = player.Platform == Platform.PS ? "ps." : string.Empty;
-
+                
                 var sb = new StringBuilder();
                 if (string.IsNullOrWhiteSpace(player.ClanTag))
                 {
@@ -1106,7 +1098,7 @@ namespace Negri.Wot.Bot
                 foreach (var t in rs)
                 {
                     sb.AppendLine(
-                        $"{Formatter.MaskedUrl(t.Name, new Uri($"https://{platformPrefix}wotclans.com.br/Tanks/{t.TankId}"))}: {t.Battles:N0} battles, " +
+                        $"{Formatter.MaskedUrl(t.Name, new Uri($"https://wotclans.com.br/Tanks/{t.TankId}"))}: {t.Battles:N0} battles, " +
                         $"WN8: {t.Wn8:N0}, " +
                         $"Dmg: {t.TotalDamagePerBattle:N0};");
                 }
@@ -1120,7 +1112,7 @@ namespace Negri.Wot.Bot
                     foreach (var t in ts)
                     {
                         sb.AppendLine(
-                            $"{Formatter.MaskedUrl(t.Name, new Uri($"https://{platformPrefix}wotclans.com.br/Tanks/{t.TankId}"))}: {t.Battles:N0} battles, " +
+                            $"{Formatter.MaskedUrl(t.Name, new Uri($"https://wotclans.com.br/Tanks/{t.TankId}"))}: {t.Battles:N0} battles, " +
                             $"WN8: {t.Wn8:N0}, " +
                             $"Dmg: {t.TotalDamagePerBattle:N0};");
                     }
@@ -1134,7 +1126,7 @@ namespace Negri.Wot.Bot
                     foreach (var t in tms)
                     {
                         sb.AppendLine(
-                            $"{Formatter.MaskedUrl(t.Name, new Uri($"https://{platformPrefix}wotclans.com.br/Tanks/{t.TankId}"))}: {t.Battles:N0} battles, " +
+                            $"{Formatter.MaskedUrl(t.Name, new Uri($"https://wotclans.com.br/Tanks/{t.TankId}"))}: {t.Battles:N0} battles, " +
                             $"WN8: {t.Wn8:N0}, " +
                             $"Dmg: {t.TotalDamagePerBattle:N0};");
                     }
@@ -1149,7 +1141,7 @@ namespace Negri.Wot.Bot
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{platformPrefix}wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -1200,7 +1192,7 @@ namespace Negri.Wot.Bot
                 if (playerId == null)
                 {
                     await ctx.RespondAsync(
-                        $"Sorry, {ctx.User?.Mention}, I have no idea who you are. You can change this by using the command `SetWhoIAm`.");
+                        $"Sorry, {ctx.User?.Mention}, I have no idea who you are. You can change this by using the command `!w SetWhoIAm \"Your GT/PSN Here\"`.");
                     return;
                 }
 
@@ -1265,7 +1257,7 @@ namespace Negri.Wot.Bot
                 recorder.AssociateDiscordUserToPlayer(userId, playerId.Value);
 
                 await ctx.RespondAsync(
-                    $"Ok, {ctx.User?.Mention}, for now on you can use `me` instead of your full {platform.TagName()} on " +
+                    $"Ok, {ctx.User?.Mention}, for now on you can use `me` instead of your full Gamer Tag/PSN Name on " +
                     "commands that take it as a parameters. I promise to never abuse this association, and protected it from use outside of this system. " +
                     "If you want me to remove this piece of information use the `ForgetWhoIAm` command.");
             }
@@ -1397,7 +1389,7 @@ namespace Negri.Wot.Bot
                 foreach (var t in tanks)
                 {
                     sb.AppendLine(
-                        $"{t.Name.PadRight(15)} {t.Battles.ToString("N0").PadLeft(7)} {t.XPPerBattle.ToString("N0").PadLeft(6)}  {t.XPPerHour.ToString("N0").PadLeft(6)}");
+                        $"{t.Name,-15} {t.Battles,7:N0} {t.XPPerBattle,6:N0}  {t.XPPerHour,6:N0}");
                 }
 
                 sb.AppendLine("```");
@@ -1407,8 +1399,7 @@ namespace Negri.Wot.Bot
                     "if you *always* plays with Premium, or *always* plays *without* Premium. If you mix, take these number with great reserve.");
 
                 var color = tanks.First().Wn8.ToColor();
-                var platformPrefix = player.Platform == Platform.PS ? "ps." : string.Empty;
-
+                
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = player.Name,
@@ -1418,7 +1409,7 @@ namespace Negri.Wot.Bot
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{platformPrefix}wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {

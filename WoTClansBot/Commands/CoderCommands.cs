@@ -30,6 +30,7 @@ namespace Negri.Wot.Bot
         }
 
         [Command("db")]
+        [Aliases("GetDbStatus")]
         [Description("Retrieve the database status.")]
         public async Task GetDbStatus(CommandContext ctx)
         {
@@ -101,6 +102,7 @@ namespace Negri.Wot.Bot
         }   
 
         [Command("PurgeTanker")]
+        [Aliases("PurgePlayer")]
         [Description("Purge a player by Wargaming ID.")]
         public async Task PurgePlayer(CommandContext ctx, [Description("Player Id")] long playerId)
         {
@@ -149,6 +151,7 @@ namespace Negri.Wot.Bot
         }
 
         [Command("TankerById")]
+        [Aliases("GetPlayerById")]
         [Description("Retrieve the game tag by Wargaming ID.")]
         public async Task GetPlayerById(CommandContext ctx, [Description("Player Id")] long playerId)
         {
@@ -192,6 +195,7 @@ namespace Negri.Wot.Bot
         }
 
         [Command("ClanDelete")]
+        [Aliases("DeleteClanFromSite")]
         [Description("Deletes a clan from the site.")]
         public async Task ClanDelete(CommandContext ctx, 
             [Description("The clan Tag")] string clanTag)
@@ -215,9 +219,6 @@ namespace Negri.Wot.Bot
                 return;
             }
 
-            var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-            var platform = GetPlatform(clanTag, cfg.Plataform, out clanTag);
-
             clanTag = clanTag.Trim('[', ']');
             clanTag = clanTag.ToUpperInvariant();
 
@@ -233,7 +234,7 @@ namespace Negri.Wot.Bot
                 putter.DeleteClan(clanTag);
 
                 await ctx.RespondAsync(
-                    $"The clan `{clanTag}` on `{platform}` was deleted from the site.");
+                    $"The clan `{clanTag}` was deleted from the site.");
                 
                 Log.Debug($"{nameof(ClanDelete)} returned ok.");
             }
@@ -349,9 +350,6 @@ namespace Negri.Wot.Bot
                 return;
             }
 
-            var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-            var platform = GetPlatform(clanTag, cfg.Plataform, out clanTag);
-
             clanTag = clanTag.Trim('[', ']');
             clanTag = clanTag.ToUpperInvariant();
 
@@ -372,7 +370,7 @@ namespace Negri.Wot.Bot
                 }
             }
 
-            Log.Warn($"{nameof(SetClan)}({clanTag}, {platform}, {flagCode}, {enable}, {isBan})...");
+            Log.Warn($"{nameof(SetClan)}({clanTag}, {flagCode}, {enable}, {isBan})...");
 
             try
             {
@@ -392,7 +390,7 @@ namespace Negri.Wot.Bot
                     WebFetchInterval = TimeSpan.FromSeconds(1)
                 };
 
-                var clan = provider.GetClan(platform, clanTag);
+                var clan = provider.GetClan(clanTag);
                 
                 if (clan == null && enable)
                 {
@@ -400,18 +398,18 @@ namespace Negri.Wot.Bot
                     await ctx.RespondAsync($"Not found `{clanTag}` on the database. Searching the WG API...");
                     await ctx.TriggerTypingAsync();
 
-                    var clanOnSite = fetcher.FindClan(platform, clanTag, true);
+                    var clanOnSite = fetcher.FindClan(clanTag);
                     if (clanOnSite == null)
                     {
                         await ctx.RespondAsync(
-                            $"Not found `{clanTag}` on the WG API for `{platform}`. Check the clan tag.");
+                            $"Not found `{clanTag}` on the WG API. Check the clan tag.");
                         return;
                     }
 
                     if (clanOnSite.AllMembersCount < 7)
                     {
                         await ctx.RespondAsync(
-                            $"The clan `{clanTag}` on `{platform}` has only {clanOnSite.AllMembersCount}, and will not be added to the system.");
+                            $"The clan `{clanTag}` has only {clanOnSite.AllMembersCount}, and will not be added to the system.");
                         return;
                     }
 
@@ -419,17 +417,17 @@ namespace Negri.Wot.Bot
                     recorder.Add(clanOnSite);
 
                     await ctx.RespondAsync(
-                        $"The clan `{clanTag}` on `{platform}` with {clanOnSite.AllMembersCount} members was added to the system and " +
+                        $"The clan `{clanTag}` with {clanOnSite.AllMembersCount} members was added to the system and " +
                         "should appear on the site in ~12 hours. Keep playing to achieve at least 7 members with 21 recent battles and appear on the default view.");
 
-                    Log.Info($"Added {platform}.{clanTag}");
+                    Log.Info($"Added {clanTag}");
                     return;
                 }
 
                 if (clan == null)
                 {
                     await ctx.RespondAsync(
-                        $"Not found `{clanTag}` on `{platform}`. Check the clan tag.");
+                        $"Not found `{clanTag}`. Check the clan tag.");
                     return;
                 }
 
@@ -440,34 +438,34 @@ namespace Negri.Wot.Bot
                     if (clanOnSite == null)
                     {
                         await ctx.RespondAsync(
-                            $"Not found `{clanTag}` on the WG API for `{platform}`. Check the clan tag.");
+                            $"Not found `{clanTag}` on the WG API. Check the clan tag.");
                         return;
                     }
 
                     if (clanOnSite.IsDisbanded)
                     {
-                        await ctx.RespondAsync($"The clan `{clanTag}` on `{platform}` was disbanded.");
+                        await ctx.RespondAsync($"The clan `{clanTag}` was disbanded.");
                         return;
                     }
 
                     if (clanOnSite.Count < 7)
                     {
                         await ctx.RespondAsync(
-                            $"The clan `{clanTag}` on `{platform}` has only {clanOnSite.Count} members and will not be enabled.");
+                            $"The clan `{clanTag}` has only {clanOnSite.Count} members and will not be enabled.");
                         return;
                     }
 
                     if (clan.DisabledReason == DisabledReason.Banned)
                     {
                         await ctx.RespondAsync(
-                            $"The clan `{clanTag}` ({clan.ClanId}) on `{platform}` was **banned** from the site.");
+                            $"The clan `{clanTag}` ({clan.ClanId}) was **banned** from the site.");
                         return;
                     }
 
                     recorder.EnableClan(clanOnSite.ClanId);
                     await ctx.RespondAsync(
-                        $"The clan `{clanTag}` on `{platform}` disabled for `{clan.DisabledReason}` is enabled again.");
-                    Log.Info($"Enabled {platform}.{clanTag}");
+                        $"The clan `{clanTag}` disabled for `{clan.DisabledReason}` is enabled again.");
+                    Log.Info($"Enabled {clanTag}");
                 }
                 else if (clan.Enabled && !enable)
                 {
@@ -480,15 +478,15 @@ namespace Negri.Wot.Bot
                         putter.DeleteClan(clan.ClanTag);
 
                         await ctx.RespondAsync(
-                            $"The clan `{clanTag}` ({clan.ClanId}) on `{platform}` was **BANNED** from the site.");
-                        Log.Warn($"BANNED {platform}.{clanTag}");
+                            $"The clan `{clanTag}` ({clan.ClanId}) was **BANNED** from the site.");
+                        Log.Warn($"BANNED {clanTag}");
                     }
                     else
                     {
                         recorder.DisableClan(clan.ClanId, DisabledReason.Unknow);
                         await ctx.RespondAsync(
-                            $"The clan `{clanTag}` ({clan.ClanId}) on `{platform}` was **disabled** from the site.");
-                        Log.Warn($"Disabled {platform}.{clanTag}");
+                            $"The clan `{clanTag}` ({clan.ClanId}) was **disabled** from the site.");
+                        Log.Warn($"Disabled {clanTag}");
                     }
                 }
 
@@ -498,11 +496,11 @@ namespace Negri.Wot.Bot
                 {
                     recorder.SetClanFlag(clan.ClanId, flagCode.ToLowerInvariant());
                     await ctx.RespondAsync(
-                        $"The flag of the clan `{clanTag}` on `{platform}` was changed to `{flagCode}`.");
-                    Log.Info($"Flag changed on {platform}.{clanTag} to {flagCode}.");
+                        $"The flag of the clan `{clanTag}` was changed to `{flagCode}`.");
+                    Log.Info($"Flag changed on {clanTag} to {flagCode}.");
                 }
 
-                await ctx.RespondAsync($"all done for `{clan.ClanTag}` on `{platform}`.");
+                await ctx.RespondAsync($"all done for `{clan.ClanTag}`.");
             }
             catch (Exception ex)
             {

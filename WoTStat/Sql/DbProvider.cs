@@ -61,12 +61,12 @@ namespace Negri.Wot.Sql
         private static long? GetPlayerIdByName(Platform platform, string gamerTag, SqlTransaction t)
         {
             const string query =
-                "select top (1) PlayerId from Main.Player where (PlataformId = @plataformId) and (GamerTag = @gamerTag);";
+                "select top (1) PlayerId from Main.Player where (PlataformId = @platformId) and (GamerTag = @gamerTag);";
             using (var cmd = new SqlCommand(query, t.Connection, t))
             {
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 15;
-                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
+                cmd.Parameters.AddWithValue("@platformId", (int) platform);
                 cmd.Parameters.AddWithValue("@gamerTag", gamerTag);
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -80,12 +80,11 @@ namespace Negri.Wot.Sql
             return null;
         }
 
-        public IEnumerable<TankReference> GetTanksReferences(Platform platform,
-            DateTime? date = null, long? tankId = null, bool includeMoe = true, bool includeHistogram = true,
+        public IEnumerable<TankReference> GetTanksReferences(DateTime? date = null, long? tankId = null, bool includeMoe = true, bool includeHistogram = true,
             bool includeLeaders = true)
         {
             return Get(transaction =>
-                GetTanksReferences(platform, date, tankId, includeMoe, includeHistogram, includeLeaders, transaction)
+                GetTanksReferences(date, tankId, includeMoe, includeHistogram, includeLeaders, transaction)
                     .ToArray());
         }
 
@@ -93,30 +92,29 @@ namespace Negri.Wot.Sql
         /// Enumerate all tanks
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Tank> EnumTanks(Platform platform)
+        public IEnumerable<Tank> EnumTanks()
         {
-            return Get(transaction => EnumTanks(platform, transaction).ToArray());
+            return Get(transaction => EnumTanks(transaction).ToArray());
         }
 
-        private static IEnumerable<Tank> EnumTanks(Platform platform, SqlTransaction t)
+        private static IEnumerable<Tank> EnumTanks(SqlTransaction t)
         {
             var tanks = new List<Tank>(600);
 
             const string sql =
-                "select TankId, [Name], ShortName, NationId, Tier, TypeId, Tag, IsPremium from Tanks.Tank where (PlataformId = @plataformId) and (IsJoke = 0);";
+                "select TankId, [Name], ShortName, NationId, Tier, TypeId, Tag, IsPremium from Tanks.Tank where (IsJoke = 0);";
             using (var cmd = new SqlCommand(sql, t.Connection, t))
             {
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 5 * 60;
-                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
-
+                
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
                         var tank = new Tank
                         {
-                            Plataform = platform,
+                            Plataform = Platform.Console,
                             TankId = reader.GetNonNullValue<long>(0),
                             FullName = reader.GetNonNullValue<string>(1),
                             Name = reader.GetNonNullValue<string>(2),
@@ -137,24 +135,26 @@ namespace Negri.Wot.Sql
         /// <summary>
         /// Retorna os jogadores de um clã que tem partidas com um tanque especifico.
         /// </summary>
-        public IEnumerable<Player> GetClanPlayerIdsOnTank(Platform platform, long clanId, long tankId)
+        public IEnumerable<Player> GetClanPlayerIdsOnTank(long clanId, long tankId)
         {
-            return Get(t => GetClanPlayerIdsOnTank(platform, clanId, tankId, t));
+            return Get(t => GetClanPlayerIdsOnTank(clanId, tankId, t));
         }
 
-        private static IEnumerable<Player> GetClanPlayerIdsOnTank(Platform platform, long clanId, long tankId,
+        private static IEnumerable<Player> GetClanPlayerIdsOnTank(long clanId, long tankId,
             SqlTransaction t)
         {
             var list = new List<Player>();
 
-            const string sql = "select distinct p.PlayerId, rcc.GamerTag " +
-                               "from Performance.PlayerDate p inner join Main.RecentClanCompositionStats rcc on (rcc.PlataformId = p.PlataformId) and (rcc.PlayerId = p.PlayerId) " +
-                               "where rcc.ClanId = @clanId and rcc.PlataformId = @platformId and rcc.IsActive = 1 and p.TankId = @tankId order by rcc.GamerTag;";
+            const string sql = "select distinct p.PlayerId, rcc.GamerTag, pp.PlataformId " +
+                               "from Performance.PlayerDate p " +
+                               "inner join Main.RecentClanCompositionStats rcc on (rcc.PlayerId = p.PlayerId) " +
+                               "inner join Main.Player pp on pp.PlayerId = p.PlayerId " +
+                               "where rcc.ClanId = @clanId and rcc.IsActive = 1 and p.TankId = @tankId " +
+                               "order by rcc.GamerTag;";
 
             using (var cmd = new SqlCommand(sql, t.Connection, t))
             {
                 cmd.CommandType = CommandType.Text;
-                cmd.Parameters.AddWithValue("@platformId", (int) platform);
                 cmd.Parameters.AddWithValue("@tankId", tankId);
                 cmd.Parameters.AddWithValue("@clanId", clanId);
 
@@ -162,7 +162,11 @@ namespace Negri.Wot.Sql
                 {
                     while (r.Read())
                     {
-                        list.Add(new Player(platform, r.GetNonNullValue<long>(0), r.GetNonNullValue<string>(1)));
+                        list.Add(
+                            new Player(
+                                r.GetNonNullValue<Platform>(2),
+                                r.GetNonNullValue<long>(0),
+                                r.GetNonNullValue<string>(1)));
                     }
                 }
             }
@@ -173,13 +177,13 @@ namespace Negri.Wot.Sql
         /// <summary>
         /// Retrieve the leaderboard for a given tank
         /// </summary>
-        public IEnumerable<Leader> GetLeaderboard(Platform platform, long tankId, int top = 25, string flagCode = null,
+        public IEnumerable<Leader> GetLeaderboard(long tankId, int top = 25, string flagCode = null,
             int skip = 0)
         {
-            return Get(t => GetLeaderboard(platform, tankId, top, flagCode, skip, t));
+            return Get(t => GetLeaderboard(tankId, top, flagCode, skip, t));
         }
 
-        private static IEnumerable<Leader> GetLeaderboard(Platform platform, long tankId, int top, string flagCode,
+        private static IEnumerable<Leader> GetLeaderboard(long tankId, int top, string flagCode,
             int skip, SqlTransaction t)
         {
             var list = new List<Leader>(top);
@@ -187,7 +191,6 @@ namespace Negri.Wot.Sql
             using (var cmd = new SqlCommand("Performance.GetTopPlayersAll", t.Connection, t))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
                 cmd.Parameters.AddWithValue("@tankId", tankId);
                 cmd.Parameters.AddWithValue("@top", top);
                 if (!string.IsNullOrWhiteSpace(flagCode))
@@ -197,7 +200,6 @@ namespace Negri.Wot.Sql
 
                 using (var reader = cmd.ExecuteReader())
                 {
-                    var leaders = new List<Leader>();
                     var order = 1;
                     while (reader.Read())
                     {
@@ -205,7 +207,7 @@ namespace Negri.Wot.Sql
                             new Leader
                             {
                                 Order = order++,
-                                Plataform = platform,
+                                Plataform = Platform.Console,
                                 TankId = tankId,
                                 PlayerId = reader.GetNonNullValue<long>(1),
                                 GamerTag = reader.GetNonNullValue<string>(2),
@@ -250,12 +252,11 @@ namespace Negri.Wot.Sql
                                "DamageAssistedTrack, DamageAssistedRadio, Shots, Hits, Piercings, ExplosionHits, CapturePoints, Losses, " +
                                "DamageReceived, SurvivedBattles, NoDamageDirectHitsReceived, DirectHitsReceived, ExplosionHitsReceived, PiercingsReceived, " +
                                "LastBattle, TreesCut, MaxFrags, MarkOfMastery, BattleLifeTimeSeconds " +
-                               "from Performance.GetTanksStatsForWn8Hist(@plataformId, @playerId, @tankId) " +
+                               "from Performance.GetTanksStatsForWn8Hist(@playerId, @tankId) " +
                                "order by LastBattle desc;";
             using (var cmd = new SqlCommand(sql, t.Connection, t))
             {
                 cmd.CommandType = CommandType.Text;
-                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
                 cmd.Parameters.AddWithValue("@playerId", playerId);
                 cmd.Parameters.AddWithValue("@tankId", tankId);
 
@@ -341,8 +342,8 @@ namespace Negri.Wot.Sql
             return l;
         }
 
-        private static IEnumerable<TankReference> GetTanksReferences(Platform platform,
-            DateTime? date, long? tankId, bool includeMoe, bool includeHistogram, bool includeLeaders, SqlTransaction t)
+        private static IEnumerable<TankReference> GetTanksReferences(DateTime? date, long? tankId, bool includeMoe, bool includeHistogram, bool includeLeaders,
+            SqlTransaction t)
         {
             var references = new Dictionary<long, TankReference>();
 
@@ -352,7 +353,7 @@ namespace Negri.Wot.Sql
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
                 cmd.Parameters.AddWithValue("@period", ReferencePeriod.All.ToString());
-                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
+                
                 if (date.HasValue)
                 {
                     cmd.Parameters.AddWithValue("@date", date.Value);
@@ -371,40 +372,40 @@ namespace Negri.Wot.Sql
                         {
                             Date = reader.GetNonNullValue<DateTime>(0),
                             TankId = reader.GetNonNullValue<long>(2),
-                            Plataform = platform,
-                            Name = reader.GetNonNullValue<string>(4),
-                            Tier = reader.GetNonNullValue<int>(5),
-                            Type = reader.GetNonNullValue<TankType>(6),
-                            Nation = reader.GetNonNullValue<Nation>(8),
-                            IsPremium = reader.GetNonNullValue<bool>(10),
-                            Tag = reader.GetNonNullValue<string>(11),
-                            Spotted = reader.GetNonNullValue<double>(12),
-                            DamageAssistedTrack = reader.GetNonNullValue<double>(13),
-                            DamageAssistedRadio = reader.GetNonNullValue<double>(14),
-                            CapturePoints = reader.GetNonNullValue<double>(15),
-                            DroppedCapturePoints = reader.GetNonNullValue<double>(16),
-                            TotalBattles = reader.GetNonNullValue<long>(17),
-                            TotalPlayers = reader.GetNonNullValue<int>(18),
-                            TotalWins = reader.GetNonNullValue<long>(19),
-                            TotalLosses = reader.GetNonNullValue<long>(20),
-                            Kills = reader.GetNonNullValue<double>(21),
-                            TotalSurvivedBattles = reader.GetNonNullValue<long>(22),
-                            DamageDealt = reader.GetNonNullValue<double>(23),
-                            DamageReceived = reader.GetNonNullValue<double>(24),
-                            TotalTime = TimeSpan.FromHours(reader.GetNonNullValue<double>(25)),
-                            TreesCut = reader.GetNonNullValue<double>(26),
-                            MaxKills = reader.GetNonNullValue<double>(27),
-                            MarkOfMastery = reader.GetNonNullValue<double>(28),
-                            Hits = reader.GetNonNullValue<double>(29),
-                            NoDamageDirectHitsReceived = reader.GetNonNullValue<double>(30),
-                            ExplosionHits = reader.GetNonNullValue<double>(31),
-                            Piercings = reader.GetNonNullValue<double>(32),
-                            Shots = reader.GetNonNullValue<double>(33),
-                            ExplosionHitsReceived = reader.GetNonNullValue<double>(34),
-                            XP = reader.GetNonNullValue<double>(35),
-                            DirectHitsReceived = reader.GetNonNullValue<double>(36),
-                            PiercingReceived = reader.GetNonNullValue<double>(37),
-                            FullName = reader.GetNonNullValue<string>(38)
+                            Plataform = Platform.Console,
+                            Name = reader.GetNonNullValue<string>(3),
+                            Tier = reader.GetNonNullValue<int>(4),
+                            Type = reader.GetNonNullValue<TankType>(5),
+                            Nation = reader.GetNonNullValue<Nation>(7),
+                            IsPremium = reader.GetNonNullValue<bool>(9),
+                            Tag = reader.GetNonNullValue<string>(10),
+                            Spotted = reader.GetNonNullValue<double>(11),
+                            DamageAssistedTrack = reader.GetNonNullValue<double>(12),
+                            DamageAssistedRadio = reader.GetNonNullValue<double>(13),
+                            CapturePoints = reader.GetNonNullValue<double>(14),
+                            DroppedCapturePoints = reader.GetNonNullValue<double>(15),
+                            TotalBattles = reader.GetNonNullValue<long>(16),
+                            TotalPlayers = reader.GetNonNullValue<int>(17),
+                            TotalWins = reader.GetNonNullValue<long>(18),
+                            TotalLosses = reader.GetNonNullValue<long>(19),
+                            Kills = reader.GetNonNullValue<double>(20),
+                            TotalSurvivedBattles = reader.GetNonNullValue<long>(21),
+                            DamageDealt = reader.GetNonNullValue<double>(22),
+                            DamageReceived = reader.GetNonNullValue<double>(23),
+                            TotalTime = TimeSpan.FromHours(reader.GetNonNullValue<double>(24)),
+                            TreesCut = reader.GetNonNullValue<double>(25),
+                            MaxKills = reader.GetNonNullValue<double>(26),
+                            MarkOfMastery = reader.GetNonNullValue<double>(27),
+                            Hits = reader.GetNonNullValue<double>(28),
+                            NoDamageDirectHitsReceived = reader.GetNonNullValue<double>(29),
+                            ExplosionHits = reader.GetNonNullValue<double>(30),
+                            Piercings = reader.GetNonNullValue<double>(31),
+                            Shots = reader.GetNonNullValue<double>(32),
+                            ExplosionHitsReceived = reader.GetNonNullValue<double>(33),
+                            XP = reader.GetNonNullValue<double>(34),
+                            DirectHitsReceived = reader.GetNonNullValue<double>(35),
+                            PiercingReceived = reader.GetNonNullValue<double>(36),
+                            FullName = reader.GetNonNullValue<string>(37)
                         };
                         references.Add(tr.TankId, tr);
                     }
@@ -412,14 +413,14 @@ namespace Negri.Wot.Sql
             }
 
             // Obtém os MoEs na data
-            var moes = includeMoe
-                ? GetMoe(platform, date, tankId, t).ToDictionary(m => m.TankId)
+            var marksOfExcellence = includeMoe
+                ? GetMoe(date, tankId, t).ToDictionary(m => m.TankId)
                 : new Dictionary<long, TankMoe>();
 
             // WN8, Histograms and Leaders
             foreach (var tr in references.Values)
             {
-                if (moes.TryGetValue(tr.TankId, out var moe))
+                if (marksOfExcellence.TryGetValue(tr.TankId, out var moe))
                 {
                     tr.MoeHighMark = moe.HighMarkDamage;
                 }
@@ -467,8 +468,8 @@ namespace Negri.Wot.Sql
                 // Histogram
                 if ((tr.TotalPlayers > 100) && (tr.TotalBattles > 1000) && (tr.Tier >= 5) && includeHistogram)
                 {
-                    // Obtem histogramas se o tanque for significativo
-                    Log.DebugFormat("Obtendo histogramas do tank {0}.{1}.{2}...", platform, tr.TankId, tr.Name);
+                    // Obtém histogramas se o tanque for significativo
+                    Log.DebugFormat("Obtendo histogramas do tank {0}.{1}...", tr.TankId, tr.Name);
 
                     var metrics = new[]
                     {
@@ -481,7 +482,6 @@ namespace Negri.Wot.Sql
                         using (var cmd = new SqlCommand("Performance.GetHistogramAll", t.Connection, t))
                         {
                             cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@plataformId", (int) tr.Plataform);
                             cmd.Parameters.AddWithValue("@tankId", tr.TankId);
                             cmd.Parameters.Add(new SqlParameter("@metric", SqlDbType.VarChar, 50) {Value = metric});
                             cmd.Parameters.AddWithValue("@levels", 50);
@@ -537,10 +537,10 @@ namespace Negri.Wot.Sql
                     }
                 }
 
-                // Obtem lideres
+                // Obtém lideres
                 if ((tr.TotalPlayers > 100) && (tr.TotalBattles > 1000) && (tr.Tier >= 5) && includeLeaders)
                 {
-                    tr.Leaders = GetLeaderboard(tr.Plataform, tr.TankId, 25, null, 0, t).ToArray();
+                    tr.Leaders = GetLeaderboard(tr.TankId, 25, null, 0, t).ToArray();
                 }
             }
 
@@ -550,7 +550,7 @@ namespace Negri.Wot.Sql
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
                 cmd.Parameters.AddWithValue("@period", ReferencePeriod.Month.ToString());
-                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
+                
                 if (date.HasValue)
                 {
                     cmd.Parameters.AddWithValue("@date", date.Value);
@@ -565,43 +565,43 @@ namespace Negri.Wot.Sql
                 {
                     while (reader.Read())
                     {
-                        var tr = new TankReferenceBasic()
+                        var tr = new TankReferenceBasic
                         {
                             TankId = reader.GetNonNullValue<long>(2),
-                            Plataform = platform,
-                            Name = reader.GetNonNullValue<string>(4),
-                            Tier = reader.GetNonNullValue<int>(5),
-                            Type = reader.GetNonNullValue<TankType>(6),
-                            Nation = reader.GetNonNullValue<Nation>(8),
-                            IsPremium = reader.GetNonNullValue<bool>(10),
-                            Tag = reader.GetNonNullValue<string>(11),
-                            Spotted = reader.GetNonNullValue<double>(12),
-                            DamageAssistedTrack = reader.GetNonNullValue<double>(13),
-                            DamageAssistedRadio = reader.GetNonNullValue<double>(14),
-                            CapturePoints = reader.GetNonNullValue<double>(15),
-                            DroppedCapturePoints = reader.GetNonNullValue<double>(16),
-                            TotalBattles = reader.GetNonNullValue<long>(17),
-                            TotalPlayers = reader.GetNonNullValue<int>(18),
-                            TotalWins = reader.GetNonNullValue<long>(19),
-                            TotalLosses = reader.GetNonNullValue<long>(20),
-                            Kills = reader.GetNonNullValue<double>(21),
-                            TotalSurvivedBattles = reader.GetNonNullValue<long>(22),
-                            DamageDealt = reader.GetNonNullValue<double>(23),
-                            DamageReceived = reader.GetNonNullValue<double>(24),
-                            TotalTime = TimeSpan.FromHours(reader.GetNonNullValue<double>(25)),
-                            TreesCut = reader.GetNonNullValue<double>(26),
-                            MaxKills = reader.GetNonNullValue<double>(27),
-                            MarkOfMastery = reader.GetNonNullValue<double>(28),
-                            Hits = reader.GetNonNullValue<double>(29),
-                            NoDamageDirectHitsReceived = reader.GetNonNullValue<double>(30),
-                            ExplosionHits = reader.GetNonNullValue<double>(31),
-                            Piercings = reader.GetNonNullValue<double>(32),
-                            Shots = reader.GetNonNullValue<double>(33),
-                            ExplosionHitsReceived = reader.GetNonNullValue<double>(34),
-                            XP = reader.GetNonNullValue<double>(35),
-                            DirectHitsReceived = reader.GetNonNullValue<double>(36),
-                            PiercingReceived = reader.GetNonNullValue<double>(37),
-                            FullName = reader.GetNonNullValue<string>(38)
+                            Plataform = Platform.Console,
+                            Name = reader.GetNonNullValue<string>(3),
+                            Tier = reader.GetNonNullValue<int>(4),
+                            Type = reader.GetNonNullValue<TankType>(5),
+                            Nation = reader.GetNonNullValue<Nation>(7),
+                            IsPremium = reader.GetNonNullValue<bool>(9),
+                            Tag = reader.GetNonNullValue<string>(10),
+                            Spotted = reader.GetNonNullValue<double>(11),
+                            DamageAssistedTrack = reader.GetNonNullValue<double>(12),
+                            DamageAssistedRadio = reader.GetNonNullValue<double>(13),
+                            CapturePoints = reader.GetNonNullValue<double>(14),
+                            DroppedCapturePoints = reader.GetNonNullValue<double>(15),
+                            TotalBattles = reader.GetNonNullValue<long>(16),
+                            TotalPlayers = reader.GetNonNullValue<int>(17),
+                            TotalWins = reader.GetNonNullValue<long>(18),
+                            TotalLosses = reader.GetNonNullValue<long>(19),
+                            Kills = reader.GetNonNullValue<double>(20),
+                            TotalSurvivedBattles = reader.GetNonNullValue<long>(21),
+                            DamageDealt = reader.GetNonNullValue<double>(22),
+                            DamageReceived = reader.GetNonNullValue<double>(23),
+                            TotalTime = TimeSpan.FromHours(reader.GetNonNullValue<double>(24)),
+                            TreesCut = reader.GetNonNullValue<double>(25),
+                            MaxKills = reader.GetNonNullValue<double>(26),
+                            MarkOfMastery = reader.GetNonNullValue<double>(27),
+                            Hits = reader.GetNonNullValue<double>(28),
+                            NoDamageDirectHitsReceived = reader.GetNonNullValue<double>(29),
+                            ExplosionHits = reader.GetNonNullValue<double>(30),
+                            Piercings = reader.GetNonNullValue<double>(31),
+                            Shots = reader.GetNonNullValue<double>(32),
+                            ExplosionHitsReceived = reader.GetNonNullValue<double>(33),
+                            XP = reader.GetNonNullValue<double>(34),
+                            DirectHitsReceived = reader.GetNonNullValue<double>(35),
+                            PiercingReceived = reader.GetNonNullValue<double>(36),
+                            FullName = reader.GetNonNullValue<string>(37)
                         };
 
                         var all = references[tr.TankId];
@@ -638,19 +638,19 @@ namespace Negri.Wot.Sql
             }
         }
 
-        public IEnumerable<TankMoe> GetMoe(Platform platform, DateTime? date = null, long? tankId = null)
+        public IEnumerable<TankMoe> GetMoe(DateTime? date = null, long? tankId = null)
         {
-            return Get(transaction => GetMoe(platform, date, tankId, transaction).ToArray());
+            return Get(transaction => GetMoe(date, tankId, transaction).ToArray());
         }
 
-        private static IEnumerable<TankMoe> GetMoe(Platform platform, DateTime? date, long? tankId, SqlTransaction t)
+        private static IEnumerable<TankMoe> GetMoe(DateTime? date, long? tankId, SqlTransaction t)
         {
             using (var cmd = new SqlCommand("Performance.GetMoE", t.Connection, t))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
-                cmd.Parameters.AddWithValue("@methodId", 4); // Metodos dos Percentis
-                cmd.Parameters.AddWithValue("@plataformId", (int) platform);
+                cmd.Parameters.AddWithValue("@methodId", 4); // Percentile Method
+                
                 if (date.HasValue)
                 {
                     cmd.Parameters.AddWithValue("@date", date.Value);
@@ -668,7 +668,7 @@ namespace Negri.Wot.Sql
                         yield return new TankMoe
                         {
                             Date = reader.GetNonNullValue<DateTime>(0),
-                            Plataform = platform,
+                            Plataform = Platform.Console,
                             Name = reader.GetNonNullValue<string>(2),
                             Tier = reader.GetNonNullValue<int>(3),
                             Type = reader.GetNonNullValue<TankType>(4),
@@ -686,9 +686,9 @@ namespace Negri.Wot.Sql
             }
         }
 
-        public Clan GetClan(Platform platform, string clanTag)
+        public Clan GetClan(string clanTag)
         {
-            var clanId = GetClanId(platform, clanTag);
+            var clanId = GetClanId(clanTag);
             if (!clanId.HasValue)
             {
                 return null;
@@ -697,21 +697,20 @@ namespace Negri.Wot.Sql
             return GetClan(clanId.Value);
         }
 
-        private long? GetClanId(Platform platform, string clanTag)
+        private long? GetClanId(string clanTag)
         {
-            return Get(transaction => GetClanId(platform, clanTag, transaction));
+            return Get(transaction => GetClanId(clanTag, transaction));
         }
 
-        private static long? GetClanId(Platform platform, string clanTag, SqlTransaction t)
+        private static long? GetClanId(string clanTag, SqlTransaction t)
         {
             const string sql =
-                "select ClanId from Main.Clan where (ClanTag = @clanTag) and (PlataformId = @plataform);";
+                "select ClanId from Main.Clan where (ClanTag = @clanTag);";
             using (var cmd = new SqlCommand(sql, t.Connection, t))
             {
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 5 * 60;
                 cmd.Parameters.AddWithValue("@clanTag", clanTag);
-                cmd.Parameters.AddWithValue("@plataform", (int) platform);
                 using (var reader = cmd.ExecuteReader())
                 {
                     if (reader.Read())
@@ -1014,7 +1013,7 @@ namespace Negri.Wot.Sql
                 "from [Current].Player p " +
                 "inner join Main.Player pp on pp.PlayerId = p.PlayerId " +
                 "left outer join [Current].ClanPlayer cp on cp.PlayerId = p.PlayerId " +
-                "left outer join Main.Clan c on c.ClanId = cp.ClanId and c.PlataformId = cp.PlataformId " +
+                "left outer join Main.Clan c on c.ClanId = cp.ClanId " +
                 "where p.PlayerId = @playerId;";
 
             using (var cmd = new SqlCommand(sql, t.Connection, t))
@@ -1517,24 +1516,22 @@ namespace Negri.Wot.Sql
             return tp;
         }
 
-        public IEnumerable<Achievements.Medal> GetMedals(Platform platform)
+        public IEnumerable<Medal> GetMedals()
         {
-            return Get(t => GetMedals(platform, t));
+            return Get(GetMedals);
         }
 
-        private IEnumerable<Medal> GetMedals(Platform platform, SqlTransaction t)
+        private IEnumerable<Medal> GetMedals(SqlTransaction t)
         {
             const string sql = "SELECT [MedalCode], [Name], [Description], [HeroInformation], [Condition], " +
                                "[CategoryId], [TypeId], [SectionId] " +
-                               "FROM [Achievements].[Medal] " +
-                               "WHERE [PlataformId] = @PlataformId;";
+                               "FROM [Achievements].[Medal];";
 
             var medals = new List<Medal>();
 
             using (var cmd = new SqlCommand(sql, t.Connection, t))
             {
                 cmd.CommandType = CommandType.Text;
-                cmd.Parameters.AddWithValue("@PlataformId", platform);
 
                 using (var r = cmd.ExecuteReader())
                 {
@@ -1542,7 +1539,7 @@ namespace Negri.Wot.Sql
                     {
                         medals.Add(new Medal()
                         {
-                            Platform = platform,
+                            Platform = Platform.Console,
                             Code = r.GetNonNullValue<string>(0),
                             Name = r.GetNonNullValue<string>(1),
                             Description = r.GetValueOrDefault<string>(2),

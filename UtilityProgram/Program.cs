@@ -65,7 +65,7 @@ namespace UtilityProgram
 
             foreach (var clan in clans)
             {
-                var c = fetcher.FindClan(Platform.PS, clan.Tag, true);
+                var c = fetcher.FindClan(clan.Tag);
                 if (c != null)
                 {
                     clan.NewClanId = c.ClanId;
@@ -202,7 +202,7 @@ namespace UtilityProgram
             var cd = DateTime.UtcNow.AddHours(-7);
             var previousMonday = cd.PreviousDayOfWeek(DayOfWeek.Monday);
 
-            var references = provider.GetTanksReferences(Platform.XBOX, previousMonday, null, false, false, false).ToArray();
+            var references = provider.GetTanksReferences(previousMonday, null, includeMoe: false, includeHistogram: false, includeLeaders: false).ToArray();
 
             var sb = new StringBuilder();
             sb.AppendLine("Id\tName\tIsPremium\tTier\tType\tNumPlayers\tNumBattles\tAvgWN8\tDamageToUnicum");
@@ -499,7 +499,7 @@ namespace UtilityProgram
                 WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"]
             };
 
-            var data = provider.EnumTanks(Platform.XBOX).ToArray();
+            var data = provider.EnumTanks().ToArray();
         }
 
         #endregion
@@ -512,7 +512,7 @@ namespace UtilityProgram
             var provider = new DbProvider(connectionString);
 
 
-            var references = provider.GetTanksReferences(Platform.PS, new DateTime(2018, 03, 12))
+            var references = provider.GetTanksReferences(new DateTime(2018, 03, 12))
                 .ToArray();
             var baseDir = ConfigurationManager.AppSettings["PsResultDirectory"];
             var dir = Path.Combine(baseDir, "Tanks");
@@ -548,14 +548,13 @@ namespace UtilityProgram
             var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
             var provider = new DbProvider(connectionString);
 
-            const Platform plataform = Platform.XBOX;
-
+            
             var date = new DateTime(2017, 03, 10);
             var maxDate = new DateTime(2017, 04, 26);
 
             while (date <= maxDate)
             {
-                var moes = provider.GetMoe(plataform, date).ToDictionary(t => t.TankId);
+                var moes = provider.GetMoe(date).ToDictionary(t => t.TankId);
                 var dateOnDb = moes.First().Value.Date;
 
                 var json = JsonConvert.SerializeObject(moes, Formatting.Indented);

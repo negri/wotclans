@@ -69,12 +69,12 @@ namespace Negri.Wot.Bot
                 Title = isHead ? "Head!" : "Tail!",
                 Description = $"{ctx.User.Mention}, your coin flipped {(isHead ? "**Head**" : "**Tail**")}!",
                 Color = DiscordColor.Goldenrod,
-                Url = cfg.Plataform.SiteUrl(),
-                ImageUrl = cfg.Plataform.SiteUrl() + $"/images/coin-{(isHead ? "head" : "tail")}.png",
+                Url = BasicExtensions.SiteUrl(),
+                ImageUrl = BasicExtensions.SiteUrl() + $"/images/coin-{(isHead ? "head" : "tail")}.png",
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
                     Name = "WoTClans",
-                    Url = cfg.Plataform.SiteUrl()
+                    Url = BasicExtensions.SiteUrl()
                 },
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {

@@ -25,47 +25,37 @@ namespace Negri.Wot.Bot
 
         private readonly string _connectionString;
 
-        private DateTime _tanksListValidUntilXbox = DateTime.MinValue;
-        private DateTime _tanksListValidUntilPs = DateTime.MinValue;
-
+        private Tank[] _tanks;
+        private DateTime _tanksListValidUntil = DateTime.MinValue;
         private readonly object _tankListLock = new object();
-        private Tank[] _tanksXbox;
-        private Tank[] _tanksPS;
-
+        
         public TankCommands()
         {
             _connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
         }
 
-        private Tank[] GetTanks(Platform platform)
+        private Tank[] GetTanks()
         {
             lock (_tankListLock)
             {
 
-                if (DateTime.UtcNow > (platform == Platform.PS ? _tanksListValidUntilPs : _tanksListValidUntilXbox))
+                if (DateTime.UtcNow > _tanksListValidUntil)
                 {
                     var provider = new DbProvider(_connectionString);
-                    if (platform == Platform.PS)
                     {
-                        _tanksPS = provider.EnumTanks(Platform.PS).OrderByDescending(t => t.Tier).ThenBy(t => t.TankId).ToArray();
-                        _tanksListValidUntilPs = DateTime.UtcNow.AddMinutes(30);
-                    }
-                    else
-                    {
-                        _tanksXbox = provider.EnumTanks(Platform.XBOX).OrderByDescending(t => t.Tier).ThenBy(t => t.TankId).ToArray();
-                        _tanksListValidUntilXbox = DateTime.UtcNow.AddMinutes(30);
+                        _tanks = provider.EnumTanks().OrderByDescending(t => t.Tier).ThenBy(t => t.TankId).ToArray();
+                        _tanksListValidUntil = DateTime.UtcNow.AddMinutes(30);
                     }
                 }
 
-                return platform == Platform.PS ? _tanksPS : _tanksXbox;
+                return _tanks;
             }
         }
 
-        public Tank FindTank(Platform platform, string tankName, out bool exact)
+        public Tank FindTank(string tankName, out bool exact)
         {
             var originalName = tankName;
-            platform = GetPlatform(tankName, platform, out tankName);
-
+            
             Nation? nation = null;
             if (tankName.Contains("."))
             {
@@ -81,7 +71,7 @@ namespace Negri.Wot.Bot
                 }
             }
 
-            var all = GetTanks(platform);
+            var all = GetTanks();
 
             if (nation.HasValue)
             {
@@ -137,7 +127,7 @@ namespace Negri.Wot.Bot
             }
 
             // not found
-            Log.Warn($"Not found a tank on {platform} by the string '{originalName}'");
+            Log.Warn($"Not found a tank by the string '{originalName}'");
 
             return null;
         }
@@ -217,7 +207,7 @@ namespace Negri.Wot.Bot
                 }
                 gamerTag = player.Name;
 
-                var tank = FindTank(player.Platform, tankName, out _);
+                var tank = FindTank(tankName, out _);
 
                 if (tank == null)
                 {
@@ -225,7 +215,7 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
-                var tr = provider.GetTanksReferences(tank.Plataform, null, tank.TankId, false, false, false).FirstOrDefault();
+                var tr = provider.GetTanksReferences(null, tank.TankId, includeMoe: false, includeHistogram: false, includeLeaders: false).FirstOrDefault();
 
                 if (tr == null)
                 {
@@ -267,14 +257,14 @@ namespace Negri.Wot.Bot
                 sb.AppendLine("Date       Battles Tot.Dmg   WN8");
                 foreach (var t in head)
                 {
-                    sb.AppendLine($"{t.LastBattle:yyyy-MM-dd} {t.Battles.ToString("N0").PadLeft(7)} {t.TotalDamagePerBattle.ToString("N0").PadLeft(7)} {t.Wn8.ToString("N0").PadLeft(6)}");
+                    sb.AppendLine($"{t.LastBattle:yyyy-MM-dd} {t.Battles,7:N0} {t.TotalDamagePerBattle,7:N0} {t.Wn8,6:N0}");
                 }
                 if (tail != null)
                 {
                     sb.AppendLine("...");
                     foreach (var t in tail)
                     {
-                        sb.AppendLine($"{t.LastBattle:yyyy-MM-dd} {t.Battles.ToString("N0").PadLeft(7)} {t.TotalDamagePerBattle.ToString("N0").PadLeft(7)} {t.Wn8.ToString("N0").PadLeft(6)}");
+                        sb.AppendLine($"{t.LastBattle:yyyy-MM-dd} {t.Battles,7:N0} {t.TotalDamagePerBattle,7:N0} {t.Wn8,6:N0}");
                     }
                 }
                 sb.AppendLine("```");
@@ -301,8 +291,6 @@ namespace Negri.Wot.Bot
                     sb.AppendLine($"Max Kills: {tr.LastMonth.MaxKills:N1}; Avg Kills: {tr.LastMonth.Kills:N1}");
                 }
 
-                var platformPrefix = tr.Plataform == Platform.PS ? "ps." : string.Empty;
-
                 var color = ptr.Wn8.ToColor();
 
                 var embed = new DiscordEmbedBuilder
@@ -315,7 +303,7 @@ namespace Negri.Wot.Bot
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{platformPrefix}wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -349,9 +337,7 @@ namespace Negri.Wot.Bot
 
                 await ctx.TriggerTypingAsync();
 
-                var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-
-                var tank = FindTank(cfg.Plataform, tankName, out var exact);
+                var tank = FindTank(tankName, out var exact);
 
                 if (tank == null)
                 {
@@ -361,7 +347,7 @@ namespace Negri.Wot.Bot
 
 
                 var provider = new DbProvider(_connectionString);
-                var tr = provider.GetTanksReferences(tank.Plataform, null, tank.TankId, false, false, false).FirstOrDefault();
+                var tr = provider.GetTanksReferences(null, tank.TankId, includeMoe: false, includeHistogram: false, includeLeaders: false).FirstOrDefault();
 
                 if (tr == null)
                 {
@@ -401,8 +387,6 @@ namespace Negri.Wot.Bot
                     sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in quotes.");
                 }
 
-                var platformPrefix = tr.Plataform == Platform.PS ? "ps." : string.Empty;
-
                 var color = (tr.LastMonth?.AverageWn8 ?? tr.AverageWn8).ToColor();
 
                 var embed = new DiscordEmbedBuilder
@@ -415,7 +399,7 @@ namespace Negri.Wot.Bot
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{platformPrefix}wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -429,7 +413,6 @@ namespace Negri.Wot.Bot
             {
                 Log.Error($"Error in {nameof(Damage)}({tankName})", ex);
                 await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
-                return;
             }
         }
 
@@ -448,9 +431,7 @@ namespace Negri.Wot.Bot
 
             await ctx.TriggerTypingAsync();
 
-            var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-
-            var tank = FindTank(cfg.Plataform, tankName, out var exact);
+            var tank = FindTank(tankName, out var exact);
 
             if (tank == null)
             {
@@ -459,7 +440,7 @@ namespace Negri.Wot.Bot
             }
 
             var provider = new DbProvider(_connectionString);
-            var moe = provider.GetMoe(tank.Plataform, null, tank.TankId).FirstOrDefault();
+            var moe = provider.GetMoe(null, tank.TankId).FirstOrDefault();
 
             if (moe == null)
             {
@@ -482,19 +463,17 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in quotes.");
             }
 
-            var platformPrefix = moe.Plataform == Platform.PS ? "ps." : string.Empty;
-
             var embed = new DiscordEmbedBuilder
             {
                 Title = $"{tank.Name} MoE",
                 Description = sb.ToString(),
                 Color = DiscordColor.Gray,
                 ThumbnailUrl = tank.SmallImageUrl,
-                Url = $"https://{platformPrefix}wotclans.com.br/Tanks/{tank.TankId}",
+                Url = "https://wotclans.com.br/Tanks/{tank.TankId}",
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
                     Name = "WoTClans",
-                    Url = $"https://{platformPrefix}wotclans.com.br"
+                    Url = "https://wotclans.com.br"
                 },
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
@@ -521,14 +500,12 @@ namespace Negri.Wot.Bot
 
             await ctx.TriggerTypingAsync();
 
-            var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-
-            var tank = FindTank(cfg.Plataform, tankName, out var exact);
+            var tank = FindTank(tankName, out var exact);
 
             if ((tank == null) && !string.IsNullOrWhiteSpace(gamerTag) && (gamerTag.Length <= 2))
             {
                 // Maybe the gamer tag is not a gamer tag, just the final part of a tank name...
-                tank = FindTank(cfg.Plataform, tankName + " " + gamerTag, out exact);
+                tank = FindTank(tankName + " " + gamerTag, out exact);
                 if (tank != null)
                 {
                     // yeah... it was not a gamer tag
@@ -564,7 +541,7 @@ namespace Negri.Wot.Bot
             Log.Info($"Requested {nameof(Leader)}({tank.Plataform}.{tank.Name}, {gamerTag})");
 
 
-            var leaderboard = provider.GetLeaderboard(tank.Plataform, tank.TankId, top).ToArray();
+            var leaderboard = provider.GetLeaderboard(tank.TankId, top: top).ToArray();
 
             if (!leaderboard.Any())
             {
@@ -584,12 +561,12 @@ namespace Negri.Wot.Bot
             {
                 maxGamerTag = 9;
             }
-            sb.AppendLine($"  # {tank.Plataform.TagName().PadRight(maxGamerTag)} {"Clan".PadRight(5)} {"Total".PadLeft(6)} {"Dir".PadLeft(6)} { "Aux".PadLeft(6)}");
+            sb.AppendLine($"  # {"Tanker".PadRight(maxGamerTag)} {"Clan",-5} {"Total",6} {"Dir",6} { "Aux",6}");
 
             for (var i = 0; i < Math.Min(leaderboard.Length, 25); i++)
             {
                 var l = leaderboard[i];
-                sb.AppendLine($"{(i + 1).ToString().PadLeft(3)} {l.GamerTag.PadRight(maxGamerTag)} {l.ClanTag.PadRight(5)} {l.TotalDamage.ToString("N0").PadLeft(6)} {l.DirectDamage.ToString("N0").PadLeft(6)} {l.DamageAssisted.ToString("N0").PadLeft(6)}");
+                sb.AppendLine($"{(i + 1),3} {l.GamerTag.PadRight(maxGamerTag)} {l.ClanTag,-5} {l.TotalDamage,6:N0} {l.DirectDamage,6:N0} {l.DamageAssisted,6:N0}");
             }
 
             sb.AppendLine("```");
@@ -601,7 +578,7 @@ namespace Negri.Wot.Bot
                 for (var i = 0; i < leaderboard.Length; i++)
                 {
                     var l = leaderboard[i];
-                    if (l.GamerTag.ToLowerInvariant() == gamerTag.ToLowerInvariant())
+                    if (string.Equals(l.GamerTag, gamerTag, StringComparison.InvariantCultureIgnoreCase))
                     {
                         position = i + 1;
                         leader = l;
@@ -630,19 +607,17 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in quotes.");
             }
 
-            var platformPrefix = leaderboard.First().Plataform == Platform.PS ? "ps." : string.Empty;
-
             var embed = new DiscordEmbedBuilder
             {
                 Title = $"{tank.Name} Leaderboard",
                 Description = sb.ToString(),
                 Color = DiscordColor.Gray,
                 ThumbnailUrl = tank.SmallImageUrl,
-                Url = $"https://{platformPrefix}wotclans.com.br/Tanks/{tank.TankId}",
+                Url = $"https://wotclans.com.br/Tanks/{tank.TankId}",
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
                     Name = "WoTClans",
-                    Url = $"https://{platformPrefix}wotclans.com.br"
+                    Url = "https://wotclans.com.br"
                 },
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
@@ -677,14 +652,12 @@ namespace Negri.Wot.Bot
             }
             flagCode = flagCode.RemoveDiacritics().ToLowerInvariant();
 
-            var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-
-            var tank = FindTank(cfg.Plataform, tankName, out var exact);
+            var tank = FindTank(tankName, out var exact);
 
             if ((tank == null) && !string.IsNullOrWhiteSpace(gamerTag) && (gamerTag.Length <= 2))
             {
                 // Maybe the gamer tag is not a gamer tag, just the final part of a tank name...
-                tank = FindTank(cfg.Plataform, tankName + " " + gamerTag, out exact);
+                tank = FindTank(tankName + " " + gamerTag, out exact);
                 if (tank != null)
                 {
                     // yeah... it was not a gamer tag
@@ -721,8 +694,8 @@ namespace Negri.Wot.Bot
             }
 
 
-            var leaderboard = provider.GetLeaderboard(tank.Plataform, tank.TankId, top, flagCode).Where(l => (l.ClanFlag ?? string.Empty)
-                .ToLowerInvariant() == flagCode).ToArray();
+            var leaderboard = provider.GetLeaderboard(tank.TankId, top, flagCode).Where(l => (l.ClanFlag ?? string.Empty)
+                                                                                             .ToLowerInvariant() == flagCode).ToArray();
 
             if (!leaderboard.Any())
             {
@@ -743,7 +716,7 @@ namespace Negri.Wot.Bot
             {
                 maxGamerTag = 9;
             }
-            sb.AppendLine($"  # {tank.Plataform.TagName().PadRight(maxGamerTag)} {"Clan".PadRight(5)} {"Total".PadLeft(6)} {"Dir".PadLeft(6)} { "Aux".PadLeft(6)}");
+            sb.AppendLine($"  # {"Tanker".PadRight(maxGamerTag)} {"Clan".PadRight(5)} {"Total".PadLeft(6)} {"Dir".PadLeft(6)} { "Aux".PadLeft(6)}");
 
             for (var i = 0; i < Math.Min(leaderboard.Length, 25); i++)
             {
@@ -789,19 +762,17 @@ namespace Negri.Wot.Bot
                 sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in quotes.");
             }
 
-            var platformPrefix = leaderboard.First().Plataform == Platform.PS ? "ps." : string.Empty;
-
             var embed = new DiscordEmbedBuilder
             {
                 Title = $"{tank.Name} Leaderboard for {flagCode.ToUpperInvariant()}",
                 Description = sb.ToString(),
                 Color = DiscordColor.Gray,
                 ThumbnailUrl = tank.SmallImageUrl,
-                Url = $"https://{platformPrefix}wotclans.com.br/Tanks/{tank.TankId}",
+                Url = $"https://wotclans.com.br/Tanks/{tank.TankId}",
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
                     Name = "WoTClans",
-                    Url = $"https://{platformPrefix}wotclans.com.br"
+                    Url = "https://wotclans.com.br"
                 },
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
@@ -864,15 +835,13 @@ namespace Negri.Wot.Bot
 
             await ctx.TriggerTypingAsync();
 
-            var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-
             Log.Debug($"Requesting {nameof(RandTank)}({minTier}, {maxTier}, {nationFilter}, {typeFilter}, {premiumFilter}, {gamerTag ?? string.Empty}, {notOnPlayer})...");
 
             try
             {
                 var provider = new DbProvider(_connectionString);
 
-                var allTanks = provider.EnumTanks(cfg.Plataform).Where(t => (t.Tier >= minTier) && (t.Tier <= maxTier)).ToList();
+                var allTanks = provider.EnumTanks().Where(t => (t.Tier >= minTier) && (t.Tier <= maxTier)).ToList();
 
                 if (!string.IsNullOrWhiteSpace(nationFilter) && !nationFilter.EqualsCiAi("any"))
                 {
@@ -966,8 +935,6 @@ namespace Negri.Wot.Bot
 
                 var tank = allTanks[number];
 
-                var platformPrefix = tank.Plataform == Platform.PS ? "ps." : string.Empty;
-
                 var sb = new StringBuilder();
 
                 sb.AppendLine($"The random tank is the `{tank.Name}`, Tier {tank.Tier.ToRomanNumeral()}, {tank.Nation.GetDescription()}, {(tank.IsPremium ? "Premium" : "Regular")}, {ctx.User.Mention}!");
@@ -978,11 +945,11 @@ namespace Negri.Wot.Bot
                     Description = sb.ToString(),
                     Color = DiscordColor.Gray,
                     ThumbnailUrl = tank.SmallImageUrl,
-                    Url = $"https://{platformPrefix}wotclans.com.br/Tanks/{tank.TankId}",
+                    Url = $"https://wotclans.com.br/Tanks/{tank.TankId}",
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{platformPrefix}wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {

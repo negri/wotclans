@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using log4net;
 using Negri.Wot.Achievements;
@@ -30,6 +31,12 @@ namespace Negri.Wot
         private const int MaxTry = 10;
 
         private static readonly ILog Log = LogManager.GetLogger(typeof(Fetcher));
+
+        /// <summary>
+        ///     Regex for clan tags
+        /// </summary>
+        private static readonly Regex ClanTagRegex = new Regex("^[A-Z0-9\\-_]{2,5}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
 
         /// <summary>
         /// The only and only HTTP Client
@@ -263,27 +270,29 @@ namespace Negri.Wot
         }
 
 
-        public Clan FindClan(Platform platform, string clanTag, bool returnSmallClans = false)
+        public Clan FindClan(string clanTag)
         {
-            Log.DebugFormat("Procurando dados do clã {0}@{1}...", clanTag, platform);
-            string server;
-            switch (platform)
+            Log.DebugFormat("Procurando dados do clã {0}...", clanTag);
+
+            if (string.IsNullOrWhiteSpace(clanTag))
             {
-                case Platform.XBOX:
-                    server = "api-console.worldoftanks.com";
-                    break;
-                case Platform.PS:
-                    server = "api-console.worldoftanks.com";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
+                return null;
             }
 
-            var requestUrl =
-                $"https://{server}/wotx/clans/list/?application_id={WargamingApplicationId}&search={clanTag}&limit=1";
+            if (clanTag.Length > 5)
+            {
+                clanTag = clanTag.Substring(0, 5);
+            }
+
+            if (!ClanTagRegex.IsMatch(clanTag))
+            {
+                return null;
+            }
+
+            string requestUrl = $"https://api-console.worldoftanks.com/wotx/clans/list/?application_id={WargamingApplicationId}&search={clanTag}&limit=1";
 
             var json =
-                GetContent($"FindClan.{platform}.{clanTag}.json", requestUrl, TimeSpan.FromMinutes(1), false,
+                GetContent($"FindClan.{clanTag}.json", requestUrl, TimeSpan.FromMinutes(1), false,
                     Encoding.UTF8);
 
             var response = JsonConvert.DeserializeObject<ClansListResponse>(json);
@@ -304,13 +313,6 @@ namespace Negri.Wot
             if (string.Compare(clanTag, found.Tag, StringComparison.OrdinalIgnoreCase) != 0)
             {
                 Log.Error($"A busca por '{clanTag}' encontrou apenas '{found.Tag}', que não coincide");
-                return null;
-            }
-
-            if ((found.MembersCount < 7) && (!returnSmallClans))
-            {
-                Log.Error(
-                    $"A busca por '{clanTag}' encontrou apenas {found.MembersCount} membros no clã id {found.ClanId}. Ele não será adicionado.");
                 return null;
             }
 
@@ -652,22 +654,20 @@ namespace Negri.Wot
         public Player GetPlayerByGamerTag(Platform platform, string gamerTag)
         {
             Log.DebugFormat("Procurando dados na plataforma {0}...", platform);
-            string server;
+
             switch (platform)
             {
-                case Platform.XBOX:
-                    server = "api-console.worldoftanks.com";
-                    break;
                 case Platform.PS:
-                    server = "api-console.worldoftanks.com";
+                    gamerTag += "-p";
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
+                case Platform.XBOX:
+                    gamerTag += "-x";
+                    break;
             }
 
-            var url = $"https://{server}/wotx/account/list/?application_id={WargamingApplicationId}&search={gamerTag}";
+            var url = $"https://api-console.worldoftanks.com/wotx/account/list/?application_id={WargamingApplicationId}&search={gamerTag}";
             var json =
-                GetContent($"AccountList.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8);
+                GetContent($"AccountList.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8);
             var result = JObject.Parse(json);
             if ((string) result["status"] == "error")
             {
@@ -696,16 +696,20 @@ namespace Negri.Wot
             var player = new Player
             {
                 Id = (long) result["data"][0]["account_id"],
-                Name = gamerTag,
+                Name = (string)result["data"][0]["nickname"],
                 Moment = DateTime.UtcNow,
                 Platform = platform
             };
 
+            var n = NormalizeNickname(player.Name);
+            player.Name = n.name;
+            player.Platform = n.platform;
+
             // Acho o clã do cidadão
             url =
-                $"https://{server}/wotx/clans/accountinfo/?application_id={WargamingApplicationId}&account_id={player.Id}&extra=clan";
+                $"https://api-console.worldoftanks.com/wotx/clans/accountinfo/?application_id={WargamingApplicationId}&account_id={player.Id}&extra=clan";
             json =
-                GetContent($"ClansAccountinfo.{platform}.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8);
+                GetContent($"ClansAccountinfo.{gamerTag}.json", url, WebCacheAge, false, Encoding.UTF8);
             result = JObject.Parse(json);
             count = (int) result["meta"]["count"];
             if (count == 1)

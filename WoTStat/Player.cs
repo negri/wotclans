@@ -16,12 +16,6 @@ namespace Negri.Wot
             Rank = Rank.Private;
         }
 
-        /// <summary>
-        /// Constroi
-        /// </summary>
-        /// <param name="platform">Plataforma</param>
-        /// <param name="playerId">Id no jogo</param>
-        /// <param name="name">Gamer Tag</param>
         public Player(Platform platform, long playerId, string name)
         {
             Id = playerId;
@@ -66,7 +60,7 @@ namespace Negri.Wot
         public TimeSpan MonthTime { get; set; }
 
         /// <summary>
-        /// Time in batles last week
+        /// Time in battles last week
         /// </summary>
         public TimeSpan WeekTime { get; set; }
 
@@ -233,7 +227,7 @@ namespace Negri.Wot
                 {
                     return string.Empty;
                 }
-                return $"https://{(Platform == Platform.PS ? "ps." : "")}wotclans.com.br/Clan/{ClanTag}";
+                return $"https://wotclans.com.br/Clan/{ClanTag}";
             }
         }
 
@@ -393,7 +387,7 @@ namespace Negri.Wot
 
             if (TotalBattles < previousPlayer.TotalBattles)
             {
-                // Totais estragados tambem...
+                // Totais estragados também...
                 TotalBattles = previousPlayer.TotalBattles;
                 TotalWn8 = previousPlayer.TotalWn8;
                 TotalWinRate = previousPlayer.TotalWinRate;
