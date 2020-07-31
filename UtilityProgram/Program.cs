@@ -278,10 +278,10 @@ namespace UtilityProgram
         private static void DeleteOldFileOnServer()
         {
             var cleanerXbox = new Putter(ConfigurationManager.AppSettings["ApiAdminKey"]);
-            cleanerXbox.CleanFiles();
+            cleanerXbox.CleanOldData();
 
             var cleanerPs = new Putter(ConfigurationManager.AppSettings["ApiAdminKey"]);
-            cleanerPs.CleanFiles();
+            cleanerPs.CleanOldData();
         }
 
         /// <summary>

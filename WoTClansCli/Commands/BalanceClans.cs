@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
 using CliFx;
 using CliFx.Attributes;
 using log4net;

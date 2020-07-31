@@ -2,13 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -26,7 +23,7 @@ namespace Negri.Wot
     /// <summary>
     ///     Retrieve information from the web (and APIs)
     /// </summary>
-    public class Fetcher 
+    public class Fetcher
     {
         private const int MaxTry = 10;
 
@@ -39,12 +36,12 @@ namespace Negri.Wot
 
 
         /// <summary>
-        /// The only and only HTTP Client
+        ///     The only and only HTTP Client
         /// </summary>
         private static readonly HttpClient HttpClient;
 
         private readonly string _cacheDirectory;
-        
+
         private DateTime _lastWebFetch = DateTime.MinValue;
 
         static Fetcher()
@@ -289,7 +286,7 @@ namespace Negri.Wot
                 return null;
             }
 
-            string requestUrl = $"https://api-console.worldoftanks.com/wotx/clans/list/?application_id={WargamingApplicationId}&search={clanTag}&limit=1";
+            var requestUrl = $"https://api-console.worldoftanks.com/wotx/clans/list/?application_id={WargamingApplicationId}&search={clanTag}&limit=1";
 
             var json =
                 GetContent($"FindClan.{clanTag}.json", requestUrl, TimeSpan.FromMinutes(1), false,
@@ -646,6 +643,9 @@ namespace Negri.Wot
             }
 
             var name = (string) result["data"][$"{id}"]["nickname"];
+
+            name = NormalizeNickname(name).name;
+
             Log.DebugFormat("...achado '{0}'.", name);
             return name;
         }
@@ -696,7 +696,7 @@ namespace Negri.Wot
             var player = new Player
             {
                 Id = (long) result["data"][0]["account_id"],
-                Name = (string)result["data"][0]["nickname"],
+                Name = (string) result["data"][0]["nickname"],
                 Moment = DateTime.UtcNow,
                 Platform = platform
             };
@@ -734,10 +734,10 @@ namespace Negri.Wot
         public IEnumerable<Medal> GetMedals()
         {
             Log.Debug("Fetching medals on platform...");
-            
+
 
             var url = $"https://api-console.worldoftanks.com/wotx/encyclopedia/achievements/?application_id={WargamingApplicationId}";
-            var json = GetContent($"Achievements.json", url, WebCacheAge, false, Encoding.UTF8);
+            var json = GetContent("Achievements.json", url, WebCacheAge, false, Encoding.UTF8);
 
             var o = JObject.Parse(json);
 

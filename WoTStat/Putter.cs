@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading;
 using log4net;
+using Newtonsoft.Json;
 
 namespace Negri.Wot
 {
@@ -68,6 +69,41 @@ namespace Negri.Wot
             }
         }
 
+        private static T Get<T>(Func<T> getter, int maxTries = 10)
+        {
+            Exception lastException = null;
+            for (var i = 0; i < maxTries; ++i)
+            {
+                try
+                {
+                    return getter();
+                }
+                catch (Exception ex)
+                {
+                    if (i < maxTries - 1)
+                    {
+                        Log.Warn(ex);
+                        Log.Warn("...esperando antes de tentar novamente.");
+                        Thread.Sleep(TimeSpan.FromSeconds(i * i * 2));
+                    }
+                    else
+                    {
+                        Log.Error(ex);
+                    }
+
+                    lastException = ex;
+                }
+            }
+
+            if (lastException != null)
+            {
+                throw lastException;
+            }
+
+            return default;
+        }
+
+
         public bool Put(Player player)
         {
             var copy = player;
@@ -108,26 +144,36 @@ namespace Negri.Wot
         /// <summary>
         /// Clean files on the remote server
         /// </summary>
-        public void CleanFiles()
+        public CleanOldDataResponse CleanOldData(
+            int daysToKeepOnDaily = 4 * 7 + 7,
+            int daysToKeepOnWeekly = 3 * 4 * 7 + 7,
+            int daysToKeepClanFiles = 2 * 4 * 7 + 7,
+            int daysToKeepPlayerFiles = 2 * 4 * 7 + 7)
         {
-            Execute(() =>
+            return Get(() =>
             {
-                Log.Debug("Calling CleanFiles API...");
+                Log.Debug("Calling CleanOldData API...");
 
-                var res = HttpClient.DeleteAsync($"{BaseUrl}/api/admin/CleanDataFolders?apiAdminKey={_apiKey}").Result;
+                var url = $"{BaseUrl}/api/admin/CleanDataFolders?apiAdminKey={_apiKey}&daysToKeepOnDaily={daysToKeepOnDaily}&" +
+                          $"daysToKeepOnWeekly={daysToKeepOnWeekly}&daysToKeepClanFiles={daysToKeepClanFiles}&daysToKeepPlayerFiles={daysToKeepPlayerFiles}";
+
+                var res = HttpClient.DeleteAsync(url).Result;
                
                 if (res.StatusCode == HttpStatusCode.OK)
                 {
                     Log.Debug("Remote deletion is done.");
+                    var json = res.Content.ReadAsStringAsync().Result;
+                    var cleaned = JsonConvert.DeserializeObject<CleanOldDataResponse>(json);
+                    return cleaned;
                 }
-                else
-                {
-                    Log.Warn($"Remote deletion fail: {res.StatusCode}, {res.ReasonPhrase}");
-                }
+
+                Log.Warn($"Remote deletion fail: {res.StatusCode}, {res.ReasonPhrase}");
+                return null;
 
             });
         }
 
+        
         /// <summary>
         /// Removes a clan from the site
         /// </summary>

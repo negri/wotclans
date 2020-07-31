@@ -118,6 +118,11 @@ namespace Negri.Wot
                     p.GetService<DbRecorder>()
                 ));
 
+            services.AddTransient(p =>
+                new CleanSiteOldData(
+                    p.GetService<Putter>()
+                ));
+
             var serviceProvider = services.BuildServiceProvider();
 
             var cab= new CliApplicationBuilder()
