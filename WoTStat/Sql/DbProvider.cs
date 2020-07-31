@@ -1182,9 +1182,9 @@ namespace Negri.Wot.Sql
                 }
             }
 
-            diagnostic.PlayersQueueLenght = GetPlayersUpdateOrder(int.MaxValue, 24, 24, t).Count();
-            diagnostic.MembershipQueueLenght = GetClanMembershipUpdateOrder(int.MaxValue, 12, t).Count();
-            diagnostic.CalculateQueueLenght = GetClanCalculateOrder(24, t).Count();
+            diagnostic.PlayersQueueLength = GetPlayersUpdateOrder(int.MaxValue, 24, 24, t).Count();
+            diagnostic.MembershipQueueLength = GetClanMembershipUpdateOrder(int.MaxValue, 12, t).Count();
+            diagnostic.CalculateQueueLength = GetClanCalculateOrder(24, t).Count();
 
             return diagnostic;
         }

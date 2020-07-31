@@ -69,9 +69,9 @@ namespace Negri.Wot.Bot
                 sb.AppendLine(
                     $"Delay on the last 48h/72h/96h: {s.Last48HDelay:N1}; {s.Last72HDelay:N1}; {s.Last96HDelay:N1}");
                 sb.AppendLine($"Total Players: {s.TotalPlayers:N0}; Enabled Clans: {s.TotalEnabledClans};");
-                sb.AppendLine($"Players Queue Length: {s.PlayersQueueLenght}");
-                sb.AppendLine($"Membership Queue Length: {s.MembershipQueueLenght}");
-                sb.AppendLine($"Calculate Queue Length: {s.CalculateQueueLenght}");
+                sb.AppendLine($"Players Queue Length: {s.PlayersQueueLength}");
+                sb.AppendLine($"Membership Queue Length: {s.MembershipQueueLength}");
+                sb.AppendLine($"Calculate Queue Length: {s.CalculateQueueLength}");
 
                 var embed = new DiscordEmbedBuilder
                 {

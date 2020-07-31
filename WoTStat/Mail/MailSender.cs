@@ -186,14 +186,14 @@ namespace Negri.Wot.Mail
             sb.AppendFormat("Jogadores:          {0:N0}", dd.TotalPlayers);
             sb.AppendLine();
 
-            sb.AppendFormat("Jogadores na fila:  {0:N0} ({1:P1})", dd.PlayersQueueLenght,
-                dd.PlayersQueueLenght * 1.0 / dd.TotalPlayers);
-            if (dd.PlayersQueueLenght > playersPerHour + 120)
+            sb.AppendFormat("Jogadores na fila:  {0:N0} ({1:P1})", dd.PlayersQueueLength,
+                dd.PlayersQueueLength * 1.0 / dd.TotalPlayers);
+            if (dd.PlayersQueueLength > playersPerHour + 120)
             {
                 mailPriority = Max(mailPriority, MailPriority.Normal);
                 sb.Append(" !");
             }
-            else if (dd.PlayersQueueLenght > playersPerHour + 240)
+            else if (dd.PlayersQueueLength > playersPerHour + 240)
             {
                 mailPriority = Max(mailPriority, MailPriority.High);
                 sb.Append(" !!!!");
@@ -201,14 +201,14 @@ namespace Negri.Wot.Mail
 
             sb.AppendLine();
 
-            sb.AppendFormat("Membership na fila: {0:N0} ({1:P1})", dd.MembershipQueueLenght,
-                dd.MembershipQueueLenght * 1.0 / dd.TotalEnabledClans);
-            if (dd.MembershipQueueLenght > 100 * 4 * 2)
+            sb.AppendFormat("Membership na fila: {0:N0} ({1:P1})", dd.MembershipQueueLength,
+                dd.MembershipQueueLength * 1.0 / dd.TotalEnabledClans);
+            if (dd.MembershipQueueLength > 100 * 4 * 2)
             {
                 sb.AppendLine(" !!!");
                 mailPriority = Max(mailPriority, MailPriority.High);
             }
-            else if (dd.MembershipQueueLenght > 100 * 4)
+            else if (dd.MembershipQueueLength > 100 * 4)
             {
                 sb.AppendLine(" !");
                 mailPriority = Max(mailPriority, MailPriority.Normal);
@@ -219,9 +219,9 @@ namespace Negri.Wot.Mail
             }
 
 
-            sb.AppendFormat("Cálculos na fila:   {0:N0} ({1:P1})", dd.CalculateQueueLenght,
-                dd.CalculateQueueLenght * 1.0 / dd.TotalEnabledClans);
-            if (dd.CalculateQueueLenght > (dd.TotalEnabledClans / 2))
+            sb.AppendFormat("Cálculos na fila:   {0:N0} ({1:P1})", dd.CalculateQueueLength,
+                dd.CalculateQueueLength * 1.0 / dd.TotalEnabledClans);
+            if (dd.CalculateQueueLength > (dd.TotalEnabledClans / 2))
             {
                 sb.AppendLine(" !!!");
                 mailPriority = Max(mailPriority, MailPriority.High);

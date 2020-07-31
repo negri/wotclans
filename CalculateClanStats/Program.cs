@@ -206,7 +206,7 @@ namespace Negri.Wot
                 Log.Debug("Obtendo informações do BD...");
                 var dd = provider.GetDataDiagnostic();
                 Log.InfoFormat("Filas: {0} jogadores; {1} clans; {2} cálculos.",
-                    dd.PlayersQueueLenght, dd.MembershipQueueLenght, dd.CalculateQueueLenght);
+                    dd.PlayersQueueLength, dd.MembershipQueueLength, dd.CalculateQueueLength);
                 Log.InfoFormat(
                     "{0} jogadores; {1:N0} por dia; {2:N0} por hora; reais: {3:N0}; {4:N0}; {5:N0}; {6:N0}",
                     dd.TotalPlayers, dd.ScheduledPlayersPerDay, dd.ScheduledPlayersPerHour,
