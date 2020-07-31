@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="Commands\BalanceClans.cs" />
     <Compile Include="Commands\CalculateClans.cs" />
+    <Compile Include="Commands\CalculateMoe.cs" />
     <Compile Include="Commands\CalculateStats.cs" />
     <Compile Include="Commands\GetClans.cs" />
     <Compile Include="Commands\GetPlayers.cs" />

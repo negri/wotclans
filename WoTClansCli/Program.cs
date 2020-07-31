@@ -78,6 +78,15 @@ namespace Negri.Wot
                 ));
 
             services.AddTransient(p =>
+                new CalculateMoe(
+                    p.GetService<Fetcher>(),
+                    p.GetService<FtpPutter>(),
+                    p.GetService<DbProvider>(),
+                    p.GetService<DbRecorder>(),
+                    resultDirectory
+                ));
+
+            services.AddTransient(p =>
                 new GetClans(
                     p.GetService<Fetcher>(),
                     p.GetService<FtpPutter>(),
