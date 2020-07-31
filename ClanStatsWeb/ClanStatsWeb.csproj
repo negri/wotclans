@@ -173,6 +173,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\Art\churchill7_1440x900_wall.jpg" />
     <Content Include="Images\Art\March_1440x900_wallpaper.jpg" />
     <Content Include="Images\Art\shashka-timeline.png" />
     <Content Include="Images\Art\su-152_1440x900_wall.jpg" />
@@ -548,13 +549,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Results\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WoTStat\WoTStat.csproj">
