@@ -182,3 +182,7 @@ table.data tbody td {
 .tc16 td:nth-child(16), .tc16 th:nth-child(16) {
     text-align: center
 }
+
+.platform-logo-big {
+    height: 0.7em;
+}

@@ -209,6 +209,7 @@
     <Content Include="Images\Nations\8.png" />
     <Content Include="Images\Nations\9.png" />
     <Content Include="Images\Nations\Globe_icon.svg" />
+    <Content Include="Images\ps.svg" />
     <Content Include="Images\Ranks\1.svg" />
     <Content Include="Images\Types\1.svg" />
     <Content Include="Images\Types\2.svg" />
@@ -217,6 +218,7 @@
     <Content Include="Images\Types\5.svg" />
     <Content Include="Images\Types\premium.svg" />
     <Content Include="Images\Types\types.png" />
+    <Content Include="Images\xbox.svg" />
     <Content Include="log4net.config">
       <SubType>Designer</SubType>
     </Content>
