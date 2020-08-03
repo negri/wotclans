@@ -41,6 +41,9 @@ namespace Negri.Wot.Commands
         [CommandOption("MaxRunMinutes", Description = "Maximum run minutes.")]
         public int? MaxRunMinutes { get; set; }
 
+        [CommandOption("MaxClans", Description = "Maximum number of clans to calculate.")]
+        public int? MaxClans { get; set; }
+
         public ValueTask ExecuteAsync(IConsole console)
         {
             var sw = Stopwatch.StartNew();
@@ -62,6 +65,18 @@ namespace Negri.Wot.Commands
 
             var clans = _provider.GetClanCalculateOrder(AgeHours).ToArray();
             Log.InfoFormat("{0} clans should be calculated.", clans.Length);
+
+            if (clans.Length <= 0)
+            {
+                Log.Info("No clan needs calculation.");
+                return default;
+            }
+
+            if (MaxClans.HasValue)
+            {
+                clans = clans.Take(MaxClans.Value).ToArray();
+                Log.InfoFormat($"... but only {clans.Length} will be, as limited by {nameof(MaxClans)}.");
+            }
 
             var doneCount = 0;
             Parallel.For(0, clans.Length, new ParallelOptions { MaxDegreeOfParallelism = MaxParallel }, i =>

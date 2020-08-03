@@ -186,3 +186,7 @@ table.data tbody td {
 .platform-logo-big {
     height: 0.7em;
 }
+
+.platform-logo-small {
+    height: 12px;
+}
