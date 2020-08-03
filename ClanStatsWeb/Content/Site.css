@@ -190,3 +190,8 @@ table.data tbody td {
 .platform-logo-small {
     height: 12px;
 }
+
+.platform-logo-clan {
+    height: 1.2em;
+    margin-bottom: 5px;
+}

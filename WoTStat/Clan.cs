@@ -98,6 +98,25 @@ namespace Negri.Wot
 
         public bool IsActive => (ActivePercent > 0.25) && (Active >= 4);
 
+        public int CountXbox => _players.Count(p => p.Platform == Platform.XBOX);
+
+        public int CountPs => _players.Count(p => p.Platform == Platform.PS);
+
+        [JsonIgnore]
+        public double CompositionXbox => (double) CountXbox / Count;
+
+        [JsonIgnore]
+        public double CompositionPs => (double)CountPs / Count;
+
+        [JsonIgnore]
+        public bool IsOnlyXbox => CountXbox == Count;
+
+        [JsonIgnore]
+        public bool IsOnlyPs => CountPs == Count;
+
+        [JsonIgnore]
+        public bool IsMixed => (CountXbox > 0) && (CountPs > 0);
+
         /// <summary>
         ///     Idade dos dados
         /// </summary>

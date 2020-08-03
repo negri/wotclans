@@ -33,6 +33,20 @@
             }
             @Resources.CalculatedAt <span id="last-update-time">@Model.Clan.Moment.ToString("O")</span>.
         </p>
+        <p style="margin-top: -15px;">
+            @if (Model.Clan.IsOnlyXbox)
+            {
+                <span>100% @Helpers.PlatformLogo(Platform.XBOX, "platform-logo-clan")</span>
+            }
+            else if (Model.Clan.IsOnlyPs)
+            {
+                <span>100% @Helpers.PlatformLogo(Platform.PS, "platform-logo-clan")</span>
+            }
+            else
+            {
+        <span>@Model.Clan.CompositionPs.ToString("P0") @Helpers.PlatformLogo(Platform.PS, "platform-logo-clan") - @Model.Clan.CompositionXbox.ToString("P0") @Helpers.PlatformLogo(Platform.XBOX, "platform-logo-clan")</span>
+            }
+        </p>
     </section>
 }
 
