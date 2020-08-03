@@ -178,10 +178,11 @@ namespace Negri.Wot.Tanks
         /// <summary>
         /// Top tanks by Kill/Death
         /// </summary>
-        public IEnumerable<TankPlayerStatistics> GetTopTanksByKillDeathRatio(ReferencePeriod period = ReferencePeriod.All, int minNumberOfTanks = 5, int minTier = 1, int maxTier = 10, PremiumSelection includePremiums = PremiumSelection.OnlyRegular)
+        public IEnumerable<TankPlayerStatistics> GetTopTanksByKillDeathRatio(ReferencePeriod period = ReferencePeriod.All, int minNumberOfTanks = 5,
+            int minTier = 1, int maxTier = 10, PremiumSelection includePremiums = PremiumSelection.OnlyRegular, int minBattles = 1)
         {
 
-            var all = GetTanks(period, minTier, maxTier).ToArray();
+            var all = GetTanks(period, minTier, maxTier, minBattles: minBattles).ToArray();
 
             var top = FilterTopTanks(all, minNumberOfTanks, includePremiums, t => t.KillDeathRatio);
 

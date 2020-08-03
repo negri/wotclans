@@ -423,6 +423,9 @@
   <data name="FilterSmallExplanation" xml:space="preserve">
     <value>Показать кланы, в которых менее 15 активных игроков.</value>
   </data>
+  <data name="ForConsole" xml:space="preserve">
+    <value>для консолей</value>
+  </data>
   <data name="ForPs" xml:space="preserve">
     <value>на PlayStation</value>
   </data>
@@ -607,7 +610,7 @@
     <value>Данные для {0:N0} машин, рассчитанные в {1:d}.</value>
   </data>
   <data name="MoEDescriptions" xml:space="preserve">
-    <value>Отличительные отметки в World of Tanks: {0}</value>
+    <value>Отличительные отметки в World of Tanks</value>
   </data>
   <data name="MoEExplanation" xml:space="preserve">
     <value>Расчётный &lt;b&gt;общий урон&lt;/b&gt; (сумма непосредственного урона и урона, нанесённого союзниками с вашей помощью), которого вы должны достичь, чтобы получить &lt;b&gt;отличительные отметки&lt;/b&gt; на стволе орудия.</value>
@@ -814,7 +817,7 @@
     <value>Данные пересчитываются каждую неделю на основе боёв членов клана, которые отслеживает этот сайт. Имейте в виду, что это не полная картина.</value>
   </data>
   <data name="StatsDesc" xml:space="preserve">
-    <value>Статистика для {0} — WoT: {1}</value>
+    <value>Статистика для {0}</value>
   </data>
   <data name="StatsTitle" xml:space="preserve">
     <value>Статистика для {0}</value>
@@ -1006,6 +1009,6 @@
     <value>WoT Clans по </value>
   </data>
   <data name="XboxCommunityDiscord" xml:space="preserve">
-    <value>XBOX Сообщество Discord</value>
+    <value>Сообщество Discord</value>
   </data>
 </root>

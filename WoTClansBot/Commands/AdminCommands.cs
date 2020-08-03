@@ -429,7 +429,7 @@ namespace Negri.Wot.Bot
 
         [Command("SetPlataform")]
         [Description("Set the plataform this Guild is interested.")]
-        public async Task SetPlataform(CommandContext ctx, [Description("Plataform")] string plataform)
+        public async Task SetPlataform(CommandContext ctx, [Description("Platform")] string plataform)
         {
             if (!Enum.TryParse(plataform, true, out Platform plat))
             {

@@ -69,12 +69,12 @@ namespace Negri.Wot
                 var url = _url + file;
                 Log.DebugFormat("Deletando '{0}'...", url);
 
-                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(url);
+                var request = (FtpWebRequest)WebRequest.Create(url);
                 request.Method = WebRequestMethods.Ftp.DeleteFile;
 
                 request.Credentials = new NetworkCredential(_user, _password);
 
-                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+                var response = (FtpWebResponse)request.GetResponse();
                 Log.DebugFormat("...status: {0}", response.StatusDescription);
                 response.Close();
             });            
@@ -95,15 +95,15 @@ namespace Negri.Wot
                         url = _url + $"{subDir}/";
                     }
 
-                    FtpWebRequest request = (FtpWebRequest)WebRequest.Create(url);
+                    var request = (FtpWebRequest)WebRequest.Create(url);
                     request.Method = WebRequestMethods.Ftp.ListDirectory;
 
                     request.Credentials = new NetworkCredential(_user, _password);
 
-                    FtpWebResponse response = (FtpWebResponse)request.GetResponse();
-                    Stream responseStream = response.GetResponseStream();
+                    var response = (FtpWebResponse)request.GetResponse();
+                    var responseStream = response.GetResponseStream();
                     Debug.Assert(responseStream != null, "responseStream != null");
-                    StreamReader reader = new StreamReader(responseStream);
+                    var reader = new StreamReader(responseStream);
                     var content = reader.ReadToEnd();
                     reader.Close();
                     response.Close();
@@ -135,18 +135,18 @@ namespace Negri.Wot
         {
             Log.InfoFormat("Destino é '{0}' e deverá ter {1} bytes...", destiny, content.Length);
 
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(destiny);
+            var request = (FtpWebRequest)WebRequest.Create(destiny);
             request.Method = WebRequestMethods.Ftp.UploadFile;
 
             request.Credentials = new NetworkCredential(_user, _password);
 
             request.ContentLength = content.Length;
 
-            Stream requestStream = request.GetRequestStream();
+            var requestStream = request.GetRequestStream();
             requestStream.Write(content, 0, content.Length);
             requestStream.Close();
 
-            FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+            var response = (FtpWebResponse)request.GetResponse();
 
             Log.InfoFormat("Upload File Complete, status {0}", response.StatusDescription.TrimEnd());
 
@@ -159,7 +159,7 @@ namespace Negri.Wot
 
             var fi = new FileInfo(clanFile);
             var fileName = fi.Name;
-            byte[] content = File.ReadAllBytes(clanFile);
+            var content = File.ReadAllBytes(clanFile);
             var destiny = _url + "Clans/" + fileName;
             
             Execute(() =>
@@ -170,7 +170,7 @@ namespace Negri.Wot
 
         public void SetRenameFile(string oldTag, string newTag)
         {
-            byte[] content = Encoding.UTF8.GetBytes(newTag);
+            var content = Encoding.UTF8.GetBytes(newTag);
             var destiny = _url + "Renames/" + oldTag + ".ren.txt";
             Execute(() =>
             {
@@ -178,7 +178,7 @@ namespace Negri.Wot
             });
         }
 
-        public int DeleteOldFiles(int daysToKeepOnDelete, string subdir = null, string filter = null)
+        public int DeleteOldFiles(int daysToKeepOnDelete, string subDirectory = null, string filter = null)
         {
             if (daysToKeepOnDelete < 7)
             {
@@ -187,21 +187,21 @@ namespace Negri.Wot
 
             var regex = new Regex(@"\d{4}-\d{2}-\d{2}", RegexOptions.Compiled);
 
-            int deleted = 0;
-            var files = List(subdir, filter).ToArray();
+            var deleted = 0;
+            var files = List(subDirectory, filter).ToArray();
             foreach (var file in files)
             {                
                 var m = regex.Match(file);
                 if (m.Success)
                 {
-                    DateTime date = DateTime.ParseExact(m.Value, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                    double age = (DateTime.UtcNow.Date - date).TotalDays;
+                    var date = DateTime.ParseExact(m.Value, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    var age = (DateTime.UtcNow.Date - date).TotalDays;
                     if (age > daysToKeepOnDelete)
                     {
-                        string toDelete = file;
-                        if (!string.IsNullOrWhiteSpace(subdir))
+                        var toDelete = file;
+                        if (!string.IsNullOrWhiteSpace(subDirectory))
                         {
-                            toDelete = subdir + "/" + file;
+                            toDelete = subDirectory + "/" + file;
                         }
                         DeleteFile(toDelete);
                         ++deleted;
@@ -218,7 +218,24 @@ namespace Negri.Wot
 
             var fi = new FileInfo(moeFile);
             var fileName = fi.Name;
-            byte[] content = File.ReadAllBytes(moeFile);
+            var content = File.ReadAllBytes(moeFile);
+            var destiny = _url + "MoE/" + fileName;
+
+            Execute(() =>
+            {
+                Put(destiny, content);
+            });
+        }
+
+        public void PutExpectedWn8(string expectedWn8File)
+        {
+            Log.InfoFormat("Iniciando o upload FTP de '{0}'...", expectedWn8File);
+
+            var fi = new FileInfo(expectedWn8File);
+            var fileName = fi.Name;
+            var content = File.ReadAllBytes(expectedWn8File);
+
+            // yep, it stays on the same directory as the MoE files
             var destiny = _url + "MoE/" + fileName;
 
             Execute(() =>
@@ -233,7 +250,7 @@ namespace Negri.Wot
 
             var fi = new FileInfo(tankFile);
             var fileName = fi.Name;
-            byte[] content = File.ReadAllBytes(tankFile);
+            var content = File.ReadAllBytes(tankFile);
             var destiny = _url + "Tanks/" + fileName;
 
             Execute(() =>

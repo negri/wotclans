@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
@@ -20,19 +19,15 @@ namespace Negri.Wot.Bot
 
         private readonly string _connectionString;
 
-
         public ClanCommands()
         {
             _connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
         }
 
-
-
         [Command("clanInactives")]
         [Aliases("Inactives")]
         [Description("The clan's inactives players")]
-        public async Task ClanInactives(CommandContext ctx,
-            [Description("The clan **tag**")] string clanTag)
+        public async Task ClanInactives(CommandContext ctx, [Description("The clan **tag**")] string clanTag)
         {
             try
             {
@@ -51,9 +46,6 @@ namespace Negri.Wot.Bot
 
                 Log.Debug($"Requesting {nameof(ClanInactives)}({clanTag})...");
 
-                var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-                var platform = GetPlatform(clanTag, cfg.Plataform, out clanTag);
-
                 clanTag = clanTag.Trim('[', ']');
                 clanTag = clanTag.ToUpperInvariant();
 
@@ -65,18 +57,12 @@ namespace Negri.Wot.Bot
 
                 var provider = new DbProvider(_connectionString);
 
-                var clan = provider.GetClan(platform, clanTag);
+                var clan = provider.GetClan(clanTag);
                 if (clan == null)
                 {
-                    platform = platform == Platform.PS ? Platform.XBOX : Platform.PS;
-
-                    clan = provider.GetClan(platform, clanTag);
-                    if (clan == null)
-                    {
-                        await ctx.RespondAsync(
-                            $"Can't find on a clan with tag `[{clanTag}]`, {ctx.User.Mention}. Maybe my site doesn't track it yet... or you have the wrong clan tag.");
-                        return;
-                    }
+                    await ctx.RespondAsync(
+                        $"Can't find on a clan with tag `[{clanTag}]`, {ctx.User.Mention}. Maybe my site doesn't track it yet... or you have the wrong clan tag.");
+                    return;
                 }
 
                 if (!clan.Enabled)
@@ -102,13 +88,13 @@ namespace Negri.Wot.Bot
 
                 var sb = new StringBuilder();
 
-                sb.Append($"Information about `{clan.ClanTag}`'s {inactives.Length} inactives tankers on the {clan.Plataform}, {ctx.User.Mention}:");
+                sb.Append($"Information about `{clan.ClanTag}`'s {inactives.Length} inactives tankers,  {ctx.User.Mention}:");
                 sb.AppendLine();
 
                 var maxNameLength = inactives.Max(p => p.Name.Length);
 
                 sb.AppendLine("```");
-                sb.AppendLine($"{platform.TagName().PadRight(maxNameLength)} {"Days".PadLeft(5)} {"Battles".PadLeft(7)} {"WN8".PadLeft(6)}");
+                sb.AppendLine($"{"Tanker".PadRight(maxNameLength)} {"Days",5} {"Battles",7} {"WN8",6}");
                 foreach (var p in inactives.Take(30))
                 {
                     sb.AppendLine($"{(p.Name ?? string.Empty).PadRight(maxNameLength)} {(DateTime.UtcNow - (p.LastBattle ?? DateTime.Today.AddYears(-5))).TotalDays.ToString("N0").PadLeft(5)} {p.MonthBattles.ToString("N0").PadLeft(7)} {p.TotalWn8.ToString("N0").PadLeft(6)}");
@@ -116,18 +102,17 @@ namespace Negri.Wot.Bot
                 sb.AppendLine("```");
 
                 var color = clan.InactivesWn8.ToColor();
-                var platformPrefix = clan.Plataform == Platform.PS ? "ps." : string.Empty;
-
+                
                 var embed = new DiscordEmbedBuilder
                 {
                     Title = $"{clan.ClanTag}'s Inactives Tankers",
                     Description = sb.ToString(),
                     Color = new DiscordColor(color.R, color.G, color.B),
-                    Url = $"https://{platformPrefix}wotclans.com.br/Clan/{clan.ClanTag}",
+                    Url = $"https://wotclans.com.br/Clan/{clan.ClanTag}",
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{platformPrefix}wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -169,9 +154,6 @@ namespace Negri.Wot.Bot
 
             Log.Debug($"Requesting {nameof(ClanTopOnTank)}({clanTag}, {tankName})...");
 
-            var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-            var platform = GetPlatform(clanTag, cfg.Plataform, out clanTag);
-
             if (!ClanTagRegex.IsMatch(clanTag))
             {
                 await ctx.RespondAsync($"You must send a **valid** clan **tag** as parameter, {ctx.User.Mention}.");
@@ -180,18 +162,12 @@ namespace Negri.Wot.Bot
 
             var provider = new DbProvider(_connectionString);
 
-            var clan = provider.GetClan(platform, clanTag);
+            var clan = provider.GetClan(clanTag);
             if (clan == null)
             {
-                platform = platform == Platform.PS ? Platform.XBOX : Platform.PS;
-
-                clan = provider.GetClan(platform, clanTag);
-                if (clan == null)
-                {
-                    await ctx.RespondAsync(
-                        $"Can't find on a clan with tag `[{clanTag}]`, {ctx.User.Mention}. Maybe my site doesn't track it yet... or you have the wrong clan tag.");
-                    return;
-                }
+                await ctx.RespondAsync(
+                    $"Can't find on a clan with tag `[{clanTag}]`, {ctx.User.Mention}. Maybe my site doesn't track it yet... or you have the wrong clan tag.");
+                return;
             }
 
             if (!clan.Enabled)
@@ -202,7 +178,7 @@ namespace Negri.Wot.Bot
             }
 
             var tankCommands = new TankCommands();
-            var tank = tankCommands.FindTank(platform, tankName, out _);
+            var tank = tankCommands.FindTank(tankName, out _);
 
             if (tank == null)
             {
@@ -210,7 +186,7 @@ namespace Negri.Wot.Bot
                 return;
             }
 
-            var tr = provider.GetTanksReferences(tank.Plataform, null, tank.TankId, false, false, false).FirstOrDefault();
+            var tr = provider.GetTanksReferences(null, tank.TankId, includeMoe: false, includeHistogram: false, includeLeaders: false).FirstOrDefault();
 
             if (tr == null)
             {
@@ -224,7 +200,7 @@ namespace Negri.Wot.Bot
                 return;
             }
 
-            var players = provider.GetClanPlayerIdsOnTank(platform, clan.ClanId, tr.TankId).ToList();
+            var players = provider.GetClanPlayerIdsOnTank(clan.ClanId, tr.TankId).ToList();
             if (players.Count <= 0)
             {
                 await ctx.RespondAsync($"No players from the `[{clan.ClanTag}]` has battles on the `{tank.Name}`, {ctx.User.Mention}, as far as the database is up to date.");
@@ -238,7 +214,7 @@ namespace Negri.Wot.Bot
             var fullPlayers = new ConcurrentBag<Player>();
             var tasks = players.Select(async p => 
             {
-                var player = await playerCommands.GetPlayer(ctx, ((p.Plataform == Platform.XBOX) ? "x." : "ps.") + p.Name, false);
+                var player = await playerCommands.GetPlayer(ctx, ((p.Platform == Platform.XBOX) ? "x." : "ps.") + p.Name, false);
                 if (player == null)
                 {
                     await ctx.RespondAsync($"Sorry, could not get updated information for player `{p.Name}`, {ctx.User.Mention}.");
@@ -258,30 +234,29 @@ namespace Negri.Wot.Bot
             //sb.AppendLine($"Here `[{clan.ClanTag}]` top players on the `{tank.Name}`, {ctx.User.Mention}:");
             //sb.AppendLine();
             sb.AppendLine("```");
-            sb.AppendLine($"{platform.TagName().PadRight(maxNameLength)} {"Days".PadLeft(5)} {"Battles".PadLeft(7)} {"WN8".PadLeft(6)}");
+            sb.AppendLine($"{"Tanker".PadRight(maxNameLength)} {"Days",5} {"Battles",7} {"WN8",6}");
             foreach (var p in fullPlayers.OrderByDescending(p => p.Performance.All[tank.TankId].Wn8).Take(25))
             {
                 var tp = p.Performance.All[tank.TankId];
-                sb.AppendLine($"{(p.Name ?? string.Empty).PadRight(maxNameLength)} {(DateTime.UtcNow - tp.LastBattle).TotalDays.ToString("N0").PadLeft(5)} {tp.Battles.ToString("N0").PadLeft(7)} {tp.Wn8.ToString("N0").PadLeft(6)}");
+                sb.AppendLine($"{(p.Name ?? string.Empty).PadRight(maxNameLength)} {(DateTime.UtcNow - tp.LastBattle).TotalDays,5:N0} {tp.Battles,7:N0} {tp.Wn8,6:N0}");
             }
             sb.AppendLine("```");
             sb.AppendLine();
             sb.AppendLine("This command is a **Premium** feature on the bot. For now it's free to use this command, but be advised that on the near future access will be restricted to Premium subscribers.");
 
             var color = clan.Top15Wn8.ToColor();
-            var platformPrefix = clan.Plataform == Platform.PS ? "ps." : string.Empty;
-
+            
             var embed = new DiscordEmbedBuilder
             {
                 Title = $"`{clan.ClanTag}` top players on the `{tank.Name}`",
                 Description = sb.ToString(),
                 Color = new DiscordColor(color.R, color.G, color.B),
                 ThumbnailUrl = tank.SmallImageUrl,
-                Url = $"https://{platformPrefix}wotclans.com.br/Clan/{clan.ClanTag}",
+                Url = $"https://wotclans.com.br/Clan/{clan.ClanTag}",
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
                     Name = "WoTClans",
-                    Url = $"https://{platformPrefix}wotclans.com.br"
+                    Url = "https://wotclans.com.br"
                 },
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
@@ -316,9 +291,6 @@ namespace Negri.Wot.Bot
 
             Log.Debug($"Requesting {nameof(Clan)}({clanTag}, {all})...");
 
-            var cfg = GuildConfiguration.FromGuild(ctx.Guild);
-            var platform = GetPlatform(clanTag, cfg.Plataform, out clanTag);
-
             clanTag = clanTag.Trim('[', ']');
             clanTag = clanTag.ToUpperInvariant();
 
@@ -330,12 +302,10 @@ namespace Negri.Wot.Bot
 
             var provider = new DbProvider(_connectionString);
 
-            var clan = provider.GetClan(platform, clanTag);
+            var clan = provider.GetClan(clanTag);
             if (clan == null)
             {
-                platform = platform == Platform.PS ? Platform.XBOX : Platform.PS;
-
-                clan = provider.GetClan(platform, clanTag);
+                clan = provider.GetClan(clanTag);
                 if (clan == null)
                 {
                     await ctx.RespondAsync(
@@ -343,8 +313,6 @@ namespace Negri.Wot.Bot
                     return;
                 }
             }
-
-            var platformPrefix = clan.Plataform == Platform.PS ? "ps." : string.Empty;
 
             var sb = new StringBuilder();
 
@@ -366,7 +334,7 @@ namespace Negri.Wot.Bot
                 {
                     sb.Append($" ({clan.Country.ToUpperInvariant()})");
                 }
-                sb.AppendLine($", on the {clan.Plataform}, {ctx.User.Mention}:");
+                sb.AppendLine($", {ctx.User.Mention}:");
                 
                 sb.AppendLine("```");
 
@@ -387,7 +355,7 @@ namespace Negri.Wot.Bot
                 {
                     sb.Append($" ({clan.Country.ToUpperInvariant()})");
                 }
-                sb.AppendLine($", on the {clan.Plataform}, {ctx.User.Mention}:");
+                sb.AppendLine($", {ctx.User.Mention}:");
 
                 if (!clan.Enabled)
                 {
@@ -435,11 +403,11 @@ namespace Negri.Wot.Bot
                     Title = title,
                     Description = sb.ToString(),
                     Color = new DiscordColor(color.R, color.G, color.B),
-                    Url = $"https://{platformPrefix}wotclans.com.br/Clan/{clan.ClanTag}",
+                    Url = $"https://wotclans.com.br/Clan/{clan.ClanTag}",
                     Author = new DiscordEmbedBuilder.EmbedAuthor
                     {
                         Name = "WoTClans",
-                        Url = $"https://{platform}wotclans.com.br"
+                        Url = "https://wotclans.com.br"
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
@@ -447,7 +415,7 @@ namespace Negri.Wot.Bot
                     }
                 };
 
-                Log.Debug($"Returned {nameof(Clan)}({clan.Plataform}.{clan.ClanTag})");
+                Log.Debug($"Returned {nameof(Clan)}({clan.ClanTag})");
 
                 await ctx.RespondAsync("", embed: embed);
             }
@@ -476,7 +444,7 @@ namespace Negri.Wot.Bot
                         sb.Append($" ({clan.Country.ToUpperInvariant()})");
                     }
 
-                    sb.AppendLine($", on the {clan.Plataform}:");
+                    sb.AppendLine(":");
                     sb.AppendLine();
 
                     foreach (var p in allPlayers.Skip(currentPage*pageSize).Take(pageSize))
@@ -489,11 +457,11 @@ namespace Negri.Wot.Bot
                         Title = title,
                         Description = sb.ToString(),
                         Color = new DiscordColor(color.R, color.G, color.B),
-                        Url = $"https://{platformPrefix}wotclans.com.br/Clan/{clan.ClanTag}",
+                        Url = $"https://wotclans.com.br/Clan/{clan.ClanTag}",
                         Author = new DiscordEmbedBuilder.EmbedAuthor
                         {
                             Name = "WoTClans",
-                            Url = $"https://{platform}wotclans.com.br"
+                            Url = "https://wotclans.com.br"
                         },
                         Footer = new DiscordEmbedBuilder.EmbedFooter
                         {

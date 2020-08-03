@@ -423,6 +423,9 @@
   <data name="FilterSmallExplanation" xml:space="preserve">
     <value>Clans mit weniger als 15 aktiven Spielern anzeigen</value>
   </data>
+  <data name="ForConsole" xml:space="preserve">
+    <value>für Konsolen</value>
+  </data>
   <data name="ForPs" xml:space="preserve">
     <value>für PlayStation</value>
   </data>
@@ -607,7 +610,7 @@
     <value>Daten für {0:N0} Panzer berechnet am {1:d}</value>
   </data>
   <data name="MoEDescriptions" xml:space="preserve">
-    <value>Erfolgsmarkierungen für World of Tanks {0}</value>
+    <value>Erfolgsmarkierungen für World of Tanks</value>
   </data>
   <data name="MoEExplanation" xml:space="preserve">
     <value>Der geschätzte &lt;b&gt;kombinierte Schaden&lt;/b&gt; (die Summe aus direktem und Unterstützungsschaden), den du erreichen solltest, um &lt;b&gt;Erfolgsmarkierungen&lt;/b&gt; auf dem Lauf eures Geschützes zu erhalten.</value>
@@ -814,10 +817,10 @@
     <value>Die Daten werden unter Verwendung der Gefechte der Clanmitglieder, die diese Seite verfolgt, wöchentlich berechnet. Dies sind nicht alle Daten, sie sind also mit Vorsicht zu genießen.</value>
   </data>
   <data name="StatsDesc" xml:space="preserve">
-    <value>Statistik für {0} – WoT {1}</value>
+    <value>Statistik für {0}</value>
   </data>
   <data name="StatsTitle" xml:space="preserve">
-    <value>Statistik {0}</value>
+    <value>Statistik für {0}</value>
   </data>
   <data name="Summary" xml:space="preserve">
     <value>Zusammenfassung</value>
@@ -1006,6 +1009,6 @@
     <value>WoT Clans von</value>
   </data>
   <data name="XboxCommunityDiscord" xml:space="preserve">
-    <value>XBOX-Community-Zwietracht</value>
+    <value>Community-Zwietracht</value>
   </data>
 </root>

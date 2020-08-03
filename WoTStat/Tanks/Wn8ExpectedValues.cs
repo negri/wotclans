@@ -43,13 +43,15 @@ namespace Negri.Wot.Tanks
         }
 
         /// <summary>
-        /// Todos os tanques
+        /// All tanks
         /// </summary>
         public Wn8TankExpectedValues[] AllTanks
         {
             get { return _values.Values.OrderBy(ev => ev.TankId).ToArray(); }
             set { _values = value.ToDictionary(t => t.TankId); }
         }
+
+        public int Count => _values.Count;
 
         public double CalculateWn8(TankPlayerStatistics tank)
         {
@@ -222,6 +224,11 @@ namespace Negri.Wot.Tanks
         public bool Contains(long tankId)
         {
             return _values.ContainsKey(tankId);
+        }
+
+        public void Remove(long tankId)
+        {
+            _values.Remove(tankId);
         }
     }
 }

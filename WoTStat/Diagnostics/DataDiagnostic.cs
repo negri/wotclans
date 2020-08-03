@@ -11,11 +11,11 @@ namespace Negri.Wot.Diagnostics
 
         public DateTime Moment { get; set; }
 
-        public int PlayersQueueLenght { get; set; }
+        public int PlayersQueueLength { get; set; }
 
-        public int MembershipQueueLenght { get; set; }
+        public int MembershipQueueLength { get; set; }
 
-        public int CalculateQueueLenght { get; set; }
+        public int CalculateQueueLength { get; set; }
 
         public int TotalPlayers { get; set; }
 

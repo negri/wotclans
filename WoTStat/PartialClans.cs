@@ -65,7 +65,7 @@ namespace Negri.Wot
                 Clan clan;
                 if (!clans.TryGetValue(player.ClanTag, out clan))
                 {
-                    clan = new Clan(player.Plataform, 0, player.ClanTag, $"{player.ClanTag} - Partial {Tag}");
+                    clan = new Clan(0, player.ClanTag, $"{player.ClanTag} - Partial {Tag}");
                     clans.Add(clan.ClanTag, clan);
                 }
                 clan.Add(player);

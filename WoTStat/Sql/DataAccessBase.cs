@@ -37,13 +37,15 @@ namespace Negri.Wot.Sql
                 catch (SqlException ex)
                 {
                     lastException = ex;
-                    Log.Warn(ex);
-                    if (ex.Number == 2627)
+
+                    if (!CanRetry(ex))
                     {
-                        // FK errada não adianta tentar
+                        Log.Error("Critical DB Exception",ex);
                         throw;
                     }
 
+                    Log.Warn("DB Exception", ex);
+                    
                     if (i < maxTries - 1)
                     {
                         var waitSeconds = 1 + i * i * 5;
@@ -56,7 +58,23 @@ namespace Negri.Wot.Sql
             {
                 throw lastException;
             }
-            throw new InvalidOperationException("Erro de Fluxo.");
+            throw new InvalidOperationException("Flow error.");
+        }
+
+        private static bool CanRetry(SqlException ex)
+        {
+            
+            switch (ex.Number)
+            {
+                case 2627: // FK Violation
+                case 207: // Wrong Column Name
+                case 8114: // Wrong Type
+                case 8144: // Wrong Number of Args
+                case 102: // Syntax
+                    return false;
+                default:
+                    return true;
+            }
         }
 
         protected void Execute(Action<SqlTransaction> action, int maxTries = 10)
@@ -89,13 +107,15 @@ namespace Negri.Wot.Sql
                 }
                 catch (SqlException ex)
                 {
-                    Log.Warn("Outer Exception", ex);
-                    lastException = ex;                    
-                    if (ex.Number == 2627)
+                    lastException = ex;
+
+                    if (!CanRetry(ex))
                     {
-                        // FK errada não adianta tentar
+                        Log.Error("Critical DB Exception", ex);
                         throw;
                     }
+
+                    Log.Warn("DB Exception", ex);
 
                     if (i < maxTries - 1)
                     {

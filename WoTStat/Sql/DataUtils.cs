@@ -63,8 +63,7 @@ namespace Negri.Wot.Sql
         {
             if (dr.IsDBNull(index))
             {
-                throw new NoNullAllowedException(string.Format("Null value on DB (at ordinal {0}) is not expected.",
-                    index));
+                throw new NoNullAllowedException($"Null value on DB (at ordinal {index}) is not expected.");
             }
             try
             {
@@ -76,8 +75,7 @@ namespace Negri.Wot.Sql
                 var expectedType = typeof(T);
 
                 throw new ApplicationException(
-                    string.Format("Erro de cast ao interpretar o campo {0} de {1} para {2}.", index, dbType,
-                        expectedType), ex);
+                    $"Cast error on field {index} de {dbType} para {expectedType}.", ex);
             }
         }
 

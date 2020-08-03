@@ -173,6 +173,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\Art\churchill7_1440x900_wall.jpg" />
     <Content Include="Images\Art\March_1440x900_wallpaper.jpg" />
     <Content Include="Images\Art\shashka-timeline.png" />
     <Content Include="Images\Art\su-152_1440x900_wall.jpg" />
@@ -208,6 +209,7 @@
     <Content Include="Images\Nations\8.png" />
     <Content Include="Images\Nations\9.png" />
     <Content Include="Images\Nations\Globe_icon.svg" />
+    <Content Include="Images\ps.svg" />
     <Content Include="Images\Ranks\1.svg" />
     <Content Include="Images\Types\1.svg" />
     <Content Include="Images\Types\2.svg" />
@@ -216,6 +218,7 @@
     <Content Include="Images\Types\5.svg" />
     <Content Include="Images\Types\premium.svg" />
     <Content Include="Images\Types\types.png" />
+    <Content Include="Images\xbox.svg" />
     <Content Include="log4net.config">
       <SubType>Designer</SubType>
     </Content>
@@ -548,13 +551,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Results\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WoTStat\WoTStat.csproj">

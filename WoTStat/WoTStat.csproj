@@ -90,8 +90,9 @@
     <Compile Include="CacheExtensions.cs" />
     <Compile Include="Clan.cs" />
     <Compile Include="ClanSummary.cs" />
+    <Compile Include="CleanOldDataResponse.cs" />
     <Compile Include="Fetcher.cs" />
-    <Compile Include="ClanPlataform.cs" />
+    <Compile Include="ClanBaseInformation.cs" />
     <Compile Include="Mathematic\EquationSolver.cs" />
     <Compile Include="FtpPutter.cs" />
     <Compile Include="BasicExtensions.cs" />

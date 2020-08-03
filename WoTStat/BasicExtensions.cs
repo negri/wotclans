@@ -245,34 +245,13 @@ namespace Negri.Wot
         /// <summary>
         /// The site for the platform, like https://wotclans.com.br or https://ps.wotclans.com.br
         /// </summary>
-        /// <param name="platform"></param>
         /// <returns></returns>
-        public static string SiteUrl(this Platform platform)
+        public static string SiteUrl()
         {
-            if (platform == Platform.PS)
-            {
-                return "https://ps.wotclans.com.br";
-            }
-            else
-            {
-                return "https://wotclans.com.br";
-            }
+            return "https://wotclans.com.br";
         }
 
-        /// <summary>
-        /// Returns Gamer Tag os PSN Name, according to the platform
-        /// </summary>
-        public static string TagName(this Platform platform)
-        {
-            if (platform == Platform.PS)
-            {
-                return "PSN Name";
-            }
-            else
-            {
-                return "Gamer Tag";
-            }
-        }
+        
 
     }
 }

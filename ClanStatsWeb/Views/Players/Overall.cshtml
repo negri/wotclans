@@ -48,7 +48,7 @@
 
 @section lead {
     <section class="jumbotron top-banner">
-        <h1><a href="@Model.ExternalUrl">@Model.Player.Name</a></h1>
+        <h1>@Helpers.PlatformBigLogo(Model.Player.Platform)<a href="@Model.ExternalUrl">@Model.Player.Name</a></h1>
         <h2><a href="~/Clan/@Model.Clan.ClanTag">@Model.Clan.ClanTag</a></h2>
         @Html.Raw(string.Format(Resources.OverallStatsForPlayerMoment, Model.Player.Moment))
     </section>
@@ -115,7 +115,7 @@
                 Wargaming
                 <ul>
                     <li><a @GlobalHelper.ExternalTarget href="https://console.worldoftanks.com/stats/players/@Model.Player.Id/">@Resources.Commander</a></li>
-                    <li><a @GlobalHelper.ExternalTarget href="https://console.worldoftanks.com/clans/@GlobalHelper.PlataformTag/@Model.Clan.ClanTag/">@Resources.Clan</a></li>
+                    <li><a @GlobalHelper.ExternalTarget href="https://console.worldoftanks.com/clans/@Model.Clan.ClanTag/">@Resources.Clan</a></li>
                     <li><a @GlobalHelper.ExternalTarget href="https://console.worldoftanks.com/en/category/news/">@Resources.News</a></li>
                 </ul>
             </li>
@@ -153,10 +153,7 @@
                     <li><a href="https://wotguru.com/general-world-of-tanks-guides/world-of-tanks-equipment-guide/">@Resources.Equipment</a></li>
                     <li><a href="https://tanks.gg/list/stats">@Resources.Comparisons</a></li>
                     <li><a href="https://www.reddit.com/r/WorldofTanksConsole/">Reddit</a></li>
-                    @if (GlobalHelper.Platform == Platform.XBOX)
-                    {
-                        <li><a href="https://discord.gg/WcJ2BGC">@Resources.XboxCommunityDiscord</a></li>
-                    }
+                    <li><a href="https://discord.gg/WcJ2BGC">@Resources.XboxCommunityDiscord</a></li>
                     <li><a href="https://discord.gg/AGbzVZz">@Resources.WgChicagoDiscord</a></li>
                     <li><a href="https://discord.gg/wotconsole">@Resources.WgMinskDiscord</a></li>
                 </ul>

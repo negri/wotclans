@@ -25,10 +25,10 @@ textarea {
 
 /* Top Banner */
 .top-banner {
-    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.60)), url(../Images/Art/shashka-timeline.png);
+    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.40)), url(../Images/Art/churchill7_1440x900_wall.jpg);
     background-size: auto auto;
     background-repeat: no-repeat;
-    background-position: 40% 20%;
+    background-position: 20% 40%;
     border-width: 0;
 }
 
@@ -181,4 +181,12 @@ table.data tbody td {
 .tc15 td:nth-child(15), .tc15 th:nth-child(15),
 .tc16 td:nth-child(16), .tc16 th:nth-child(16) {
     text-align: center
+}
+
+.platform-logo-big {
+    height: 0.7em;
+}
+
+.platform-logo-small {
+    height: 12px;
 }

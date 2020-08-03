@@ -514,7 +514,7 @@
     <value>Nombre de membres dans le clan</value>
   </data>
   <data name="MetaDescription" xml:space="preserve">
-    <value>WoT Clans suit le status et l'évolution des clans dans le jeu World of Tanks  {0}.</value>
+    <value>WoT Clans suit le status et l'évolution des clans dans le jeu World of Tanks.</value>
   </data>
   <data name="Metric" xml:space="preserve">
     <value>Mesure</value>
@@ -712,7 +712,7 @@
     <value>Les Données sont compilées chaque semaine en utilisant les batailles des membres des clans suivis par ce site et ne représentes pas une vue d'ensemble du jeu, soyez avisé.</value>
   </data>
   <data name="StatsDesc" xml:space="preserve">
-    <value>Statistiques pour  {0} - WoT {1}</value>
+    <value>Statistiques pour  {0}</value>
   </data>
   <data name="StatsTitle" xml:space="preserve">
     <value>Statistiques pour  {0}</value>
@@ -902,5 +902,8 @@
   </data>
   <data name="Information" xml:space="preserve">
     <value>Informations</value>
+  </data>
+  <data name="ForConsole" xml:space="preserve">
+    <value>pour consoles</value>
   </data>
 </root>

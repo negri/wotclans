@@ -9,7 +9,7 @@ namespace Negri.Wot
     {
         public ClanSummary(Clan c)
         {
-            Plataform = c.Plataform;
+            Plataform = c.Platform;
             ClanTag = c.ClanTag;
             ClanId = c.ClanId;
             Country = c.Country;

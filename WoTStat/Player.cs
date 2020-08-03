@@ -16,21 +16,15 @@ namespace Negri.Wot
             Rank = Rank.Private;
         }
 
-        /// <summary>
-        /// Constroi
-        /// </summary>
-        /// <param name="platform">Plataforma</param>
-        /// <param name="playerId">Id no jogo</param>
-        /// <param name="name">Gamer Tag</param>
         public Player(Platform platform, long playerId, string name)
         {
             Id = playerId;
             Name = name;
-            Plataform = platform;
+            Platform = platform;
             Moment = DateTime.UtcNow;
         }
 
-        public Platform Plataform { get; set; } = Platform.XBOX;
+        public Platform Platform { get; set; } = Platform.XBOX;
 
         /// <summary>
         ///     Referencia (que é comum ser nula) ao clã do jogador
@@ -66,7 +60,7 @@ namespace Negri.Wot
         public TimeSpan MonthTime { get; set; }
 
         /// <summary>
-        /// Time in batles last week
+        /// Time in battles last week
         /// </summary>
         public TimeSpan WeekTime { get; set; }
 
@@ -233,7 +227,7 @@ namespace Negri.Wot
                 {
                     return string.Empty;
                 }
-                return $"https://{(Plataform == Platform.PS ? "ps." : "")}wotclans.com.br/Clan/{ClanTag}";
+                return $"https://wotclans.com.br/Clan/{ClanTag}";
             }
         }
 
@@ -247,7 +241,7 @@ namespace Negri.Wot
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Plataform == other.Plataform && Id == other.Id;
+            return Platform == other.Platform && Id == other.Id;
         }
 
         public override bool Equals(object obj)
@@ -263,7 +257,7 @@ namespace Negri.Wot
         {
             unchecked
             {
-                return ((int) Plataform*397) ^ Id.GetHashCode();
+                return ((int) Platform*397) ^ Id.GetHashCode();
             }
         }
 
@@ -393,7 +387,7 @@ namespace Negri.Wot
 
             if (TotalBattles < previousPlayer.TotalBattles)
             {
-                // Totais estragados tambem...
+                // Totais estragados também...
                 TotalBattles = previousPlayer.TotalBattles;
                 TotalWn8 = previousPlayer.TotalWn8;
                 TotalWinRate = previousPlayer.TotalWinRate;
