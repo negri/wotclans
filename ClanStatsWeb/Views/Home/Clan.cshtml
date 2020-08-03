@@ -289,13 +289,12 @@
                             <td class="number">@player.Item1.ToString()</td>
                             <td style="white-space: nowrap;">
                                 <a class="@(player.Item2.IsPatched ? "suspectData" : null)" href="http://console.worldoftanks.com/stats/players/@player.Item2.Id/" title="Statistics on the Wargaming site" rel="nofollow" @GlobalHelper.ExternalTarget>
-                                    @Helpers.PlatformSmallLogo(player.Item2.Platform)
-                                    <img src="~/Images/Ranks/@((int) player.Item2.Rank).svg" height="12" width="12" alt="@player.Item2.Rank" title="@player.Item2.Rank"/>
+                                    <img src="~/Images/Ranks/@((int)player.Item2.Rank).svg" height="12" width="12" alt="@player.Item2.Rank" title="@player.Item2.Rank" />
                                     @player.Item2.Name
                                 </a>
                             </td>
                             <td class="number title-moment" title="@string.Format(Resources.DataRetrievedAtNextAt, player.Item2.Moment, player.Item2.NextMoment)">@player.Item2.MonthBattles.ToString("N0")</td>
-                            <td class="number">@((player.Item1 > 15 ? 0.0 : (player.Item2.MonthBattles) / ((double)Model.Clan.Top15Battles)).ToString("P1"))</td>
+                            <td class="number">@((@player.Item1 > 15 ? 0.0 : (player.Item2.MonthBattles) / ((double)Model.Clan.Top15Battles)).ToString("P1"))</td>
                             <td class="number">@player.Item2.MonthWinRate.ToString("P1")</td>
                             <td class="number rightPadding" style="padding-right: 0.2em;">@player.Item2.MonthTier.ToString("N1")</td>
                             <td class="number @player.Item2.MonthWn8.ToLabelClass()" style="border-right: 1px solid black; background-color: @player.Item2.MonthWn8.ToWebColor();">

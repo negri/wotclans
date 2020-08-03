@@ -23,26 +23,6 @@
     <a href="~/Tanks/@t.TankId"><span class="@t.PremiumClass" title="@t.FullName">@t.Name</span></a>
 }
 
-@* The logo of the platform on a small size (for tables) *@
-@helper PlatformSmallLogo(Platform platform)
-{
-    string file, alt;
-    switch (platform)
-    {
-        case Platform.XBOX:
-            file = "xbox.svg";
-            alt = "XBOX";
-            break;
-        case Platform.PS:
-            file = "ps.svg";
-            alt = "PlayStation";
-            break;
-        default:
-            throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
-    }
-    <img alt="@alt" src="~/Images/@file" class="platform-logo-small">
-}
-
 @* The logo of the platform on a big size (for players page) *@
 @helper PlatformBigLogo(Platform platform)
 {
