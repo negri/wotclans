@@ -799,7 +799,7 @@ namespace Negri.Wot.Sql
             const string sql = "select Name, FlagCode, MembershipMoment, PlayerId, RankId, GamerTag, PlayerMoment, " +
                                "TotalBattles, MonthBattles, TotalWinRate, MonthWinRate, " +
                                "TotalWN8, MonthWN8, IsPatched, ClanTag, [Delay], [Enabled], IsHidden, Origin, PlayerDelay, " +
-                               "TotalTier, MonthTier " +
+                               "TotalTier, MonthTier, PlayerPlatformId " +
                                "from [Main].[RecentClanCompositionStats] " +
                                "where (ClanId = @clanId) and (PlayerMoment is not null) " +
                                "order by PlayerId;";
@@ -850,7 +850,8 @@ namespace Negri.Wot.Sql
                             Origin = reader.GetNonNullValue<PlayerDataOrigin>(18),
                             Delay = reader.GetNonNullValue<double>(19),
                             TotalTier = reader.GetNonNullValue<double>(20),
-                            MonthTier = reader.GetNonNullValue<double>(21)
+                            MonthTier = reader.GetNonNullValue<double>(21),
+                            Platform = reader.GetNonNullValue<Platform>(22)
                         };
 
                         Debug.Assert(clan != null, "clan != null");
