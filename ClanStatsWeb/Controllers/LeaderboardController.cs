@@ -152,7 +152,7 @@ namespace Negri.Wot.Site.Controllers
                         Tier = t.Tier.ToRomanNumeral(),
                         Tank = $"{t.Name}|{t.Tag}|{t.FullName}|{t.PremiumClass}|{t.Nation}|{t.TankId}",
                         ClanTag = $"{t.ClanTag}|{t.ClanFlag ?? string.Empty}",
-                        Commander = $"{t.GamerTag}|{t.PlayerId}|{t.ClanTag}",
+                        Commander = $"{t.GamerTag}|{t.PlayerId}|{t.ClanTag}|{t.Platform.ToString().ToLowerInvariant()}",
                         Rank = t.Order,
                         Battles = t.Battles.ToString("N0"),
                         DirectDamage = t.DirectDamage.ToString("N0"),

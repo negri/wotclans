@@ -254,7 +254,7 @@
                         data: "Commander",
                         render: function (data, type, full, meta) {
                             var a = data.split("|");
-                            var s = '<a href="' + rootUrl + 'Clan/'  + a[2] + '/Commanders/' + a[1] + '/All" rel="nofollow"'+ (isMobile ? 'target="_blank"' : '') +'>' + a[0] + '</a>';
+                            var s = '<a href="' + rootUrl + 'Clan/' + a[2] + '/Commanders/' + a[1] + '/All" rel="nofollow"' + (isMobile ? ' target="_blank"' : '') + '>' + '<img src="' + rootUrl + 'Images/' + a[3] + '.svg"' + ' class="platform-logo-small" />' + a[0] + '</a>';
                             return s;
                         }
                     },

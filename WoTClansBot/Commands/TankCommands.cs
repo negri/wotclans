@@ -538,7 +538,7 @@ namespace Negri.Wot.Bot
                 }
             }
 
-            Log.Info($"Requested {nameof(Leader)}({tank.Plataform}.{tank.Name}, {gamerTag})");
+            Log.Info($"Requested {nameof(Leader)}({tank.Platform}.{tank.Name}, {gamerTag})");
 
 
             var leaderboard = provider.GetLeaderboard(tank.TankId, top: top).ToArray();
@@ -671,7 +671,7 @@ namespace Negri.Wot.Bot
                 return;
             }
 
-            Log.Info($"Requested {nameof(LeaderByFlag)}({flagCode}, {tank.Plataform}.{tank.Name}, {gamerTag})");
+            Log.Info($"Requested {nameof(LeaderByFlag)}({flagCode}, {tank.Platform}.{tank.Name}, {gamerTag})");
 
             var top = 25;
             gamerTag = gamerTag ?? string.Empty;

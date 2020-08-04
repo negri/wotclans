@@ -114,7 +114,7 @@ namespace Negri.Wot.Sql
                     {
                         var tank = new Tank
                         {
-                            Plataform = Platform.Console,
+                            Platform = Platform.Console,
                             TankId = reader.GetNonNullValue<long>(0),
                             FullName = reader.GetNonNullValue<string>(1),
                             Name = reader.GetNonNullValue<string>(2),
@@ -207,7 +207,6 @@ namespace Negri.Wot.Sql
                             new Leader
                             {
                                 Order = order++,
-                                Plataform = Platform.Console,
                                 TankId = tankId,
                                 PlayerId = reader.GetNonNullValue<long>(0),
                                 GamerTag = reader.GetNonNullValue<string>(1),
@@ -229,7 +228,8 @@ namespace Negri.Wot.Sql
                                 Tag = reader.GetNonNullValue<string>(17),
                                 Tier = reader.GetNonNullValue<int>(18),
                                 Type = reader.GetNonNullValue<TankType>(19),
-                                Nation = reader.GetNonNullValue<Nation>(20)
+                                Nation = reader.GetNonNullValue<Nation>(20),
+                                Platform = reader.GetNonNullValue<Platform>(21)
                             });
                     }
                 }
@@ -372,7 +372,7 @@ namespace Negri.Wot.Sql
                         {
                             Date = reader.GetNonNullValue<DateTime>(0),
                             TankId = reader.GetNonNullValue<long>(2),
-                            Plataform = Platform.Console,
+                            Platform = Platform.Console,
                             Name = reader.GetNonNullValue<string>(3),
                             Tier = reader.GetNonNullValue<int>(4),
                             Type = reader.GetNonNullValue<TankType>(5),
@@ -437,7 +437,7 @@ namespace Negri.Wot.Sql
                         {
                             tr.Wn8Values = new Wn8TankExpectedValues
                             {
-                                Plataform = tr.Plataform,
+                                Platform = tr.Platform,
                                 TankId = tr.TankId,
                                 Name = tr.Name,
                                 FullName = tr.FullName,
@@ -568,7 +568,7 @@ namespace Negri.Wot.Sql
                         var tr = new TankReferenceBasic
                         {
                             TankId = reader.GetNonNullValue<long>(2),
-                            Plataform = Platform.Console,
+                            Platform = Platform.Console,
                             Name = reader.GetNonNullValue<string>(3),
                             Tier = reader.GetNonNullValue<int>(4),
                             Type = reader.GetNonNullValue<TankType>(5),
@@ -1256,7 +1256,7 @@ namespace Negri.Wot.Sql
                     {
                         list.Add(new Tank
                         {
-                            Plataform = platform,
+                            Platform = platform,
                             TankId = reader.GetNonNullValue<long>(0),
                             FullName = reader.GetNonNullValue<string>(1),
                             Name = reader.GetNonNullValue<string>(2),
@@ -1593,7 +1593,7 @@ namespace Negri.Wot.Sql
 
                         tvs.Add(new Wn8TankExpectedValues
                         {
-                            Plataform = Platform.Console,
+                            Platform = Platform.Console,
 
                             TankId = reader.GetNonNullValue<long>(0),
                             Name = reader.GetNonNullValue<string>(1),

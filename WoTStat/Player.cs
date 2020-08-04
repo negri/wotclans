@@ -475,7 +475,7 @@ namespace Negri.Wot
                         continue;
                     }
 
-                    kv.Value.Plataform = t.Plataform;
+                    kv.Value.Platform = t.Platform;
                     kv.Value.TankId = t.TankId;
                     kv.Value.Name = t.Name;
                     kv.Value.Tag = t.Tag;
