@@ -76,8 +76,8 @@
                 <th colspan="4" style="padding-bottom: 4px; border-left: 1px solid black;">@Resources.Overall</th>
             </tr>
             <tr>
+                <th title="The platform composition of the clan"  style="white-space: nowrap;">@Helpers.PlatformLogo(Platform.PS, "platform-logo-main") ⬌ @Helpers.PlatformLogo(Platform.XBOX, "platform-logo-main")</th>
                 <th title="@Resources.ActivesExplanation">@Resources.Actives</th>
-                <th title="@Resources.ActivityExplanation">@Resources.Activity</th>
                 <th title="@Resources.BattlesExplanation">@Resources.Battles</th>
                 <th title="@Resources.WinRateExplanation" style="white-space: nowrap;">@Resources.WinRate</th>
                 <th><abbr title="@Resources.Wn8aExplanation">WN8a</abbr></th>
@@ -103,8 +103,10 @@
                                 <img src="~/Images/Flags/@(clan.Item2.Country).png" alt="@clan.Item2.Country" title="@clan.Item2.Country.ToUpperInvariant()"/>
                             }
                         </td>
+                        <td data-sort="@clan.Item2.CompositionPs">
+                            <progress class="platform-mix" max="100" value="@((clan.Item2.CompositionPs*100.0).ToString("N0"))" title="@clan.Item2.CountPs on PS; @clan.Item2.CountXbox on XBOX"></progress>
+                        </td>
                         <td class="number">@clan.Item2.Active.ToString("N0")</td>
-                        <td class="number">@clan.Item2.ActivePercent.ToString("P0")</td>
                         <td class="number title-moment" title="@Resources.UpdatedAt @clan.Item2.Moment.ToString("O")">
                             @clan.Item2.ActiveBattles.ToString("N0")
                         </td>

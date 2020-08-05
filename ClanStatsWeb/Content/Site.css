@@ -183,6 +183,8 @@ table.data tbody td {
     text-align: center
 }
 
+/* Platform Logos */
+
 .platform-logo-big {
     height: 0.7em;
 }
@@ -194,4 +196,20 @@ table.data tbody td {
 .platform-logo-clan {
     height: 1.2em;
     margin-bottom: 5px;
+}
+
+.platform-logo-main {
+    height: 1.4em;
+    margin-bottom: 5px;
+}
+
+.platform-mix {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 85px;
+    height: 12px;
+    border: none;
+    color: blue;
+    background-color: green;
 }
