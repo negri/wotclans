@@ -196,6 +196,18 @@ namespace Negri.Wot.Tanks
         public double WinRate => 1.0 * Wins / Battles;
 
         /// <summary>
+        /// Spots per battle
+        /// </summary>
+        [JsonIgnore]
+        public double SpotsPerBattle => Spotted / (double)Battles;
+
+        /// <summary>
+        /// Dropped Capture Points per battle
+        /// </summary>
+        [JsonIgnore]
+        public double DroppedCapturePointsPerBattle => DroppedCapturePoints / (double)Battles;
+
+        /// <summary>
         /// XP per Battle
         /// </summary>
         /// <remarks>

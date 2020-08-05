@@ -168,7 +168,8 @@ namespace Negri.Wot.Bot
         [Description("The history of a tanker on a tank")]
         public async Task TankerTank(CommandContext ctx,
             [Description("The *gamer tag* or *PSN Name*. If it has spaces, enclose it on quotes.")] string gamerTag,
-            [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on quotes.")][RemainingText] string tankName)
+            [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on quotes.")]string tankName,
+            [Description("Shows additional info explaining the calculated WN8")]bool explainWn8 = false)
         {
             // Yeah... it's a Player feature but it uses more calculations for tanks...
             if (!await CanExecute(ctx, Features.Players))
@@ -190,7 +191,7 @@ namespace Negri.Wot.Bot
 
             await ctx.TriggerTypingAsync();
 
-            Log.Debug($"Requesting {nameof(TankerTank)}({gamerTag}, {tankName})...");
+            Log.Debug($"Requesting {nameof(TankerTank)}({gamerTag}, {tankName}, {explainWn8})...");
 
             try
             {
@@ -312,6 +313,99 @@ namespace Negri.Wot.Bot
                 };
 
                 await ctx.RespondAsync("", embed: embed);
+
+                if (!explainWn8)
+                {
+                    return;
+                }
+
+                sb.Clear();
+                sb.AppendLine($"Overall WN8 Explanation for the {Formatter.MaskedUrl(tr.Name, new Uri(tr.Url))}, Tier {tr.Tier.ToRomanNumeral()}, {tr.Nation.GetDescription()}, {(tr.IsPremium ? "Premium" : "Regular")}, as played by {Formatter.MaskedUrl(gamerTag, new Uri(player.PlayerOverallUrl))}, {ctx.User.Mention}:");
+                sb.AppendLine();
+
+                var e = wn8Expected[tank.TankId];
+                sb.AppendLine("**Expected Values**");
+                sb.AppendLine($"eDmg  = {e.Damage}");
+                sb.AppendLine($"eFrag = {e.Frag}");
+                sb.AppendLine($"eSpot = {e.Spot}");
+                sb.AppendLine($"eWin  = {e.WinRate}");
+                sb.AppendLine($"eDef  = {e.Def}");
+                sb.AppendLine();
+
+                sb.AppendLine("**Player Values**");
+                sb.AppendLine($"pDmg  = {ptr.DirectDamagePerBattle}");
+                sb.AppendLine($"pFrag = {ptr.KillsPerBattle}");
+                sb.AppendLine($"pSpot = {ptr.SpotsPerBattle}");
+                sb.AppendLine($"pWin  = {ptr.WinRate}");
+                sb.AppendLine($"pDef  = {ptr.DroppedCapturePointsPerBattle}");
+                sb.AppendLine();
+
+                var rDmg = ptr.DirectDamagePerBattle / e.Damage;
+                var rFrag = ptr.KillsPerBattle / e.Frag;
+                var rSpot = ptr.SpotsPerBattle / e.Spot;
+                var rWin = ptr.WinRate / e.WinRate;
+                var rDef = ptr.DroppedCapturePointsPerBattle / e.Def;
+
+                sb.AppendLine("**Relative Values**");
+                sb.AppendLine($"rDmg  = pDmg/eDmg   = {rDmg}");
+                sb.AppendLine($"rFrag = pFrag/eFrag = {rFrag}");
+                sb.AppendLine($"rSpot = pSpot/eSpot = {rSpot}");
+                sb.AppendLine($"rWin  = pWin/eWin   = {rWin}");
+                sb.AppendLine($"rDef  = pDef/eDef   = {rDef}");
+                sb.AppendLine();
+
+                var nDmg = Math.Max(0, (rDmg - 0.22) / (1.0 - 0.22));
+                var nWin = Math.Max(0, (rWin - 0.71) / (1.0 - 0.71));
+                var nFrag = Math.Max(0, Math.Min(nDmg + 0.2, (rFrag - 0.12) / (1 - 0.12)));
+                var nSpot = Math.Max(0, Math.Min(nDmg + 0.1, (rSpot - 0.38) / (1 - 0.38)));
+                var nDef = Math.Max(0, Math.Min(nDmg + 0.1, (rDef - 0.10) / (1 - 0.10)));
+
+                sb.AppendLine("**Normalized Values**");
+                sb.AppendLine($"nDmg  = Max(0, (rDmg - 0.22) / (1.0 - 0.22)) = {nDmg}");
+                sb.AppendLine($"nFrag = Max(0, Min(nDmg + 0.2, (rFrag - 0.12) / (1 - 0.12))) = {nFrag}");
+                sb.AppendLine($"nSpot = Max(0, Min(nDmg + 0.1, (rSpot - 0.38) / (1 - 0.38))) = {nSpot}");
+                sb.AppendLine($"nWin  = Max(0, (rWin - 0.71) / (1.0 - 0.71)) = {nWin}");
+                sb.AppendLine($"nDef  = Max(0, Min(nDmg + 0.1, (rDef - 0.10) / (1 - 0.10))) = {nDef}");
+                sb.AppendLine();
+
+                var dmgPart = 980.0 * nDmg;
+                var winPart = 145.0 * Math.Min(1.8, nWin);
+                var fragPart = 210.0 * nDmg * nFrag;
+                var spotPart = 155.0 * nFrag * nSpot;
+                var defPart = 75.0 * nFrag * nDef;
+
+                sb.AppendLine("**WN8 Parts**");
+                sb.AppendLine($"dmgPart = 980 * nDmg = {dmgPart}");
+                sb.AppendLine($"fragPart = 210 * nDmg * nFrag = {fragPart}");
+                sb.AppendLine($"spotPart = 155 * nFrag * nSpot = {spotPart}");
+                sb.AppendLine($"winPart  = 145 * Min(1.8, nWin) = {winPart}");
+                sb.AppendLine($"defPart  = 75 * nFrag * nDef = {defPart}");
+                sb.AppendLine();
+
+                var wn8 = dmgPart + winPart + fragPart + spotPart + defPart;
+                sb.AppendLine($"**WN8** = dmgPart + fragPart + spotPart + winPart + defPart = **{wn8}**");
+
+
+                embed = new DiscordEmbedBuilder
+                {
+                    Title = $"{gamerTag} WN8 with the {tank.Name}",
+                    Description = sb.ToString(),
+                    Color = new DiscordColor(color.R, color.G, color.B),
+                    ThumbnailUrl = tank.SmallImageUrl,
+                    Url = player.PlayerOverallUrl,
+                    Author = new DiscordEmbedBuilder.EmbedAuthor
+                    {
+                        Name = "WoTClans",
+                        Url = "https://wotclans.com.br"
+                    },
+                    Footer = new DiscordEmbedBuilder.EmbedFooter
+                    {
+                        Text = $"Calculated at {player.Moment:yyyy-MM-dd HH:mm} UTC"
+                    }
+                };
+
+                await ctx.RespondAsync("", embed: embed);
+
             }
             catch (Exception ex)
             {

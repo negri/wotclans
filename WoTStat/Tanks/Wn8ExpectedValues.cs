@@ -58,6 +58,7 @@ namespace Negri.Wot.Tanks
             return CalculateWn8(new[] {tank});
         }
 
+        
         /// <summary>
         /// Devolve os esperados de um tanque a partir do ID
         /// </summary>
