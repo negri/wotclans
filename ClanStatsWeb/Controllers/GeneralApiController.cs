@@ -215,6 +215,20 @@ namespace Negri.Wot.Site.Controllers
                     }
                 }
 
+
+                // Clans tag changes
+                di = new DirectoryInfo(Path.Combine(rootFolder, "Renames"));
+                foreach (var fi in di.EnumerateFiles())
+                {
+                    var date = fi.LastWriteTimeUtc;
+                    var age = (DateTime.UtcNow.Date - date).TotalDays;
+                    if (age > daysToKeepClanFiles)
+                    {
+                        DeletedFileLocal(fi);
+                    }
+                }
+
+
                 // Players without any updates on files (old way)
                 di = new DirectoryInfo(Path.Combine(rootFolder, "Players"));
                 foreach (var fi in di.EnumerateFiles())
