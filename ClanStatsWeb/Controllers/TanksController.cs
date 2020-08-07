@@ -65,7 +65,7 @@ namespace Negri.Wot.Site.Controllers
         }
 
         /// <summary>
-        ///     Estatisticas dos tanques
+        ///     Estatísticas dos tanques
         /// </summary>
         /// <param name="tankId">Id do tanque</param>
         [OutputCache(CacheProfile = "Normal")]

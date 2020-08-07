@@ -80,7 +80,7 @@ namespace Negri.Wot.Sql
             return null;
         }
 
-        public IEnumerable<TankReference> GetTanksReferences(DateTime? date = null, long? tankId = null, bool includeMoe = true, bool includeHistogram = true,
+        public IEnumerable<TankReference> GetTanksReferences(DateTime? date = null, long? tankId = null, bool includeMoe = true, bool includeHistogram = false,
             bool includeLeaders = true)
         {
             return Get(transaction =>

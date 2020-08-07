@@ -34,7 +34,7 @@ namespace UtilityProgram
         {
             try
             {
-                TestGetClan();
+                CalculateAverageWn8OfAllTanks();
             }
             catch (Exception ex)
             {
@@ -202,7 +202,7 @@ namespace UtilityProgram
             var cd = DateTime.UtcNow.AddHours(-7);
             var previousMonday = cd.PreviousDayOfWeek(DayOfWeek.Monday);
 
-            var references = provider.GetTanksReferences(previousMonday, null, includeMoe: false, includeHistogram: false, includeLeaders: false).ToArray();
+            var references = provider.GetTanksReferences(previousMonday).ToArray();
 
             var sb = new StringBuilder();
             sb.AppendLine("Id\tName\tIsPremium\tTier\tType\tNumPlayers\tNumBattles\tAvgWN8\tDamageToUnicum");
