@@ -16,20 +16,16 @@ namespace Negri.Wot.Commands
         private static readonly ILog Log = LogManager.GetLogger(typeof(GetClans));
 
         private readonly Fetcher _fetcher;
-        private readonly FtpPutter _ftpPutter;
         private readonly Putter _putter;
         private readonly DbProvider _provider;
         private readonly DbRecorder _recorder;
-        private readonly string _resultDirectory;
-
-        public GetClans(Fetcher fetcher, FtpPutter ftpPutter, Putter putter, DbProvider provider,
-            DbRecorder recorder, string resultDirectory)
+        
+        public GetClans(Fetcher fetcher, Putter putter, DbProvider provider,
+            DbRecorder recorder)
         {
             _fetcher = fetcher;
             _provider = provider;
             _recorder = recorder;
-            _resultDirectory = resultDirectory;
-            _ftpPutter = ftpPutter;
             _putter = putter;
         }
 
@@ -113,31 +109,13 @@ namespace Negri.Wot.Commands
             Log.Info($"{clansToRename.Count} changed their tags.");
             if (clansToRename.Any())
             {
-                var resultDirectory = Path.Combine(_resultDirectory, "Clans");
-
                 foreach (var clan in clansToRename)
                 {
                     Log.InfoFormat("The clan {0}.{1} had the tag changed from {2}.", clan.ClanId, clan.ClanTag, clan.OldTag);
 
-                    // Faz copia do arquivo local, e o upload com o novo nome
-                    var oldFile = Path.Combine(resultDirectory, $"clan.{clan.OldTag}.json");
-                    if (!File.Exists(oldFile))
+                    if (!_putter.RenameClan(clan.OldTag, clan.ClanTag))
                     {
-                        continue;
-                    }
-
-                    var newFile = Path.Combine(resultDirectory, $"clan.{clan.ClanTag}.json");
-                    File.Copy(oldFile, newFile, true);
-
-                    try
-                    {
-                        _ftpPutter.PutClan(newFile);
-                        _ftpPutter.DeleteFile($"Clans/clan.{clan.OldTag}.json");
-                        _ftpPutter.SetRenameFile(clan.OldTag, clan.ClanTag);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error($"Error renaming clan {clan.OldTag} to {clan.ClanTag} on the site.", ex);
+                        Log.Error($"Error renaming clan {clan.OldTag} to {clan.ClanTag} on the site.");
                     }
                 }
             }

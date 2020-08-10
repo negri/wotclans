@@ -329,25 +329,47 @@ namespace Negri.Wot
         /// </remarks>
         public void DeleteClan(string clanTag)
         {
-            Log.Debug("Calling DeleteClan API...");
+            Log.Debug($"Calling DeleteClan({clanTag}) API...");
 
-            var client = new HttpClient
+            Execute(()=>
             {
-                BaseAddress = new Uri(BaseUrl)
-            };
-            var res = client.DeleteAsync($"api/admin/DeleteClan?apiAdminKey={_apiKey}&clanTag={clanTag}").Result;
+                var res = HttpClient.DeleteAsync($"{BaseUrl}/api/admin/DeleteClan?apiAdminKey={_apiKey}&clanTag={clanTag}").Result;
 
-            if (res.StatusCode == HttpStatusCode.OK)
-            {
-                Log.Debug("Remote deletion is done.");
-            }
-            else
-            {
-                Log.Warn($"Remote deletion fail: {res.StatusCode}, {res.ReasonPhrase}");
-            }
+                if (res.StatusCode == HttpStatusCode.OK)
+                {
+                    Log.Debug("Remote deletion is done.");
+                }
+                else
+                {
+                    Log.Warn($"Remote deletion fail: {res.StatusCode}, {res.ReasonPhrase}");
+                }
+            });
+
+            
         }
 
 
-        
+        public bool RenameClan(string oldTag, string newTag)
+        {
+            Log.Debug($"Calling RenameClan({oldTag}, {newTag}) API...");
+
+            return Get(() =>
+            {
+                // Not really a delete... 
+                var res = HttpClient.DeleteAsync($"{BaseUrl}/api/admin/RenameClan?apiAdminKey={_apiKey}&oldTag={oldTag}&newTag={newTag}").Result;
+
+                if (res.StatusCode == HttpStatusCode.OK)
+                {
+                    Log.Debug("Remote rename is done.");
+                    return true;
+                }
+                else
+                {
+                    Log.Warn($"Remote rename fail: {res.StatusCode}, {res.ReasonPhrase}");
+                    return false;
+                }
+            });
+
+        }
     }
 }

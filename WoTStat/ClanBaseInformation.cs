@@ -8,9 +8,9 @@ namespace Negri.Wot
             ClanId = clanId;
         }
 
-        public Platform Platform { get; protected set; } = Platform.Console;
+        public Platform Platform { get; set; } = Platform.Console;
 
-        public string ClanTag { get; protected set; }
+        public string ClanTag { get; set; }
 
         public long ClanId { get; protected set; }
 

@@ -46,18 +46,10 @@ namespace Negri.Wot
 
             services.AddTransient(p => new Putter(wotClansAdminApiKey));
 
-            var ftpFolder = ConfigurationManager.AppSettings["FtpFolder"];
-            var ftpUser = ConfigurationManager.AppSettings["FtpUser"];
-            var ftpPassword = ConfigurationManager.AppSettings["FtpPassword"];
-
-            services.AddTransient(p => new FtpPutter(ftpFolder, ftpUser, ftpPassword));
-
             var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
 
             services.AddTransient(p => new DbProvider(connectionString));
             services.AddTransient(p => new DbRecorder(connectionString));
-
-            var resultDirectory = ConfigurationManager.AppSettings["ResultDirectory"];
 
             services.AddTransient(p =>
                 new ImportXvm(
@@ -86,11 +78,9 @@ namespace Negri.Wot
             services.AddTransient(p =>
                 new GetClans(
                     p.GetService<Fetcher>(),
-                    p.GetService<FtpPutter>(),
                     p.GetService<Putter>(),
                     p.GetService<DbProvider>(),
-                    p.GetService<DbRecorder>(),
-                    resultDirectory
+                    p.GetService<DbRecorder>()
                 ));
 
             services.AddTransient(p =>

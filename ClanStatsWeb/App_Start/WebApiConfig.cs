@@ -27,6 +27,12 @@ namespace Negri.Wot.Site
             );
 
             config.Routes.MapHttpRoute(
+                name: "RenameClan",
+                routeTemplate: "api/admin/RenameClan",
+                defaults: new { controller = "GeneralApi", action = "RenameClan" }
+            );
+
+            config.Routes.MapHttpRoute(
                 name: "PutData",
                 routeTemplate: "api/admin/Data",
                 defaults: new { controller = "GeneralApi", action = "PutData" }

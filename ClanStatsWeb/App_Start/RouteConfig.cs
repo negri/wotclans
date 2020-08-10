@@ -54,7 +54,7 @@ namespace Negri.Wot
                 url: "Clan",
                 defaults: new { controller = "Home", action = "ClanRoot" });            
 
-            // Para não duplicar codigo, fica onde está essa API
+            // To not duplicate code, keep this API where it is
             routes.MapRoute(
                 name: "ApiLeaderboard",
                 url: "api/leaderboard/{date}",

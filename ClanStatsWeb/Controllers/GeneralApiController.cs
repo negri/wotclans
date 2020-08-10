@@ -358,6 +358,68 @@ namespace Negri.Wot.Site.Controllers
             }
         }
 
+        [HttpDelete]
+        public IHttpActionResult RenameClan(string apiAdminKey, string oldTag, string newTag)
+        {
+            try
+            {
+                
+                if (apiAdminKey != ApiAdminKey)
+                {
+                    Log.Warn($"Invalid API key on {nameof(RenameClan)}: {apiAdminKey}");
+                    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized)
+                    {
+                        Content = new StringContent("Incorrect key! Your try was logged."),
+                        ReasonPhrase = "Incorrect key"
+                    });
+                }
+
+                var oldClanFile = Path.Combine(GlobalHelper.DataFolder, "Clans", $"clan.{oldTag.ToUpperInvariant()}.json");
+                if (!File.Exists(oldClanFile))
+                {
+                    // Nothing to rename, no problem
+                    return Ok();
+                }
+
+                // Change the tag and save with the new name
+                var oldClan = Clan.FromFile(oldClanFile);
+
+                oldClan.ClanTag = newTag;
+                oldClan.ToFile(GlobalHelper.DataFolder);
+
+                // Deletes a possible obsolete rename file
+                var toDeleteRenameFile = Path.Combine(GlobalHelper.DataFolder, "Renames", $"{newTag.ToUpperInvariant()}.ren.txt");
+                if (File.Exists(toDeleteRenameFile))
+                {
+                    File.Delete(toDeleteRenameFile);
+                }
+
+                // Saves the new rename file
+                var renameFile = Path.Combine(GlobalHelper.DataFolder, "Renames", $"{oldTag.ToUpperInvariant()}.ren.txt");
+
+                File.WriteAllText(renameFile, newTag.ToUpperInvariant(), Encoding.UTF8);
+
+                // Deletes the old clan file
+                File.Delete(oldClanFile);
+
+                return Ok();
+            }
+            catch (HttpResponseException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error in {nameof(RenameClan)}({oldTag}, {newTag})", ex);
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(ex.Message),
+                    ReasonPhrase = "Clean failed"
+                });
+            }
+        }
+
+
         [NonAction]
         private static bool DeleteFile(FileSystemInfo fi, out string error)
         {

@@ -35,7 +35,7 @@ namespace UtilityProgram
         {
             try
             {
-                CalculateAndPutReferences();
+                TestClanRename();
             }
             catch (Exception ex)
             {
@@ -44,6 +44,18 @@ namespace UtilityProgram
             }
 
             return 0;
+        }
+
+        /// <summary>
+        ///     Dispara a deleção de arquivos no servidor usando o método de API
+        /// </summary>
+        private static void TestClanRename()
+        {
+            var putter = new Putter(ConfigurationManager.AppSettings["ApiAdminKey"])
+            {
+                BaseUrl = "http://localhost/ClanStatsWeb"
+            };
+            putter.RenameClan("ZAS-K", "GO");
         }
 
         /// <summary>
