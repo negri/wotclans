@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using log4net;
+using Newtonsoft.Json;
 using OfficeOpenXml;
 
 namespace Negri.Wot.Tanks
@@ -230,6 +232,13 @@ namespace Negri.Wot.Tanks
         public void Remove(long tankId)
         {
             _values.Remove(tankId);
+        }
+
+        public void ToFile(string rootDataDirectory)
+        {
+            var json = JsonConvert.SerializeObject(this, Formatting.Indented);
+            var file = Path.Combine(rootDataDirectory, "MoE", $"{Date:yyyy-MM-dd}.WN8.json");
+            File.WriteAllText(file, json, Encoding.UTF8);
         }
     }
 }

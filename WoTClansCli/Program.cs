@@ -62,10 +62,9 @@ namespace Negri.Wot
             services.AddTransient(p =>
                 new ImportXvm(
                     p.GetService<Fetcher>(),
-                    p.GetService<FtpPutter>(),
+                    p.GetService<Putter>(),
                     p.GetService<DbProvider>(),
-                    p.GetService<DbRecorder>(),
-                    resultDirectory
+                    p.GetService<DbRecorder>()
                 ));
 
             services.AddTransient(p =>

@@ -460,6 +460,20 @@ namespace Negri.Wot.Site.Controllers
 
                     RetryPolicy.Default.ExecuteAction(() => { File.WriteAllText(file, json, Encoding.UTF8); });
                 }
+                else if (request.Context == PutDataRequestContext.TankWN8)
+                {
+                    var o = request.GetObject<Wn8ExpectedValues>();
+                    if (o == null)
+                    {
+                        throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotAcceptable)
+                        {
+                            Content = new StringContent("Null WN8 was sent."),
+                            ReasonPhrase = "Null WN8"
+                        });
+                    }
+
+                    RetryPolicy.Default.ExecuteAction(() => { o.ToFile(GlobalHelper.DataFolder); });
+                }
                 else if (request.Context == PutDataRequestContext.TankReference)
                 {
                     var o = request.GetObject<TankReference>();

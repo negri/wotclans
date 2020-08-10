@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CliFx;
 using CliFx.Attributes;
+using CliFx.Exceptions;
 using log4net;
 using Negri.Wot.Sql;
 using Newtonsoft.Json;
@@ -17,18 +18,16 @@ namespace Negri.Wot.Commands
         private static readonly ILog Log = LogManager.GetLogger(typeof(ImportXvm));
 
         private readonly Fetcher _fetcher;
-        private readonly FtpPutter _ftpPutter;
+        private readonly Putter _putter;
         private readonly DbProvider _provider;
         private readonly DbRecorder _recorder;
-        private readonly string _resultDirectory;
-
-        public ImportXvm(Fetcher fetcher, FtpPutter ftpPutter, DbProvider provider, DbRecorder recorder, string resultDirectory)
+        
+        public ImportXvm(Fetcher fetcher, Putter putter, DbProvider provider, DbRecorder recorder)
         {
             _fetcher = fetcher;
             _provider = provider;
             _recorder = recorder;
-            _resultDirectory = resultDirectory;
-            _ftpPutter = ftpPutter;
+            _putter = putter;
         }
 
         [CommandOption("WebCacheAge",  Description = "Maximum age for data retrieved from the web")]
@@ -70,12 +69,10 @@ namespace Negri.Wot.Commands
             // Get the new calculated values and save on
             var wn8 = _provider.GetWn8ExpectedValues();
 
-            var json = JsonConvert.SerializeObject(wn8, Formatting.Indented);
-            var file = Path.Combine(_resultDirectory, "MoE", $"{wn8.Date:yyyy-MM-dd}.WN8.json");
-            File.WriteAllText(file, json, Encoding.UTF8);
-            Log.Debug($"Saved WN8 Expected at '{file}'");
-
-            _ftpPutter.PutExpectedWn8(file);
+            if (!_putter.Put(wn8))
+            {
+                throw new CommandException("Can't upload WN8 file!");
+            }
 
             console.Output.WriteLine("Done!");
             Log.Info($"Done {nameof(ImportXvm)}.");

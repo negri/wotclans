@@ -7,5 +7,6 @@ namespace Negri.Wot
         public static string TankReference => "TankReference";
         public static string Clan => "Clan";
         public static string TankMoE => "TankMoE";
+        public static string TankWN8 => "TankWN8";
     }
 }
