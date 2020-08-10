@@ -94,7 +94,6 @@
     <Compile Include="Fetcher.cs" />
     <Compile Include="ClanBaseInformation.cs" />
     <Compile Include="Mathematic\EquationSolver.cs" />
-    <Compile Include="FtpPutter.cs" />
     <Compile Include="BasicExtensions.cs" />
     <Compile Include="Diagnostics\AveragedCpuUsage.cs" />
     <Compile Include="Diagnostics\AveragedProcessCpuUsage.cs" />
