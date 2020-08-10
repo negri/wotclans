@@ -173,6 +173,34 @@ namespace Negri.Wot
             }
         }
 
+        public bool Put(Clan clan)
+        {
+            try
+            {
+                Execute(() =>
+                {
+
+                    var req = new PutDataRequest
+                    {
+                        ApiKey = _apiKey,
+                        Context = PutDataRequestContext.Clan
+                    };
+                    req.SetObject(clan);
+
+                    var bsonFormatter = new BsonMediaTypeFormatter();
+                    var res = HttpClient.PutAsync($"{BaseUrl}/api/admin/Data", req, bsonFormatter).Result;
+                    res.EnsureSuccessStatusCode();
+                }, 5);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Put({clan.Name}))", ex);
+                return false;
+            }
+        }
+
         public bool Put(DateTime date, IEnumerable<Leader> leaders)
         {
             try
@@ -201,6 +229,8 @@ namespace Negri.Wot
                 return false;
             }
         }
+
+
 
         /// <summary>
         /// Clean files on the remote server
@@ -260,6 +290,7 @@ namespace Negri.Wot
                 Log.Warn($"Remote deletion fail: {res.StatusCode}, {res.ReasonPhrase}");
             }
         }
+
 
         
     }

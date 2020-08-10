@@ -15,18 +15,15 @@ namespace Negri.Wot.Commands
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(CalculateClans));
 
-        private readonly FtpPutter _ftpPutter;
+        private readonly Putter _putter;
         private readonly DbProvider _provider;
         private readonly DbRecorder _recorder;
-        private readonly string _resultDirectory;
-
-        public CalculateClans(FtpPutter ftpPutter, DbProvider provider,
-            DbRecorder recorder, string resultDirectory)
+        
+        public CalculateClans(Putter putter, DbProvider provider, DbRecorder recorder)
         {
             _provider = provider;
             _recorder = recorder;
-            _resultDirectory = resultDirectory;
-            _ftpPutter = ftpPutter;
+            _putter = putter;
         }
 
         [CommandParameter(0, Description = "Hours after a clan calculation being update that a new calculation should be done.")]
@@ -61,7 +58,7 @@ namespace Negri.Wot.Commands
 
             Log.Info("------------------------------------------------------------------------------------");
             Log.Info($"{nameof(CalculateClans)} starting...");
-            Log.Info($"AgeHours: {AgeHours}; resultDirectory: {_resultDirectory}; WaitForUpload: {WaitForUpload}; MaxRunMinutes: {MaxRunMinutes}");
+            Log.Info($"AgeHours: {AgeHours}; WaitForUpload: {WaitForUpload}; MaxRunMinutes: {MaxRunMinutes}");
 
             var clans = _provider.GetClanCalculateOrder(AgeHours).ToArray();
             Log.InfoFormat("{0} clans should be calculated.", clans.Length);
@@ -99,18 +96,11 @@ namespace Negri.Wot.Commands
                 {
                     var fsw = Stopwatch.StartNew();
 
-                    var fileName = cc.ToFile(_resultDirectory);
-                    Log.Info($"Clan file wrote to '{fileName}'.");
-
                     var putTask = Task.Run(() =>
                     {
-                        try
+                        if (!_putter.Put(cc))
                         {
-                            _ftpPutter.PutClan(fileName);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error($"Error putting console clan file for {cc.ClanTag}", ex);
+                            Log.Error($"Error putting clan file for {cc.ClanTag}");
                         }
                     });
 

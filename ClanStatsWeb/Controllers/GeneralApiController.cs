@@ -394,8 +394,8 @@ namespace Negri.Wot.Site.Controllers
                                 
                 if (request.Context == PutDataRequestContext.Player)
                 {
-                    var player = request.GetObject<Player>();
-                    if (player == null)
+                    var o = request.GetObject<Player>();
+                    if (o == null)
                     {
                         throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotAcceptable)
                         {
@@ -406,7 +406,7 @@ namespace Negri.Wot.Site.Controllers
 
                     var connectionString = ConfigurationManager.ConnectionStrings["Store"].ConnectionString;
                     var db = new KeyStore(connectionString);
-                    db.Set(player);
+                    db.Set(o);
                 }
                 else if (request.Context == PutDataRequestContext.Leaderboard)
                 {
@@ -419,8 +419,8 @@ namespace Negri.Wot.Site.Controllers
                         });
                     }
 
-                    var leaders = request.GetObject<Leader[]>();
-                    if (leaders == null)
+                    var o = request.GetObject<Leader[]>();
+                    if (o == null)
                     {
                         throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotAcceptable)
                         {
@@ -430,14 +430,14 @@ namespace Negri.Wot.Site.Controllers
                     }
                     
                     var file = Path.Combine(GlobalHelper.DataFolder, "Tanks", $"{request.Title}.Leaders.json");
-                    var json = JsonConvert.SerializeObject(leaders, Formatting.Indented);
+                    var json = JsonConvert.SerializeObject(o, Formatting.Indented);
 
                     RetryPolicy.Default.ExecuteAction(() => { File.WriteAllText(file, json, Encoding.UTF8); });
                 }
                 else if (request.Context == PutDataRequestContext.TankReference)
                 {
-                    var tankReference = request.GetObject<TankReference>();
-                    if (tankReference == null)
+                    var o = request.GetObject<TankReference>();
+                    if (o == null)
                     {
                         throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotAcceptable)
                         {
@@ -446,9 +446,21 @@ namespace Negri.Wot.Site.Controllers
                         });
                     }
 
-                    var path = Path.Combine(GlobalHelper.DataFolder, "Tanks");
+                    RetryPolicy.Default.ExecuteAction(() => { o.ToFile(GlobalHelper.DataFolder); });
+                }
+                else if (request.Context == PutDataRequestContext.Clan)
+                {
+                    var o = request.GetObject<Clan>();
+                    if (o == null)
+                    {
+                        throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotAcceptable)
+                        {
+                            Content = new StringContent("Null Clan was sent."),
+                            ReasonPhrase = "Null Clan"
+                        });
+                    }
 
-                    RetryPolicy.Default.ExecuteAction(() => { tankReference.Save(path); });
+                    RetryPolicy.Default.ExecuteAction(() => { o.ToFile(GlobalHelper.DataFolder); });
                 }
                 else
                 {

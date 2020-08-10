@@ -438,10 +438,9 @@ namespace Negri.Wot
         /// <summary>
         ///     Root directory to save calculated data
         /// </summary>
-        public string ToFile(string resultDirectory)
+        public string ToFile(string rootDataDirectory)
         {
-            var fileName = Path.Combine(resultDirectory, "Clans",
-                $"clan.{ClanTag}.json");
+            var fileName = Path.Combine(rootDataDirectory, "Clans", $"clan.{ClanTag}.json");
 
             var json = JsonConvert.SerializeObject(this, Formatting.Indented);
             File.WriteAllText(fileName, json, Encoding.UTF8);

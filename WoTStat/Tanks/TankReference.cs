@@ -154,11 +154,11 @@ namespace Negri.Wot.Tanks
         /// Salva esse tanque em arquivo
         /// </summary>
         /// <returns>O full name do arquivo escrito</returns>
-        /// <param name="path"></param>
-        public string Save(string path)
+        /// <param name="rootDataDirectory"></param>
+        public string ToFile(string rootDataDirectory)
         {
-            var file = Path.Combine(path, $"Tank.{TankId:000000}.{Tag}.ref.json");
-            string json = JsonConvert.SerializeObject(this, Formatting.Indented);
+            var file = Path.Combine(rootDataDirectory, "Tanks", $"Tank.{TankId:000000}.{Tag}.ref.json");
+            var json = JsonConvert.SerializeObject(this, Formatting.Indented);
             File.WriteAllText(file, json, Encoding.UTF8);
             return file;
         }

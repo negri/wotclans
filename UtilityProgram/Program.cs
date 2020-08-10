@@ -583,38 +583,6 @@ namespace UtilityProgram
 
         }
 
-        private static void DumpReferenceFiles()
-        {
-            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
-            var provider = new DbProvider(connectionString);
-
-
-            var references = provider.GetTanksReferences(new DateTime(2018, 03, 12))
-                .ToArray();
-            var baseDir = ConfigurationManager.AppSettings["PsResultDirectory"];
-            var dir = Path.Combine(baseDir, "Tanks");
-
-            var leaders = new List<Leader>();
-            foreach (var r in references)
-            {
-                r.Save(dir);
-                Log.InfoFormat("Escrito {0}", r.Name);
-                leaders.AddRange(r.Leaders);
-            }
-
-            var json = JsonConvert.SerializeObject(leaders, Formatting.Indented);
-            var file = Path.Combine(dir, $"{references.First().Date:yyyy-MM-dd}.Leaders.json");
-            File.WriteAllText(file, json, Encoding.UTF8);
-
-            var sb = new StringBuilder();
-            foreach (var leader in leaders)
-            {
-                sb.AppendLine(leader.ToString());
-            }
-
-            file = Path.Combine(dir, $"{references.First().Date:yyyy-MM-dd}.Leaders.txt");
-            File.WriteAllText(file, sb.ToString(), Encoding.UTF8);
-        }
 
         #endregion
 
