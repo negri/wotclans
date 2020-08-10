@@ -34,7 +34,6 @@ namespace Negri.Wot
         /// </summary>
         private static readonly Regex ClanTagRegex = new Regex("^[A-Z0-9\\-_]{2,5}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-
         /// <summary>
         ///     The only and only HTTP Client
         /// </summary>
@@ -56,6 +55,8 @@ namespace Negri.Wot
             _cacheDirectory = cacheDirectory ?? Path.GetTempPath();
         }
 
+        
+
         /// <summary>
         ///     WG App ID
         /// </summary>
@@ -68,6 +69,12 @@ namespace Negri.Wot
         ///     Administrative API key for the WoTClans site
         /// </summary>
         public string WotClansAdminApiKey { set; private get; } = "nope";
+
+
+        /// <summary>
+        ///     WoT Clans base URL
+        /// </summary>
+        public string WotClansBaseUrl { get; set; } = "https://wotclans.com.br";
 
         /// <summary>
         ///     Cache Age
@@ -88,7 +95,7 @@ namespace Negri.Wot
         {
             Log.Debug("Obtendo o diagnostico do site remoto");
 
-            const string url = "https://wotclans.com.br/api/status";
+            string url = $"{WotClansBaseUrl}/api/status";
 
             var json = GetContent($"SiteDiagnostic.{DateTime.UtcNow:yyyy-MM-dd.HHmmss}.json",
                 $"{url}?apiAdminKey={WotClansAdminApiKey}", WebCacheAge,

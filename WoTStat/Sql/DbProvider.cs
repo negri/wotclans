@@ -81,10 +81,10 @@ namespace Negri.Wot.Sql
         }
 
         public IEnumerable<TankReference> GetTanksReferences(DateTime? date = null, long? tankId = null, bool includeMoe = true, bool includeHistogram = false,
-            bool includeLeaders = true)
+            bool includeLeaders = true, int topLeaders = 50)
         {
             return Get(transaction =>
-                GetTanksReferences(date, tankId, includeMoe, includeHistogram, includeLeaders, transaction)
+                GetTanksReferences(date, tankId, includeMoe, includeHistogram, includeLeaders, topLeaders, transaction)
                     .ToArray());
         }
 
@@ -186,6 +186,8 @@ namespace Negri.Wot.Sql
         private static IEnumerable<Leader> GetLeaderboard(long tankId, int top, string flagCode,
             int skip, SqlTransaction t)
         {
+            Log.Debug($"{nameof(GetLeaderboard)}({tankId}, {top}, {flagCode}, {skip})...");
+
             var list = new List<Leader>(top);
 
             using (var cmd = new SqlCommand("Performance.GetTopPlayersAll", t.Connection, t))
@@ -343,6 +345,7 @@ namespace Negri.Wot.Sql
         }
 
         private static IEnumerable<TankReference> GetTanksReferences(DateTime? date, long? tankId, bool includeMoe, bool includeHistogram, bool includeLeaders,
+            int topLeaders,
             SqlTransaction t)
         {
             var references = new Dictionary<long, TankReference>();
@@ -540,7 +543,7 @@ namespace Negri.Wot.Sql
                 // Obtém lideres
                 if ((tr.TotalPlayers > 100) && (tr.TotalBattles > 1000) && (tr.Tier >= 5) && includeLeaders)
                 {
-                    tr.Leaders = GetLeaderboard(tr.TankId, 25, null, 0, t).ToArray();
+                    tr.Leaders = GetLeaderboard(tr.TankId, topLeaders, null, 0, t).ToArray();
                 }
             }
 

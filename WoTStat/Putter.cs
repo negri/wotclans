@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading;
 using log4net;
+using Negri.Wot.Tanks;
 using Newtonsoft.Json;
 
 namespace Negri.Wot
@@ -122,7 +126,7 @@ namespace Negri.Wot
                     var req = new PutDataRequest
                     {
                         ApiKey = _apiKey,
-                        Context = "Player"
+                        Context = PutDataRequestContext.Player
                     };
                     req.SetObject(copy);
 
@@ -139,6 +143,63 @@ namespace Negri.Wot
                 return false;
             }
             
+        }
+
+        public bool Put(TankReference tankReference)
+        {
+            try
+            {
+                Execute(() =>
+                {
+
+                    var req = new PutDataRequest
+                    {
+                        ApiKey = _apiKey,
+                        Context = PutDataRequestContext.TankReference
+                    };
+                    req.SetObject(tankReference);
+
+                    var bsonFormatter = new BsonMediaTypeFormatter();
+                    var res = HttpClient.PutAsync($"{BaseUrl}/api/admin/Data", req, bsonFormatter).Result;
+                    res.EnsureSuccessStatusCode();
+                }, 5);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Put({tankReference.Name}))", ex);
+                return false;
+            }
+        }
+
+        public bool Put(DateTime date, IEnumerable<Leader> leaders)
+        {
+            try
+            {
+                Execute(() =>
+                {
+
+                    var req = new PutDataRequest
+                    {
+                        ApiKey = _apiKey,
+                        Context = PutDataRequestContext.Leaderboard,
+                        Title = date.ToString("yyyy-MM-dd")
+                    };
+                    req.SetObject(leaders.ToArray());
+
+                    var bsonFormatter = new BsonMediaTypeFormatter();
+                    var res = HttpClient.PutAsync($"{BaseUrl}/api/admin/Data", req, bsonFormatter).Result;
+                    res.EnsureSuccessStatusCode();
+                }, 5);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Put({date:yyyy-MM-dd}, Leaders))", ex);
+                return false;
+            }
         }
 
         /// <summary>
@@ -200,5 +261,6 @@ namespace Negri.Wot
             }
         }
 
+        
     }
 }

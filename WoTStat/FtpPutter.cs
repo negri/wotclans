@@ -243,22 +243,5 @@ namespace Negri.Wot
                 Put(destiny, content);
             });
         }
-
-        public void PutTankReference(string tankFile)
-        {
-            Log.InfoFormat("Iniciando o upload FTP de '{0}'...", tankFile);
-
-            var fi = new FileInfo(tankFile);
-            var fileName = fi.Name;
-            var content = File.ReadAllBytes(tankFile);
-            var destiny = _url + "Tanks/" + fileName;
-
-            Execute(() =>
-            {
-                Put(destiny, content);
-            });
-        }
-
-        
     }
 }

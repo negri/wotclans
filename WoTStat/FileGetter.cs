@@ -104,14 +104,14 @@ namespace Negri.Wot
         /// <returns></returns>
         public string GetRenamedClan(string clanName)
         {
-            var redirFile = Path.Combine(_dataDirectory, "Renames");
-            redirFile = Path.Combine(redirFile, clanName + ".ren.txt");
-            if (!File.Exists(redirFile))
+            var redirectFile = Path.Combine(_dataDirectory, "Renames");
+            redirectFile = Path.Combine(redirectFile, clanName + ".ren.txt");
+            if (!File.Exists(redirectFile))
             {
                 return string.Empty;
             }
 
-            var newName = File.ReadAllText(redirFile, Encoding.UTF8);
+            var newName = File.ReadAllText(redirectFile, Encoding.UTF8);
             if (string.IsNullOrWhiteSpace(newName))
             {
                 return string.Empty;

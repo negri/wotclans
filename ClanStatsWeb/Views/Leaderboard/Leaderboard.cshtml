@@ -27,12 +27,12 @@
         @if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "pt")
         {
             <h1 lang="pt">Placar de Líderes</h1>
-            <h2 lang="pt">Os 25 melhores jogadores de clãs em cada tanque.</h2>
+            <h2 lang="pt">Os melhores jogadores de clãs em cada tanque.</h2>
         }
         else
         {
             <h1>Leaderboard</h1>
-            <h2>The top 25 best clan players on each tank.</h2>
+            <h2>The top best clan players on each tank.</h2>
         }
         <p>
             @string.Format("Calculated at {0:d}.", Model.Date)
@@ -152,12 +152,12 @@
         {
             <h3 class="text-center" style="margin-top: 5px; margin-bottom: 5px;">Informações</h3>
             <ol>
-                <li>Estes são os melhores 25 jogadores de <b>clãs</b>, por <b>dano combinado</b> histórico médio.</li>
+                <li>Estes são os melhores jogadores de <b>clãs</b>, por <b>dano combinado</b> histórico médio.</li>
                 <li>Dano Combinado é a soma de dano por assistência (Rádio e Tracking) e dano direto.</li>
-                <li>Está página não tem nada a ver com <i>maestria</i> nos tanques.</li>
+                <li>Está página não tem nada a ver com <i>maestria</i> ou <i>marcas de excelência</i> nos tanques.</li>
                 <li>Estes dados são atualizados automaticamente nas primeiras horas (UTC) de toda Terça-Feira.</li>
                 <li>Para aparecer na lista é preciso ter jogado pelo menos Tier x 10 partidas (então um jogador de Tiger I tem ter feito pelo menos 70 partidas nele), e ter feito ao menos uma partida com o tanque nos últimos 3 meses, e ter feito pelo menos 1.000 partidas no jogo.</li>
-                <li>Se um tanque não aparece na lista é porque há menos de 100 jogadores nele que atendem aos requisitos. Não faz sentido criar um top 25 dentre somente 50...</li>
+                <li>Se um tanque não aparece na lista é porque há menos de 100 jogadores nele que atendem aos requisitos. Não faz sentido criar um top 50 dentre somente 70...</li>
                 <li>Eu não gosto de <i>massacrar foquinhas</i>, então não há tanques de tier IV e abaixo, nem me peça.</li>            
             </ol>
         }
@@ -165,12 +165,12 @@
         {
             <h3 class="text-center" style="margin-top: 5px; margin-bottom: 5px;">Information</h3>
             <ol>
-                <li>These are the best top 25 <b>clan</b> players, by overall average <b>Combined Damage</b>.</li>
+                <li>These are the best top <b>clan</b> players, by overall average <b>Combined Damage</b>.</li>
                 <li>Combined Damage is the sum of Radio Assisted Damage, Tracking Assisted Damage and Direct Damage.</li>
-                <li>This page is not related to <i>maestry badges</i> on tanks.</li>
+                <li>This page is not related to <i>mastery badges</i> or <i>marks of excellence</i> on tanks.</li>
                 <li>This data is automatically updated on the first hours (UTC) of every Tuesday.</li>
                 <li>To appear on the list one must have played at least tier x 10 battles on the tank (so a Tiger I player must have at least 70 battles in it), and had at least one battle with the tank on the last 3 months, and have at least 1,000 battles in the game.</li>
-                <li>If a tank doesn't appear on the list it's because there are less than 100 players on it with the requirements. There's no sense in creating a top 25 among only 50...</li>
+                <li>If a tank doesn't appear on the list it's because there are less than 100 players on it with the requirements. There's no sense in creating a top 50 among only 70...</li>
                 <li>I don't like <i>seal clubbing</i>, so there are no tanks on tier 4 and bellow, don't even ask.</li>
             </ol>
         }
@@ -195,7 +195,7 @@
             var oTable = $("#mainTable").DataTable({
                 paging: true,
                 lengthChange: false,
-                pageLength: 25,
+                pageLength: 50,
                 pagingType: "numbers",
                 info: false,
                 searching: true,

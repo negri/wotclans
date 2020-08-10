@@ -68,7 +68,7 @@ namespace Negri.Wot.Site.Controllers
 
                 var globalSearch = Request["search[value]"];
 
-                var model = GetTankLeaders(upToOrder: 25, nation: nation, tankType: tankType, isPremium: isPremium,
+                var model = GetTankLeaders(upToOrder: 50, nation: nation, tankType: tankType, isPremium: isPremium,
                     tier: tier, globalSearch: globalSearch);
 
                 var data = model.Leaders.AsEnumerable();

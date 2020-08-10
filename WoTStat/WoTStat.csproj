@@ -136,6 +136,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="PutDataRequest.cs" />
+    <Compile Include="PutDataRequestContext.cs" />
     <Compile Include="Putter.cs" />
     <Compile Include="Rank.cs" />
     <Compile Include="RatingPoint.cs" />
@@ -159,6 +160,9 @@
     <Compile Include="Tanks\Wn8ExpectedValues.cs" />
     <Compile Include="Tanks\Wn8TankExpectedValues.cs" />
     <Compile Include="Tanks\Wn8TankExpectedValuesOrigin.cs" />
+    <Compile Include="Threading\ExponentialRetryPolicy.cs" />
+    <Compile Include="Threading\FixedRetryPolicy.cs" />
+    <Compile Include="Threading\RetryPolicy.cs" />
     <Compile Include="Tournament.cs" />
     <Compile Include="UrlHelperExtensions.cs" />
     <Compile Include="WgApi\Clan.cs" />

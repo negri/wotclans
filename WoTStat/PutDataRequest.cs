@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using System.Text;
 
 namespace Negri.Wot
 {
@@ -17,6 +16,11 @@ namespace Negri.Wot
         /// The context of what is being put
         /// </summary>
         public string Context { get; set; }
+
+        /// <summary>
+        /// Data title (optional)
+        /// </summary>
+        public string Title { get; set; }
 
         /// <summary>
         /// The data, as a zipped json

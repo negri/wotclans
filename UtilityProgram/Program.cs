@@ -4,6 +4,7 @@ using Negri.Wot.Sql;
 using Negri.Wot.Tanks;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
@@ -34,7 +35,7 @@ namespace UtilityProgram
         {
             try
             {
-                CalculateAverageWn8OfAllTanks();
+                CalculateAndPutReferences();
             }
             catch (Exception ex)
             {
@@ -139,7 +140,7 @@ namespace UtilityProgram
             var provider = new DbProvider(connectionString);
             var clan = provider.GetClan(208);
         }
-        
+
 
         private static void PutPlayer(long playerId)
         {
@@ -506,6 +507,82 @@ namespace UtilityProgram
 
         #region Referencias
 
+        private static void CalculateAndPutReferences()
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
+            var provider = new DbProvider(connectionString);
+            var recorder = new DbRecorder(connectionString);
+
+            var cacheDirectory = ConfigurationManager.AppSettings["CacheDirectory"];
+            var wargamingApplicationId = ConfigurationManager.AppSettings["WgAppId"];
+            var wotClansAdminApiKey = ConfigurationManager.AppSettings["ApiAdminKey"];
+            var webCacheAge = TimeSpan.FromMinutes(1);
+
+            var fetcher = new Fetcher(cacheDirectory)
+            {
+                WebCacheAge = webCacheAge,
+                WebFetchInterval = TimeSpan.FromSeconds(1),
+                WargamingApplicationId = wargamingApplicationId,
+                WotClansAdminApiKey = wotClansAdminApiKey,
+                WotClansBaseUrl = "http://localhost/ClanStatsWeb"
+            };
+
+            var putter = new Putter(wotClansAdminApiKey)
+            {
+                BaseUrl = "http://localhost/ClanStatsWeb"
+            };
+
+            const int utcShiftToCalculate = -7;
+            const int topLeaders = 50;
+            const int maxParallel = 1;
+
+            recorder.CalculateReference(utcShiftToCalculate);
+
+            var siteDiagnostic = fetcher.GetSiteDiagnostic();
+            var lastLeaderboard = siteDiagnostic.TankLeadersLastDate;
+            Log.Info($"Last leaderboard on site: {lastLeaderboard:yyyy-MM-dd}");
+
+            var cd = DateTime.UtcNow.AddHours(utcShiftToCalculate);
+            var previousMonday = cd.PreviousDayOfWeek(DayOfWeek.Monday);
+            Log.Info($"Previous Monday: {previousMonday:yyyy-MM-dd}");
+
+            if (previousMonday <= lastLeaderboard)
+            {
+                Log.Info("No need to upload.");
+                return;
+            }
+
+            Log.Info($"Getting tanks stats for {previousMonday:yyyy-MM-dd}...");
+            var references = provider.GetTanksReferences(previousMonday, null, true, false, true, topLeaders).ToArray();
+            Log.Debug($"Data for {references.Length} tanks retrieved.");
+            var leaders = new ConcurrentBag<Leader>();
+
+            Parallel.For(0, references.Length, new ParallelOptions { MaxDegreeOfParallelism = maxParallel }, i =>
+            {
+                var r = references[i];
+
+                Log.Debug($"Putting references for tank {r.Name}...");
+                if (!putter.Put(r))
+                {
+                    Log.Error($"Error putting tank reference files for tank {r.Name}.");
+                }
+
+                foreach (var leader in r.Leaders)
+                {
+                    leaders.Add(leader);
+                }
+            });
+
+            var orderedLeaders = leaders.OrderByDescending(l => l.Tier).ThenBy(l => l.Type).ThenBy(l => l.Nation).ThenBy(l => l.Name).ThenBy(l => l.Order)
+                .ToArray();
+            Log.Info($"Uploading leaderboard with {orderedLeaders.Length} players...");
+            if (!putter.Put(previousMonday, orderedLeaders))
+            {
+                Log.Error("Error putting leaders to the server.");
+            }
+
+        }
+
         private static void DumpReferenceFiles()
         {
             var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
@@ -548,7 +625,7 @@ namespace UtilityProgram
             var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
             var provider = new DbProvider(connectionString);
 
-            
+
             var date = new DateTime(2017, 03, 10);
             var maxDate = new DateTime(2017, 04, 26);
 

@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Http;
@@ -17,6 +18,8 @@ using log4net;
 using Negri.Wot.Diagnostics;
 using Negri.Wot.Sql;
 using Negri.Wot.Tanks;
+using Negri.Wot.Threading;
+using Newtonsoft.Json;
 
 namespace Negri.Wot.Site.Controllers
 {
@@ -389,7 +392,7 @@ namespace Negri.Wot.Site.Controllers
                     });
                 }
                                 
-                if (request.Context == "Player")
+                if (request.Context == PutDataRequestContext.Player)
                 {
                     var player = request.GetObject<Player>();
                     if (player == null)
@@ -405,6 +408,48 @@ namespace Negri.Wot.Site.Controllers
                     var db = new KeyStore(connectionString);
                     db.Set(player);
                 }
+                else if (request.Context == PutDataRequestContext.Leaderboard)
+                {
+                    if (string.IsNullOrWhiteSpace(request.Title))
+                    {
+                        throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotAcceptable)
+                        {
+                            Content = new StringContent($"A title is required for context {PutDataRequestContext.Leaderboard}."),
+                            ReasonPhrase = "No Title"
+                        });
+                    }
+
+                    var leaders = request.GetObject<Leader[]>();
+                    if (leaders == null)
+                    {
+                        throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotAcceptable)
+                        {
+                            Content = new StringContent("Null Leader[] was sent."),
+                            ReasonPhrase = "Null Leaders"
+                        });
+                    }
+                    
+                    var file = Path.Combine(GlobalHelper.DataFolder, "Tanks", $"{request.Title}.Leaders.json");
+                    var json = JsonConvert.SerializeObject(leaders, Formatting.Indented);
+
+                    RetryPolicy.Default.ExecuteAction(() => { File.WriteAllText(file, json, Encoding.UTF8); });
+                }
+                else if (request.Context == PutDataRequestContext.TankReference)
+                {
+                    var tankReference = request.GetObject<TankReference>();
+                    if (tankReference == null)
+                    {
+                        throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotAcceptable)
+                        {
+                            Content = new StringContent("Null TankReference was sent."),
+                            ReasonPhrase = "Null TankReference"
+                        });
+                    }
+
+                    var path = Path.Combine(GlobalHelper.DataFolder, "Tanks");
+
+                    RetryPolicy.Default.ExecuteAction(() => { tankReference.Save(path); });
+                }
                 else
                 {
                     throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
@@ -413,7 +458,6 @@ namespace Negri.Wot.Site.Controllers
                         ReasonPhrase = "Invalid Context."
                     });
                 }
-
 
                 Log.Debug($"PutData in {sw.Elapsed}");
                 return Ok();

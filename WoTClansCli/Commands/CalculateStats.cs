@@ -10,7 +10,6 @@ using CliFx.Attributes;
 using log4net;
 using Negri.Wot.Sql;
 using Negri.Wot.Tanks;
-using Newtonsoft.Json;
 
 namespace Negri.Wot.Commands
 {
@@ -20,18 +19,16 @@ namespace Negri.Wot.Commands
         private static readonly ILog Log = LogManager.GetLogger(typeof(CalculateStats));
 
         private readonly Fetcher _fetcher;
-        private readonly FtpPutter _ftpPutter;
+        private readonly Putter _putter;
         private readonly DbProvider _provider;
         private readonly DbRecorder _recorder;
-        private readonly string _resultDirectory;
-
-        public CalculateStats(Fetcher fetcher, FtpPutter ftpPutter, DbProvider provider, DbRecorder recorder, string resultDirectory)
+        
+        public CalculateStats(Fetcher fetcher, Putter putter, DbProvider provider, DbRecorder recorder)
         {
             _fetcher = fetcher;
             _provider = provider;
             _recorder = recorder;
-            _resultDirectory = resultDirectory;
-            _ftpPutter = ftpPutter;
+            _putter = putter;
         }
 
         /// <summary>
@@ -42,6 +39,9 @@ namespace Negri.Wot.Commands
 
         [CommandOption("MaxParallel", Description = "Maximum parallel threads.")]
         public int MaxParallel { get; set; } = 4;
+
+        [CommandOption("TopLeaders", Description = "The number of leaders for each tank.")]
+        public int TopLeaders { get; set; } = 50;
 
         public ValueTask ExecuteAsync(IConsole console)
         {
@@ -68,24 +68,18 @@ namespace Negri.Wot.Commands
             }
 
             Log.Info($"Getting tanks stats for {previousMonday:yyyy-MM-dd}...");
-            var references = _provider.GetTanksReferences(previousMonday).ToArray();
+            var references = _provider.GetTanksReferences(previousMonday, null, true, false, true, TopLeaders).ToArray();
             Log.Debug($"Data for {references.Length} tanks retrieved.");
-            var referencesDir = Path.Combine(_resultDirectory, "Tanks");
             var leaders = new ConcurrentBag<Leader>();
 
-            Parallel.For(0, references.Length, new ParallelOptions { MaxDegreeOfParallelism = MaxParallel }, i =>
+            Parallel.For(0, references.Length, new ParallelOptions {MaxDegreeOfParallelism = MaxParallel}, i =>
             {
                 var r = references[i];
-                var tankFile = r.Save(referencesDir);
 
-                try
+                Log.Debug($"Putting references for tank {r.Name}...");
+                if (!_putter.Put(r))
                 {
-                    _ftpPutter.PutTankReference(tankFile);
-                    Log.Debug($"Upload done for tank {r.Name}");
-                }
-                catch (Exception ex)
-                {
-                    Log.Error($"Error putting tank reference files for tank {r.Name}", ex);
+                    Log.Error($"Error putting tank reference files for tank {r.Name}.");
                 }
 
                 foreach (var leader in r.Leaders)
@@ -94,12 +88,13 @@ namespace Negri.Wot.Commands
                 }
             });
 
-            var json = JsonConvert.SerializeObject(leaders.ToArray(), Formatting.Indented);
-            var leadersFile = Path.Combine(referencesDir, $"{previousMonday:yyyy-MM-dd}.Leaders.json");
-            File.WriteAllText(leadersFile, json, Encoding.UTF8);
-
-            Log.Info("Uploading leaderboard...");
-            _ftpPutter.PutTankReference(leadersFile);
+            var orderedLeaders = leaders.OrderByDescending(l => l.Tier).ThenBy(l => l.Type).ThenBy(l => l.Nation).ThenBy(l => l.Name).ThenBy(l => l.Order)
+                .ToArray();
+            Log.Info($"Uploading leaderboard with {orderedLeaders.Length} players...");
+            if (!_putter.Put(previousMonday, orderedLeaders))
+            {
+                Log.Error("Error putting leaders to the server.");
+            }
 
             console.Output.WriteLine("Done!");
             Log.Info($"Done {nameof(CalculateStats)}.");
@@ -107,6 +102,6 @@ namespace Negri.Wot.Commands
             return default;
         }
 
-       
+
     }
 }
