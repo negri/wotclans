@@ -107,6 +107,34 @@ namespace Negri.Wot
             return default;
         }
 
+        public bool Put(DateTime date, IDictionary<long, TankMoe> marks)
+        {
+            try
+            {
+                Execute(() =>
+                {
+
+                    var req = new PutDataRequest
+                    {
+                        ApiKey = _apiKey,
+                        Context = PutDataRequestContext.TankMoE,
+                        Title = date.ToString("yyyy-MM-dd")
+                    };
+                    req.SetObject(marks);
+
+                    var bsonFormatter = new BsonMediaTypeFormatter();
+                    var res = HttpClient.PutAsync($"{BaseUrl}/api/admin/Data", req, bsonFormatter).Result;
+                    res.EnsureSuccessStatusCode();
+                }, 5);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Put({date:yyyy-MM-dd}, Leaders))", ex);
+                return false;
+            }
+        }
 
         public bool Put(Player player)
         {

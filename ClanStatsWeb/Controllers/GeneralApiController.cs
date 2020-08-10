@@ -434,6 +434,32 @@ namespace Negri.Wot.Site.Controllers
 
                     RetryPolicy.Default.ExecuteAction(() => { File.WriteAllText(file, json, Encoding.UTF8); });
                 }
+                else if (request.Context == PutDataRequestContext.TankMoE)
+                {
+                    if (string.IsNullOrWhiteSpace(request.Title))
+                    {
+                        throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotAcceptable)
+                        {
+                            Content = new StringContent($"A title is required for context {PutDataRequestContext.TankMoE}."),
+                            ReasonPhrase = "No Title"
+                        });
+                    }
+
+                    var o = request.GetObject<IDictionary<long, TankMoe>>();
+                    if (o == null)
+                    {
+                        throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotAcceptable)
+                        {
+                            Content = new StringContent("Null Leader[] was sent."),
+                            ReasonPhrase = "Null Leaders"
+                        });
+                    }
+
+                    var file = Path.Combine(GlobalHelper.DataFolder, "MoE", $"{request.Title}.moe.json");
+                    var json = JsonConvert.SerializeObject(o, Formatting.Indented);
+
+                    RetryPolicy.Default.ExecuteAction(() => { File.WriteAllText(file, json, Encoding.UTF8); });
+                }
                 else if (request.Context == PutDataRequestContext.TankReference)
                 {
                     var o = request.GetObject<TankReference>();

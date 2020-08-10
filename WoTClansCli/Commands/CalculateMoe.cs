@@ -17,18 +17,16 @@ namespace Negri.Wot.Commands
         private static readonly ILog Log = LogManager.GetLogger(typeof(CalculateMoe));
 
         private readonly Fetcher _fetcher;
-        private readonly FtpPutter _ftpPutter;
+        private readonly Putter _putter;
         private readonly DbProvider _provider;
         private readonly DbRecorder _recorder;
-        private readonly string _resultDirectory;
-
-        public CalculateMoe(Fetcher fetcher, FtpPutter ftpPutter, DbProvider provider, DbRecorder recorder, string resultDirectory)
+        
+        public CalculateMoe(Fetcher fetcher, Putter putter, DbProvider provider, DbRecorder recorder)
         {
             _fetcher = fetcher;
             _provider = provider;
             _recorder = recorder;
-            _resultDirectory = resultDirectory;
-            _ftpPutter = ftpPutter;
+            _putter = putter;
         }
 
         /// <summary>
@@ -62,16 +60,14 @@ namespace Negri.Wot.Commands
 
                 if (tankMarks.Count > 0)
                 {
-                    var json = JsonConvert.SerializeObject(tankMarks, Formatting.Indented);
-                    var file = Path.Combine(_resultDirectory, "MoE", $"{date:yyyy-MM-dd}.moe.json");
-                    File.WriteAllText(file, json, Encoding.UTF8);
-                    Log.DebugFormat("Saved MoE in '{0}'", file);
-
-                    _ftpPutter.PutMoe(file);
+                    if (!_putter.Put(date, tankMarks))
+                    {
+                        Log.Error($"Couldn't upload MoE file!");
+                    }
                 }
                 else
                 {
-                    Log.ErrorFormat("There are 0 tanks with calculated MoEs in {0:yyyy-MM-dd}!", date);
+                    Log.Error($"There are 0 tanks with calculated MoEs in {date:yyyy-MM-dd}!");
                 }
 
                 date = date.AddDays(1);
