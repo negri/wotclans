@@ -135,8 +135,8 @@ namespace Negri.Wot.Site.Controllers
                 }
 
                 int start = int.Parse(Request["start"] ?? "0");
-                int lenght = int.Parse(Request["length"] ?? "25");
-                data = data.Skip(start).Take(lenght).ToArray();
+                int length = int.Parse(Request["length"] ?? "25");
+                data = data.Skip(start).Take(length).ToArray();
 
                 var o = new
                 {
