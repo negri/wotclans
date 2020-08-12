@@ -26,27 +26,6 @@ namespace Negri.Wot.Controllers
             return View(clansPage);
         }
 
-        public ActionResult Tournament(string tournament, string countryFilter = null, int minActiveSize = 0,
-            int maxActiveSize = 200,
-            int minWn8T15 = 0)
-        {
-            var getter = HttpRuntime.Cache.Get("FileGetter", GlobalHelper.CacheMinutes,
-                () => new FileGetter(GlobalHelper.DataFolder));
-            var clans = getter.GetAllRecent().OrderByDescending(c => c.Top15Wn8).ToArray();
-
-            var t = Wot.Tournament.Read(GlobalHelper.DataFolder, tournament);
-
-            var tournamentClans = new HashSet<string>(t.Clans);
-            clans = clans.Where(c => tournamentClans.Contains(c.ClanTag)).ToArray();
-
-            var clansPage = new ClansPage(clans, countryFilter, false, minActiveSize, maxActiveSize, minWn8T15)
-            {
-                Tournament = t
-            };
-
-            return View(clansPage);
-        }
-
         [OutputCache(CacheProfile = "Normal")]
         public ActionResult ClanRoot()
         {
