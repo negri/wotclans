@@ -5,7 +5,6 @@ using System.IO;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using CliFx;
 using log4net;
 using log4net.Config;

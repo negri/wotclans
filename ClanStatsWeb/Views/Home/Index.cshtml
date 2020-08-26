@@ -6,8 +6,9 @@
 @using Negri.Wot.Properties
 @model ClansPage
 @section extraHeaders {
-    <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css " rel="stylesheet" type="text/css" />
-    <meta name="description" content="@string.Format(Resources.MetaDescription, GlobalHelper.ForPlatform)">    
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/scroller/2.0.2/css/scroller.bootstrap.min.css" />
+    <meta name="description" content="@string.Format(Resources.MetaDescription, GlobalHelper.ForPlatform)">
 }
 
 @section lead {
@@ -21,127 +22,109 @@
     </section>
 }
 
-@*<section class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-4 alert alert-info">
-
-            @if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "pt")
-            {
-                <p class="text-center">
-                    Veja os clãs do <a href="~/Tournament/WCT3">3º Torneio Mundial da Comunidade</a>!
-                </p>
-            }
-            else
-            {
-                <p class="text-center">
-                    Check out the clans on the <a href="~/Tournament/WCT3">3rd World of Tanks Community Tournament</a>!
-                </p>
-            }
-        </div>
-        <div class="col-md-4"></div>
-    </section>*@
 
 <section class="row">
     <div class="col-md-12">
 
         <div id="filters" class="row">
             <div class="col-sm-6">
-                <a class="btn btn-info btn-xs" title="@Resources.FilterDefaultExplanation" href="@Url.Current(new {countryFilter = "", invertCountryFilter = "", minActiveSize = "", maxActiveSize = "", minWn8T15 = ""})">@Resources.FilterDefault</a>
-                <a class="btn btn-info btn-xs" title="@Resources.FilterAllExplanation" href="@Url.Current(new {minActiveSize = "0", maxActiveSize = "", minWn8T15 = 0})">@Resources.FilterAll</a>
-                <a class="btn btn-info btn-xs" title="@Resources.FilterBigExplanation" href="@Url.Current(new {minActiveSize = 15, maxActiveSize = ""})">@Resources.FilterBig</a>
-                <a class="btn btn-info btn-xs" title="@Resources.FilterSmallExplanation" href="@Url.Current(new {minActiveSize = "0", maxActiveSize = 14})">@Resources.FilterSmall</a>
+                <a class="btn btn-info btn-xs" title="@Resources.FilterDefaultExplanation" href="#!show=default">@Resources.FilterDefault</a>
+                <a class="btn btn-info btn-xs" title="@Resources.FilterAllExplanation" href="#!show=all">@Resources.FilterAll</a>
+                <a class="btn btn-info btn-xs" title="@Resources.FilterBigExplanation" href="#!show=big">@Resources.FilterBig</a>
+                <a class="btn btn-info btn-xs" title="@Resources.FilterSmallExplanation" href="#!show=small">@Resources.FilterSmall</a>
             </div>
             <div class="col-sm-4">
                 @Resources.FilterByCountry:
 
                 @foreach (string country in Model.GetMostCountries())
                 {
-                    <a title="@Resources.FilterByCountryExplanation @country" href="@Url.Current(new {countryFilter = country, invertCountryFilter = ""})"><img src="~/Images/Flags/@(country.ToLowerInvariant()).png" alt="@country"/></a>
+                    <a title="@Resources.FilterByCountryExplanation @country" href="#!showByFlag=@country"><img src="~/Images/Flags/@(country.ToLowerInvariant()).png" alt="@country" /></a>
                 }
             </div>
             <div class="col-sm-2">
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon">@Resources.Search</span>
-                    <input type="text" class="form-control" placeholder="@Resources.Clan" id="searchBox" maxlength="5" style="text-align: center; width: 6em;"/>
-                </div>                
+                    <input type="text" class="form-control" placeholder="@Resources.Clan" id="searchBox" maxlength="5" pattern="[A-Za-z]{2,5}" style="text-align: center; width: 6em;" />
+                </div>
             </div>
         </div>
-        
+
         <table class="data table-striped" id="clanTable">
             <thead>
-            <tr>
-                <th title="@Resources.ClanRankingExplanation" rowspan="2" class="sort-key">#</th>
-                <th rowspan="2">@Resources.Clan</th>
-                <th colspan="7" title="@Resources.OnLastMonth" style="padding-bottom: 4px;">@Resources.Recent</th>
-                <th colspan="4" style="padding-bottom: 4px; border-left: 1px solid black;">@Resources.Overall</th>
-            </tr>
-            <tr>
-                <th title="The platform composition of the clan"  style="white-space: nowrap;">@Helpers.PlatformLogo(Platform.PS, "platform-logo-main") ⬌ @Helpers.PlatformLogo(Platform.XBOX, "platform-logo-main")</th>
-                <th title="@Resources.ActivesExplanation">@Resources.Actives</th>
-                <th title="@Resources.BattlesExplanation">@Resources.Battles</th>
-                <th title="@Resources.WinRateExplanation" style="white-space: nowrap;">@Resources.WinRate</th>
-                <th><abbr title="@Resources.Wn8aExplanation">WN8a</abbr></th>
-                <th class="sort-key"><abbr title="@Resources.Wn8t15Explanation">WN8t15</abbr></th>
-                <th><abbr title="@Resources.Wn8T7Explanation">WN8t7</abbr></th>
-                <th style="border-left: 1px solid black;" title="@Resources.MembersExplanation">@Resources.Members</th>
-                <th title="@Resources.OverallBattlesExplanation">@Resources.Battles</th>
-                <th title="@Resources.OverallWinRateExplanation" style="white-space: nowrap;">@Resources.WinRate</th>
-                <th><abbr title="@Resources.OverallWn8Explanation">WN8</abbr></th>
-            </tr>
+                <tr>
+                    <th title="@Resources.ClanRankingExplanation" rowspan="2" class="sort-key">#</th>
+                    <th rowspan="2">@Resources.Clan</th>
+                    <th colspan="7" title="@Resources.OnLastMonth" style="padding-bottom: 4px;">@Resources.Recent</th>
+                    <th colspan="4" style="padding-bottom: 4px; border-left: 1px solid black;">@Resources.Overall</th>
+                </tr>
+                <tr>
+                    <th title="The platform composition of the clan" style="white-space: nowrap;">@Helpers.PlatformLogo(Platform.PS, "platform-logo-main") ⬌ @Helpers.PlatformLogo(Platform.XBOX, "platform-logo-main")</th>
+                    <th title="@Resources.ActivesExplanation">@Resources.Actives</th>
+                    <th title="@Resources.BattlesExplanation">@Resources.Battles</th>
+                    <th title="@Resources.WinRateExplanation" style="white-space: nowrap;">@Resources.WinRate</th>
+                    <th><abbr title="@Resources.Wn8aExplanation">WN8a</abbr></th>
+                    <th class="sort-key"><abbr title="@Resources.Wn8t15Explanation">WN8t15</abbr></th>
+                    <th><abbr title="@Resources.Wn8T7Explanation">WN8t7</abbr></th>
+                    <th style="border-left: 1px solid black;" title="@Resources.MembersExplanation">@Resources.Members</th>
+                    <th title="@Resources.OverallBattlesExplanation">@Resources.Battles</th>
+                    <th title="@Resources.OverallWinRateExplanation" style="white-space: nowrap;">@Resources.WinRate</th>
+                    <th><abbr title="@Resources.OverallWn8Explanation">WN8</abbr></th>
+                </tr>
             </thead>
             <tfoot></tfoot>
             <tbody>
-            @{
-                foreach (Tuple<int, Clan> clan in Model.Clans)
-                {
-                    <tr>
-                        <td class="number">@clan.Item1.ToString()</td>
-                        <td style="white-space: nowrap;">
-                            <a title="@clan.Item2.Name" href="~/Clan/@clan.Item2.ClanTag" class="@clan.Item2.IsOldDataClass()">@clan.Item2.ClanTag</a>
-                            @if (!string.IsNullOrWhiteSpace(clan.Item2.Country))
-                            {
-                                <img src="~/Images/Flags/@(clan.Item2.Country).png" alt="@clan.Item2.Country" title="@clan.Item2.Country.ToUpperInvariant()"/>
-                            }
-                        </td>
-                        <td data-sort="@clan.Item2.CompositionPs">
-                            <progress class="platform-mix" max="100" value="@((clan.Item2.CompositionPs*100.0).ToString("N0"))" title="@clan.Item2.CountPs on PS; @clan.Item2.CountXbox on XBOX"></progress>
-                        </td>
-                        <td class="number">@clan.Item2.Active.ToString("N0")</td>
-                        <td class="number title-moment" title="@Resources.UpdatedAt @clan.Item2.Moment.ToString("O")">
-                            @clan.Item2.ActiveBattles.ToString("N0")
-                        </td>
-                        <td class="number">@clan.Item2.ActiveWinRate.ToString("P1")</td>
-                        <td class="number @clan.Item2.ActiveWn8.ToLabelClass()" title="@clan.Item2.ActiveWn8.ToRatingString()" style="background-color: @clan.Item2.ActiveWn8.ToWebColor();">
-                            @clan.Item2.ActiveWn8.ToString("N0")
-                        </td>
-                        <td class="number @clan.Item2.Top15Wn8.ToLabelClass()" title="@clan.Item2.Top15Wn8.ToRatingString()" style="background-color: @clan.Item2.Top15Wn8.ToWebColor();">
-                            @clan.Item2.Top15Wn8.ToString("N0")
-                        </td>
-                        <td class="number @clan.Item2.Top7Wn8.ToLabelClass()" title="@clan.Item2.Top7Wn8.ToRatingString()" style="background-color: @clan.Item2.Top7Wn8.ToWebColor();">
-                            @clan.Item2.Top7Wn8.ToString("N0")
-                        </td>
-                        <td class="number" style="border-left: 1px solid black;">
-                            @clan.Item2.Count.ToString("N0")
-                        </td>
-                        <td class="number">@clan.Item2.TotalBattles.ToString("N0")</td>
-                        <td class="number">@clan.Item2.TotalWinRate.ToString("P1")</td>
-                        <td class="number @clan.Item2.TotalWn8.ToLabelClass()" title="@clan.Item2.TotalWn8.ToRatingString()" style="background-color: @clan.Item2.TotalWn8.ToWebColor();">
-                            @clan.Item2.TotalWn8.ToString("N0")
-                        </td>
-                    </tr>
+                @{
+                    foreach (Tuple<int, Clan> clan in Model.Clans)
+                    {
+                        <tr>
+                            <td class="number">@clan.Item1.ToString()</td>
+                            <td style="white-space: nowrap;">
+                                <a title="@clan.Item2.Name" href="~/Clan/@clan.Item2.ClanTag" class="@clan.Item2.IsOldDataClass()">@clan.Item2.ClanTag</a>
+                                @if (!string.IsNullOrWhiteSpace(clan.Item2.Country))
+                                {
+                                    <img src="~/Images/Flags/@(clan.Item2.Country).png" alt="@clan.Item2.Country" title="@clan.Item2.Country.ToUpperInvariant()" />
+                                }
+                            </td>
+                            <td data-sort="@clan.Item2.CompositionPs">
+                                <progress class="platform-mix" max="100" value="@((clan.Item2.CompositionPs*100.0).ToString("N0"))" title="@clan.Item2.CountPs on PS; @clan.Item2.CountXbox on XBOX"></progress>
+                            </td>
+                            <td class="number">@clan.Item2.Active.ToString("N0")</td>
+                            <td class="number title-moment" title="@Resources.UpdatedAt @clan.Item2.Moment.ToString("O")">
+                                @clan.Item2.ActiveBattles.ToString("N0")
+                            </td>
+                            <td class="number">@clan.Item2.ActiveWinRate.ToString("P1")</td>
+                            <td class="number @clan.Item2.ActiveWn8.ToLabelClass()" title="@clan.Item2.ActiveWn8.ToRatingString()" style="background-color: @clan.Item2.ActiveWn8.ToWebColor();">
+                                @clan.Item2.ActiveWn8.ToString("N0")
+                            </td>
+                            <td class="number @clan.Item2.Top15Wn8.ToLabelClass()" title="@clan.Item2.Top15Wn8.ToRatingString()" style="background-color: @clan.Item2.Top15Wn8.ToWebColor();">
+                                @clan.Item2.Top15Wn8.ToString("N0")
+                            </td>
+                            <td class="number @clan.Item2.Top7Wn8.ToLabelClass()" title="@clan.Item2.Top7Wn8.ToRatingString()" style="background-color: @clan.Item2.Top7Wn8.ToWebColor();">
+                                @clan.Item2.Top7Wn8.ToString("N0")
+                            </td>
+                            <td class="number" style="border-left: 1px solid black;">
+                                @clan.Item2.Count.ToString("N0")
+                            </td>
+                            <td class="number">@clan.Item2.TotalBattles.ToString("N0")</td>
+                            <td class="number">@clan.Item2.TotalWinRate.ToString("P1")</td>
+                            <td class="number @clan.Item2.TotalWn8.ToLabelClass()" title="@clan.Item2.TotalWn8.ToRatingString()" style="background-color: @clan.Item2.TotalWn8.ToWebColor();">
+                                @clan.Item2.TotalWn8.ToString("N0")
+                            </td>
+                        </tr>
+                    }
                 }
-            }
 
             </tbody>
         </table>
-        
+
     </div>
 </section>
 
 
 @section scripts {
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js  "></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/scroller/2.0.2/js/dataTables.scroller.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
     <script type="text/javascript" src="~/Scripts/Site/HomeIndex.js"></script>
 }
