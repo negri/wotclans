@@ -11,7 +11,12 @@ namespace Negri.Wot.Tanks
         /// <summary>
         ///     Data do cálculo
         /// </summary>
-        public DateTime Date { get; set; }        
+        public DateTime Date { get; set; }
+
+        /// <summary>
+        /// Method of MoE
+        /// </summary>
+        public MoeMethod Method { get; set; } = MoeMethod.Percentile;
 
         /// <summary>
         ///     O valor de 100% da marca

@@ -203,6 +203,7 @@ namespace Negri.Wot.Sql
             }
         }
 
+        
         /// <summary>
         /// Salva os valores esperados no BD
         /// </summary>
@@ -949,8 +950,73 @@ namespace Negri.Wot.Sql
             }
         }
 
-        
 
-     
+        /// <summary>
+        /// Saves a load of calculated MoEs
+        /// </summary>
+        public void Set(MoeMethod method, DateTime moment, IEnumerable<TankMoe> moes)
+        {
+            switch (method)
+            {
+                case MoeMethod.WoTConsoleRu:
+                    SetWoTConsoleRuMoe(moment, moes.ToArray());
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(method), method, @"MoE Method not supported!");
+            }
+        }
+
+        private void SetWoTConsoleRuMoe(DateTime moment, TankMoe[] moes)
+        {
+            Log.Debug("Saving WoTConsole.ru MoEs...");
+            var sw = Stopwatch.StartNew();
+            Execute(t => SetWoTConsoleRuMoe(moment, moes, t));
+            Log.DebugFormat("Saved WoTConsole.ru MoEs in {0}.", sw.Elapsed);
+        }
+
+        private void SetWoTConsoleRuMoe(DateTime moment, TankMoe[] moes, SqlTransaction t)
+        {
+            var date = moment.Date.RemoveKind();
+            var count = moes.Length;
+
+            const string sql = "Performance.SetMoEWoTConsoleRuLoad";
+            using (var cmd = new SqlCommand(sql, t.Connection, t))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@date", date);
+                cmd.Parameters.AddWithValue("@moment", moment);
+                cmd.Parameters.AddWithValue("@count", count);
+                
+                cmd.ExecuteNonQuery();
+            }
+
+            const string delSql = "delete from [Performance].[MoEWoTConsoleRu] where [Date] = @date;";
+            using (var cmd = new SqlCommand(delSql, t.Connection, t))
+            {
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@date", date);
+                cmd.ExecuteNonQuery();
+            }
+
+            const string insSql = "insert into [Performance].[MoEWoTConsoleRu] ([Date], TankId, Battles, MaxAvgDmg) values (@date, @tankId, @battles, @maxAvgDmg);";
+            using (var cmd = new SqlCommand(insSql, t.Connection, t))
+            {
+                cmd.CommandType = CommandType.Text;
+
+                foreach (var m in moes)
+                {
+                    cmd.Parameters.Clear();
+                    
+                    cmd.Parameters.AddWithValue("@date", date);
+                    cmd.Parameters.AddWithValue("@tankId", m.TankId);
+                    cmd.Parameters.AddWithValue("@battles", m.NumberOfBattles);
+                    cmd.Parameters.AddWithValue("@maxAvgDmg", m.HighMarkDamage);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+        }
     }
 }

@@ -90,57 +90,88 @@
         <h2>@Resources.Links</h2>
     </div>
 </div>
+
 <section class="row" id="links">
-    <div class="col-sm-3">
+    <div class="col-sm-4" id="link-wg">
         <ul>
             <li>
                 Wargaming
                 <ul>
-                    <li><a @GlobalHelper.ExternalTarget href="https://console.worldoftanks.com/stats/players/@Model.Player.Id/">@Resources.Commander</a></li>
-                    <li><a @GlobalHelper.ExternalTarget href="https://console.worldoftanks.com/clans/@Model.Clan.ClanTag/">@Resources.Clan</a></li>
-                    <li><a @GlobalHelper.ExternalTarget href="https://console.worldoftanks.com/news/">@Resources.News</a></li>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="https://console.worldoftanks.com/stats/players/@Model.Player.Id/">@Resources.Commander</a></li>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="https://console.worldoftanks.com/clans/@Model.Clan.ClanTag/">@Resources.Clan</a></li>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="https://console.worldoftanks.com/en/category/news/">@Resources.News</a></li>
                 </ul>
             </li>
         </ul>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-4" id="link-WoTStatConsole">
         <ul>
             <li>
                 WoTStatConsole
                 <ul>
-                    <li><a @GlobalHelper.ExternalTarget href="@Model.WoTStatConsoleOverallUrl">@Resources.Overall</a></li>
-                    <li><a @GlobalHelper.ExternalTarget href="@Model.WotStatConsoleRecentUrl">@Resources.Recent</a></li>
-                    <li><a @GlobalHelper.ExternalTarget href="@Model.WotStatConsoleHistoryUrl">@Resources.History</a></li>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="@Model.WoTStatConsoleOverallUrl">@Resources.Overall</a></li>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="@Model.WotStatConsoleRecentUrl">@Resources.Recent</a></li>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="@Model.WotStatConsoleHistoryUrl">@Resources.History</a></li>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="@Model.WotStatConsoleClanUrl">@Resources.Clan</a></li>
                 </ul>
             </li>
         </ul>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-4" id="link-WoTconsoleRu">
+        <ul>
+            <li>
+                WoTconsole.ru
+                <ul>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="@Model.WoTConsoleRuOverallUrl">@Resources.Commander</a></li>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="@Model.WotConsoleRuClanUrl">@Resources.Clan</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+</section>
+
+<section class="row" id="links-2">
+    <div class="col-sm-4" id="link-WoTStars">
+        <ul>
+            <li>
+                WoTStars
+                <ul>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="@Model.WoTStarsOverallUrl">@Resources.Commander</a></li>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="@Model.WoTStarsClanUrl">@Resources.Clan</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="col-sm-4" id="link-WoTInfo">
         <ul>
             <li>
                 WoTInfo
                 <ul>
-                    <li><a @GlobalHelper.ExternalTarget href="@Model.WoTInfoOverallUrl">@Resources.Overall</a></li>
-                    <li><a @GlobalHelper.ExternalTarget href="@Model.WoTInfoRecentUrl">@Resources.Recent</a></li>
-                    <li><a @GlobalHelper.ExternalTarget href="@Model.WoTInfoHistoryUrl">@Resources.History</a></li>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="@Model.WoTInfoOverallUrl">@Resources.Overall</a></li>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="@Model.WoTInfoRecentUrl">@Resources.Recent</a></li>
+                    <li><a @GlobalHelper.ExternalTarget rel="nofollow" href="@Model.WoTInfoHistoryUrl">@Resources.History</a></li>
                 </ul>
             </li>
         </ul>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-4" id="link-others">
         <ul>
             <li>
                 Others
                 <ul>
-                    <li><a href="http://www.vbaddict.net/tankstatistics/overall">@Resources.Equipment</a></li>
+                    <li><a href="https://wotguru.com/general-world-of-tanks-guides/world-of-tanks-equipment-guide/">@Resources.Equipment</a></li>
                     <li><a href="https://tanks.gg/list/stats">@Resources.Comparisons</a></li>
                     <li><a href="https://www.reddit.com/r/WorldofTanksConsole/">Reddit</a></li>
-                    <li><a href="https://discord.gg/WcJ2BGC">Discord</a></li>
+                    <li><a href="https://discord.gg/WcJ2BGC">@Resources.XboxCommunityDiscord</a></li>
+                    <li><a href="https://discord.gg/AGbzVZz">@Resources.WgChicagoDiscord</a></li>
+                    <li><a href="https://discord.gg/wotconsole">@Resources.WgMinskDiscord</a></li>
                 </ul>
             </li>
         </ul>
     </div>
 </section>
+
 
 @if (Model.Player.Performance.Month.Any())
 {
@@ -152,63 +183,63 @@
             @*<h3 style="font-size: medium;">@string.Format("{0:N0} battles, {1:N0} minutes, WN8 {2:N0}", Model.Player.MonthBattles, Model.Player.MonthTime.TotalMinutes, Model.Player.MonthWn8)</h3>*@
             <table class="data table-striped" id="overallTanks">
                 <thead>
-                <tr>
-                    <th colspan="4">@Resources.Tank</th>
-                    @*extend*@
-                    @*extend*@
-                    @*extend*@
-                    <th class="sort-key" rowspan="2">@Resources.DaysAgo</th>
-                    <th rowspan="2">
-                        <img alt="@Resources.Battles" title="@Resources.Battles" height="18" src="~/Images/battles-fought.png"/>
-                    </th>
-                    <th colspan="3" class="sort-key">@Resources.Damage</th>
-                    @*extend*@
-                    @*extend*@
-                    <th colspan="2">@Resources.Kills</th>
-                    @*extend*@
-                    <th rowspan="2">@Resources.WN8</th>
-                </tr>
-                <tr>
-                    <th><img alt="@Resources.Nation" title="@Resources.Nation" height="18" src="~/Images/Nations/Globe_icon.svg"/></th>
-                    <th><img alt="@Resources.Type" title="@Resources.Type" height="18" src="~/Images/Types/types.png"/></th>
-                    <th><span style="white-space: nowrap;" title="@Resources.Tier">V-X</span></th>
-                    <th>@Resources.Name</th>
-                    @*extend*@
-                    @*extend*@
-                    @*extend*@
-                    <th>@Resources.Direct</th>
-                    <th>@Resources.Assisted</th>
-                    <th>@Resources.Combined</th>
-                    <th>@Resources.Avg</th>
-                    <th>@Resources.Max</th>
-                    @*extend*@
-                </tr>
+                    <tr>
+                        <th colspan="4">@Resources.Tank</th>
+                        @*extend*@
+                        @*extend*@
+                        @*extend*@
+                        <th class="sort-key" rowspan="2">@Resources.DaysAgo</th>
+                        <th rowspan="2">
+                            <img alt="@Resources.Battles" title="@Resources.Battles" height="18" src="~/Images/battles-fought.png" />
+                        </th>
+                        <th colspan="3" class="sort-key">@Resources.Damage</th>
+                        @*extend*@
+                        @*extend*@
+                        <th colspan="2">@Resources.Kills</th>
+                        @*extend*@
+                        <th rowspan="2">@Resources.WN8</th>
+                    </tr>
+                    <tr>
+                        <th><img alt="@Resources.Nation" title="@Resources.Nation" height="18" src="~/Images/Nations/Globe_icon.svg" /></th>
+                        <th><img alt="@Resources.Type" title="@Resources.Type" height="18" src="~/Images/Types/types.png" /></th>
+                        <th><span style="white-space: nowrap;" title="@Resources.Tier">V-X</span></th>
+                        <th>@Resources.Name</th>
+                        @*extend*@
+                        @*extend*@
+                        @*extend*@
+                        <th>@Resources.Direct</th>
+                        <th>@Resources.Assisted</th>
+                        <th>@Resources.Combined</th>
+                        <th>@Resources.Avg</th>
+                        <th>@Resources.Max</th>
+                        @*extend*@
+                    </tr>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-                @foreach (var t in Model.Player.Performance.Month.Values.OrderByDescending(t => t.LastBattle))
-                {
-                    <tr id="tank-id-ot-@t.TankId.ToString()-@Model.Player.Id.ToString()">
-                        <td class="text-center" data-sort="@t.Nation" data-filter="@t.Nation">
-                            <img height="18" title="@Resources.ResourceManager.GetString(t.Nation.ToString())" alt="@Resources.ResourceManager.GetString(t.Nation.ToString())" src="~/Images/Nations/@((int) t.Nation).png"/>
-                        </td>
-                        <td class="text-center" data-sort="@t.Type" data-filter="@t.Type@(t.IsPremium ? " Premium" : " Regular")">
-                            <img height="18" title="@Resources.ResourceManager.GetString(t.Type.ToString())" alt="@Resources.ResourceManager.GetString(t.Type.ToString())" src="~/Images/Types/@((int) t.Type).svg"/>
-                        </td>
-                        <td class="text-center" data-sort="@t.Tier" data-filter="@t.Tier">@t.Tier.ToRomanNumeral()</td>
-                        <td style="white-space: nowrap;" data-sort="@t.Name.RemoveDiacritics().ToLowerInvariant()" data-filter="@t.Name.RemoveDiacritics().ToLowerInvariant() @t.FullName.RemoveDiacritics().ToLowerInvariant()">
-                            @Helpers.TankLink(t)
-                        </td>
-                        <td class="number-integer">@t.LastBattleAge.TotalDays.ToString("N0")</td>
-                        <td class="number-integer">@t.Battles.ToString("N0")</td>
-                        <td class="number-integer">@t.DirectDamagePerBattle.ToString("N0")</td>
-                        <td class="number-integer">@t.DamageAssistedPerBattle.ToString("N0")</td>
-                        <td class="number-integer">@t.TotalDamagePerBattle.ToString("N0")</td>
-                        <td class="number">@t.KillsPerBattle.ToString("N2")</td>
-                        <td class="number-integer">@t.MaxFrags.ToString("N0")</td>
-                        @Helpers.WN8Td(t.Wn8)
-                    </tr>
-                }
+                    @foreach (var t in Model.Player.Performance.Month.Values.OrderByDescending(t => t.LastBattle))
+                    {
+                        <tr id="tank-id-ot-@t.TankId.ToString()-@Model.Player.Id.ToString()">
+                            <td class="text-center" data-sort="@t.Nation" data-filter="@t.Nation">
+                                <img height="18" title="@Resources.ResourceManager.GetString(t.Nation.ToString())" alt="@Resources.ResourceManager.GetString(t.Nation.ToString())" src="~/Images/Nations/@((int) t.Nation).png" />
+                            </td>
+                            <td class="text-center" data-sort="@t.Type" data-filter="@t.Type@(t.IsPremium ? " Premium" : " Regular")">
+                                <img height="18" title="@Resources.ResourceManager.GetString(t.Type.ToString())" alt="@Resources.ResourceManager.GetString(t.Type.ToString())" src="~/Images/Types/@((int) t.Type).svg" />
+                            </td>
+                            <td class="text-center" data-sort="@t.Tier" data-filter="@t.Tier">@t.Tier.ToRomanNumeral()</td>
+                            <td style="white-space: nowrap;" data-sort="@t.Name.RemoveDiacritics().ToLowerInvariant()" data-filter="@t.Name.RemoveDiacritics().ToLowerInvariant() @t.FullName.RemoveDiacritics().ToLowerInvariant()">
+                                @Helpers.TankLink(t)
+                            </td>
+                            <td class="number-integer">@t.LastBattleAge.TotalDays.ToString("N0")</td>
+                            <td class="number-integer">@t.Battles.ToString("N0")</td>
+                            <td class="number-integer">@t.DirectDamagePerBattle.ToString("N0")</td>
+                            <td class="number-integer">@t.DamageAssistedPerBattle.ToString("N0")</td>
+                            <td class="number-integer">@t.TotalDamagePerBattle.ToString("N0")</td>
+                            <td class="number">@t.KillsPerBattle.ToString("N2")</td>
+                            <td class="number-integer">@t.MaxFrags.ToString("N0")</td>
+                            @Helpers.WN8Td(t.Wn8)
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>

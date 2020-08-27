@@ -31,6 +31,11 @@ namespace Negri.Wot
             return DateTime.SpecifyKind(date, DateTimeKind.Unspecified);
         }
 
+        /// <summary>
+        /// Converts a UNIX time to a DateTime
+        /// </summary>
+        /// <param name="unixTime"></param>
+        /// <returns></returns>
         public static DateTime ToDateTime(this long unixTime)
         {
             return UnixEpoch.AddSeconds(unixTime);

@@ -62,6 +62,9 @@ namespace Negri.Wot.Commands
         [CommandOption("Kd", Description = "Kd (Derivative) parameter to throttle the fetch.")]
         public double Kd { get; set; } = 1.0;
 
+        [CommandOption("IncreaseIfLate", Description = "Increase factor if running late.")]
+        public double IncreaseFactorIfLate { get; set; } = 1.5;
+
         public ValueTask ExecuteAsync(IConsole console)
         {
             var sw = Stopwatch.StartNew();
@@ -94,7 +97,7 @@ namespace Negri.Wot.Commands
             {
                 MaxPlayers = (int?) (dbInfo.ScheduledPlayersPerHour / 60.0 * MaxRunMinutes.Value);
                 originalMaxPlayers = MaxPlayers.Value;
-                MaxPlayers = (int?) (MaxPlayers.Value * 1.20);
+                MaxPlayers = (int?) (MaxPlayers.Value * Math.Max(1.0, IncreaseFactorIfLate));
             }
 
             Log.Info($"maxRunMinutes: {MaxRunMinutes}; maxPlayers: {MaxPlayers}; originalMaxPlayers: {originalMaxPlayers}");

@@ -74,10 +74,19 @@ namespace Negri.Wot.Models
 
         public string WoTStatConsoleOverallUrl { get; set; }
         public string WotStatConsoleRecentUrl { get; set; }
+        public string WotStatConsoleHistoryUrl { get; set; }
+        public string WotStatConsoleClanUrl { get; set; }
+
         public string WoTInfoOverallUrl { get; set; }
         public string WoTInfoRecentUrl { get; set; }
         public string WoTInfoHistoryUrl { get; set; }
-        public string WotStatConsoleHistoryUrl { get; set; }
+
+        public string WoTConsoleRuOverallUrl { get; set; }
+        public string WotConsoleRuClanUrl { get; set; }
+
+        public string WoTStarsOverallUrl { get; set; }
+        public string WoTStarsClanUrl { get; set; }
+
         public string ExternalUrl { get; set; }
 
         public DateTime NextLeaderboardCutMoment
@@ -116,5 +125,7 @@ namespace Negri.Wot.Models
                 return nextTuesday.AddHours(2);
             }
         }
+
+        
     }
 }

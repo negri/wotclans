@@ -782,5 +782,76 @@ namespace Negri.Wot
 
             return medals;
         }
+
+        private class WoTConsoleRuResponse
+        {
+            [JsonProperty("meta")]
+            public WoTConsoleRuResponseMeta Meta { get; set; }
+
+            [JsonProperty("data")]
+            public WoTConsoleRuResponseMoe[] Data { get; set; }
+        }
+
+        private class WoTConsoleRuResponseMeta
+        {
+            [JsonProperty("date")]
+            public long UnixStamp { get; set; }
+
+            [JsonIgnore]
+            public DateTime Moment => UnixStamp.ToDateTime();
+
+            [JsonProperty("count")]
+            public int Count { get; set; }
+        }
+
+        private class WoTConsoleRuResponseMoe
+        {
+            [JsonProperty("tank_id")]
+            public long TankId { get; set; }
+
+            [JsonProperty("battles")]
+            public long Battles { get; set; }
+
+            [JsonProperty("one_mark")]
+            public double Moe1Dmg { get; set; }
+
+            [JsonProperty("two_mark")]
+            public double Moe2Dmg { get; set; }
+
+            [JsonProperty("three_mark")]
+            public double Moe3Dmg { get; set; }
+
+            [JsonIgnore]
+            public double HighMarkDamage => ((Moe1Dmg / 0.65) + (Moe2Dmg / 0.85) + (Moe3Dmg / 0.95)) / 3.0;
+
+        }
+
+        public (DateTime moment, long count, IDictionary<long, TankMoe> data) GetMoEFromWoTConsoleRu()
+        {
+            var url = $"https://wotconsole.ru/api/marks.json";
+            var json = GetContent($"WoTConsoleRu.MoE.json", url, WebCacheAge, false, Encoding.UTF8);
+
+            var response = JsonConvert.DeserializeObject<WoTConsoleRuResponse>(json);
+            if (response.Meta.Count <= 0)
+            {
+                throw new ApplicationException("No MoE values from WoTConsoleRu!");
+            }
+
+            var data = new Dictionary<long, TankMoe>(response.Meta.Count);
+            foreach (var m in response.Data)
+            {
+                data.Add(m.TankId, new TankMoe
+                {
+                    TankId = m.TankId,
+                    Date = response.Meta.Moment.Date.RemoveKind(),
+                    Method = MoeMethod.WoTConsoleRu,
+                    NumberOfDates = 14,
+                    NumberOfBattles = m.Battles,
+                    HighMarkDamage = m.HighMarkDamage
+                });
+            }
+
+            return (response.Meta.Moment, response.Meta.Count, data);
+        }
     }
 }

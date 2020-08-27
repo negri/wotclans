@@ -109,7 +109,7 @@
     </div>
 </div>
 <section class="row" id="links">
-    <div class="col-sm-3">
+    <div class="col-sm-4" id="link-wg">
         <ul>
             <li>
                 Wargaming
@@ -121,7 +121,7 @@
             </li>
         </ul>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-4" id="link-WoTStatConsole">
         <ul>
             <li>
                 WoTStatConsole
@@ -129,11 +129,38 @@
                     <li><a @GlobalHelper.ExternalTarget href="@Model.WoTStatConsoleOverallUrl">@Resources.Overall</a></li>
                     <li><a @GlobalHelper.ExternalTarget href="@Model.WotStatConsoleRecentUrl">@Resources.Recent</a></li>
                     <li><a @GlobalHelper.ExternalTarget href="@Model.WotStatConsoleHistoryUrl">@Resources.History</a></li>
+                    <li><a @GlobalHelper.ExternalTarget href="@Model.WotStatConsoleClanUrl">@Resources.Clan</a></li>
                 </ul>
             </li>
         </ul>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-4" id="link-WoTconsoleRu">
+        <ul>
+            <li>
+                WoTconsole.ru
+                <ul>
+                    <li><a @GlobalHelper.ExternalTarget href="@Model.WoTConsoleRuOverallUrl">@Resources.Commander</a></li>
+                    <li><a @GlobalHelper.ExternalTarget href="@Model.WotConsoleRuClanUrl">@Resources.Clan</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+</section>
+
+<section class="row" id="links-2">
+    <div class="col-sm-4" id="link-WoTStars">
+        <ul>
+            <li>
+                WoTStars
+                <ul>
+                    <li><a @GlobalHelper.ExternalTarget href="@Model.WoTStarsOverallUrl">@Resources.Commander</a></li>
+                    <li><a @GlobalHelper.ExternalTarget href="@Model.WoTStarsClanUrl">@Resources.Clan</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="col-sm-4" id="link-WoTInfo">
         <ul>
             <li>
                 WoTInfo
@@ -145,7 +172,7 @@
             </li>
         </ul>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-4" id="link-others">
         <ul>
             <li>
                 Others

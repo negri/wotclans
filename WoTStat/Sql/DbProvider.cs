@@ -417,7 +417,7 @@ namespace Negri.Wot.Sql
 
             // Obtém os MoEs na data
             var marksOfExcellence = includeMoe
-                ? GetMoe(date, tankId, t).ToDictionary(m => m.TankId)
+                ? GetMoe(date, tankId, MoeMethod.WoTConsoleRu, t).ToDictionary(m => m.TankId)
                 : new Dictionary<long, TankMoe>();
 
             // WN8, Histograms and Leaders
@@ -641,18 +641,20 @@ namespace Negri.Wot.Sql
             }
         }
 
-        public IEnumerable<TankMoe> GetMoe(DateTime? date = null, long? tankId = null)
+        public IEnumerable<TankMoe> GetMoe(DateTime? date = null, long? tankId = null, MoeMethod? method = null)
         {
-            return Get(transaction => GetMoe(date, tankId, transaction).ToArray());
+            return Get(transaction => GetMoe(date, tankId, method, transaction).ToArray());
         }
 
-        private static IEnumerable<TankMoe> GetMoe(DateTime? date, long? tankId, SqlTransaction t)
+        private static IEnumerable<TankMoe> GetMoe(DateTime? date, long? tankId, MoeMethod? method, SqlTransaction t)
         {
+            method = method ?? MoeMethod.WoTConsoleRu;
+
             using (var cmd = new SqlCommand("Performance.GetMoE", t.Connection, t))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
-                cmd.Parameters.AddWithValue("@methodId", 4); // Percentile Method
+                cmd.Parameters.AddWithValue("@methodId", (int)method.Value); 
                 
                 if (date.HasValue)
                 {
@@ -681,7 +683,8 @@ namespace Negri.Wot.Sql
                             NumberOfDates = reader.GetNonNullValue<int>(10),
                             NumberOfBattles = reader.GetNonNullValue<long>(11),
                             TankId = reader.GetNonNullValue<long>(12),
-                            FullName = reader.GetNonNullValue<string>(13)
+                            FullName = reader.GetNonNullValue<string>(13),
+                            Method = reader.GetNonNullValue<MoeMethod>(14)
                         };
                     }
                 }
