@@ -60,6 +60,12 @@ namespace Negri.Wot
                 ));
 
             services.AddTransient(p =>
+                new ImportMoe(
+                    p.GetService<Fetcher>(),
+                    p.GetService<DbRecorder>()
+                ));
+
+            services.AddTransient(p =>
                 new CalculateStats(
                     p.GetService<Fetcher>(),
                     p.GetService<Putter>(),

@@ -549,11 +549,15 @@ namespace Negri.Wot.Bot
             sb.AppendLine($" ** 2 marks: {moe.Moe2Dmg:N0} Total Damage");
             sb.AppendLine($"*** 3 marks: {moe.Moe3Dmg:N0} Total Damage```");
 
-            var emoji = DiscordEmoji.FromName(ctx.Client, ":exclamation:");
+            sb.AppendLine();
+            sb.AppendLine($"This data was computed and kindly provided by {Formatter.MaskedUrl("WoTconsole.ru", new Uri($"https://www.wotconsole.ru/marks/"))}. " +
+                          "They use the same algorithm that I used, but with a much larger sample size. And their site is great!");
+            
 
             if (!exact)
             {
                 sb.AppendLine();
+                var emoji = DiscordEmoji.FromName(ctx.Client, ":exclamation:");
                 sb.AppendLine($"{emoji} If this is *not the tank* you are looking for, try sending the exact short name, the one that appears during battles, or enclosing the name in quotes.");
             }
 
@@ -563,11 +567,11 @@ namespace Negri.Wot.Bot
                 Description = sb.ToString(),
                 Color = DiscordColor.Gray,
                 ThumbnailUrl = tank.SmallImageUrl,
-                Url = "https://wotclans.com.br/Tanks/{tank.TankId}",
+                Url = "https://www.wotconsole.ru/marks/",
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
-                    Name = "WoTClans",
-                    Url = "https://wotclans.com.br"
+                    Name = "WoTconsole.ru",
+                    Url = "https://www.wotconsole.ru/marks/"
                 },
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {

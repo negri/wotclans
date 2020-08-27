@@ -139,12 +139,21 @@ namespace Negri.Wot.Site.Controllers
                     LeaderIfFewMoreDamage = leaderIfFewMoreDamage,
                     LeaderOnNextUpdate = leaderOnNextUpdate,
                     ExternalUrl = url,
+
                     WoTStatConsoleOverallUrl = GetWoTStatConsoleOverallUrl(player),
                     WotStatConsoleRecentUrl = GetWoTStatConsoleRecentUrl(player),
                     WotStatConsoleHistoryUrl = GetWoTStatConsoleHistoryUrl(player),
+                    WotStatConsoleClanUrl = GetWotStatConsoleClan(clan),
+
                     WoTInfoOverallUrl = GetWoTInfoOverallUrl(player),
                     WoTInfoRecentUrl = GetWoTInfoRecentUrl(player),
                     WoTInfoHistoryUrl = GetWoTInfoHistoryUrl(player),
+
+                    WoTConsoleRuOverallUrl = GetWoTConsoleRuOverallUrl(player),
+                    WotConsoleRuClanUrl = GetWotConsoleRuClanUrl(clan),
+
+                    WoTStarsOverallUrl = GetWoTStarsOverallUrl(player),
+                    WoTStarsClanUrl = GetWoTStarsClanUrl(clan),
                 };
 
                 return View(model);
@@ -156,6 +165,63 @@ namespace Negri.Wot.Site.Controllers
             }
         }
 
+        
+
+
+        private string GetWoTStarsClanUrl(Clan clan)
+        {   
+            // https://www.wotstars.com/clans/1073753199
+            return $"https://www.wotstars.com/clans/{clan.ClanId}";
+        }
+
+        private string GetWoTStarsOverallUrl(Player player)
+        {
+            // https://www.wotstars.com/xbox/1763298
+            // https://www.wotstars.com/ps/1074422202
+
+            string platform;
+            switch (player.Platform)
+            {
+                case Platform.XBOX:
+                    platform = "xbox";
+                    break;
+                case Platform.PS:
+                    platform = "ps";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return $"https://www.wotstars.com/{platform}/{player.Id}";
+        }
+
+        private string GetWotConsoleRuClanUrl(Clan clan)
+        {
+            // https://www.wotconsole.ru/clan/?n=SELVA
+            return $"https://www.wotconsole.ru/clan/?n={clan.ClanTag.ToUpperInvariant()}";
+        }
+
+        private string GetWoTConsoleRuOverallUrl(Player player)
+        {
+            // https://www.wotconsole.ru/player/?p=ps4&n=juckof
+            // https://www.wotconsole.ru/player/?p=xbox&n=JP+Negri+Coder
+
+            string platform;
+            switch (player.Platform)
+            {
+                case Platform.XBOX:
+                    platform = "xbox";
+                    break;
+                case Platform.PS:
+                    platform = "ps4";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            var name = player.Name.Replace(' ', '+');
+            return $"https://www.wotconsole.ru/player/?p={platform}&n={name}";
+        }
 
 
         private static string GetDefaultOverallUrl(Player player)
@@ -170,6 +236,37 @@ namespace Negri.Wot.Site.Controllers
                     // As WoTInfo appears to be more stable...
                     return GetWoTInfoOverallUrl(player);
             }
+        }
+
+        private string GetWotStatConsoleClan(Clan clan)
+        {
+            // https://wotcstat.info/clandetails?Tag=11458&lang=en
+
+            string lang = GlobalHelper.Language;
+            string externalLang;
+            switch (lang)
+            {
+                case "pt":
+                    externalLang = "pt";
+                    break;
+                case "pl":
+                    externalLang = "pl";
+                    break;
+                case "de":
+                    externalLang = "de";
+                    break;
+                case "it":
+                    externalLang = "it";
+                    break;
+                case "es":
+                    externalLang = "es";
+                    break;
+                default:
+                    externalLang = "en";
+                    break;
+            }
+
+            return $"https://wotcstat.info/clandetails?Tag={clan.ClanId}&lang={externalLang}";
         }
 
         private static string GetWoTStatConsoleOverallUrl(Player player)
@@ -207,6 +304,7 @@ namespace Negri.Wot.Site.Controllers
             
             return url;
         }
+
 
         private static string GetWoTInfoOverallUrl(Player player)
         {
@@ -349,12 +447,21 @@ namespace Negri.Wot.Site.Controllers
                     Wn8ExpectedValues = wn8ExpectedValues,
                     MoEs = moes,
                     ExternalUrl = url,
+
                     WoTStatConsoleOverallUrl = GetWoTStatConsoleOverallUrl(player),
                     WotStatConsoleRecentUrl = GetWoTStatConsoleRecentUrl(player),
                     WotStatConsoleHistoryUrl = GetWoTStatConsoleHistoryUrl(player),
+                    WotStatConsoleClanUrl = GetWotStatConsoleClan(clan),
+
                     WoTInfoOverallUrl = GetWoTInfoOverallUrl(player),
                     WoTInfoRecentUrl = GetWoTInfoRecentUrl(player),
                     WoTInfoHistoryUrl = GetWoTInfoHistoryUrl(player),
+
+                    WoTConsoleRuOverallUrl = GetWoTConsoleRuOverallUrl(player),
+                    WotConsoleRuClanUrl = GetWotConsoleRuClanUrl(clan),
+
+                    WoTStarsOverallUrl = GetWoTStarsOverallUrl(player),
+                    WoTStarsClanUrl = GetWoTStarsClanUrl(clan),
                 };
 
                 return View(model);
