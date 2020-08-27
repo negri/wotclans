@@ -683,7 +683,8 @@ namespace Negri.Wot.Sql
                             NumberOfDates = reader.GetNonNullValue<int>(10),
                             NumberOfBattles = reader.GetNonNullValue<long>(11),
                             TankId = reader.GetNonNullValue<long>(12),
-                            FullName = reader.GetNonNullValue<string>(13)
+                            FullName = reader.GetNonNullValue<string>(13),
+                            Method = reader.GetNonNullValue<MoeMethod>(14)
                         };
                     }
                 }

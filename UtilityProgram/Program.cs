@@ -21,6 +21,7 @@ using Negri.Wot.WgApi;
 using Clan = Negri.Wot.Clan;
 using Formatting = Newtonsoft.Json.Formatting;
 using Tank = Negri.Wot.WgApi.Tank;
+using System.Globalization;
 
 namespace UtilityProgram
 {
@@ -35,7 +36,7 @@ namespace UtilityProgram
         {
             try
             {
-                TestClanRename();
+                DumpMoEFiles(args);
             }
             catch (Exception ex)
             {
@@ -454,8 +455,8 @@ namespace UtilityProgram
             var provider = new DbProvider(connectionString);
 
 
-            var date = new DateTime(2017, 03, 10);
-            var maxDate = new DateTime(2017, 04, 26);
+            var date = DateTime.ParseExact(args[0], "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            var maxDate = DateTime.ParseExact(args[1], "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
             while (date <= maxDate)
             {
@@ -464,7 +465,7 @@ namespace UtilityProgram
 
                 var json = JsonConvert.SerializeObject(moes, Formatting.Indented);
 
-                var baseDir = ConfigurationManager.AppSettings["ResultsFolder"];
+                var baseDir = ConfigurationManager.AppSettings["ResultDirectory"];
                 var file = Path.Combine(baseDir, "MoE", $"{dateOnDb:yyyy-MM-dd}.moe.json");
                 File.WriteAllText(file, json, Encoding.UTF8);
 
