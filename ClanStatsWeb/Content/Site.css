@@ -106,6 +106,12 @@ table.data .number-integer {
     padding-right: 0.9em;
 }
 
+/* hack: Bleed a div inside a table td to the right (used on the new dynamic main table) */
+.bleed-right {
+    margin-right: -7px;
+    padding-right: 7px;
+}
+
 
 table.data tbody td {
     padding-left: 0.5em;

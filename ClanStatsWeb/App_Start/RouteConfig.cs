@@ -52,7 +52,12 @@ namespace Negri.Wot
             routes.MapRoute(
                 name: "ClanRoot",
                 url: "Clan",
-                defaults: new { controller = "Home", action = "ClanRoot" });            
+                defaults: new { controller = "Home", action = "ClanRoot" });
+
+            routes.MapRoute(
+                name: "ClanGrid",
+                url: "Clans/Grid",
+                defaults: new { controller = "Home", action = "ClansGrid" });
 
             // To not duplicate code, keep this API where it is
             routes.MapRoute(

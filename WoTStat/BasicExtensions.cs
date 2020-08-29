@@ -256,7 +256,35 @@ namespace Negri.Wot
             return "https://wotclans.com.br";
         }
 
-        
+        /// <summary>
+        /// Apply an action on every element
+        /// </summary>
+        /// <remarks>
+        /// Use with extreme caution!
+        /// </remarks>
+        public static IEnumerable<T> ActOnEach<T>(this IEnumerable<T> source, Action<T> action)
+        {
+            if (source == null)
+            {
+                yield break;
+            }
+
+            if (action == null)
+            {
+                foreach (var e in source)
+                {
+                    yield return e;
+                }
+
+                yield break;
+            }
+            
+            foreach (var e in source)
+            {
+                action(e);
+                yield return e;
+            }
+        }
 
     }
 }

@@ -27,19 +27,25 @@
     <div class="col-md-12">
 
         <div id="filters" class="row">
-            <div class="col-sm-6">
-                <a class="btn btn-info btn-xs" title="@Resources.FilterDefaultExplanation" href="#!show=default">@Resources.FilterDefault</a>
-                <a class="btn btn-info btn-xs" title="@Resources.FilterAllExplanation" href="#!show=all">@Resources.FilterAll</a>
-                <a class="btn btn-info btn-xs" title="@Resources.FilterBigExplanation" href="#!show=big">@Resources.FilterBig</a>
-                <a class="btn btn-info btn-xs" title="@Resources.FilterSmallExplanation" href="#!show=small">@Resources.FilterSmall</a>
+            <div class="col-sm-3">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default btn-sm" aria-label="Reset" id="resetFilters" title="@Resources.FilterDefaultExplanation">
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    </button>
+                    <button id="FilterAll" type="button" class="btn btn-default btn-sm" title="@Resources.FilterAllExplanation">@Resources.FilterAll</button>
+                    <button id="FilterBig" type="button" class="btn btn-default btn-sm" title="@Resources.FilterBigExplanation">@Resources.FilterBig</button>
+                    <button id="FilterSmall" type="button" class="btn btn-default btn-sm" title="@Resources.FilterSmallExplanation">@Resources.FilterSmall</button>
+                </div>
             </div>
-            <div class="col-sm-4">
-                @Resources.FilterByCountry:
-
-                @foreach (string country in Model.GetMostCountries())
-                {
-                    <a title="@Resources.FilterByCountryExplanation @country" href="#!showByFlag=@country"><img src="~/Images/Flags/@(country.ToLowerInvariant()).png" alt="@country" /></a>
-                }
+            <div class="col-sm-7">
+                <div class="btn-group">
+                    @foreach (string country in Model.GetMostCountries(2, 16))
+                    {
+                        <button type="button" class="btn btn-default btn-sm btn-nation" title="@Resources.FilterByCountryExplanation @country" data-nation="@country.ToLowerInvariant()">
+                            <img src="~/Images/Flags/@(country.ToLowerInvariant()).png" alt="@country" />
+                        </button>
+                    }
+                </div>
             </div>
             <div class="col-sm-2">
                 <div class="input-group input-group-sm">
@@ -49,7 +55,7 @@
             </div>
         </div>
 
-        <table class="data table-striped" id="clanTable">
+        <table class="data table-striped" id="clanTable" data-api-url="@Href("~/Clans/Grid")" data-translation-updated-at="@Resources.UpdatedAt">
             <thead>
                 <tr>
                     <th title="@Resources.ClanRankingExplanation" rowspan="2" class="sort-key">#</th>
@@ -72,49 +78,7 @@
                 </tr>
             </thead>
             <tfoot></tfoot>
-            <tbody>
-                @{
-                    foreach (Tuple<int, Clan> clan in Model.Clans)
-                    {
-                        <tr>
-                            <td class="number">@clan.Item1.ToString()</td>
-                            <td style="white-space: nowrap;">
-                                <a title="@clan.Item2.Name" href="~/Clan/@clan.Item2.ClanTag" class="@clan.Item2.IsOldDataClass()">@clan.Item2.ClanTag</a>
-                                @if (!string.IsNullOrWhiteSpace(clan.Item2.Country))
-                                {
-                                    <img src="~/Images/Flags/@(clan.Item2.Country).png" alt="@clan.Item2.Country" title="@clan.Item2.Country.ToUpperInvariant()" />
-                                }
-                            </td>
-                            <td data-sort="@clan.Item2.CompositionPs">
-                                <progress class="platform-mix" max="100" value="@((clan.Item2.CompositionPs*100.0).ToString("N0"))" title="@clan.Item2.CountPs on PS; @clan.Item2.CountXbox on XBOX"></progress>
-                            </td>
-                            <td class="number">@clan.Item2.Active.ToString("N0")</td>
-                            <td class="number title-moment" title="@Resources.UpdatedAt @clan.Item2.Moment.ToString("O")">
-                                @clan.Item2.ActiveBattles.ToString("N0")
-                            </td>
-                            <td class="number">@clan.Item2.ActiveWinRate.ToString("P1")</td>
-                            <td class="number @clan.Item2.ActiveWn8.ToLabelClass()" title="@clan.Item2.ActiveWn8.ToRatingString()" style="background-color: @clan.Item2.ActiveWn8.ToWebColor();">
-                                @clan.Item2.ActiveWn8.ToString("N0")
-                            </td>
-                            <td class="number @clan.Item2.Top15Wn8.ToLabelClass()" title="@clan.Item2.Top15Wn8.ToRatingString()" style="background-color: @clan.Item2.Top15Wn8.ToWebColor();">
-                                @clan.Item2.Top15Wn8.ToString("N0")
-                            </td>
-                            <td class="number @clan.Item2.Top7Wn8.ToLabelClass()" title="@clan.Item2.Top7Wn8.ToRatingString()" style="background-color: @clan.Item2.Top7Wn8.ToWebColor();">
-                                @clan.Item2.Top7Wn8.ToString("N0")
-                            </td>
-                            <td class="number" style="border-left: 1px solid black;">
-                                @clan.Item2.Count.ToString("N0")
-                            </td>
-                            <td class="number">@clan.Item2.TotalBattles.ToString("N0")</td>
-                            <td class="number">@clan.Item2.TotalWinRate.ToString("P1")</td>
-                            <td class="number @clan.Item2.TotalWn8.ToLabelClass()" title="@clan.Item2.TotalWn8.ToRatingString()" style="background-color: @clan.Item2.TotalWn8.ToWebColor();">
-                                @clan.Item2.TotalWn8.ToString("N0")
-                            </td>
-                        </tr>
-                    }
-                }
-
-            </tbody>
+            <tbody></tbody>
         </table>
 
     </div>

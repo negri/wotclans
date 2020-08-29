@@ -351,6 +351,11 @@ namespace Negri.Wot
         public string OldTag { get; set; }
 
         /// <summary>
+        /// The rank of the clan when on lists
+        /// </summary>
+        public int Rank { get; set; }
+
+        /// <summary>
         ///     If a clan should be hidden on the site
         /// </summary>
         public bool IsHidden { get; set; }
