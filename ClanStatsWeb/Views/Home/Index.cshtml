@@ -27,6 +27,12 @@
     <div class="col-md-12">
 
         <div id="filters" class="row">
+            <div class="col-sm-2">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">@Resources.Search</span>
+                    <input type="text" class="form-control" placeholder="@Resources.Clan" id="searchBox" maxlength="5" pattern="[A-Za-z;]{2,5}" style="text-align: center; width: 6em;" />
+                </div>
+            </div>
             <div class="col-sm-3">
                 <div id="activesButtons" class="btn-group">
                     <button type="button" class="btn btn-default btn-sm" aria-label="Reset" id="resetFilters" title="@Resources.FilterDefaultExplanation">
@@ -45,12 +51,6 @@
                             <img src="~/Images/Flags/@(country.ToLowerInvariant()).png" alt="@country" />
                         </button>
                     }
-                </div>
-            </div>
-            <div class="col-sm-2">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-addon">@Resources.Search</span>
-                    <input type="text" class="form-control" placeholder="@Resources.Clan" id="searchBox" maxlength="5" pattern="[A-Za-z;]{2,5}" style="text-align: center; width: 6em;" />
                 </div>
             </div>
         </div>
