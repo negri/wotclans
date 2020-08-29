@@ -151,6 +151,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="App_Start\GlobalHelper.cs" />
+    <Compile Include="Models\ApiClansReturn.cs" />
     <Compile Include="Models\ClanExtensions.cs" />
     <Compile Include="Models\ClanPage.cs" />
     <Compile Include="Models\ClansPage.cs" />

@@ -39,7 +39,7 @@
             </div>
             <div class="col-sm-7">
                 <div id="nationButtons" class="btn-group" data-selected-nation="">
-                    @foreach (string country in Model.GetMostCountries(5, 16))
+                    @foreach (string country in Model.GetMostCountries(2, 10))
                     {
                         <button id="btnNation-@country.ToLowerInvariant()" type="button" class="btn btn-default btn-sm btn-nation" title="@Resources.FilterByCountryExplanation @country" data-nation="@country.ToLowerInvariant()">
                             <img src="~/Images/Flags/@(country.ToLowerInvariant()).png" alt="@country" />
@@ -50,7 +50,7 @@
             <div class="col-sm-2">
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon">@Resources.Search</span>
-                    <input type="text" class="form-control" placeholder="@Resources.Clan" id="searchBox" maxlength="5" pattern="[A-Za-z]{2,5}" style="text-align: center; width: 6em;" />
+                    <input type="text" class="form-control" placeholder="@Resources.Clan" id="searchBox" maxlength="5" pattern="[A-Za-z;]{2,5}" style="text-align: center; width: 6em;" />
                 </div>
             </div>
         </div>
@@ -60,21 +60,21 @@
                 <tr>
                     <th title="@Resources.ClanRankingExplanation" rowspan="2" class="sort-key">#</th>
                     <th rowspan="2">@Resources.Clan</th>
-                    <th colspan="7" title="@Resources.OnLastMonth" style="padding-bottom: 4px;">@Resources.Recent</th>
-                    <th colspan="4" style="padding-bottom: 4px; border-left: 1px solid black;">@Resources.Overall</th>
+                    <th colspan="6" title="@Resources.OnLastMonth" style="padding-bottom: 4px;">@Resources.Recent</th>
+                    <th colspan="5" style="padding-bottom: 4px; border-left: 1px solid black;">@Resources.Overall</th>
                 </tr>
                 <tr>
-                    <th title="The platform composition of the clan" style="white-space: nowrap;">@Helpers.PlatformLogo(Platform.PS, "platform-logo-main") ⬌ @Helpers.PlatformLogo(Platform.XBOX, "platform-logo-main")</th>
-                    <th title="@Resources.ActivesExplanation">@Resources.Actives</th>
-                    <th title="@Resources.BattlesExplanation">@Resources.Battles</th>
-                    <th title="@Resources.WinRateExplanation" style="white-space: nowrap;">@Resources.WinRate</th>
                     <th><abbr title="@Resources.Wn8aExplanation">WN8a</abbr></th>
                     <th class="sort-key"><abbr title="@Resources.Wn8t15Explanation">WN8t15</abbr></th>
                     <th><abbr title="@Resources.Wn8T7Explanation">WN8t7</abbr></th>
-                    <th style="border-left: 1px solid black;" title="@Resources.MembersExplanation">@Resources.Members</th>
-                    <th title="@Resources.OverallBattlesExplanation">@Resources.Battles</th>
-                    <th title="@Resources.OverallWinRateExplanation" style="white-space: nowrap;">@Resources.WinRate</th>
-                    <th><abbr title="@Resources.OverallWn8Explanation">WN8</abbr></th>
+                    <th title="@Resources.WinRateExplanation" style="white-space: nowrap;">🏆</th>
+                    <th title="@Resources.BattlesExplanation">⚔</th>
+                    <th title="@Resources.ActivesExplanation">👤</th>
+                    <th style="border-left: 1px solid black;" ><abbr title="@Resources.OverallWn8Explanation">WN8</abbr></th>
+                    <th title="@Resources.OverallWinRateExplanation" style="white-space: nowrap;">🏆</th>
+                    <th title="@Resources.OverallBattlesExplanation">⚔</th>
+                    <th title="@Resources.MembersExplanation">👤</th>
+                    <th title="The platform composition of the clan" style="white-space: nowrap;">@Helpers.PlatformLogo(Platform.PS, "platform-logo-main") ⬌ @Helpers.PlatformLogo(Platform.XBOX, "platform-logo-main")</th>
                 </tr>
             </thead>
             <tfoot></tfoot>

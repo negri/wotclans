@@ -186,7 +186,7 @@ namespace Negri.Wot.Controllers
                 var minWn8T15 = 900;
                 var maxWn8T15 = 10000;
 
-                s = Request["columns[3][search][value]"];
+                s = Request["columns[7][search][value]"];
                 if (!string.IsNullOrWhiteSpace(s))
                 {
                     if (s == "all")
@@ -217,12 +217,18 @@ namespace Negri.Wot.Controllers
                         var a = s.Split(';');
                         if (a.Length >= 1)
                         {
-                            minActiveSize = int.Parse(a[0].Trim());
+                            if (int.TryParse(a[0].Trim(), out var i))
+                            {
+                                minActiveSize = i;
+                            }
                         }
 
                         if (a.Length >= 2)
                         {
-                            maxActiveSize = int.Parse(a[1].Trim());
+                            if (int.TryParse(a[1].Trim(), out var i))
+                            {
+                                maxActiveSize = i;
+                            }
                         }
                     }
                 }
@@ -230,18 +236,24 @@ namespace Negri.Wot.Controllers
                 // WN8t15 Filter
                 if (!activesAndWn8Filter)
                 {
-                    s = Request["columns[7][search][value]"];
+                    s = Request["columns[3][search][value]"];
                     if (!string.IsNullOrWhiteSpace(s))
                     {
                         var a = s.Split(';');
                         if (a.Length >= 1)
                         {
-                            minWn8T15 = int.Parse(a[0].Trim());
+                            if (int.TryParse(a[0].Trim(), out var i))
+                            {
+                                minWn8T15 = i;
+                            }
                         }
 
                         if (a.Length >= 2)
                         {
-                            maxWn8T15 = int.Parse(a[1].Trim());
+                            if (int.TryParse(a[1].Trim(), out var i))
+                            {
+                                maxWn8T15 = i;
+                            }
                         }
                     }
                 }
@@ -270,37 +282,37 @@ namespace Negri.Wot.Controllers
                                     data = data.OrderBy(t => t.ClanTag.TrimStart('_', '-').ToUpperInvariant());
                                     break;
                                 case 2:
-                                    data = data.OrderBy(t => t.CompositionPs);
+                                    data = data.OrderBy(t => t.ActiveWn8);
                                     break;
                                 case 3:
-                                    data = data.OrderBy(t => t.Active);
+                                    data = data.OrderBy(t => t.Top15Wn8);
                                     break;
                                 case 4:
-                                    data = data.OrderBy(t => t.ActiveBattles);
+                                    data = data.OrderBy(t => t.Top7Wn8);
                                     break;
                                 case 5:
                                     data = data.OrderBy(t => t.ActiveWinRate);
                                     break;
                                 case 6:
-                                    data = data.OrderBy(t => t.ActiveWn8);
+                                    data = data.OrderBy(t => t.ActiveBattles);
                                     break;
                                 case 7:
-                                    data = data.OrderBy(t => t.Top15Wn8);
+                                    data = data.OrderBy(t => t.Active);
                                     break;
                                 case 8:
-                                    data = data.OrderBy(t => t.Top7Wn8);
+                                    data = data.OrderBy(t => t.TotalWn8);
                                     break;
                                 case 9:
-                                    data = data.OrderBy(t => t.Count);
+                                    data = data.OrderBy(t => t.TotalWinRate);
                                     break;
                                 case 10:
                                     data = data.OrderBy(t => t.TotalBattles);
                                     break;
                                 case 11:
-                                    data = data.OrderBy(t => t.TotalWinRate);
+                                    data = data.OrderBy(t => t.Count);
                                     break;
                                 case 12:
-                                    data = data.OrderBy(t => t.TotalWn8);
+                                    data = data.OrderBy(t => t.CompositionPs);
                                     break;
                             }
 

@@ -64,7 +64,7 @@ $(document).ready(function() {
             }
 
             // actives
-            const activesFilter = data.columns[3].search.search;
+            const activesFilter = data.columns[7].search.search;
             if (activesFilter === "all") {
                 $("#FilterAll").addClass("filter-button-selected");
             }
@@ -78,7 +78,7 @@ $(document).ready(function() {
         },
 
         columnDefs: [
-            { searchable: false, targets: [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12] }
+            { searchable: false, targets: [0, 2, 4, 5, 6, 8, 9, 10, 11, 12] }
         ],
 
         columns: [
@@ -112,6 +112,85 @@ $(document).ready(function() {
                 }
             },
             {
+                data: "ActiveWn8",
+                className: "number",
+                render: function (data, type, full, meta) {
+                    const a = data.split(";");
+                    const [wn8, labelClass, rating, color] = a;
+                    const s =
+                        `<div title="${rating}" style="background-color: ${color}" class="${labelClass} bleed-right">${
+                            wn8}</div>`;
+                    return s;
+                }
+            },
+            {
+                data: "Top15Wn8",
+                className: "number",
+                render: function (data, type, full, meta) {
+                    const a = data.split(";");
+                    const [wn8, labelClass, rating, color] = a;
+                    const s =
+                        `<div title="${rating}" style="background-color: ${color}" class="${labelClass} bleed-right">${
+                            wn8}</div>`;
+                    return s;
+                }
+            },
+            {
+                data: "Top7Wn8",
+                className: "number",
+                render: function (data, type, full, meta) {
+                    const a = data.split(";");
+                    const [wn8, labelClass, rating, color] = a;
+                    const s =
+                        `<div title="${rating}" style="background-color: ${color}" class="${labelClass}">${wn8}</div>`;
+                    return s;
+                }
+            },
+            {
+                data: "ActiveWinRate",
+                className: "number"
+            },
+            {
+                data: "ActiveBattles",
+                className: "number",
+                render: function (data, type, full, meta) {
+                    const a = data.split(";");
+                    const [battles, utcMoment] = a;
+                    const localMoment = convertToLocalTime(utcMoment);
+
+                    const s = `<span title="${translationUpdatedAt} ${localMoment}">${battles}</span>`;
+
+                    return s;
+                }
+            },
+            {
+                data: "Active",
+                className: "number"
+            },
+            {
+                data: "TotalWn8",
+                className: "number",
+                render: function (data, type, full, meta) {
+                    const a = data.split(";");
+                    const [wn8, labelClass, rating, color] = a;
+                    const s =
+                        `<div title="${rating}" style="background-color: ${color}" class="${labelClass}">${wn8}</div>`;
+                    return s;
+                }
+            },
+            {
+                data: "TotalWinRate",
+                className: "number"
+            },
+            {
+                data: "TotalBattles",
+                className: "number"
+            },
+            {
+                data: "Count",
+                className: "number"
+            },
+            {
                 data: "Composition",
                 render: function(data, type, full, meta) {
                     const a = data.split(";");
@@ -124,95 +203,13 @@ $(document).ready(function() {
 
                     return s;
                 }
-            },
-            {
-                data: "Active",
-                className: "number"
-            },
-            {
-                data: "ActiveBattles",
-                className: "number",
-                render: function(data, type, full, meta) {
-                    const a = data.split(";");
-                    const [battles, utcMoment] = a;
-                    const localMoment = convertToLocalTime(utcMoment);
-
-                    const s = `<span title="${translationUpdatedAt} ${localMoment}">${battles}</span>`;
-
-                    return s;
-                }
-            },
-            {
-                data: "ActiveWinRate",
-                className: "number"
-            },
-            {
-                data: "ActiveWn8",
-                className: "number",
-                render: function(data, type, full, meta) {
-                    const a = data.split(";");
-                    const [wn8, labelClass, rating, color] = a;
-                    const s =
-                        `<div title="${rating}" style="background-color: ${color}" class="${labelClass} bleed-right">${
-                            wn8}</div>`;
-                    return s;
-                }
-            },
-            {
-                data: "Top15Wn8",
-                className: "number",
-                render: function(data, type, full, meta) {
-                    const a = data.split(";");
-                    const [wn8, labelClass, rating, color] = a;
-                    const s =
-                        `<div title="${rating}" style="background-color: ${color}" class="${labelClass} bleed-right">${
-                            wn8}</div>`;
-                    return s;
-                }
-            },
-            {
-                data: "Top7Wn8",
-                className: "number",
-                render: function(data, type, full, meta) {
-                    const a = data.split(";");
-                    const [wn8, labelClass, rating, color] = a;
-                    const s =
-                        `<div title="${rating}" style="background-color: ${color}" class="${labelClass}">${wn8}</div>`;
-                    return s;
-                }
-            },
-            {
-                data: "Count",
-                className: "number"
-            },
-            {
-                data: "TotalBattles",
-                className: "number"
-            },
-            {
-                data: "TotalWinRate",
-                className: "number"
-            },
-            {
-                data: "TotalWn8",
-                className: "number",
-                render: function(data, type, full, meta) {
-                    const a = data.split(";");
-                    const [wn8, labelClass, rating, color] = a;
-                    const s =
-                        `<div title="${rating}" style="background-color: ${color}" class="${labelClass}">${wn8}</div>`;
-                    return s;
-                }
             }
         ],
 
-        order: [[7, "desc"]],
+        order: [[2, "desc"]],
         dom: "lrtip",
         language: {
-            paginate: {
-                previous: "@Resources.Previous",
-                next: "@Resources.Next"
-            }
+            processing: "⌛ Please wait..."
         }
     });
 
@@ -224,7 +221,7 @@ $(document).ready(function() {
         $("#activesButtons .btn-actives").removeClass("filter-button-selected");
 
         oTable.columns(1).search("");
-        oTable.columns(3).search("").draw();
+        oTable.columns(7).search("").draw();
     });
 
     // nations buttons
@@ -244,8 +241,16 @@ $(document).ready(function() {
 
     // clan search
     $("#searchBox").keyup(function () {
-        const clan = $(this).val();
-        const nation = $("#nationButtons").data("selectedNation");
+        var clan = $(this).val();
+
+        var nation = "";
+        if (clan.startsWith(";") === true) {
+            nation = clan.split(";")[1];
+            clan = "";
+        } else {
+            nation = $("#nationButtons").data("selectedNation");
+        }
+
         const search = `${clan};${nation}`;
 
         oTable.columns(1).search(search).draw();
@@ -257,7 +262,7 @@ $(document).ready(function() {
 
         const type = btn.data("type");
 
-        oTable.columns(3).search(type).draw();
+        oTable.columns(7).search(type).draw();
 
         $("#activesButtons .btn-actives").removeClass("filter-button-selected");
         btn.addClass("filter-button-selected");
