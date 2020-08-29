@@ -179,26 +179,76 @@ namespace Negri.Wot.Controllers
                 }
 
                 // Activity Filter
+                var activesAndWn8Filter = false;
+                
                 var minActiveSize = 7;
                 var maxActiveSize = 200;
+                var minWn8T15 = 900;
+                var maxWn8T15 = 10000;
+
                 s = Request["columns[3][search][value]"];
                 if (!string.IsNullOrWhiteSpace(s))
                 {
-                    var a = s.Split(';');
-                    if (a.Length >= 1)
+                    if (s == "all")
                     {
-                        minActiveSize = int.Parse(a[0].Trim());
-                    }
+                        activesAndWn8Filter = true;
 
-                    if (a.Length >= 2)
+                        minActiveSize = 0;
+                        maxActiveSize = 200;
+                        minWn8T15 = 0;
+                        maxWn8T15 = int.MaxValue;
+                    }
+                    else if (s == "big")
                     {
-                        maxActiveSize = int.Parse(a[1].Trim());
+                        activesAndWn8Filter = true;
+
+                        minActiveSize = 15;
+                        maxActiveSize = 200;
+                    }
+                    else if (s == "small")
+                    {
+                        activesAndWn8Filter = true;
+
+                        minActiveSize = 0;
+                        maxActiveSize = 14;
+                    }
+                    else
+                    {
+                        var a = s.Split(';');
+                        if (a.Length >= 1)
+                        {
+                            minActiveSize = int.Parse(a[0].Trim());
+                        }
+
+                        if (a.Length >= 2)
+                        {
+                            maxActiveSize = int.Parse(a[1].Trim());
+                        }
+                    }
+                }
+
+                // WN8t15 Filter
+                if (!activesAndWn8Filter)
+                {
+                    s = Request["columns[7][search][value]"];
+                    if (!string.IsNullOrWhiteSpace(s))
+                    {
+                        var a = s.Split(';');
+                        if (a.Length >= 1)
+                        {
+                            minWn8T15 = int.Parse(a[0].Trim());
+                        }
+
+                        if (a.Length >= 2)
+                        {
+                            maxWn8T15 = int.Parse(a[1].Trim());
+                        }
                     }
                 }
 
                 var getter = HttpRuntime.Cache.Get("FileGetter", GlobalHelper.CacheMinutes, () => new FileGetter(GlobalHelper.DataFolder));
                 var clans = getter.GetAllRecent(true).ToArray();
-                var apiClansReturn = new ApiClansReturn(clans, countryFilter, minActiveSize, maxActiveSize, 0, int.MaxValue, clanFilter);
+                var apiClansReturn = new ApiClansReturn(clans, countryFilter, minActiveSize, maxActiveSize, minWn8T15, maxWn8T15, clanFilter);
 
                 var data = apiClansReturn.Clans.ToArray().AsEnumerable();
 

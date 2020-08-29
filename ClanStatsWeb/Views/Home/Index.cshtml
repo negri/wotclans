@@ -28,20 +28,20 @@
 
         <div id="filters" class="row">
             <div class="col-sm-3">
-                <div class="btn-group">
+                <div id="activesButtons" class="btn-group">
                     <button type="button" class="btn btn-default btn-sm" aria-label="Reset" id="resetFilters" title="@Resources.FilterDefaultExplanation">
                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                     </button>
-                    <button id="FilterAll" type="button" class="btn btn-default btn-sm" title="@Resources.FilterAllExplanation">@Resources.FilterAll</button>
-                    <button id="FilterBig" type="button" class="btn btn-default btn-sm" title="@Resources.FilterBigExplanation">@Resources.FilterBig</button>
-                    <button id="FilterSmall" type="button" class="btn btn-default btn-sm" title="@Resources.FilterSmallExplanation">@Resources.FilterSmall</button>
+                    <button id="FilterAll" type="button" data-type="all" class="btn btn-default btn-sm btn-actives" title="@Resources.FilterAllExplanation">@Resources.FilterAll</button>
+                    <button id="FilterBig" type="button" data-type="big" class="btn btn-default btn-sm btn-actives" title="@Resources.FilterBigExplanation">@Resources.FilterBig</button>
+                    <button id="FilterSmall" type="button" data-type="small" class="btn btn-default btn-sm btn-actives" title="@Resources.FilterSmallExplanation">@Resources.FilterSmall</button>
                 </div>
             </div>
             <div class="col-sm-7">
-                <div class="btn-group">
-                    @foreach (string country in Model.GetMostCountries(2, 16))
+                <div id="nationButtons" class="btn-group" data-selected-nation="">
+                    @foreach (string country in Model.GetMostCountries(5, 16))
                     {
-                        <button type="button" class="btn btn-default btn-sm btn-nation" title="@Resources.FilterByCountryExplanation @country" data-nation="@country.ToLowerInvariant()">
+                        <button id="btnNation-@country.ToLowerInvariant()" type="button" class="btn btn-default btn-sm btn-nation" title="@Resources.FilterByCountryExplanation @country" data-nation="@country.ToLowerInvariant()">
                             <img src="~/Images/Flags/@(country.ToLowerInvariant()).png" alt="@country" />
                         </button>
                     }

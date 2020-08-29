@@ -1,5 +1,6 @@
 ﻿// Home | Index mains script
 
+
 // Converte hora UTC para hora local no formato do request
 function convertToLocalTime(utcString) {
     var moment = window.moment.utc(utcString);
@@ -15,16 +16,19 @@ function convertToLocalTime(utcString) {
     return s;
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
 
+    // Convert time of last update to local time
+    $("#last-update-time").text(convertToLocalTime($("#last-update-time").text()));
 
+    // Where the grid API is
     const apiUrl = $("#clanTable").data("apiUrl");
 
     // to retrieve translations from te page
     const translationUpdatedAt = $("#clanTable").data("translationUpdatedAt");
 
 
-    // Configura a tabela de dados
+    // Configure the data table
     const oTable = $("#clanTable").DataTable({
         paging: true,
         lengthChange: false,
@@ -41,14 +45,38 @@ $(document).ready(function () {
         },
 
         stateSave: true,
-        stateDuration: -1,
+        stateDuration: 60 * 60 *  24 * 7,
         stateLoaded: function (settings, data) {
-            //var filterString = data.search.search;
-            //if (filterString !== "") {
-            //    $("#searchBox").val(filterString);
-            //}
+
+            // nation and filter
+            const nationAndFilter = data.columns[1].search.search;
+            if (nationAndFilter !== "") {
+                const a = nationAndFilter.split(";");
+                const [clan, nation] = a;
+
+                if (clan !== "") {
+                    $("#searchBox").val(clan);
+                }
+
+                if (nation !== "") {
+                    $(`#btnNation-${nation.toLowerCase()}`).addClass("filter-button-selected");
+                }
+            }
+
+            // actives
+            const activesFilter = data.columns[3].search.search;
+            if (activesFilter === "all") {
+                $("#FilterAll").addClass("filter-button-selected");
+            }
+            else if (activesFilter === "big") {
+                $("#FilterBig").addClass("filter-button-selected");
+            }
+            else if (activesFilter === "small") {
+                $("#FilterSmall").addClass("filter-button-selected");
+            }
+
         },
-        
+
         columnDefs: [
             { searchable: false, targets: [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12] }
         ],
@@ -60,7 +88,7 @@ $(document).ready(function () {
             },
             {
                 data: "ClanTag",
-                render: function (data, type, full, meta) {
+                render: function(data, type, full, meta) {
                     const a = data.split(";");
                     const tag = a[0];
                     const flag = a[1];
@@ -74,7 +102,9 @@ $(document).ready(function () {
 
                     var s = `<a href="./Clan/${tag}"${isOldDataClass} title="${name}">${tag}`;
                     if (a[1] !== "") {
-                        const flagImg = `<img src="./Images/Flags/${flag}.png" alt="${flag.toUpperCase()}" title="${flag.toUpperCase()}" />`;
+                        const flagImg =
+                            `<img src="./Images/Flags/${flag}.png" alt="${flag.toUpperCase()}" title="${
+                                flag.toUpperCase()}" />`;
                         s = s + flagImg;
                     }
                     s = s + "</a>";
@@ -83,13 +113,15 @@ $(document).ready(function () {
             },
             {
                 data: "Composition",
-                render: function (data, type, full, meta) {
+                render: function(data, type, full, meta) {
                     const a = data.split(";");
 
                     const [psIndex, psCount, xboxCount] = a;
 
-                    const s = `<progress class="platform-mix" max="100" value="${psIndex}" title="${psCount} on PS; ${xboxCount} on XBOX"></progress>`;
-                    
+                    const s =
+                        `<progress class="platform-mix" max="100" value="${psIndex}" title="${psCount} on PS; ${
+                            xboxCount} on XBOX"></progress>`;
+
                     return s;
                 }
             },
@@ -100,7 +132,7 @@ $(document).ready(function () {
             {
                 data: "ActiveBattles",
                 className: "number",
-                render: function (data, type, full, meta) {
+                render: function(data, type, full, meta) {
                     const a = data.split(";");
                     const [battles, utcMoment] = a;
                     const localMoment = convertToLocalTime(utcMoment);
@@ -117,30 +149,35 @@ $(document).ready(function () {
             {
                 data: "ActiveWn8",
                 className: "number",
-                render: function (data, type, full, meta) {
+                render: function(data, type, full, meta) {
                     const a = data.split(";");
                     const [wn8, labelClass, rating, color] = a;
-                    const s = `<div title="${rating}" style="background-color: ${color}" class="${labelClass} bleed-right">${wn8}</div>`;
+                    const s =
+                        `<div title="${rating}" style="background-color: ${color}" class="${labelClass} bleed-right">${
+                            wn8}</div>`;
                     return s;
                 }
             },
             {
                 data: "Top15Wn8",
                 className: "number",
-                render: function (data, type, full, meta) {
+                render: function(data, type, full, meta) {
                     const a = data.split(";");
                     const [wn8, labelClass, rating, color] = a;
-                    const s = `<div title="${rating}" style="background-color: ${color}" class="${labelClass} bleed-right">${wn8}</div>`;
+                    const s =
+                        `<div title="${rating}" style="background-color: ${color}" class="${labelClass} bleed-right">${
+                            wn8}</div>`;
                     return s;
                 }
             },
             {
                 data: "Top7Wn8",
                 className: "number",
-                render: function (data, type, full, meta) {
+                render: function(data, type, full, meta) {
                     const a = data.split(";");
                     const [wn8, labelClass, rating, color] = a;
-                    const s = `<div title="${rating}" style="background-color: ${color}" class="${labelClass}">${wn8}</div>`;
+                    const s =
+                        `<div title="${rating}" style="background-color: ${color}" class="${labelClass}">${wn8}</div>`;
                     return s;
                 }
             },
@@ -159,10 +196,11 @@ $(document).ready(function () {
             {
                 data: "TotalWn8",
                 className: "number",
-                render: function (data, type, full, meta) {
+                render: function(data, type, full, meta) {
                     const a = data.split(";");
                     const [wn8, labelClass, rating, color] = a;
-                    const s = `<div title="${rating}" style="background-color: ${color}" class="${labelClass}">${wn8}</div>`;
+                    const s =
+                        `<div title="${rating}" style="background-color: ${color}" class="${labelClass}">${wn8}</div>`;
                     return s;
                 }
             }
@@ -178,28 +216,53 @@ $(document).ready(function () {
         }
     });
 
-    $("#searchBox").keyup(function () {
-        //oTable.search($(this).val()).draw();
+    // reset
+    $("#resetFilters").click(function() {
+        $("#searchBox").val("");
+        $("#nationButtons .btn-nation").removeClass("filter-button-selected");
+        $("#nationButtons").data("selectedNation", "");
+        $("#activesButtons .btn-actives").removeClass("filter-button-selected");
+
+        oTable.columns(1).search("");
+        oTable.columns(3).search("").draw();
     });
 
-    // Troca a hora UTC de atualização para a hora correspondente no cliente
-    $("#last-update-time").text(convertToLocalTime($("#last-update-time").text()));
+    // nations buttons
+    $("#nationButtons .btn-nation").click(function () {
+        const btn = $(this);
 
-    // Troca a hora UTC nos titulos
-    //$(".title-moment").each(function (index) {
-    //    var item = $(this);
+        const nation = btn.data("nation");
+        const clan = $("#searchBox").val();
+        const search = `${clan};${nation}`;
 
-    //    var re = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)*Z/g;
+        oTable.columns(1).search(search).draw();
 
-    //    function replacer(match) {
-    //        return convertToLocalTime(match);
-    //    }
+        $("#nationButtons .btn-nation").removeClass("filter-button-selected");
+        btn.addClass("filter-button-selected");
+        $("#nationButtons").data("selectedNation", nation);
+    });
 
-    //    var currentTitle = item.attr("title");
-    //    var newTitle = currentTitle.replace(re, replacer);
-    //    item.attr("title", newTitle);
+    // clan search
+    $("#searchBox").keyup(function () {
+        const clan = $(this).val();
+        const nation = $("#nationButtons").data("selectedNation");
+        const search = `${clan};${nation}`;
 
-    //});
+        oTable.columns(1).search(search).draw();
+    });
+
+    // Size and WN8t15 filters
+    $("#activesButtons .btn-actives").click(function () {
+        const btn = $(this);
+
+        const type = btn.data("type");
+
+        oTable.columns(3).search(type).draw();
+
+        $("#activesButtons .btn-actives").removeClass("filter-button-selected");
+        btn.addClass("filter-button-selected");
+    });
+    
 
 
 });
