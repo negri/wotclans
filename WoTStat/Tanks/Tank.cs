@@ -66,7 +66,7 @@ namespace Negri.Wot.Tanks
         /// <summary>
         /// Small Image URL
         /// </summary>
-        public string SmallImageUrl => $"https://wxpcdn.gcdn.co/dcont/tankopedia/{Nation.ToStringUrl()}/{Tag}_preview.png";
+        public string SmallImageUrl => $"https://wxpcdn-cbprodretail.gcdn.co/dcont/tankopedia/{Nation.ToStringUrl()}/{Tag}_preview.png";
 
         [JsonIgnore]
         public string Url => $"https://{(Platform == Platform.PS ? "ps" : string.Empty)}wotclans.com.br/Tanks/{TankId}";
