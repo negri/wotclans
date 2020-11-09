@@ -136,7 +136,7 @@ namespace Negri.Wot.Tanks
             return tanks.ToArray();
         }
 
-        private static TankPlayerStatistics[] FilterTopTanks(TankPlayerStatistics[] all, int minNumberOfTanks, PremiumSelection includePremiums, Func<TankPlayerStatistics, double> orderBy)
+        private static TankPlayerStatistics[] FilterTopTanks(TankPlayerStatistics[] all, int minNumberOfTanks, Func<TankPlayerStatistics, double> orderBy)
         {
             if (all.Length <= 0)
             {
@@ -164,8 +164,7 @@ namespace Negri.Wot.Tanks
 
             foreach (var minBattles in battlesRanges)
             {
-                var top = all.Where(t => t.Battles >= minBattles && includePremiums.Filter(t.IsPremium))
-                    .OrderByDescending(orderBy).Take(minNumberOfTanks).ToArray();
+                var top = all.Where(t => t.Battles >= minBattles).OrderByDescending(orderBy).Take(minNumberOfTanks).ToArray();
                 if (top.Length >= minNumberOfTanks)
                 {
                     return top;
@@ -179,41 +178,52 @@ namespace Negri.Wot.Tanks
         /// Top tanks by Kill/Death
         /// </summary>
         public IEnumerable<TankPlayerStatistics> GetTopTanksByKillDeathRatio(ReferencePeriod period = ReferencePeriod.All, int minNumberOfTanks = 5,
-            int minTier = 1, int maxTier = 10, PremiumSelection includePremiums = PremiumSelection.OnlyRegular, int minBattles = 1)
+            int minTier = 1, int maxTier = 10, PremiumSelection includePremiums = PremiumSelection.OnlyRegular, int minBattles = 1, HashSet<Nation> nationsFilters = null, HashSet<TankType> typesFilter = null)
         {
 
             var all = GetTanks(period, minTier, maxTier, minBattles: minBattles).ToArray();
 
-            var top = FilterTopTanks(all, minNumberOfTanks, includePremiums, t => t.KillDeathRatio);
-
-            if (top.Any())
+            if (nationsFilters != null && nationsFilters.Count > 0)
             {
-                return top;
+                all = all.Where(t => nationsFilters.Contains(t.Nation)).ToArray();
             }
 
-            // new player, very few higher tiers
-            top = GetTanks(period).Where(t => t.Battles >= 1).OrderByDescending(t => t.KillDeathRatio).Take(minNumberOfTanks).ToArray();
-            return top;
+            if (typesFilter != null && typesFilter.Count > 0)
+            {
+                all = all.Where(t => typesFilter.Contains(t.Type)).ToArray();
+            }
+
+            all = all.Where(t => includePremiums.Filter(t.IsPremium)).ToArray();
+
+            var top = FilterTopTanks(all, minNumberOfTanks, t => t.KillDeathRatio);
+
+            return top.Any() ? top : Array.Empty<TankPlayerStatistics>();
         }
 
         /// <summary>
         /// Top tanks by WN8
         /// </summary>
-        public IEnumerable<TankPlayerStatistics> GetTopTanks(ReferencePeriod period = ReferencePeriod.All, int minNumberOfTanks = 5, int minTier = 1, int maxTier = 10, PremiumSelection includePremiums = PremiumSelection.OnlyRegular)
+        public IEnumerable<TankPlayerStatistics> GetTopTanks(ReferencePeriod period = ReferencePeriod.All, int minNumberOfTanks = 5, int minTier = 1,
+            int maxTier = 10, PremiumSelection includePremiums = PremiumSelection.OnlyRegular, int minBattles = 1, HashSet<Nation> nationsFilters = null, HashSet<TankType> typesFilter = null)
         {
 
-            var all = GetTanks(period, minTier, maxTier).ToArray();
-
-            var top = FilterTopTanks(all, minNumberOfTanks, includePremiums, t => t.Wn8);
-
-            if (top.Any())
+            var all = GetTanks(period, minTier, maxTier, minBattles: minBattles).ToArray();
+            
+            if (nationsFilters != null && nationsFilters.Count > 0)
             {
-                return top;
+                all = all.Where(t => nationsFilters.Contains(t.Nation)).ToArray();
             }
 
-            // new player, very few higher tiers
-            top = GetTanks(period).Where(t => t.Battles >= 1).OrderByDescending(t => t.Wn8).Take(minNumberOfTanks).ToArray();
-            return top;
+            if (typesFilter != null && typesFilter.Count > 0)
+            {
+                all = all.Where(t => typesFilter.Contains(t.Type)).ToArray();
+            }
+
+            all = all.Where(t => includePremiums.Filter(t.IsPremium)).ToArray();
+
+            var top = FilterTopTanks(all, minNumberOfTanks, t => t.Wn8);
+
+            return top.Any() ? top : Array.Empty<TankPlayerStatistics>();
         }
 
         public TankPlayerStatistics GetBestTank(ReferencePeriod period = ReferencePeriod.All)

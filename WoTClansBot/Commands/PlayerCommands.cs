@@ -830,8 +830,10 @@ namespace Negri.Wot.Bot
             [Description("The *gamer tag* or *PSN Name*")] string gamerTag,
             [Description("Minimum tier")] int minTier = 5,
             [Description("Maximum tier")] int maxTier = 10,
-            [Description("Include premiums tanks or not. Use *true*, *false* or *premium*.")] string includePremiums = "false",
-            [Description("The minimum number of battles on the tank")] int minBattles = 1)
+            [Description("Include premiums tanks or not. Use *Any*, *Regular* or *Premium*.")] string includePremiums = "Regular",
+            [Description("The minimum number of battles on the tank")] int minBattles = 1,
+            [Description("Nation of the tank, or *any*. Multiple values can be sent using *;* as separators")] string nationFilter = "any",
+            [Description("Type of the tank, or *any*. Multiple values can be sent using *;* as separators")] string typeFilter = "any")
         {
             if (!await CanExecute(ctx, Features.Players))
             {
@@ -854,6 +856,46 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            var nationsFilters = new HashSet<Nation>();
+            if (!string.IsNullOrWhiteSpace(nationFilter) && !nationFilter.EqualsCiAi("any"))
+            {
+                var filtersText = nationFilter.Split(new[] { ',', ';', '-', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var filterText in filtersText)
+                {
+                    if (Enum.TryParse<Nation>(filterText, true, out var nation))
+                    {
+                        nationsFilters.Add(nation);
+                    }
+                    else
+                    {
+                        await ctx.RespondAsync(
+                            $"Sorry, {ctx.User.Mention}, the nation `{filterText}` is not a valid nation. Valid nations are: {string.Join(", ", NationExtensions.GetGameNations().Select(n => $"`{n.ToString().ToLowerInvariant()}`"))}.");
+                        return;
+                    }
+                }
+            }
+
+            var typesFilters = new HashSet<TankType>();
+            if (!string.IsNullOrWhiteSpace(typeFilter) && !typeFilter.EqualsCiAi("any"))
+            {
+                var filtersText = typeFilter.Split(new[] { ',', ';', '-', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var filterText in filtersText)
+                {
+                    if (Enum.TryParse<TankType>(filterText, true, out var tankType))
+                    {
+                        typesFilters.Add(tankType);
+                    }
+                    else
+                    {
+                        await ctx.RespondAsync(
+                            $"Sorry, {ctx.User.Mention}, the tank type `{filterText}` is not a valid type. Valid tank types are: {string.Join(", ", TankTypeExtensions.GetGameTankTypes().Select(n => $"`{n.ToString().ToLowerInvariant()}`"))}.");
+                        return;
+                    }
+                }
+            }
+
             try
             {
                 var player = await GetPlayer(ctx, gamerTag);
@@ -863,8 +905,7 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
-                var top = player.Performance.GetTopTanksByKillDeathRatio(ReferencePeriod.All, 25, minTier, maxTier, premiumSelection, minBattles)
-                    .ToArray();
+                var top = player.Performance.GetTopTanksByKillDeathRatio(ReferencePeriod.All, 25, minTier, maxTier, premiumSelection, minBattles, nationsFilters, typesFilters).ToArray();
                 if (!top.Any())
                 {
                     await ctx.RespondAsync(
@@ -928,8 +969,10 @@ namespace Negri.Wot.Bot
             [Description("The *gamer tag* or *PSN Name*")] string gamerTag,
             [Description("Minimum tier")] int minTier = 5,
             [Description("Maximum tier")] int maxTier = 10,
-            [Description("Include premiums tanks or not. Use *true*, *false* or *premium*.")]
-            string includePremiums = "false")
+            [Description("Include premiums tanks or not. Use *Any*, *Regular* or *Premium*.")] string includePremiums = "Regular",
+            [Description("The minimum number of battles on the tank")] int minBattles = 1,
+            [Description("Nation of the tank, or *any*. Multiple values can be sent using *;* as separators")] string nationFilter = "any",
+            [Description("Type of the tank, or *any*. Multiple values can be sent using *;* as separators")] string typeFilter = "any")
         {
             if (!await CanExecute(ctx, Features.Players))
             {
@@ -952,6 +995,46 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            var nationsFilters = new HashSet<Nation>();
+            if (!string.IsNullOrWhiteSpace(nationFilter) && !nationFilter.EqualsCiAi("any"))
+            {
+                var filtersText = nationFilter.Split(new[] { ',', ';', '-', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                
+                foreach (var filterText in filtersText)
+                {
+                    if (Enum.TryParse<Nation>(filterText, true, out var nation))
+                    {
+                        nationsFilters.Add(nation);
+                    }
+                    else
+                    {
+                        await ctx.RespondAsync(
+                            $"Sorry, {ctx.User.Mention}, the nation `{filterText}` is not a valid nation. Valid nations are: {string.Join(", ", NationExtensions.GetGameNations().Select(n => $"`{n.ToString().ToLowerInvariant()}`"))}.");
+                        return;
+                    }
+                }
+            }
+
+            var typesFilters = new HashSet<TankType>();
+            if (!string.IsNullOrWhiteSpace(typeFilter) && !typeFilter.EqualsCiAi("any"))
+            {
+                var filtersText = typeFilter.Split(new[] { ',', ';', '-', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                
+                foreach (var filterText in filtersText)
+                {
+                    if (Enum.TryParse<TankType>(filterText, true, out var tankType))
+                    {
+                        typesFilters.Add(tankType);
+                    }
+                    else
+                    {
+                        await ctx.RespondAsync(
+                            $"Sorry, {ctx.User.Mention}, the tank type `{filterText}` is not a valid type. Valid tank types are: {string.Join(", ", TankTypeExtensions.GetGameTankTypes().Select(n => $"`{n.ToString().ToLowerInvariant()}`"))}.");
+                        return;
+                    }
+                }
+            }
+
             try
             {
                 var player = await GetPlayer(ctx, gamerTag);
@@ -961,12 +1044,10 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
-                var top = player.Performance.GetTopTanks(ReferencePeriod.All, 25, minTier, maxTier, premiumSelection)
-                    .ToArray();
+                var top = player.Performance.GetTopTanks(ReferencePeriod.All, 25, minTier, maxTier, premiumSelection, minBattles, nationsFilters, typesFilters).ToArray();
                 if (!top.Any())
                 {
-                    await ctx.RespondAsync(
-                        $"Sorry, {ctx.User.Mention}. There are not enough tanks with the specified filters.");
+                    await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. There are not enough tanks with the specified filters.");
                 }
 
                 var sb = new StringBuilder();
