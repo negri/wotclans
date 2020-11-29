@@ -63,8 +63,15 @@ namespace Negri.Wot.Bot
                 playerId = playerId ?? provider.GetPlayerIdByName(platform, gamerTag);
                 if (playerId == null)
                 {
+                    // Try the other platform
+                    platform = platform == Platform.XBOX ? Platform.PS : Platform.XBOX;
+                    playerId = provider.GetPlayerIdByName(platform, gamerTag);
+                }
+
+                if (playerId == null)
+                {
                     Log.Debug($"Could not find player {platform}.{gamerTag} on the database... trying the API...");
-                    willTryApiMessage = await ctx.RespondAsync($"I could not find a player on `{platform}` " +
+                    willTryApiMessage = await ctx.RespondAsync($"I could not find a player " +
                                                                $"with the Gamer Tag `{gamerTag}` on the Database, {ctx.User.Mention}. I will try the Wargaming API... it may take some time...");
                 }
 
@@ -87,6 +94,13 @@ namespace Negri.Wot.Bot
                     apiPlayer = fetcher.GetPlayerByGamerTag(platform, gamerTag);
                     if (apiPlayer == null)
                     {
+                        // Try the other platform
+                        platform = platform == Platform.XBOX ? Platform.PS : Platform.XBOX;
+                        fetcher.GetPlayerByGamerTag(platform, gamerTag);
+                    }
+
+                    if (apiPlayer == null)
+                    {
                         Log.Debug($"Could not find player {platform}.{gamerTag} on the WG API.");
 
                         if (willTryApiMessage != null)
@@ -95,7 +109,7 @@ namespace Negri.Wot.Bot
                         }
 
                         await ctx.RespondAsync(
-                            $"Sorry, {ctx.User.Mention}. I could not find a player on `{platform}` " +
+                            $"Sorry, {ctx.User.Mention}. I could not find a player " +
                             $"with the Gamer Tag `{gamerTag}` on the Wargaming API. Are you sure about the **exact** gamer tag?.");
                         return null;
                     }
