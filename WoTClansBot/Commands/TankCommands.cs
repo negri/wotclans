@@ -9,6 +9,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Humanizer;
 using log4net;
 using Negri.Wot.Sql;
 using Negri.Wot.Tanks;
@@ -308,7 +309,7 @@ namespace Negri.Wot.Bot
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"Calculated at {player.Moment:yyyy-MM-dd HH:mm} UTC"
+                        Text = $"Calculated {player.Moment.Humanize()}"
                     }
                 };
 
@@ -400,7 +401,7 @@ namespace Negri.Wot.Bot
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"Calculated at {player.Moment:yyyy-MM-dd HH:mm} UTC"
+                        Text = $"Calculated {player.Moment.Humanize()}"
                     }
                 };
 
@@ -497,7 +498,7 @@ namespace Negri.Wot.Bot
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"Calculated at {tr.Date:yyyy-MM-dd} from {tr.LastMonth?.TotalPlayers ?? tr.TotalPlayers:N0} recent players and {tr.LastMonth?.TotalBattles ?? tr.TotalBattles:N0} battles."
+                        Text = $"Calculated {tr.Date.Humanize()} from {tr.LastMonth?.TotalPlayers ?? tr.TotalPlayers:N0} recent players and {tr.LastMonth?.TotalBattles ?? tr.TotalBattles:N0} battles."
                     }
                 };
 
@@ -575,7 +576,7 @@ namespace Negri.Wot.Bot
                 },
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
-                    Text = $"Calculated at {moe.Date:yyyy-MM-dd} from {moe.NumberOfBattles:N0} battles."
+                    Text = $"Calculated {moe.Date.Humanize()} from {moe.NumberOfBattles:N0} battles."
                 }
             };
 
@@ -719,7 +720,7 @@ namespace Negri.Wot.Bot
                 },
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
-                    Text = $"Calculated at {leaderboard.First().Date:yyyy-MM-dd}."
+                    Text = $"Calculated {leaderboard.First().Date.Humanize()}"
                 }
             };
 
@@ -874,7 +875,7 @@ namespace Negri.Wot.Bot
                 },
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
-                    Text = $"Calculated at {leaderboard.First().Date:yyyy-MM-dd}."
+                    Text = $"Calculated {leaderboard.First().Date.Humanize()}."
                 }
             };
 

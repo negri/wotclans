@@ -8,6 +8,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Humanizer;
 using log4net;
 using Negri.Wot.Sql;
 
@@ -411,7 +412,7 @@ namespace Negri.Wot.Bot
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"Data calculated at {clan.Moment:yyyy-MM-dd HH:mm} UTC."
+                        Text = $"Calculated {clan.Moment.Humanize()}."
                     }
                 };
 

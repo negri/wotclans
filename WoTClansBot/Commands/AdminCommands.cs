@@ -10,6 +10,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Humanizer;
 using Negri.Wot.Diagnostics;
 
 namespace Negri.Wot.Bot
@@ -33,7 +34,7 @@ namespace Negri.Wot.Bot
 
             var up = DateTime.UtcNow - cpu.StartTime;
             await ctx.RespondAsync($"I'm up since {cpu.StartTime:yyyy-MM-dd HH:mm:ss} UTC, {ctx.User.Mention}. " +
-                                   $"That's {up.TotalDays:N0}.{up.Hours:00}:{up.Minutes:00} ago. " +
+                                   $"That's {up.Humanize(2)} ago. " +
                                    $"I was compiled at {RetrieveLinkerTimestamp():yyyy-MM-dd HH:mm}, " +
                                    $"and I'm currently running on a machine called {Environment.MachineName}, " +
                                    $"using {cpu.SinceStartedLoad:P2} of the CPUs and {memory.WorkingSetMB}MB of RAM.");

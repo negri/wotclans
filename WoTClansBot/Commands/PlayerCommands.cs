@@ -12,6 +12,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Humanizer;
 using log4net;
 using Negri.Wot.Achievements;
 using Negri.Wot.Sql;
@@ -162,7 +163,7 @@ namespace Negri.Wot.Bot
                     if (showStatus)
                     {
                         willTryApiMessage = await ctx.RespondAsync($"Data for  `{player.Name}` on `{player.Platform}` " +
-                                                                   $"is more than {player.Age.TotalHours:N0}h old, {ctx.User.Mention}. Retrieving fresh data, please wait...");
+                                                                   $"is {player.Age.Humanize(2)} old, {ctx.User.Mention}. Retrieving fresh data, please wait...");
                     }
 
                     var tanks = fetcher.GetTanksForPlayer(player.Id);
@@ -656,7 +657,7 @@ namespace Negri.Wot.Bot
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"Retrieved at {player.Moment:yyyy-MM-dd HH:mm} UTC"
+                        Text = $"Retrieved {player.Moment.Humanize()}"
                     }
                 };
 
@@ -823,7 +824,7 @@ namespace Negri.Wot.Bot
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"Retrieved at {player.Moment:yyyy-MM-dd HH:mm} UTC"
+                        Text = $"Retrieved {player.Moment.Humanize()}"
                     }
                 };
 
@@ -963,7 +964,7 @@ namespace Negri.Wot.Bot
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"Calculated at {player.Moment:yyyy-MM-dd HH:mm} UTC."
+                        Text = $"Calculated {player.Moment.Humanize()}"
                     }
                 };
 
@@ -1101,7 +1102,7 @@ namespace Negri.Wot.Bot
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"Calculated at {player.Moment:yyyy-MM-dd HH:mm} UTC."
+                        Text = $"Calculated {player.Moment.Humanize()}"
                     }
                 };
 
@@ -1240,7 +1241,7 @@ namespace Negri.Wot.Bot
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"Calculated at {player.Moment:yyyy-MM-dd HH:mm} UTC."
+                        Text = $"Calculated {player.Moment.Humanize()}"
                     }
                 };
 
@@ -1508,7 +1509,7 @@ namespace Negri.Wot.Bot
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"Calculated at {player.Moment:yyyy-MM-dd HH:mm} UTC."
+                        Text = $"Calculated {player.Moment.Humanize()}"
                     }
                 };
 
