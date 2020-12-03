@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Humanizer;
 using log4net;
 using Negri.Wot.Sql;
 
@@ -85,7 +86,7 @@ namespace Negri.Wot.Bot
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"Retrieved at {s.Moment:yyyy-MM-dd HH:mm} UTC."
+                        Text = $"Retrieved {s.Moment.Humanize()}."
                     }
                 };
 
@@ -287,9 +288,9 @@ namespace Negri.Wot.Bot
 
                 var sb = new StringBuilder();
                 sb.AppendLine($"Data Age Minutes: {s.DataAgeMinutes:N0}");
-                sb.AppendLine($"Most Recent Clan Moment: {s.MostRecentClanMoment:yyyy-MM-dd HH:mm}");
-                sb.AppendLine($"Tank Leaders Last Date: {s.TankLeadersLastDate:yyyy-MM-dd}");
-                sb.AppendLine($"Tank MoE Last Date: {s.TanksMoELastDate:yyyy-MM-dd}");
+                sb.AppendLine($"Most Recent Clan Moment: {s.MostRecentClanMoment.Humanize()}");
+                sb.AppendLine($"Tank Leaders Last Date: {s.TankLeadersLastDate.Humanize()}");
+                sb.AppendLine($"Tank MoE Last Date: {s.TanksMoELastDate.Humanize()}");
                 sb.AppendLine($"Players: {s.PlayersCount:N0}; Clans: {s.ClansCount:N0}");
                 sb.AppendLine($"Clans With Players Updated On Last Hour: {s.ClansWithPlayersUpdatedOnLastHour:N0}");
                 sb.AppendLine($"Since Started Load: {s.AveragedProcessCpuUsage.SinceStartedLoad:P1}");
@@ -306,7 +307,7 @@ namespace Negri.Wot.Bot
                     },
                     Footer = new DiscordEmbedBuilder.EmbedFooter
                     {
-                        Text = $"Retrieved at {s.ServerMoment:yyyy-MM-dd HH:mm} UTC."
+                        Text = $"Retrieved {s.ServerMoment.Humanize()}."
                     }
                 };
 
