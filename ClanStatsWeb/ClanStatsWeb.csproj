@@ -182,6 +182,7 @@
     <Content Include="Images\coin-head.png" />
     <Content Include="Images\coin-tail.png" />
     <Content Include="Images\external-link.png" />
+    <Content Include="Images\external-link.svg" />
     <Content Include="Images\Flags\qc.png" />
     <Content Include="App_Code\Helpers.cshtml" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

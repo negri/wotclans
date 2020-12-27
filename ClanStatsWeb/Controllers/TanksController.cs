@@ -14,13 +14,15 @@ namespace Negri.Wot.Site.Controllers
         [OutputCache(CacheProfile = "Normal")]
         public ActionResult Moe(DateTime? date = null)
         {
-            var getter = HttpRuntime.Cache.Get("FileGetter", GlobalHelper.CacheMinutes,
-                () => new FileGetter(GlobalHelper.DataFolder));
+            return RedirectPermanent("https://www.wotconsole.ru/marks/");
 
-            var moes = getter.GetTanksMoe(date);
-            var model = new TanksMoe(moes);
+            //var getter = HttpRuntime.Cache.Get("FileGetter", GlobalHelper.CacheMinutes,
+            //    () => new FileGetter(GlobalHelper.DataFolder));
 
-            return View(model);
+            //var moes = getter.GetTanksMoe(date);
+            //var model = new TanksMoe(moes);
+
+            //return View(model);
         }
 
         /// <summary>
