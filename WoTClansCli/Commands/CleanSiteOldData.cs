@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CliFx;
 using CliFx.Attributes;
+using CliFx.Infrastructure;
 using log4net;
 
 namespace Negri.Wot.Commands

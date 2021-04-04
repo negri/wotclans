@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CliFx;
 using CliFx.Attributes;
+using CliFx.Infrastructure;
 using log4net;
 using Negri.Wot.Sql;
 using Negri.Wot.Tanks;

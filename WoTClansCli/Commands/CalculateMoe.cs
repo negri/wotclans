@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CliFx;
 using CliFx.Attributes;
+using CliFx.Infrastructure;
 using log4net;
 using Negri.Wot.Sql;
 using Newtonsoft.Json;
