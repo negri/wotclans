@@ -78,6 +78,7 @@
     <Compile Include="Commands\GetPlayers.cs" />
     <Compile Include="Commands\ImportMoe.cs" />
     <Compile Include="Commands\ImportXvm.cs" />
+    <Compile Include="Commands\PurgeOldPlayers.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

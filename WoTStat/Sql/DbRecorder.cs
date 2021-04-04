@@ -1018,5 +1018,28 @@ namespace Negri.Wot.Sql
             }
 
         }
+
+        public void PurgeOldPlayers(int months)
+        {
+            Log.Debug("PurgeOldPlayers...");
+            var sw = Stopwatch.StartNew();
+            Execute(t => PurgeOldPlayers(months, t));
+            Log.DebugFormat("PurgeOldPlayers in {0}.", sw.Elapsed);
+        }
+
+        private static void PurgeOldPlayers(int months, SqlTransaction t)
+        {
+            const string sql = "Support.PurgeOldPlayers";
+            using (var cmd = new SqlCommand(sql, t.Connection, t))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 60 * 60; // 1h... pode demorar
+
+                cmd.Parameters.AddWithValue("@onlyReport", false);
+                cmd.Parameters.AddWithValue("@lunarMonths", months);
+                
+                cmd.ExecuteNonQuery();
+            }
+        }
     }
 }

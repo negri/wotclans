@@ -109,6 +109,11 @@ namespace Negri.Wot
                 ));
 
             services.AddTransient(p =>
+                new PurgeOldPlayers(
+                    p.GetService<DbRecorder>()
+                ));
+
+            services.AddTransient(p =>
                 new CleanSiteOldData(
                     p.GetService<Putter>()
                 ));
