@@ -274,6 +274,29 @@ namespace Negri.Wot.Commands
         {
             var tanks = _fetcher.GetTanksForPlayer(player.Id);
             var validTanks = tanks.Where(t => allTanks.ContainsKey(t.TankId)).ToArray();
+
+            if (validTanks.Length <= 0)
+            {
+                // No battles, not my problem
+                return;
+            }
+            
+            var lastTotalBattles = validTanks.Sum(tp => tp.All.Battles);
+            var previous = _provider.GetPlayer(player.Id, player.Date, true);
+            if (previous?.TotalBattles != null)
+            {
+                if (previous.TotalBattles == lastTotalBattles)
+                {
+                    Log.Debug($"Player {player.Id} didn't played since the last update. Just forwarding the last save point.");
+
+                    // Don't really need to be saved, just touch so he can get out of the queue
+                    previous.Moment = player.Moment;
+                    _recorder.Set(previous);
+                    return;
+                }
+            }
+
+            // Ok... save new data
             _recorder.Set(validTanks);
 
             var played = _provider.GetWn8RawStatsForPlayer(player.Id);
@@ -282,7 +305,7 @@ namespace Negri.Wot.Commands
             player.Moment = DateTime.UtcNow;
             player.Origin = PlayerDataOrigin.Self;
 
-            var previous = _provider.GetPlayer(player.Id, player.Date, true);
+            
             if (previous != null)
             {
                 if (player.Check(previous, true))

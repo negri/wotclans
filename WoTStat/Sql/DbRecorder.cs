@@ -397,7 +397,109 @@ namespace Negri.Wot.Sql
                 }
             }
 
-            var medals = CreateMedalsTable(tps);
+            // Get the current medals/ribbons so only a diff get upload
+            var oldMedals = GetMedalsForPlayer(tps[0].PlayerId, t).ToDictionary(m => (m.tankId, m.medalCode));
+
+            if (oldMedals.Count <= 0)
+            {
+                // Easier to do a bulk copy
+                SetMedalsByBulkCopy(t, tps);
+                return;
+            }
+
+            var toUpdate = new List<(long tankId, string medalCode, int count, long battles)>();
+
+            foreach (var tank in tps)
+            {
+                if ((tank?.All?.Achievements != null) && (tank.All.Achievements.Count > 0))
+                {
+                    foreach (var medal in tank.All.Achievements)
+                    {
+                        if (oldMedals.TryGetValue((tank.TankId, medal.Key), out var previous))
+                        {
+                            if (previous.battles != tank.All.Battles || previous.count != medal.Value)
+                            {
+                                toUpdate.Add((tank.TankId, medal.Key, medal.Value, tank.All.Battles));
+                            }
+                        }
+                        else
+                        {
+                            toUpdate.Add((tank.TankId, medal.Key, medal.Value, tank.All.Battles));
+                        }
+                    }
+                }
+
+                if ((tank?.All?.Ribbons != null) && (tank.All.Ribbons.Count > 0))
+                {
+                    foreach (var medal in tank.All.Ribbons)
+                    {
+                        if (oldMedals.TryGetValue((tank.TankId, medal.Key), out var previous))
+                        {
+                            if (previous.battles != tank.All.Battles || previous.count != medal.Value)
+                            {
+                                toUpdate.Add((tank.TankId, medal.Key, medal.Value, tank.All.Battles));
+                            }
+                        }
+                        else
+                        {
+                            toUpdate.Add((tank.TankId, medal.Key, medal.Value, tank.All.Battles));
+                        }
+                    }
+                }
+            }
+
+            if (toUpdate.Count <= 0)
+            {
+                return;
+            }
+
+            using (var cmd = new SqlCommand("Achievements.SetPlayerMedal", t.Connection, t))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 5 * 60;
+
+                foreach (var (tankId, medalCode, count, battles) in toUpdate)
+                {
+                    cmd.Parameters.Clear();
+
+                    cmd.Parameters.AddWithValue("@playerId", tps[0].PlayerId);
+                    cmd.Parameters.AddWithValue("@tankId", tankId);
+                    cmd.Parameters.AddWithValue("@medalCode", medalCode);
+                    cmd.Parameters.AddWithValue("@count", count);
+                    cmd.Parameters.AddWithValue("@battles", battles);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+        }
+
+        private static IEnumerable<(long tankId, string medalCode, int count, long battles)> GetMedalsForPlayer(long playerId, SqlTransaction t)
+        {
+            var res = new List<(long tankId, string medalCode, int count, long battles)>();
+
+            const string query = "select TankId, MedalCode, [Count], Battles from Achievements.PlayerMedal where PlayerId = @playerId;";
+            using (var cmd = new SqlCommand(query, t.Connection, t))
+            {
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandTimeout = 15;
+                cmd.Parameters.AddWithValue("@playerId", playerId);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        res.Add((reader.GetNonNullValue<long>(0), reader.GetNonNullValue<string>(1), 
+                            reader.GetNonNullValue<int>(2), reader.GetNonNullValue<long>(3)));
+                    }
+                }
+            }
+
+            return res;
+        }
+
+        private static void SetMedalsByBulkCopy(SqlTransaction t, TankPlayer[] tankPlayer)
+        {
+            var medals = CreateMedalsTable(tankPlayer);
             if (medals.Rows.Count > 0)
             {
                 const string delSql = "delete Achievements.PlayerMedal where (PlayerId = @playerId);";
@@ -405,19 +507,18 @@ namespace Negri.Wot.Sql
                 {
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandTimeout = 5 * 60;
-                    cmd.Parameters.AddWithValue("@playerId", tps[0].PlayerId);
+                    cmd.Parameters.AddWithValue("@playerId", tankPlayer[0].PlayerId);
                     cmd.ExecuteNonQuery();
                 }
 
-                using(var bc = new SqlBulkCopy(t.Connection, SqlBulkCopyOptions.Default, t))
+                using (var bc = new SqlBulkCopy(t.Connection, SqlBulkCopyOptions.Default, t))
                 {
                     bc.DestinationTableName = "Achievements.PlayerMedal";
                     bc.WriteToServer(medals);
                 }
-
             }
-
         }
+
 
         private static DataTable CreateMedalsTable(IEnumerable<TankPlayer> tanks)
         {
