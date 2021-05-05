@@ -97,7 +97,7 @@ namespace Negri.Wot.Bot
                     {
                         // Try the other platform
                         platform = platform == Platform.XBOX ? Platform.PS : Platform.XBOX;
-                        fetcher.GetPlayerByGamerTag(platform, gamerTag);
+                        apiPlayer = fetcher.GetPlayerByGamerTag(platform, gamerTag);
                     }
 
                     if (apiPlayer == null)
