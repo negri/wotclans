@@ -44,12 +44,15 @@ namespace Negri.Wot.Commands
         [CommandOption("TopLeaders", Description = "The number of leaders for each tank.")]
         public int TopLeaders { get; set; } = 50;
 
+        [CommandOption("MaxDates", Description = "The maximum number of dates to calculate on a run.")]
+        public int MaxDates { get; set; } = 2;
+
         public ValueTask ExecuteAsync(IConsole console)
         {
             Log.Info($"Starting {nameof(CalculateStats)}...");
 
             var csw = Stopwatch.StartNew();
-            _recorder.CalculateReference(UtcShiftToCalculate);
+            _recorder.CalculateReference(UtcShiftToCalculate, MaxDates);
             csw.Stop();
             Log.Debug($"Statistics for tanks calculated in {csw.Elapsed.TotalSeconds:N0}s.");
 

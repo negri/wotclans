@@ -684,29 +684,36 @@ namespace Negri.Wot.Sql
         /// <summary>
         ///     Calcula os valores de referência dos tanques
         /// </summary>
-        public void CalculateReference(int utcShiftToCalculate = 0)
+        public void CalculateReference(int utcShiftToCalculate = -7, int maxDates = 2)
         {
             Log.Debug("Calculando Dados de Tanques...");
             var sw = Stopwatch.StartNew();
-            Execute(t => CalculateReference(utcShiftToCalculate, t));
+            Execute(t => CalculateReference(utcShiftToCalculate, maxDates, t));
             Log.DebugFormat("Calculo de Dados de Tanques em {0}.", sw.Elapsed);
         }
 
         private static void CalculateMoE(int utcShiftToCalculate, SqlTransaction t)
         {
-            using var cmd = new SqlCommand("Performance.CalculateMoEPercentile", t.Connection, t);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandTimeout = 50 * 60; // pode ser bastante lento!
+            using var cmd = new SqlCommand("Performance.CalculateMoEPercentile", t.Connection, t)
+            {
+                CommandType = CommandType.StoredProcedure, 
+                CommandTimeout = 4 * 60 * 60 // BRUTALMENTE LENTO!
+            };
+            
             cmd.Parameters.AddWithValue("@utcShift", utcShiftToCalculate);
             cmd.ExecuteNonQuery();
         }
 
-        private static void CalculateReference(int utcShiftToCalculate, SqlTransaction t)
+        private static void CalculateReference(int utcShiftToCalculate, int maxDates, SqlTransaction t)
         {
-            using var cmd = new SqlCommand("Performance.CalculateReferenceValues", t.Connection, t);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandTimeout = 50 * 60; // Muitos minutos: pode ser bastante lento!
+            using var cmd = new SqlCommand("Performance.CalculateReferenceValues", t.Connection, t)
+            {
+                CommandType = CommandType.StoredProcedure,
+                CommandTimeout = 4 * 60 * 60 // BRUTALMENTE LENTO!
+            };
+            // Muitos minutos: pode ser bastante lento!
             cmd.Parameters.AddWithValue("@utcShift", utcShiftToCalculate);
+            cmd.Parameters.AddWithValue("@maxDates", maxDates);
             cmd.ExecuteNonQuery();
         }
 
