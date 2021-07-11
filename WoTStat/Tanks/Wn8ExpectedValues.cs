@@ -160,38 +160,36 @@ namespace Negri.Wot.Tanks
                 throw new FileNotFoundException("Coult not find the template file!", template);
             }
 
-            using (var p = new ExcelPackage(new FileInfo(template)))
+            using var p = new ExcelPackage(new FileInfo(template));
+            var ws = p.Workbook.Worksheets["WN8 Reference"];
+
+            ws.Cells[3, 2].Value = Source;
+            ws.Cells[4, 2].Value = Version;
+            ws.Cells[5, 2].Value = Date;
+
+            var r = 7;
+
+            ws.Cells[r, 1, r, 12].AutoFilter = true;
+
+            foreach (var t in _values.Values.OrderByDescending(t => t.Tier).ThenByDescending(t => t.TypeName).ThenBy(t => t.NatioName).ThenBy(t => t.Name))
             {
-                var ws = p.Workbook.Worksheets["WN8 Reference"];
+                ++r;
 
-                ws.Cells[3, 2].Value = Source;
-                ws.Cells[4, 2].Value = Version;
-                ws.Cells[5, 2].Value = Date;
-
-                int r = 7;
-
-                ws.Cells[r, 1, r, 12].AutoFilter = true;
-
-                foreach (var t in _values.Values.OrderByDescending(t => t.Tier).ThenByDescending(t => t.TypeName).ThenBy(t => t.NatioName).ThenBy(t => t.Name))
-                {
-                    ++r;
-
-                    ws.Cells[r, 1].Value = t.TankId;
-                    ws.Cells[r, 2].Value = t.Name;
-                    ws.Cells[r, 3].Value = t.Tier;
-                    ws.Cells[r, 4].Value = t.TypeName;
-                    ws.Cells[r, 5].Value = t.NatioName;
-                    ws.Cells[r, 6].Value = t.IsPremium;
-                    ws.Cells[r, 7].Value = t.Damage;
-                    ws.Cells[r, 8].Value = t.WinRate;
-                    ws.Cells[r, 9].Value = t.Frag;
-                    ws.Cells[r, 10].Value = t.Spot;
-                    ws.Cells[r, 11].Value = t.Def;
-                    ws.Cells[r, 12].Value = t.Origin.ToString();
-                }
-
-                return p.GetAsByteArray();
+                ws.Cells[r, 1].Value = t.TankId;
+                ws.Cells[r, 2].Value = t.Name;
+                ws.Cells[r, 3].Value = t.Tier;
+                ws.Cells[r, 4].Value = t.TypeName;
+                ws.Cells[r, 5].Value = t.NatioName;
+                ws.Cells[r, 6].Value = t.IsPremium;
+                ws.Cells[r, 7].Value = t.Damage;
+                ws.Cells[r, 8].Value = t.WinRate;
+                ws.Cells[r, 9].Value = t.Frag;
+                ws.Cells[r, 10].Value = t.Spot;
+                ws.Cells[r, 11].Value = t.Def;
+                ws.Cells[r, 12].Value = t.Origin.ToString();
             }
+
+            return p.GetAsByteArray();
         }
 
         /// <summary>

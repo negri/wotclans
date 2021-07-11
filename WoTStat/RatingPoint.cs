@@ -31,8 +31,8 @@ namespace Negri.Wot
         {
             var histogram = new Dictionary<Wn8Rating, RatingPoint>();
             
-            int total = 0;
-            int totalBattles = 0;
+            var total = 0;
+            var totalBattles = 0;
             foreach (var player in players)
             {
                 total++;

@@ -95,7 +95,7 @@ namespace Negri.Wot
         {
             Log.Debug("Obtendo o diagnostico do site remoto");
 
-            string url = $"{WotClansBaseUrl}/api/status";
+            var url = $"{WotClansBaseUrl}/api/status";
 
             var json = GetContent($"SiteDiagnostic.{DateTime.UtcNow:yyyy-MM-dd.HHmmss}.json",
                 $"{url}?apiAdminKey={WotClansAdminApiKey}", WebCacheAge,
@@ -233,7 +233,7 @@ namespace Negri.Wot
 
             foreach (var tank in tanks) tank.Plataform = Platform.PC;
 
-            return tanks;
+            return tanks.Where(t => t.Tier is >= 1 and <= 10);
         }
 
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
@@ -270,7 +270,7 @@ namespace Negri.Wot
 
             foreach (var tank in response.Data.Values) tank.Plataform = platform;
 
-            return response.Data.Values;
+            return response.Data.Values.Where(t => t.Tier is >= 1 and <= 10);
         }
 
 

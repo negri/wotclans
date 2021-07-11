@@ -20,9 +20,9 @@ namespace Negri.Wot
                 uiCulture = CultureInfo.CurrentUICulture;
             }
 
-            string language = uiCulture.TwoLetterISOLanguageName.ToLowerInvariant();
-            string fileName = $"Warning.{language}.html";
-            string path = Path.Combine(HttpContext.Current.Server.MapPath("~"), fileName);
+            var language = uiCulture.TwoLetterISOLanguageName.ToLowerInvariant();
+            var fileName = $"Warning.{language}.html";
+            var path = Path.Combine(HttpContext.Current.Server.MapPath("~"), fileName);
             if (File.Exists(path))
             {
                 return true;
@@ -49,9 +49,9 @@ namespace Negri.Wot
                 uiCulture = CultureInfo.CurrentUICulture;                
             }
 
-            string language = uiCulture.TwoLetterISOLanguageName.ToLowerInvariant();
-            string fileName = $"Warning.{language}.html";
-            string path = Path.Combine(HttpContext.Current.Server.MapPath("~"), fileName);
+            var language = uiCulture.TwoLetterISOLanguageName.ToLowerInvariant();
+            var fileName = $"Warning.{language}.html";
+            var path = Path.Combine(HttpContext.Current.Server.MapPath("~"), fileName);
             if (File.Exists(path))
             {
                 return MvcHtmlString.Create(File.ReadAllText(path, Encoding.UTF8));

@@ -100,7 +100,7 @@ namespace Negri.Wot
 
         public static string ToWebColor(this double wn8, double? alpha = null, double? colorCorrection = null)
         {
-            Color color = wn8.ToColor();
+            var color = wn8.ToColor();
 
             if (colorCorrection != null)
             {

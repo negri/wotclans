@@ -23,7 +23,7 @@ namespace Negri.Wot
 
             var l = new List<HistoricPoint>();
 
-            for (int i = 1; i < a.Length; i++)
+            for (var i = 1; i < a.Length; i++)
             {
                 if ((a[i - 1].Date != a[i].Date) && (a[i-1].Active > 0))
                 {

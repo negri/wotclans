@@ -32,13 +32,11 @@ namespace Negri.Wot.Sql
             using (var conn = new SqlConnection(ConnectionString))
             {
                 conn.Open();
-                using (var cmd = new SqlCommand("Store.ClearPlayers", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandTimeout = 2 * 60;
-                    cmd.Parameters.AddWithValue("@age", age);
-                    cmd.ExecuteNonQuery();
-                }
+                using var cmd = new SqlCommand("Store.ClearPlayers", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 2 * 60;
+                cmd.Parameters.AddWithValue("@age", age);
+                cmd.ExecuteNonQuery();
             }
             
             Log.Debug($"Cleaned old players with age > {age} in {sw.Elapsed}.");
@@ -65,13 +63,11 @@ namespace Negri.Wot.Sql
             var json = JsonConvert.SerializeObject(player, Formatting.None);
             var bin = json.Zip();
 
-            using (var cmd = new SqlCommand("Store.SetPlayer", t.Connection, t))
-            {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@playerId", player.Id);
-                cmd.Parameters.AddWithValue("@data", bin);
-                cmd.ExecuteNonQuery();
-            }
+            using var cmd = new SqlCommand("Store.SetPlayer", t.Connection, t);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@playerId", player.Id);
+            cmd.Parameters.AddWithValue("@data", bin);
+            cmd.ExecuteNonQuery();
         }
 
         /// <summary>
@@ -93,15 +89,13 @@ namespace Negri.Wot.Sql
             {
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = 20;
-                cmd.Parameters.AddWithValue("@playerId", playerId);                
-                using (var reader = cmd.ExecuteReader())
+                cmd.Parameters.AddWithValue("@playerId", playerId);
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
                 {
-                    if (reader.Read())
-                    {
-                        var bin = (byte[])reader[0];
-                        var json = bin.Unzip();
-                        return JsonConvert.DeserializeObject<Player>(json);
-                    }
+                    var bin = (byte[])reader[0];
+                    var json = bin.Unzip();
+                    return JsonConvert.DeserializeObject<Player>(json);
                 }
             }
 

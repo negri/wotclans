@@ -131,12 +131,12 @@ namespace Negri.Wot
                 return string.Empty;
             }
 
-            string stFormD = input.Normalize(NormalizationForm.FormD);
-            int len = stFormD.Length;
+            var stFormD = input.Normalize(NormalizationForm.FormD);
+            var len = stFormD.Length;
             var sb = new StringBuilder();
-            for (int i = 0; i < len; i++)
+            for (var i = 0; i < len; i++)
             {
-                UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(stFormD[i]);
+                var uc = CharUnicodeInfo.GetUnicodeCategory(stFormD[i]);
                 if (uc != UnicodeCategory.NonSpacingMark)
                 {
                     sb.Append(stFormD[i]);
@@ -147,7 +147,7 @@ namespace Negri.Wot
 
         public static void CopyTo(this Stream src, Stream dest)
         {
-            byte[] bytes = new byte[4096];
+            var bytes = new byte[4096];
 
             int cnt;
 
@@ -161,30 +161,26 @@ namespace Negri.Wot
         {
             var bytes = Encoding.UTF8.GetBytes(s);
 
-            using (var msi = new MemoryStream(bytes))
-            using (var mso = new MemoryStream())
+            using var msi = new MemoryStream(bytes);
+            using var mso = new MemoryStream();
+            using (var gs = new GZipStream(mso, CompressionMode.Compress))
             {
-                using (var gs = new GZipStream(mso, CompressionMode.Compress))
-                {
-                    CopyTo(msi, gs);
-                }
-
-                return mso.ToArray();
+                CopyTo(msi, gs);
             }
+
+            return mso.ToArray();
         }
 
         public static string Unzip(this byte[] bytes)
         {
-            using (var msi = new MemoryStream(bytes))
-            using (var mso = new MemoryStream())
+            using var msi = new MemoryStream(bytes);
+            using var mso = new MemoryStream();
+            using (var gs = new GZipStream(msi, CompressionMode.Decompress))
             {
-                using (var gs = new GZipStream(msi, CompressionMode.Decompress))
-                {
-                    CopyTo(gs, mso);
-                }
-
-                return Encoding.UTF8.GetString(mso.ToArray());
+                CopyTo(gs, mso);
             }
+
+            return Encoding.UTF8.GetString(mso.ToArray());
         }
 
         /// <summary>
@@ -198,7 +194,7 @@ namespace Negri.Wot
             }
             fileName = fileName.RemoveDiacritics();
 
-            string regexSearch = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
+            var regexSearch = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
             var r = new Regex($"[{Regex.Escape(regexSearch)}]");
             fileName = r.Replace(fileName, "");
             if (replaceWhiteSpace)
@@ -243,7 +239,7 @@ namespace Negri.Wot
                 return default(T);
             }
 
-            int index = Random.Next(0, a.Length);
+            var index = Random.Next(0, a.Length);
             return a[index];
         }
 

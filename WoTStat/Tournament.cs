@@ -112,9 +112,9 @@ namespace Negri.Wot
 
         public static IEnumerable<Tournament> ReadAll(bool includeRestricted = false)
         {
-            string dataDirectory = ConfigurationManager.AppSettings["ClanResultsFolder"];                        
-            string currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-            DateTime date = DateTime.UtcNow;
+            var dataDirectory = ConfigurationManager.AppSettings["ClanResultsFolder"];                        
+            var currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+            var date = DateTime.UtcNow;
 
             var all = ReadAll(dataDirectory).Where(t => t.ShouldAppear(currentLanguage) && t.ShouldAppear(date)).OrderBy(t => t.Name);
             return includeRestricted ? all : all.Where(t => !t.IsRestricted);
@@ -152,7 +152,7 @@ namespace Negri.Wot
         public void Save(string baseDirectory)
         {
             var tournamentDirectory = Path.Combine(baseDirectory, "Tournament");
-            string json = JsonConvert.SerializeObject(this, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(this, Formatting.Indented);
             File.WriteAllText(Path.Combine(tournamentDirectory, $"{Tag}.json"), json, Encoding.UTF8);
         }
     }

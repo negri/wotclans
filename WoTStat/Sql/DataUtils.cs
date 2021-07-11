@@ -138,10 +138,10 @@ namespace Negri.Wot.Sql
         public static byte[] GetBytes(this IDataRecord reader, int index)
         {
             if (reader.IsDBNull(index)) return new byte[0];
-            long size = reader.GetBytes(index, 0, null, 0, 0);
+            var size = reader.GetBytes(index, 0, null, 0, 0);
             if (size <= 0) return new byte[0];
             var buffer = new byte[size];
-            long read = reader.GetBytes(index, 0, buffer, 0, (int)size);
+            var read = reader.GetBytes(index, 0, buffer, 0, (int)size);
             Debug.Assert(read == size);
             return buffer;
         }

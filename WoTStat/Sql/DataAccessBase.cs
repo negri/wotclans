@@ -23,16 +23,12 @@ namespace Negri.Wot.Sql
             {
                 try
                 {
-                    using (var connection = new SqlConnection(ConnectionString))
-                    {
-                        connection.Open();
-                        using (var t = connection.BeginTransaction("Get"))
-                        {
-                            T result = getter(t);
-                            t.Commit();
-                            return result;
-                        }
-                    }
+                    using var connection = new SqlConnection(ConnectionString);
+                    connection.Open();
+                    using var t = connection.BeginTransaction("Get");
+                    var result = getter(t);
+                    t.Commit();
+                    return result;
                 }
                 catch (SqlException ex)
                 {
@@ -84,26 +80,22 @@ namespace Negri.Wot.Sql
             {
                 try
                 {
-                    using (var connection = new SqlConnection(ConnectionString))
+                    using var connection = new SqlConnection(ConnectionString);
+                    connection.Open();
+                    using var t = connection.BeginTransaction("Execute");
+                    try
                     {
-                        connection.Open();
-                        using (var t = connection.BeginTransaction("Execute"))
-                        {
-                            try
-                            {
-                                action(t);
-                                t.Commit();
-                            }
-                            catch (SqlException ex)
-                            {
-                                Log.Warn("Inner Exception", ex);
-                                t.Rollback();
-                                throw;
-                            }
-                            
-                            return;
-                        }
+                        action(t);
+                        t.Commit();
                     }
+                    catch (SqlException ex)
+                    {
+                        Log.Warn("Inner Exception", ex);
+                        t.Rollback();
+                        throw;
+                    }
+
+                    return;
                 }
                 catch (SqlException ex)
                 {
