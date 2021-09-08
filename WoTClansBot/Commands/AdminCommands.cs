@@ -22,6 +22,22 @@ namespace Negri.Wot.Bot
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class AdminCommands
     {
+        [Command("leave")]
+        [Description("Tells the bot to leave your server.")]
+        public async Task Leave(CommandContext ctx)
+        {
+            try
+            {
+                await ctx.RespondAsync("Ok... I will show myself the door.");
+                await ctx.Guild.LeaveAsync();
+            }
+            catch (Exception ex)
+            {
+                await ctx.RespondAsync($"Sorry, {ctx.User.Mention}. There was an error... the *Coder* will be notified of `{ex.Message}`.");
+            }
+        }
+
+
         [Command("uptime")]
         [Aliases("version", "info")]
         [Description("Shows the amount of time this bot is running.")]
@@ -423,7 +439,7 @@ namespace Negri.Wot.Bot
 
             var configuration = GuildConfiguration.FromGuild(ctx.Guild);
 
-            var result = configuration.CanCallerExecute(feature, new[] {role}, channel, out var reason);
+            var result = configuration.CanCallerExecute(feature, new[] { role }, channel, out var reason);
             await ctx.RespondAsync(
                 $"The feature `{feature}` is **{(result ? "allowed" : "denied")}** on role `{role}` in the channel `#{channel}`. Explanation: {reason}");
         }
