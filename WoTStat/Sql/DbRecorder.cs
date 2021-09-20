@@ -1000,6 +1000,13 @@ namespace Negri.Wot.Sql
 
             foreach (var medal in medals)
             {
+                if (string.IsNullOrWhiteSpace(medal.Name))
+                {
+                    Log.Warn($"Medal {medal.Code} don't have a name!");
+                    medal.Name = medal.Code;
+                    continue;
+                }
+
                 cmd.Parameters.Clear();
 
                 cmd.Parameters.AddWithValue("@MedalCode", medal.Code);
