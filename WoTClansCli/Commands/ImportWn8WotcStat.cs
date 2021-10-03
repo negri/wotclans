@@ -10,17 +10,19 @@ using Negri.Wot.Sql;
 
 namespace Negri.Wot.Commands
 {
-    [Command("ImportXvm", Description = "Import Expected WN8 values from XVM")]
-    public class ImportXvm : ICommand
+
+    
+    [Command("ImportWn8WotcStat", Description = "Import Expected WN8 values from WotcStat")]
+    public class ImportWn8WotcStat : ICommand
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ImportXvm));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ImportWn8WotcStat));
 
         private readonly Fetcher _fetcher;
         private readonly Putter _putter;
         private readonly DbProvider _provider;
         private readonly DbRecorder _recorder;
-        
-        public ImportXvm(Fetcher fetcher, Putter putter, DbProvider provider, DbRecorder recorder)
+
+        public ImportWn8WotcStat(Fetcher fetcher, Putter putter, DbProvider provider, DbRecorder recorder)
         {
             _fetcher = fetcher;
             _provider = provider;
@@ -28,7 +30,7 @@ namespace Negri.Wot.Commands
             _putter = putter;
         }
 
-        [CommandOption("WebCacheAge",  Description = "Maximum age for data retrieved from the web")]
+        [CommandOption("WebCacheAge", Description = "Maximum age for data retrieved from the web")]
         public TimeSpan WebCacheAge { get; set; } = TimeSpan.FromHours(1);
 
         [CommandOption("Compute", Description = "If the reference values for this site should be computed from the acquired data")]
@@ -39,36 +41,36 @@ namespace Negri.Wot.Commands
 
         public ValueTask ExecuteAsync(IConsole console)
         {
-            Log.Info($"Starting {nameof(ImportXvm)}...");
+            Log.Info($"Starting {nameof(ImportWn8WotcStat)}...");
 
             _fetcher.WebCacheAge = WebCacheAge;
 
-            // Get PC Tanks on the API
-            var pcTanks = _fetcher.GetTanks(Platform.PC).ToArray();
-            Log.Info($"{pcTanks.Length} PC Tanks retrieved from the API.");
+            // Get Tanks on the API
+            var apiTanks = _fetcher.GetTanks(Platform.Console).ToArray();
+            Log.Info($"{apiTanks.Length} Console Tanks retrieved from the API.");
 
             // Save on Database
-            _recorder.Set(Platform.PC, pcTanks);
-            Log.Info("PC Tanks saved.");
+            _recorder.Set(Platform.Console, apiTanks);
+            Log.Info("Console Tanks saved.");
 
-            // Get XVM Expected Values
+            // Get Expected Values
             var expected = _fetcher.GetXvmWn8ExpectedValues();
-            Log.Info("Expected PC values retrieved from XVM");
+            Log.Info("Expected values retrieved from WotcStat");
 
-            // XVM is returning some strange ids..
-            var tanks = pcTanks.Select(t => t.TankId).ToHashSet();
+            // WotcStat may be returning some strange ids..
+            var tanks = apiTanks.Select(t => t.TankId).ToHashSet();
             foreach (var t in expected.AllTanks)
             {
                 if (!tanks.Contains(t.TankId))
                 {
-                    Log.Warn($"XVM reported tank Id {t.TankId} that is not a current PC tank.");
+                    Log.Warn($"WotcStat reported tank Id {t.TankId} that is not a current console tank.");
                     expected.Remove(t.TankId);
                 }
             }
 
-            // Save XVM Data on DB and Calculate Console Values from it
+            // Save WotcStat Data on DB and Calculate Console Values from it
             _recorder.Set(expected, Compute);
-            Log.Info("Expected XVM Values saved.");
+            Log.Info("Expected WotcStat Values saved.");
             if (Compute)
             {
                 Log.Info("Console values computed.");
@@ -86,11 +88,12 @@ namespace Negri.Wot.Commands
 
                 Log.Info("WN8 values saved to the site.");
             }
-            
+
             console.Output.WriteLine("Done!");
-            Log.Info($"Done {nameof(ImportXvm)}.");
+            Log.Info($"Done {nameof(ImportWn8WotcStat)}.");
 
             return default;
         }
     }
+
 }

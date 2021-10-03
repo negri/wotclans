@@ -160,6 +160,7 @@
     <Compile Include="Tanks\TankReferenceBasic.cs" />
     <Compile Include="Tanks\TankTypeExtensions.cs" />
     <Compile Include="Tanks\Wn8ExpectedValues.cs" />
+    <Compile Include="Tanks\Wn8ExpectedValuesSources.cs" />
     <Compile Include="Tanks\Wn8TankExpectedValues.cs" />
     <Compile Include="Tanks\Wn8TankExpectedValuesOrigin.cs" />
     <Compile Include="Threading\ExponentialRetryPolicy.cs" />

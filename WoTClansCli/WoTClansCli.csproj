@@ -94,6 +94,7 @@
     <Compile Include="Commands\GetClans.cs" />
     <Compile Include="Commands\GetPlayers.cs" />
     <Compile Include="Commands\ImportMoe.cs" />
+    <Compile Include="Commands\ImportWn8WotcStat.cs" />
     <Compile Include="Commands\ImportXvm.cs" />
     <Compile Include="Commands\PurgeOldPlayers.cs" />
     <Compile Include="Program.cs" />

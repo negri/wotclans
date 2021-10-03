@@ -13,7 +13,7 @@ namespace Negri.Wot
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(CacheExtensions));
 
-        private static readonly object Lock = new object();
+        private static readonly object Lock = new();
 
         public static T Get<T>(this Cache cache, string key, int lifeTimeMinutes, Func<T> generator)
         {

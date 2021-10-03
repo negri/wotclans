@@ -61,7 +61,7 @@ namespace Negri.Wot.Sql
                     var o = cmd.ExecuteScalar();
                     if (o != null)
                     {
-                        var existingId = (long) o;
+                        var existingId = (long)o;
                         if (existingId != clan.ClanId)
                         {
                             // O novo nome colide com algum outro...
@@ -81,7 +81,7 @@ namespace Negri.Wot.Sql
                     {
                         cmd.CommandTimeout = 5 * 60;
                         cmd.Parameters.AddWithValue("@clanId", otherClanId.Value);
-                        isEnabled = (bool) cmd.ExecuteScalar();
+                        isEnabled = (bool)cmd.ExecuteScalar();
                     }
                     if (isEnabled)
                     {
@@ -105,7 +105,7 @@ namespace Negri.Wot.Sql
 
                         cmd.Parameters.AddWithValue("@clanTag", disabledName);
                         cmd.Parameters.AddWithValue("@clanId", otherClanId.Value);
-                        
+
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -145,7 +145,7 @@ namespace Negri.Wot.Sql
                 cmd.Parameters.AddWithValue("@MembershipMoment", clan.MembershipMoment);
                 cmd.ExecuteNonQuery();
             }
-            
+
             foreach (var player in clan.Players)
             {
                 Set(player, t, !onlyMembership && player.Moment.Date == date);
@@ -185,7 +185,7 @@ namespace Negri.Wot.Sql
                     cmd.Parameters.AddWithValue("@clanId", clan.ClanId);
                     cmd.Parameters.AddWithValue("@date", date);
                     cmd.Parameters.AddWithValue("@playerId", player.Id);
-                    cmd.Parameters.AddWithValue("@rankId", (int) player.Rank);
+                    cmd.Parameters.AddWithValue("@rankId", (int)player.Rank);
                     cmd.ExecuteNonQuery();
                 }
 
@@ -203,21 +203,21 @@ namespace Negri.Wot.Sql
             }
         }
 
-        
+
         /// <summary>
-        /// Salva os valores esperados no BD
+        /// Salva os valores esperados no BD, e dispara a atualização local
         /// </summary>
-        public void Set(Wn8ExpectedValues ev)
+        public void Set(Wn8ExpectedValues ev, bool computeConsoleValues)
         {
             Log.DebugFormat("Salvando Wn8 Expected Values BD...");
             var sw = Stopwatch.StartNew();
-            Execute(transaction => { Set(ev, transaction); });
+            Execute(transaction => { Set(ev, computeConsoleValues, transaction); });
             Log.DebugFormat("Salva Wn8 Expected Values no BD em {0}.", sw.Elapsed);
         }
 
-        private static void Set(Wn8ExpectedValues ev, SqlTransaction t)
+        private static void Set(Wn8ExpectedValues ev, bool computeConsoleValues, SqlTransaction t)
         {
-            var now = DateTime.UtcNow;            
+            var now = DateTime.UtcNow;
 
             using (var cmd = new SqlCommand("Tanks.SetWn8ExpectedLoad", t.Connection, t))
             {
@@ -251,16 +251,22 @@ namespace Negri.Wot.Sql
                     cmd.Parameters.AddWithValue("@damage", v.Damage);
                     cmd.Parameters.AddWithValue("@winRate", v.WinRate);
 
-                    cmd.ExecuteNonQuery();                    
-                }                
+                    cmd.ExecuteNonQuery();
+                }
             }
 
-            // Dispara o completamento da tabela
-            using (var cmd = new SqlCommand("Tanks.[CalculateWn8ConsoleExpectedFromXvm]", t.Connection, t))
+            if (computeConsoleValues)
             {
+                var computeProcedure = ev.Source switch
+                {
+                    Wn8ExpectedValuesSources.Xvm => "Tanks.[CalculateWn8ConsoleExpectedFromXvm]",
+                    Wn8ExpectedValuesSources.WotcStat => "Tanks.[CalculateWn8ConsoleExpectedFromWotcStat]",
+                    _ => throw new ArgumentOutOfRangeException(nameof(ev.Source), ev.Source, @"Source not supported"),
+                };
+                using var cmd = new SqlCommand(computeProcedure, t.Connection, t);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
-                
+
                 cmd.ExecuteNonQuery();
             }
 
@@ -298,7 +304,7 @@ namespace Negri.Wot.Sql
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
                 cmd.Parameters.AddWithValue("@playerId", tps[0].PlayerId);
-                firstTime = (int) cmd.ExecuteScalar() == 0;
+                firstTime = (int)cmd.ExecuteScalar() == 0;
             }
 
             if (firstTime)
@@ -477,17 +483,15 @@ namespace Negri.Wot.Sql
             var res = new List<(long tankId, string medalCode, int count, long battles)>();
 
             const string query = "select TankId, MedalCode, [Count], Battles from Achievements.PlayerMedal where PlayerId = @playerId;";
-            using (var cmd = new SqlCommand(query, t.Connection, t))
+            using var cmd = new SqlCommand(query, t.Connection, t);
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandTimeout = 15;
+            cmd.Parameters.AddWithValue("@playerId", playerId);
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
             {
-                cmd.CommandType = CommandType.Text;
-                cmd.CommandTimeout = 15;
-                cmd.Parameters.AddWithValue("@playerId", playerId);
-                using var reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    res.Add((reader.GetNonNullValue<long>(0), reader.GetNonNullValue<string>(1),
-                        reader.GetNonNullValue<int>(2), reader.GetNonNullValue<long>(3)));
-                }
+                res.Add((reader.GetNonNullValue<long>(0), reader.GetNonNullValue<string>(1),
+                    reader.GetNonNullValue<int>(2), reader.GetNonNullValue<long>(3)));
             }
 
             return res;
@@ -613,10 +617,10 @@ namespace Negri.Wot.Sql
             };
 
 
-            using var cmd = new SqlCommand(procedure, t.Connection, t) {CommandType = CommandType.StoredProcedure, CommandTimeout = 5 * 60};
+            using var cmd = new SqlCommand(procedure, t.Connection, t) { CommandType = CommandType.StoredProcedure, CommandTimeout = 5 * 60 };
             foreach (var tank in tanks)
             {
-                
+
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@tankId", tank.TankId);
                 cmd.Parameters.AddWithValue("@name", tank.Name);
@@ -637,16 +641,15 @@ namespace Negri.Wot.Sql
         private static string GetGamerTag(long playerId, SqlTransaction t)
         {
             const string sql = "select GamerTag from Main.Player where PlayerId = @playerId;";
-            using (var cmd = new SqlCommand(sql, t.Connection, t))
+            using var cmd = new SqlCommand(sql, t.Connection, t);
+            cmd.CommandTimeout = 5 * 60;
+            cmd.Parameters.AddWithValue("@playerId", playerId);
+            using var reader = cmd.ExecuteReader();
+            if (reader.Read())
             {
-                cmd.CommandTimeout = 5 * 60;
-                cmd.Parameters.AddWithValue("@playerId", playerId);
-                using var reader = cmd.ExecuteReader();
-                if (reader.Read())
-                {
-                    return reader.GetNonNullValue<string>(0);
-                }
+                return reader.GetNonNullValue<string>(0);
             }
+
             return null;
         }
 
@@ -657,16 +660,15 @@ namespace Negri.Wot.Sql
         {
             const string sql =
                 "select ClanTag from Main.Clan where (ClanId = @clanId);";
-            using (var cmd = new SqlCommand(sql, t.Connection, t))
+            using var cmd = new SqlCommand(sql, t.Connection, t);
+            cmd.CommandTimeout = 5 * 60;
+            cmd.Parameters.AddWithValue("@clanId", clanId);
+            using var reader = cmd.ExecuteReader();
+            if (reader.Read())
             {
-                cmd.CommandTimeout = 5 * 60;
-                cmd.Parameters.AddWithValue("@clanId", clanId);
-                using var reader = cmd.ExecuteReader();
-                if (reader.Read())
-                {
-                    return reader.GetNonNullValue<string>(0);
-                }
+                return reader.GetNonNullValue<string>(0);
             }
+
             return null;
         }
 
@@ -696,10 +698,10 @@ namespace Negri.Wot.Sql
         {
             using var cmd = new SqlCommand("Performance.CalculateMoEPercentile", t.Connection, t)
             {
-                CommandType = CommandType.StoredProcedure, 
+                CommandType = CommandType.StoredProcedure,
                 CommandTimeout = 4 * 60 * 60 // BRUTALMENTE LENTO!
             };
-            
+
             cmd.Parameters.AddWithValue("@utcShift", utcShiftToCalculate);
             cmd.ExecuteNonQuery();
         }
@@ -1059,7 +1061,7 @@ namespace Negri.Wot.Sql
                 cmd.Parameters.AddWithValue("@date", date);
                 cmd.Parameters.AddWithValue("@moment", moment);
                 cmd.Parameters.AddWithValue("@count", count);
-                
+
                 cmd.ExecuteNonQuery();
             }
 
@@ -1079,7 +1081,7 @@ namespace Negri.Wot.Sql
                 foreach (var m in moes)
                 {
                     cmd.Parameters.Clear();
-                    
+
                     cmd.Parameters.AddWithValue("@date", date);
                     cmd.Parameters.AddWithValue("@tankId", m.TankId);
                     cmd.Parameters.AddWithValue("@battles", m.NumberOfBattles);

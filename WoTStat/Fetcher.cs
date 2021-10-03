@@ -32,7 +32,7 @@ namespace Negri.Wot
         /// <summary>
         ///     Regex for clan tags
         /// </summary>
-        private static readonly Regex ClanTagRegex = new Regex("^[A-Z0-9\\-_]{2,5}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex ClanTagRegex = new("^[A-Z0-9\\-_]{2,5}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         /// <summary>
         ///     The only and only HTTP Client
@@ -109,6 +109,42 @@ namespace Negri.Wot
             return GetTanks(platform, null);
         }
 
+        public Wn8ExpectedValues GetWotcStatWn8ExpectedValues()
+        {
+            throw new NotImplementedException("Not yet...");
+
+            Log.Debug("Obtendo os WN8 da XVM");
+            const string url = "https://static.modxvm.com/wn8-data-exp/json/wn8exp.json";
+            var json = GetContent("Wn8XVM.json", url, WebCacheAge, false, Encoding.UTF8);
+
+            var ev = new Wn8ExpectedValues();
+
+            var j = JObject.Parse(json);
+            var h = j["header"];
+
+            Debug.Assert(h != null, nameof(h) + " != null");
+
+            ev.Source = Wn8ExpectedValuesSources.Xvm;
+            ev.Version = (string)h["version"];
+
+            var d = j["data"];
+            Debug.Assert(d != null, nameof(d) + " != null");
+
+            foreach (var dd in d.Children())
+                ev.Add(new Wn8TankExpectedValues
+                {
+                    TankId = (long)dd["IDNum"],
+                    Def = (double)dd["expDef"],
+                    Frag = (double)dd["expFrag"],
+                    Spot = (double)dd["expSpot"],
+                    Damage = (double)dd["expDamage"],
+                    WinRate = (double)dd["expWinRate"] / 100.0
+                });
+
+            return ev;
+        }
+
+
         public Wn8ExpectedValues GetXvmWn8ExpectedValues()
         {
             Log.Debug("Obtendo os WN8 da XVM");
@@ -122,7 +158,7 @@ namespace Negri.Wot
 
             Debug.Assert(h != null, nameof(h) + " != null");
 
-            ev.Source = (string) h["source"];
+            ev.Source = Wn8ExpectedValuesSources.Xvm;
             ev.Version = (string) h["version"];
 
             var d = j["data"];

@@ -7,7 +7,7 @@ namespace Negri.Wot.Threading
     /// </summary>
     public class ExponentialRetryPolicy : RetryPolicy
     {
-        private static readonly Random Random = new Random();
+        private static readonly Random Random = new();
 
         private readonly TimeSpan _maxWait;
         private readonly TimeSpan _minWait;

@@ -12,7 +12,7 @@ namespace Negri.Wot
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Clan));
 
-        private readonly List<Player> _players = new List<Player>();
+        private readonly List<Player> _players = new();
         private HistoricPoint[] _history = new HistoricPoint[0];
         private DateTime _membershipMoment;
 

@@ -18,7 +18,7 @@ namespace Negri.Wot.Tanks
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Wn8ExpectedValues));
 
-        private Dictionary<long, Wn8TankExpectedValues> _values = new Dictionary<long, Wn8TankExpectedValues>();
+        private Dictionary<long, Wn8TankExpectedValues> _values = new();
 
         /// <summary>
         /// Dados dos dados
@@ -193,7 +193,7 @@ namespace Negri.Wot.Tanks
         }
 
         /// <summary>
-        /// Calcula o Tier Medio de um conjunto de batalhas jogadas
+        /// Calcula o Tier Médio de um conjunto de batalhas jogadas
         /// </summary>
         /// <param name="played"></param>
         /// <returns></returns>

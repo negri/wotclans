@@ -19,8 +19,8 @@ namespace Negri.Wot
 
         private readonly string _dataDirectory;
         private readonly Guid _instanceId = Guid.NewGuid();
-        private readonly object _clansLock = new object();
-        private readonly object _tanksLock = new object();
+        private readonly object _clansLock = new();
+        private readonly object _tanksLock = new();
                        
         /// <summary>
         ///     Cache dos dados mais recentes dos clãs

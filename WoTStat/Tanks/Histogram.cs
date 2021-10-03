@@ -12,7 +12,7 @@ namespace Negri.Wot.Tanks
             _bins.AddRange(bins);
         }
 
-        private readonly List<Bin> _bins = new List<Bin>();
+        private readonly List<Bin> _bins = new();
 
         public void Add(double lower, double upper, long count)
         {

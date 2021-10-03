@@ -13,8 +13,8 @@ namespace Negri.Wot
     public static class BasicExtensions
     {
 
-        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private static readonly Random Random = new Random();
+        private static readonly DateTime UnixEpoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly Random Random = new();
 
         /// <summary>
         /// Muda o tipo de Data (não é o mesmo que ToLocal ou ToUniversal, só mexe no DateTimeKind)
@@ -94,8 +94,8 @@ namespace Negri.Wot
                     CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) == 0;
         }
 
-        private static readonly List<string> RomanNumerals = new List<string> { "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" };
-        private static readonly List<int> Numerals = new List<int> { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
+        private static readonly List<string> RomanNumerals = new() { "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" };
+        private static readonly List<int> Numerals = new() { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
 
 
         /// <summary>
