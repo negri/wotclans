@@ -78,6 +78,10 @@ namespace Negri.Wot.Commands
             {
                 // Get the new calculated values and save on
                 var wn8 = _provider.GetWn8ExpectedValues();
+                if (wn8.Count <= 0)
+                {
+                    throw new CommandException("No current source!");
+                }
 
                 if (!_putter.Put(wn8))
                 {

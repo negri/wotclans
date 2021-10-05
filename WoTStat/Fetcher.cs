@@ -109,41 +109,64 @@ namespace Negri.Wot
             return GetTanks(platform, null);
         }
 
+        private class WotcStatWn8ExpectedValue
+        {
+            [JsonProperty("expDamage")]
+            public double ExpDamage { get; set; }
+
+            [JsonProperty("expDef")]
+            public double ExpDef { get; set; }
+
+            [JsonProperty("expFrag")]
+            public double ExpFrag { get; set; }
+
+            [JsonProperty("expSpot")]
+            public double ExpSpot { get; set; }
+
+            [JsonProperty("expWinRate")]
+            public double ExpWinRate { get; set; }
+        }
+
         public Wn8ExpectedValues GetWotcStatWn8ExpectedValues()
         {
-            throw new NotImplementedException("Not yet...");
+            
+            Log.Debug("Getting WN8 from WotcStat...");
+            const string url = "https://wotcstat.info/tankopedia/wn8console.json";
+            var json = GetContent("Wn8WotcStat.json", url, WebCacheAge, false, Encoding.UTF8);
 
-            Log.Debug("Obtendo os WN8 da XVM");
-            const string url = "https://static.modxvm.com/wn8-data-exp/json/wn8exp.json";
-            var json = GetContent("Wn8XVM.json", url, WebCacheAge, false, Encoding.UTF8);
+            var fromSite = JsonConvert.DeserializeObject<Dictionary<long, WotcStatWn8ExpectedValue>>(json);
+            if (fromSite == null)
+            {
+                throw new ApplicationException("null return");
+            }
 
-            var ev = new Wn8ExpectedValues();
+            if (fromSite.Count <= 0)
+            {
+                throw new ApplicationException("empty return");
+            }
 
-            var j = JObject.Parse(json);
-            var h = j["header"];
+            var ev = new Wn8ExpectedValues
+            {
+                Source = Wn8ExpectedValuesSources.WotcStat,
+                Version = DateTime.UtcNow.ToString("yyyy-MM-dd")
+            };
 
-            Debug.Assert(h != null, nameof(h) + " != null");
-
-            ev.Source = Wn8ExpectedValuesSources.Xvm;
-            ev.Version = (string)h["version"];
-
-            var d = j["data"];
-            Debug.Assert(d != null, nameof(d) + " != null");
-
-            foreach (var dd in d.Children())
-                ev.Add(new Wn8TankExpectedValues
-                {
-                    TankId = (long)dd["IDNum"],
-                    Def = (double)dd["expDef"],
-                    Frag = (double)dd["expFrag"],
-                    Spot = (double)dd["expSpot"],
-                    Damage = (double)dd["expDamage"],
-                    WinRate = (double)dd["expWinRate"] / 100.0
-                });
+            foreach (var kv in fromSite)
+            {
+                ev.Add(
+                    new Wn8TankExpectedValues
+                    {
+                        TankId = kv.Key,
+                        Def = kv.Value.ExpDef,
+                        Frag = kv.Value.ExpFrag,
+                        Spot = kv.Value.ExpSpot,
+                        Damage = kv.Value.ExpDamage,
+                        WinRate = kv.Value.ExpWinRate / 100.0
+                    });
+            }
 
             return ev;
         }
-
 
         public Wn8ExpectedValues GetXvmWn8ExpectedValues()
         {

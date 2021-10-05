@@ -59,6 +59,14 @@ namespace Negri.Wot
                 ));
 
             services.AddTransient(p =>
+                new ImportWn8WotcStat(
+                    p.GetService<Fetcher>(),
+                    p.GetService<Putter>(),
+                    p.GetService<DbProvider>(),
+                    p.GetService<DbRecorder>()
+                ));
+
+            services.AddTransient(p =>
                 new ImportMoe(
                     p.GetService<Fetcher>(),
                     p.GetService<DbRecorder>()

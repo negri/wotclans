@@ -54,16 +54,16 @@ namespace Negri.Wot.Commands
             Log.Info("Console Tanks saved.");
 
             // Get Expected Values
-            var expected = _fetcher.GetXvmWn8ExpectedValues();
+            var expected = _fetcher.GetWotcStatWn8ExpectedValues();
             Log.Info("Expected values retrieved from WotcStat");
 
-            // WotcStat may be returning some strange ids..
+            // WotcStat may be returning some strange ids.., most likely it's my tanks database that's outdated (WG API may lag) or it's a Cold War tank
             var tanks = apiTanks.Select(t => t.TankId).ToHashSet();
             foreach (var t in expected.AllTanks)
             {
                 if (!tanks.Contains(t.TankId))
                 {
-                    Log.Warn($"WotcStat reported tank Id {t.TankId} that is not a current console tank.");
+                    Log.Warn($"WotcStat reported tank Id {t.TankId} that is not a current WW2 console tank.");
                     expected.Remove(t.TankId);
                 }
             }

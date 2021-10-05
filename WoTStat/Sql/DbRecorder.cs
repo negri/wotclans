@@ -232,7 +232,14 @@ namespace Negri.Wot.Sql
                 cmd.ExecuteNonQuery();
             }
 
-            using (var cmd = new SqlCommand("Tanks.SetWn8PcExpectedValues", t.Connection, t))
+            var setProcedure = ev.Source switch
+            {
+                Wn8ExpectedValuesSources.Xvm => "Tanks.[SetWn8PcExpectedValues]",
+                Wn8ExpectedValuesSources.WotcStat => "Tanks.[SetWn8ConsoleExpectedValues]",
+                _ => throw new ArgumentOutOfRangeException(nameof(ev.Source), ev.Source, @"Source not supported"),
+            };
+
+            using (var cmd = new SqlCommand(setProcedure, t.Connection, t))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 5 * 60;
@@ -260,14 +267,18 @@ namespace Negri.Wot.Sql
                 var computeProcedure = ev.Source switch
                 {
                     Wn8ExpectedValuesSources.Xvm => "Tanks.[CalculateWn8ConsoleExpectedFromXvm]",
-                    Wn8ExpectedValuesSources.WotcStat => "Tanks.[CalculateWn8ConsoleExpectedFromWotcStat]",
+                    Wn8ExpectedValuesSources.WotcStat => string.Empty, // no need to compute anything
                     _ => throw new ArgumentOutOfRangeException(nameof(ev.Source), ev.Source, @"Source not supported"),
                 };
-                using var cmd = new SqlCommand(computeProcedure, t.Connection, t);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandTimeout = 5 * 60;
 
-                cmd.ExecuteNonQuery();
+                if (!string.IsNullOrWhiteSpace(computeProcedure))
+                {
+                    using var cmd = new SqlCommand(computeProcedure, t.Connection, t);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandTimeout = 5 * 60;
+
+                    cmd.ExecuteNonQuery();
+                }
             }
 
         }
