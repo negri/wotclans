@@ -585,9 +585,17 @@ namespace Negri.Wot.Sql
                     };
 
                     var all = references[tr.TankId];
-                    tr.AverageWn8 = all.Wn8Values.GetWn8(tr.DamageDealt, tr.WinRatio, tr.Kills, tr.Spotted,
-                        tr.DroppedCapturePoints);
 
+                    if (all.Wn8Values == null)
+                    {
+                        Log.Error($"No WN8 Expected values for tank id {tr.TankId} ({tr.Name})");
+                        tr.AverageWn8 = 1000.0;
+                    }
+                    else
+                    {
+                        tr.AverageWn8 = all.Wn8Values.GetWn8(tr.DamageDealt, tr.WinRatio, tr.Kills, tr.Spotted, tr.DroppedCapturePoints);
+                    }
+                    
                     all.LastMonth = tr;
                 }
             }
