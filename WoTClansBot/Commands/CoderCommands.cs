@@ -484,7 +484,7 @@ namespace Negri.Wot.Bot
                     }
                     else
                     {
-                        recorder.DisableClan(clan.ClanId, DisabledReason.Unknow);
+                        recorder.DisableClan(clan.ClanId, DisabledReason.Unknown);
                         await ctx.RespondAsync(
                             $"The clan `{clanTag}` ({clan.ClanId}) was **disabled** from the site.");
                         Log.Warn($"Disabled {clanTag}");

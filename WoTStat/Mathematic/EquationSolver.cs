@@ -60,7 +60,7 @@ namespace Negri.Wot.Mathematic
             SolutionFound = 1,
 
             /// <summary>
-            ///     The maximum numbr of steps were reached
+            ///     The maximum number of steps were reached
             /// </summary>
             MaximumNumberOfSteps = 2,
 

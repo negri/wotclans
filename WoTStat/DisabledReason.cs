@@ -1,7 +1,7 @@
 namespace Negri.Wot
 {
     /// <summary>
-    /// Razões para um clã estar desabilidado no sistema
+    /// Reasons for a clan being disabled
     /// </summary>
     public enum DisabledReason
     {
@@ -11,6 +11,6 @@ namespace Negri.Wot
         Banned = 3,
         Request = 4,
         Disbanded = 5,
-        Unknow = 6
+        Unknown = 6
     }
 }
