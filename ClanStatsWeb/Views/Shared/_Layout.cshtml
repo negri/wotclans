@@ -95,9 +95,9 @@
                             </li>
                         }*@
 
-                    @*<li>
+                    <li>
                         @Html.ActionLink(Resources.Donate, "Donate", "Home", new { area = "" }, new { style = "color: gold;", title = Resources.DonateExplain })
-                    </li>*@
+                    </li>
                     <li>@Html.ActionLink(Resources.AboutTextLink, "About", "Home")</li>
                 </ul>
             </div>
@@ -118,13 +118,13 @@
             </section>
         }
 
-        @*<section id="donateSection" class="row" style="padding-top: 1em;">
+        <section id="donateSection" class="row" style="padding-top: 1em;">
             <div class="col-md-2"></div>
             <div class="col-md-8 alert alert-dismissible alert-info">
                 <button class="close" type="button" data-dismiss="alert">x</button>
                 @if (GlobalHelper.Language == "pt")
                 {
-                    <p style="text-align: center;">Me ajude a manter esse site sem propagandas! <a href="~/Donate">Doe!</a></p>
+                    <p style="text-align: center;">Me ajude a manter esse site sem propagandas! <a href="~/Donate">Doe!</a> Aceito PIX!</p>
                 }
                 else
                 {
@@ -132,7 +132,7 @@
                 }
             </div>
             <div class="col-md-2"></div>
-        </section>*@
+        </section>
 
         @RenderBody()
 
