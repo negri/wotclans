@@ -1344,9 +1344,27 @@ namespace Negri.Wot.Bot
                 var playerId = provider.GetPlayerIdByName(platform, gamerTag);
                 if (playerId == null)
                 {
-                    await ctx.RespondAsync(
-                        $"Sorry, {ctx.User?.Mention}, I do not track `{gamerTag}` yet. Are you a member of a tracked clan? Are you sure about the gamer tag?");
-                    return;
+                    // Maybe on the wrong platform...
+                    if (platform == Platform.XBOX)
+                    {
+                        platform = Platform.PS;
+                        playerId = provider.GetPlayerIdByName(platform, gamerTag);
+                    }
+                    else if (platform == Platform.PS)
+                    {
+                        platform = Platform.XBOX;
+                        playerId = provider.GetPlayerIdByName(platform, gamerTag);
+                    }
+
+                    if (playerId == null)
+                    {
+                        await ctx.RespondAsync($"Sorry, {ctx.User?.Mention}, I do not track `{gamerTag}` yet. Are you a member of a tracked clan? Are you sure about the gamer tag?");
+                        return;
+                    }
+
+                    // Warns that I changed the platform
+                    await ctx.RespondAsync($"Warning, {ctx.User?.Mention}, I found the Gamer Tag/PSN Name `{gamerTag}` on the {platform} platform. If I got it wrong try the command again putting the prefix `x.` or `ps.` before your Gamer Tag/PSN Name.");
+
                 }
 
                 var recorder = new DbRecorder(_connectionString);
