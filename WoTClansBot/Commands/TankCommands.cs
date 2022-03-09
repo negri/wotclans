@@ -457,11 +457,11 @@ namespace Negri.Wot.Bot
                 sb.AppendLine();
                 sb.AppendLine("```");
                 sb.AppendLine("Rating   WN8  Damage Piercings Shots");
-                sb.AppendLine($"Average {    ((int)Wn8Rating.Average).ToString("N0").PadLeft(5)} {    tr.TargetDamageAverage.ToString("N0").PadLeft(6)}        {    tr.TargetDamageAveragePiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageAverageShots.ToString("N0").PadLeft(2)}");
-                sb.AppendLine($"Good    {       ((int)Wn8Rating.Good).ToString("N0").PadLeft(5)} {       tr.TargetDamageGood.ToString("N0").PadLeft(6)}        {       tr.TargetDamageGoodPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageGoodShots.ToString("N0").PadLeft(2)}");
-                sb.AppendLine($"Great   {      ((int)Wn8Rating.Great).ToString("N0").PadLeft(5)} {      tr.TargetDamageGreat.ToString("N0").PadLeft(6)}        {      tr.TargetDamageGreatPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageGreatShots.ToString("N0").PadLeft(2)}");
-                sb.AppendLine($"Unicum  {     ((int)Wn8Rating.Unicum).ToString("N0").PadLeft(5)} {     tr.TargetDamageUnicum.ToString("N0").PadLeft(6)}        {     tr.TargetDamageUnicumPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageUnicumShots.ToString("N0").PadLeft(2)}");
-                sb.AppendLine($"Super   {((int)Wn8Rating.SuperUnicum).ToString("N0").PadLeft(5)} {tr.TargetDamageSuperUnicum.ToString("N0").PadLeft(6)}        {tr.TargetDamageSuperUnicumPiercings.ToString("N0").PadLeft(2)}    {tr.TargetDamageSuperUnicumShots.ToString("N0").PadLeft(2)}");
+                sb.AppendLine($"Average {    ((int)Wn8Rating.Average),5:N0} {    tr.TargetDamageAverage,6:N0}        {    tr.TargetDamageAveragePiercings,2:N0}    {tr.TargetDamageAverageShots,2:N0}");
+                sb.AppendLine($"Good    {       (int)Wn8Rating.Good,5:N0} {       tr.TargetDamageGood,6:N0}        {       tr.TargetDamageGoodPiercings,2:N0}    {tr.TargetDamageGoodShots,2:N0}");
+                sb.AppendLine($"Great   {      (int)Wn8Rating.Great,5:N0} {      tr.TargetDamageGreat,6:N0}        {      tr.TargetDamageGreatPiercings,2:N0}    {tr.TargetDamageGreatShots,2:N0}");
+                sb.AppendLine($"Unicum  {     (int)Wn8Rating.Unicum,5:N0} {     tr.TargetDamageUnicum,6:N0}        {     tr.TargetDamageUnicumPiercings,2:N0}    {tr.TargetDamageUnicumShots,2:N0}");
+                sb.AppendLine($"Super   {(int)Wn8Rating.SuperUnicum,5:N0} {tr.TargetDamageSuperUnicum,6:N0}        {tr.TargetDamageSuperUnicumPiercings,2:N0}    {tr.TargetDamageSuperUnicumShots,2:N0}");
                 sb.AppendLine("```");
                 sb.AppendLine();
 
@@ -815,12 +815,12 @@ namespace Negri.Wot.Bot
             {
                 maxGamerTag = 9;
             }
-            sb.AppendLine($"  # {"Tanker".PadRight(maxGamerTag)} {"Clan".PadRight(5)} {"Total".PadLeft(6)} {"Dir".PadLeft(6)} { "Aux".PadLeft(6)}");
+            sb.AppendLine($"  # {"Tanker".PadRight(maxGamerTag)} {"Clan",-5} {"Total",6} {"Dir",6} { "Aux",6}");
 
             for (var i = 0; i < Math.Min(leaderboard.Length, 25); i++)
             {
                 var l = leaderboard[i];
-                sb.AppendLine($"{(i + 1).ToString().PadLeft(3)} {l.GamerTag.PadRight(maxGamerTag)} {l.ClanTag.PadRight(5)} {l.TotalDamage.ToString("N0").PadLeft(6)} {l.DirectDamage.ToString("N0").PadLeft(6)} {l.DamageAssisted.ToString("N0").PadLeft(6)}");
+                sb.AppendLine($"{i + 1,3} {l.GamerTag.PadRight(maxGamerTag)} {l.ClanTag,-5} {l.TotalDamage,6:N0} {l.DirectDamage,6:N0} {l.DamageAssisted,6:N0}");
             }
 
             sb.AppendLine("```");

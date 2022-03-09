@@ -63,8 +63,18 @@ namespace Negri.Wot.Commands
             {
                 if (!tanks.Contains(t.TankId))
                 {
-                    Log.Warn($"WotcStat reported tank Id {t.TankId} that is not a current WW2 console tank.");
+                    Log.Warn($"WotcStat reported tank Id {t.TankId} that is not a current WW2 console tank or not yiey on the database.");
                     expected.Remove(t.TankId);
+                }
+            }
+
+            // WotcStat may be missing some tanks... just report. The reference values will come from XVM
+            tanks = expected.AllTanks.Select(t => t.TankId).ToHashSet();
+            foreach (var apiTank in apiTanks)
+            {
+                if (!tanks.Contains(apiTank.TankId))
+                {
+                    Log.Warn($"WotcStat didn't have expected values for {apiTank.ShortName}, id {apiTank.TankId}, Tier {apiTank.Tier}, {apiTank.Type}.");
                 }
             }
 
