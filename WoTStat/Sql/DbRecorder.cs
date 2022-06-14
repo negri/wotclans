@@ -483,7 +483,15 @@ namespace Negri.Wot.Sql
                     cmd.Parameters.AddWithValue("@count", count);
                     cmd.Parameters.AddWithValue("@battles", battles);
 
-                    cmd.ExecuteNonQuery();
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (SqlException ex)
+                    {
+                        Log.Error($"Invoking Achievements.SetPlayerMedal({tps[0].PlayerId}, {tankId}, {medalCode}, {count}, {battles})", ex);
+                    }
+                    
                 }
             }
 

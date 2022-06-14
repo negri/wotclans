@@ -36,7 +36,8 @@ namespace UtilityProgram
         {
             try
             {
-                DumpMoEFiles(args);
+                PopulateAllMedals();
+                //DumpMoEFiles(args);
             }
             catch (Exception ex)
             {
@@ -131,7 +132,7 @@ namespace UtilityProgram
             {
                 WebCacheAge = TimeSpan.FromMinutes(15),
                 WebFetchInterval = TimeSpan.FromSeconds(1),
-                WargamingApplicationId = ConfigurationManager.AppSettings["WgApi"]
+                WargamingApplicationId = ConfigurationManager.AppSettings["WgAppId"]
             };
 
             var gameMedals = fetcher.GetMedals().ToDictionary(m => m.Code);
@@ -140,6 +141,8 @@ namespace UtilityProgram
             var maxDescription = gameMedals.Values.Max(m => m.Description.Length);
             var maxHeroInformation = gameMedals.Values.Max(m => m.HeroInformation?.Length ?? 0);
             var maxCondition = gameMedals.Values.Max(m => m.Condition?.Length ?? 0);
+
+            var onTank = gameMedals["marksOnGun"];
 
             var connectionString = ConfigurationManager.ConnectionStrings["Main"].ConnectionString;
             var recorder = new DbRecorder(connectionString);
