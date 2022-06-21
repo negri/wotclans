@@ -13,7 +13,7 @@ namespace Negri.Wot.WgApi
         public long Count { get; set; }
 
         /// <summary>
-        /// De um total disponivel
+        /// De um total disponível
         /// </summary>
         public long Total { get; set; }
 
@@ -25,7 +25,7 @@ namespace Negri.Wot.WgApi
         /// <summary>
         /// Current page
         /// </summary>
-        public int Page { get; set; }
+        public int? Page { get; set; }
 
         /// <summary>
         /// Total pages
