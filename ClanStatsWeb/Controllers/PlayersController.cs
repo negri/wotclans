@@ -197,14 +197,14 @@ namespace Negri.Wot.Site.Controllers
 
         private string GetWotConsoleRuClanUrl(Clan clan)
         {
-            // https://www.wotconsole.ru/clan/?n=SELVA
-            return $"https://www.wotconsole.ru/clan/?n={clan.ClanTag.ToUpperInvariant()}";
+            // https://www.wotconsole.info/clan/?n=SELVA
+            return $"https://www.wotconsole.info/clan/?n={clan.ClanTag.ToUpperInvariant()}";
         }
 
         private string GetWoTConsoleRuOverallUrl(Player player)
         {
-            // https://www.wotconsole.ru/player/?p=ps4&n=juckof
-            // https://www.wotconsole.ru/player/?p=xbox&n=JP+Negri+Coder
+            // https://www.wotconsole.info/player/?p=ps4&n=juckof
+            // https://www.wotconsole.info/player/?p=xbox&n=JP+Negri+Coder
 
             string platform;
             switch (player.Platform)
@@ -220,7 +220,7 @@ namespace Negri.Wot.Site.Controllers
             }
 
             var name = player.Name.Replace(' ', '+');
-            return $"https://www.wotconsole.ru/player/?p={platform}&n={name}";
+            return $"https://www.wotconsole.info/player/?p={platform}&n={name}";
         }
 
 

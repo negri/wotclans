@@ -10,7 +10,7 @@ using Negri.Wot.Tanks;
 
 namespace Negri.Wot.Commands
 {
-    [Command("ImportMoe", Description = "Import MoE numbers from WoTConsole.ru")]
+    [Command("ImportMoe", Description = "Import MoE numbers from WoTconsole.info")]
     public class ImportMoe : ICommand
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ImportMoe));
@@ -41,9 +41,9 @@ namespace Negri.Wot.Commands
             _recorder.Set(Platform.Console, consoleTanks);
             Log.Info("Console Tanks saved.");
 
-            // Get WoTConsole.ru MoE Values
+            // Get wotconsole.info MoE Values
             var response = _fetcher.GetMoEFromWoTConsoleRu();
-            Log.Info("MoE values retrieved from WoTConsole.ru");
+            Log.Info("MoE values retrieved from wotconsole.info");
 
             // Checking for bizarre ids..
             var tanks = consoleTanks.Select(t => t.TankId).ToHashSet();
@@ -51,7 +51,7 @@ namespace Negri.Wot.Commands
             {
                 if (!tanks.Contains(t.TankId))
                 {
-                    Log.Warn($"WoTConsole.ru reported tank Id {t.TankId} that is not a current Console tank.");
+                    Log.Warn($"wotconsole.info reported tank Id {t.TankId} that is not a current Console tank.");
                     response.data.Remove(t.TankId);
                 }
             }

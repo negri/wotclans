@@ -551,7 +551,7 @@ namespace Negri.Wot.Bot
             sb.AppendLine($"*** 3 marks: {moe.Moe3Dmg:N0} Total Damage```");
 
             sb.AppendLine();
-            sb.AppendLine($"This data was computed and kindly provided by {Formatter.MaskedUrl("WoTconsole.ru", new Uri($"https://www.wotconsole.ru/marks/"))}. " +
+            sb.AppendLine($"This data was computed and kindly provided by {Formatter.MaskedUrl("WoTconsole.info", new Uri($"https://www.wotconsole.info/marks/"))}. " +
                           "They use the same algorithm that I used, but with a much larger sample size. And their site is great!");
             
 
@@ -568,11 +568,11 @@ namespace Negri.Wot.Bot
                 Description = sb.ToString(),
                 Color = DiscordColor.Gray,
                 ThumbnailUrl = tank.SmallImageUrl,
-                Url = "https://www.wotconsole.ru/marks/",
+                Url = "https://www.wotconsole.info/marks/",
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
-                    Name = "WoTconsole.ru",
-                    Url = "https://www.wotconsole.ru/marks/"
+                    Name = "WoTconsole.info",
+                    Url = "https://www.wotconsole.info/marks/"
                 },
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {

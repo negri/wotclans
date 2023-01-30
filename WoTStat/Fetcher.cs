@@ -887,7 +887,7 @@ namespace Negri.Wot
 
         public (DateTime moment, long count, IDictionary<long, TankMoe> data) GetMoEFromWoTConsoleRu()
         {
-            var url = $"https://wotconsole.ru/api/marks.json";
+            var url = $"https://wotconsole.info/api/marks.json";
             var json = GetContent($"WoTConsoleRu.MoE.json", url, WebCacheAge, false, Encoding.UTF8);
 
             var response = JsonConvert.DeserializeObject<WoTConsoleRuResponse>(json);

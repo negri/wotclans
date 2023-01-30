@@ -1061,10 +1061,10 @@ namespace Negri.Wot.Sql
 
         private void SetWoTConsoleRuMoe(DateTime moment, TankMoe[] moes)
         {
-            Log.Debug("Saving WoTConsole.ru MoEs...");
+            Log.Debug("Saving wotconsole.info MoEs...");
             var sw = Stopwatch.StartNew();
             Execute(t => SetWoTConsoleRuMoe(moment, moes, t));
-            Log.DebugFormat("Saved WoTConsole.ru MoEs in {0}.", sw.Elapsed);
+            Log.DebugFormat("Saved wotconsole.info MoEs in {0}.", sw.Elapsed);
         }
 
         private void SetWoTConsoleRuMoe(DateTime moment, TankMoe[] moes, SqlTransaction t)

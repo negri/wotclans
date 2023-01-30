@@ -14,7 +14,7 @@ namespace Negri.Wot.Site.Controllers
         [OutputCache(CacheProfile = "Normal")]
         public ActionResult Moe(DateTime? date = null)
         {
-            return RedirectPermanent("https://www.wotconsole.ru/marks/");
+            return RedirectPermanent("https://www.wotconsole.info/marks/");
 
             //var getter = HttpRuntime.Cache.Get("FileGetter", GlobalHelper.CacheMinutes,
             //    () => new FileGetter(GlobalHelper.DataFolder));
