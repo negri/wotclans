@@ -174,6 +174,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Images\Art\churchill7_1440x900_wall.jpg" />
+    <Content Include="Images\Art\LorraineAMX-M4_1920.jpg" />
     <Content Include="Images\Art\March_1440x900_wallpaper.jpg" />
     <Content Include="Images\Art\shashka-timeline.png" />
     <Content Include="Images\Art\su-152_1440x900_wall.jpg" />

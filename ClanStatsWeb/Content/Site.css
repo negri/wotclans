@@ -25,10 +25,10 @@ textarea {
 
 /* Top Banner */
 .top-banner {
-    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.40)), url(../Images/Art/churchill7_1440x900_wall.jpg);
+    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.40)), url(../Images/Art/LorraineAMX-M4_1920.jpg);
     background-size: auto auto;
     background-repeat: no-repeat;
-    background-position: 20% 40%;
+    background-position: 20% 45%;
     border-width: 0;
 }
 
