@@ -71,6 +71,8 @@ that I would love to have some help:
 * A more "mobile friendly" main view...
 * etc
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/A0A4ITI9T)
+
 ## FAQ
 
 1) Can I copy your project, database, and open up my version of it with beer, hookers and ads?
