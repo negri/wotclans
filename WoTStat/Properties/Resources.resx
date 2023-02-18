@@ -559,10 +559,10 @@
     <value>Donate with Crypto Currencies</value>
   </data>
   <data name="DonateExplain" xml:space="preserve">
-    <value>Help me keep this site ad free!</value>
+    <value>Help me keep this site up!</value>
   </data>
   <data name="DonatePayPal" xml:space="preserve">
-    <value>Donate with PayPal</value>
+    <value>Buy me a Coffee!</value>
   </data>
   <data name="Tanks" xml:space="preserve">
     <value>Tanks</value>

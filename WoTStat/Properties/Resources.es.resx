@@ -135,6 +135,12 @@
   <data name="Discussion" xml:space="preserve">
     <value>Discusión</value>
   </data>
+  <data name="DonateExplain" xml:space="preserve">
+    <value>¡Ayúdame a mantener este sitio en funcionamiento!</value>
+  </data>
+  <data name="DonatePayPal" xml:space="preserve">
+    <value>¡Cómprame un café!</value>
+  </data>
   <data name="FilterAll" xml:space="preserve">
     <value>Mostrar Todo</value>
   </data>

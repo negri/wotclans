@@ -36,18 +36,18 @@
                 <ul class="nav navbar-nav">
 
                     @*<li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            @Resources.Tournaments <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            @foreach (var tournament in Tournament.ReadAll())
-                            {
-                                <li><a href="~/Tournament/@tournament.Tag" title="@tournament.Description">@tournament.Name</a></li>
-                            }
-                            <li role="separator" class="divider"></li>
-                            <li>@Html.ActionLink(Resources.AboutTournamentsTextLink, Resources.AboutLink, "Home", null, null, "tournaments", null, null)</li>
-                        </ul>
-                    </li>*@
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                @Resources.Tournaments <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                @foreach (var tournament in Tournament.ReadAll())
+                                {
+                                    <li><a href="~/Tournament/@tournament.Tag" title="@tournament.Description">@tournament.Name</a></li>
+                                }
+                                <li role="separator" class="divider"></li>
+                                <li>@Html.ActionLink(Resources.AboutTournamentsTextLink, Resources.AboutLink, "Home", null, null, "tournaments", null, null)</li>
+                            </ul>
+                        </li>*@
 
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -104,7 +104,7 @@
         </div>
     </div>
 
-    <div class="container body-content"style="padding-left: 5px; padding-right: 5px;">
+    <div class="container body-content" style="padding-left: 5px; padding-right: 5px;">
         @RenderSection("lead", required: false)
 
         @if (Html.HasWarnings())
@@ -124,11 +124,16 @@
                 <button class="close" type="button" data-dismiss="alert">x</button>
                 @if (GlobalHelper.Language == "pt")
                 {
-                    <p style="text-align: center;">Me ajude a manter esse site sem propagandas! <a href="~/Donate">Doe!</a> Aceito PIX!</p>
+                    <p style="text-align: center;">Me ajude a manter esse site funcionando! <a href="~/Donate">Doe!</a> Aceito PIX!</p>
                 }
                 else
                 {
-                    <p style="text-align: center;">Help me keep this site ad free! <a href="~/Donate">Donate!</a></p>
+                    <p style="text-align: center;">Help me keep this site running! <a href="~/Donate">Donate!</a></p>
+                    <p style="text-align: center;">
+                        <a href='https://ko-fi.com/A0A4ITI9T' target='_blank'>
+                            <img height='36' style='border: 0px; height: 36px;' src='https://storage.ko-fi.com/cdn/kofi2.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' />
+                        </a>
+                    </p>
                 }
             </div>
             <div class="col-md-2"></div>

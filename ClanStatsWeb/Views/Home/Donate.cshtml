@@ -5,7 +5,7 @@
 }
 
 @section extraHeaders {
-    <meta name="description" content="Donate to keep this site up and running withou ads!">
+    <meta name="description" content="Donate to keep this site up and running!">
 }
 
 @section lead {
@@ -47,6 +47,9 @@
         {
             <h3>Sua ajuda é muito necessária!</h3>
             <p>
+                <b>Atualização em 2023-02-17</b>: Eu realmente preciso pagar pelos servidores... se não conseguir doações até o final de março, terei de encher o site de propaganda...
+            </p>
+            <p>
                 Eu comecei esse site em Fevereiro de 2016 como um hobby, para verificar facilmente minhas estatísticas e as do meu clã. Inicialmente apenas em português, e com bem poucos outros clãs.
                 Eu nem mesmo usava um banco de dados, somente um monte de arquivos texto, pois havia pouca informação.
             </p>
@@ -79,25 +82,22 @@
                 e eles provem um serviço estelar e acessível, mas não é de graça: para o próximo ano, mantendo tudo onde está, acabou de me custar <b>US$119,40</b>, o equivalente a <b>R$684,39</b>.
                 Além disso renovei o domínio por mais 3 anos, por <b>R$112,00</b>. Tudo saído do meu bolso.
             </p>
-            <p>
-                Eu retirarei a mensagem pedindo doações do topo das páginas tão logo consiga receber os custos de hospedagem.
-            </p>
-            <p>
-                <b>Eu estou pedindo sua ajuda. Eu não quero estragar o layout colocando propaganda. Então, qualquer quantidade será apreciada.</b>
-            </p>
         }
         else
         {
             @*<h3>The server is paid for 2019! Thank you!!!</h3>
                 <p>
                     Finally, in September, thanks to a dozen of comunity members' generosity, the server is fully paid for 2019. For 2020 I'm
-                    thinking in setup a patreon allowing subscribers access to especial features, especially bot comands.
+                    thinking in setup a patreon allowing subscribers access to especial features, especially bot commands.
                 </p>
                 <p>
                     Again, thank you very much!
                 </p>
                 <hr style="border-color:azure;" />*@
             <h3>Your help is pretty much appreciated!</h3>
+            <p>
+                <b>Update at 2023-02-17</b>: I really need to pay for the servers... if I could not get funding until the end of March, I will need to put ads. Sorry.
+            </p>
             <p>
                 I started this site in February 2016 as a hobby, to easily check my statistics and those of my clan. At first only in Portuguese, and very few clans.
                 I didn't even used a database, only a bunch of text files, as there was so few data.
@@ -127,28 +127,17 @@
                 Due to COVID-19 I didn't asked for donations in 2020 and 2021. There were better uses for your money than my site.
             </p>
             <p>
-                But here we are in 2022, and real life, outside of World of Tanks still exists, and I need to pay for the server that hosts this site. I use <a href="http://www.smarterasp.net/">SmarterASP.NET</a>
-                and they provide a stellar and affordable service, but it's not free. For the next year it just cost me <b>US$119.40</b>.
+                But here we are in 2023-02, and real life, outside of World of Tanks still exists, and I need to pay for the server that hosts this site. I use <a href="http://www.smarterasp.net/">SmarterASP.NET</a>
+                and they provide a good and affordable service, but it's not free. For the next year it just cost me <b>US$119.40</b>.
                 It may not appear much for someone on richer parts of the world, but consider that down here, in Brazil, this is ~BRL680.00, about half of our monthly minimum wage.
             </p>
-            <p>
-                I will take off the message asking for donations from the pages' top as soon as I can recover these hosting costs.
-            </p>
-
-            <p>
-                <b>I'm asking you to help me. I don't want to ruin the layout putting ads. So, any amount would be appreciated.</b>
-            </p>
+            
         }
         <section class="row alert alert-info" id="donateSection">
             <div class="col-md-12">
-                <p><strong>@Resources.DonatePayPal</strong></p>
-                <p>
-                    <b>Fuck PayPal!</b> I will not use a bank transfer company that puts a clause of termination and a fine of USD 2,500 for whatever reasons (woke reasons?!?) they want.
-                </p>
-                <p>
-                    And now, except for cryptocurrencies, I have no idea on how to receive money from outside Brazil on feasible, easy way. 
-                </p>
-                <p></p>
+                <p><strong>Buy me a Coffee!</strong></p>
+                <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
+                <script type='text/javascript'>kofiwidget2.init('Support Me on Ko-fi', '#48857d', 'A0A4ITI9T');kofiwidget2.draw();</script>
                 @if (GlobalHelper.Language == "pt")
                 {
                     <p><strong>Doe com PIX</strong></p>

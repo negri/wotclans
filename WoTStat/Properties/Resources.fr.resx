@@ -328,10 +328,10 @@
     <value>Faire un Don en crypto-monnaies</value>
   </data>
   <data name="DonateExplain" xml:space="preserve">
-    <value>Aidez-moi à garder ce site sans publicités!</value>
+    <value>Aidez-moi à faire vivre ce site !</value>
   </data>
   <data name="DonatePayPal" xml:space="preserve">
-    <value>Faire un Don via PayPal</value>
+    <value>Achetez-moi un café</value>
   </data>
   <data name="DPM" xml:space="preserve">
     <value>DPM</value>

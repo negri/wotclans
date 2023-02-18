@@ -346,10 +346,10 @@
     <value>Wesprzyj kryptowalutami</value>
   </data>
   <data name="DonateExplain" xml:space="preserve">
-    <value>Pomóż mi utrzymać tę stronę bez reklam!</value>
+    <value>Pomóż mi utrzymać tę stronę!</value>
   </data>
   <data name="DonatePayPal" xml:space="preserve">
-    <value>Wesprzyj przez PayPal</value>
+    <value>Kup mi kawę!</value>
   </data>
   <data name="DPM" xml:space="preserve">
     <value>U/min</value>
