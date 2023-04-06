@@ -880,6 +880,9 @@ namespace Negri.Wot
             [JsonProperty("three_mark")]
             public double Moe3Dmg { get; set; }
 
+            [JsonProperty("four_mark")]
+            public double Moe4Dmg { get; set; }
+
             [JsonIgnore]
             public double HighMarkDamage => ((Moe1Dmg / 0.65) + (Moe2Dmg / 0.85) + (Moe3Dmg / 0.95)) / 3.0;
 
