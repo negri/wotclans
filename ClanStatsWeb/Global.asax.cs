@@ -63,7 +63,7 @@ namespace Negri.Wot.Site
         /// Languages that I have translations
         /// </summary>
         private static readonly HashSet<string> ExistingTranslations = new HashSet<string>
-            {"en", "de", "es", "fr", "pl", "pt", "ru"};
+            {"en", "de", "es", "fr", "pl", "pt", "ru", "it"};
 
         /// <summary>
         /// Being used to improve on ASP.Net MVC automated language and culture detection

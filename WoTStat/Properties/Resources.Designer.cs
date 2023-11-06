@@ -2266,6 +2266,24 @@ namespace Negri.Wot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The End.
+        /// </summary>
+        public static string TheEnd {
+            get {
+                return ResourceManager.GetString("TheEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This site will soon stop to work. Thanks you all!.
+        /// </summary>
+        public static string TheEndExplain {
+            get {
+                return ResourceManager.GetString("TheEndExplain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tier.
         /// </summary>
         public static string Tier {

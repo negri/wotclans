@@ -1005,4 +1005,10 @@
   <data name="ForConsole" xml:space="preserve">
     <value>para Consoles</value>
   </data>
+  <data name="TheEnd" xml:space="preserve">
+    <value>O Fim</value>
+  </data>
+  <data name="TheEndExplain" xml:space="preserve">
+    <value>Este site logo deixará de funcionar. Obrigado a todos!</value>
+  </data>
 </root>

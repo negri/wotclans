@@ -906,4 +906,10 @@
   <data name="ForConsole" xml:space="preserve">
     <value>pour consoles</value>
   </data>
+  <data name="TheEnd" xml:space="preserve">
+    <value>La fin</value>
+  </data>
+  <data name="TheEndExplain" xml:space="preserve">
+    <value>Ce site cessera bientôt de fonctionner. Merci à tous!</value>
+  </data>
 </root>

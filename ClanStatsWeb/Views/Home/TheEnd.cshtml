@@ -1,0 +1,286 @@
+﻿@using Negri.Wot.Properties
+
+@{
+    ViewBag.Title = "The End";
+}
+
+@section extraHeaders {
+    <meta name="description" content="This site will soon stop working. Thanks you all!">
+}
+
+@section lead {
+    <section class="jumbotron top-banner">
+        <h1>@Resources.TheEnd</h1>
+        <p>
+            @Resources.TheEndExplain
+        </p>
+    </section>
+}
+
+
+
+
+<section class="row">
+    <div class="col-md-12">
+        @if (GlobalHelper.Language == "pt")
+        {
+            <h3>Este site deixará de funcionar em breve.</h3>
+
+            <p>Prezados usuários do WOTClans.com.br, amigos,</p>
+
+            <p>Como criador e proprietário deste site, lamento informar que em breve estarei encerrando suas atividades, tanto do site quanto do bot.Explico a seguir.</p>
+
+            <p>A razão principal é que a vida(a minha) mudou bastante desde quando criei o site em 2016 - 02.Na ocasião meu trabalho, e a vida familiar, me davam muito tempo livre, tempo que eu gastava jogando WoT, e depois investindo no site para colocar técnicas de programação que me eram novas(no meu trabalho sou um programador backend). Mas veio minha amada filha mais nova, e o trabalho ficou muito mais intenso desde 2019.</p>
+
+            <p>Concorrendo com isso, minha visão piorou muito, e mesmo com 2 cirúrgias, é incomodo jogar na televisão, sentado no sofa, devido às distâncias em que consigo focar(só enxergo bem de muito perto, ou de longe, entre 0.5m e 5m a visão é embaçada.Sim, eu posso usar óculos, mas não é o mesmo para quem tinha uma visão 20 / 20).Pouco tenho jogado WoT desde 2019, ou qualquer outro jogo, exceto Minecraft com minha pequena.</p>
+
+            <p>Nesse tempo todo o site(e o bot, e o seu banco de dados) ficaram obsoletos em termos tecnológicos e funcionais.Eu não suporto ainda as batalhas de Cold War, e a refatoração para as incluir, embora não difícil técnicamente, tomaria um bom tempo.</p>
+
+            <p>Em adição às essas questões primárias, há meu receio em relação a riscos legais.Sim, riscos legais num site de estatísticas de jogo!Isso se deve à recente implementação da LGPD(Lei Geral de Proteção de Dados) brasileira, que exige consentimento explícito de cada jogador antes que seus dados pessoais possam ser processados.A lei é draconiana, com multas pesadas, e linguagem vaga no que pode ser definido como "informação pessoal".Alguns advogados que consultei dizem que Game Tags são pessoais, outros não. E não quero um juiz deixar decidir.Ainda que não sejam dados pessoais, não quero gastar com advogados.</p>
+
+            <p>Assim, o site, e o bot, deixarão de funcionar antes do próximo período de renovação, em 2024 - 02.Não é questão de dinheiro: felizmente, mesmo morando num pais muito pobre, eu posso arcar com USD 120 / ano; e sei que generosos doadores me ajudariam a pagar, como sempre fizeram ao longo dos anos todos.</p>
+
+            <p>O código do site é Open Source, está no GitHub.Se alguém quiser carregar a bandeira, aviso que é pesada: tecnologia obsoleta(.Net 4.8, ASP.Net MVC) e um banco de dados Sql Server que é massivo e cheio de procedures complicadas.Não recomendo.</p>
+
+            <p>Graças ao site conheci muita gente, de toda parte do mundo.Trocamos histórias e jogamos juntos. Com alguns criei amizades que vão perdurar ainda por muito tempo.</p>
+
+            <p>Agradeço a Wargaming, que sempre me atendeu, permitiu-me usar suas artes em meu site, dedicou pessoal para criar as traduções para outras línguas e até me presenteou com tanques.</p>
+
+            <p>Mas, acima de tudo, quero agradecer a cada um de vocês por seu apoio e por tornar este site um sucesso.Era um projeto de paixão minha, e é triste ter que encerrá - lo.É como um bom livro que acaba: você fica feliz por ter vivido a história, mas ela chega ao fim eventualmente.</p>
+
+            <p>Um fraterno abraço,</p>
+
+            <p><strong>JP Negri</strong></p>
+
+        }
+        else if (GlobalHelper.Language == "de")
+        {
+            <h3>Diese Seite wird bald nicht mehr funktionieren</h3>
+
+            <p>Liebe WOTClans.com.br - Benutzer, Freunde,</p>
+
+            <p>Als Ersteller und Eigentümer dieser Website muss ich Ihnen leider mitteilen, dass ich ihre Aktivitäten, sowohl die Website als auch den Bot, bald einstellen werde. Ich erkläre es weiter unten.</p>
+
+            <p>Der Hauptgrund ist, dass sich mein Leben seit der Erstellung der Website im Jahr 2016 / 02 stark verändert hat.Damals gab mir mein Berufs - und Familienleben viel Freizeit, Zeit, die ich damit verbrachte, WoT zu spielen, und die ich dann in die Website investierte, um Programmiertechniken zu erlernen, die für mich neu waren(in meiner Arbeit bin ich Backend-Entwickler). Aber meine geliebte jüngste Tochter wurde geboren und die Arbeit ist seit 2019 viel intensiver geworden.</p>
+
+            <p>Gleichzeitig hat sich mein Sehvermögen stark verschlechtert, und selbst nach zwei Operationen ist es aufgrund der Entfernungen, auf die ich fokussieren kann, unangenehm, vor dem Fernseher zu sitzen und auf dem Sofa zu sitzen(ich kann nur aus sehr großer Nähe gut sehen, oder aus der Ferne; zwischen 0,5 m und 5 m ist die Sicht verschwommen.Ja, ich kann eine Brille tragen, aber das ist nicht dasselbe für jemanden, der eine Sehstärke von 20 / 20 hat.Ich habe seit 2019 nicht mehr viel WoT oder ein anderes Spiel gespielt, außer Minecraft mit meiner Kleinen.</p>
+
+            <p>In dieser Zeit wurden die Website, der Bot und seine Datenbank technisch und funktional veraltet. Ich kann die Schlachten des Kalten Krieges immer noch nicht nachverfolgen, und die Umgestaltung, um sie einzubeziehen, wäre zwar technisch nicht schwierig, würde aber lange dauern.</p>
+
+            <p>Zusätzlich zu diesen Hauptthemen habe ich Angst vor rechtlichen Risiken. Ja, rechtliche Risiken auf einer Spielstatistikseite! Dies ist auf die jüngste Umsetzung des brasilianischen LGPD(Allgemeines Datenschutzgesetz) zurückzuführen, das die ausdrückliche Zustimmung jedes Spielers erfordert, bevor seine personenbezogenen Daten verarbeitet werden dürfen.Das Gesetz ist drakonisch, mit hohen Geldstrafen und einer vagen Formulierung dessen, was als „personenbezogene Daten“ definiert werden kann.Einige Anwälte, die ich konsultiert habe, sagen, dass Game Tags persönlich seien, andere nicht. Und ich möchte nicht, dass ein Richter darüber entscheidet. Auch wenn es keine personenbezogenen Daten sind, möchte ich kein Geld für Anwälte ausgeben.</p>
+
+            <p>Daher werden die Website und der Bot vor dem nächsten Verlängerungszeitraum 2024–02 nicht mehr funktionieren.Es ist keine Frage des Geldes: Glücklicherweise kann ich mir 120 USD / Jahr leisten, obwohl ich in einem sehr armen Land lebe; und ich weiß, dass großzügige Spender mir bei der Bezahlung helfen würden, wie sie es im Laufe der Jahre getan haben.</p>
+
+            <p>Der Code der Website ist Open Source, er befindet sich auf GitHub.Wenn jemand die Flagge tragen möchte, warne ich Sie, dass sie schwer ist: veraltete Technologie(.Net 4.8, ASP.Net MVC) und eine SQL Server-Datenbank, die riesig und voller komplizierter Prozeduren ist.Ich empfehle es nicht.</p>
+
+            <p>Dank der Website habe ich viele Menschen aus der ganzen Welt kennengelernt. Wir tauschten Geschichten aus und spielten gemeinsam Spiele. Mit einigen habe ich Freundschaften geschlossen, die lange halten werden.</p>
+
+            <p>Ich danke Wargaming, das mir immer geholfen hat, mir erlaubt hat, ihre Kunst auf meiner Website zu verwenden, engagiertes Personal für die Erstellung von Übersetzungen in andere Sprachen und mir sogar Panzer geschenkt hat.</p>
+
+            <p>Aber vor allem möchte ich jedem einzelnen von Ihnen für Ihre Unterstützung und dafür danken, dass Sie diese Website zu einem Erfolg gemacht haben.Es war ein Leidenschaftsprojekt von mir und es ist traurig, es beenden zu müssen.Es ist wie bei einem guten Buch, das zu Ende geht: Man ist froh, die Geschichte erlebt zu haben, aber irgendwann geht sie zu Ende.</p>
+
+            <p>Eine brüderliche Umarmung,</p>
+
+            <p><strong>JP Negri</strong></p>
+        }
+        else if (GlobalHelper.Language == "es")
+        {
+            <h3>Este sitio pronto dejará de funcionar</h3>
+
+            <p>Estimados usuarios y amigos de WOTClans.com.br,</p>
+
+            <p>Como creador y propietario de este sitio, lamento informarles que pronto cesaré sus actividades, tanto el sitio como el bot. Te lo explico a continuación.</p>
+
+            <p>La razón principal es que mi vida ha cambiado mucho desde que creé el sitio en 2016 - 02.En ese momento, mi vida laboral y familiar me daba mucho tiempo libre, tiempo que dedicaba a jugar WoT y luego invertir en el sitio web para aprender técnicas de programación que eran nuevas para mí(en mi trabajo soy desarrollador backend).Pero nació mi querida hija menor y el trabajo se ha vuelto mucho más intenso desde 2019.</p>
+
+            <p>Paralelamente a esto, mi visión ha empeorado mucho, y aún con 2 cirugías, me resulta incómodo jugar en la televisión, sentado en el sofá, debido a las distancias a las que puedo enfocar(sólo puedo ver bien desde muy cerca, o de lejos, entre 0,5m y 5m de visión es borroso. Sí, puedo usar gafas, pero no es lo mismo alguien que tenía una visión de 20 / 20). No he jugado mucho a WoT ni a ningún otro juego desde 2019, excepto Minecraft con mi pequeño.</p>
+
+            <p>Durante este tiempo el sitio web, el bot y su base de datos quedaron obsoletos en términos tecnológicos y funcionales.Todavía no puedo rastrear las batallas de la Guerra Fría, y refactorizarlas para incluirlas, aunque no es técnicamente difícil, llevaría mucho tiempo.</p>
+
+            <p>Además de estas cuestiones principales, está mi temor respecto a los riesgos legales. Sí, ¡riesgos legales en un sitio de estadísticas de juegos! Esto se debe a la reciente implementación de la LGPD(Ley General de Protección de Datos) brasileña, que requiere el consentimiento explícito de cada jugador antes de que sus datos personales puedan ser procesados.La ley es draconiana, con fuertes multas y un lenguaje vago sobre lo que puede definirse como "información personal".Algunos abogados que consulté dicen que las etiquetas de juego son personales, otros no. Y no quiero que un juez decida.Aunque no sean datos personales, no quiero gastar dinero en abogados.</p>
+
+            <p>Por lo tanto, el sitio web y el bot dejarán de funcionar antes del próximo período de renovación en 2024-02.No es una cuestión de dinero: afortunadamente, aunque vivo en un país muy pobre, puedo permitirme 120 dólares al año; y sé que los donantes generosos me ayudarían a pagar, como lo han hecho a lo largo de los años.</p>
+
+            <p>El código del sitio es Open Source, está en GitHub.Si alguien quiere llevar la bandera, les advierto que pesa: tecnología obsoleta(.Net 4.8, ASP.Net MVC) y una base de datos Sql Server enorme y llena de trámites complicados. No lo recomiendo.</p>
+
+            <p>Gracias al sitio web conocí a mucha gente de todo el mundo. Intercambiamos historias y jugamos juntos.Con algunos creé amistades que durarán mucho tiempo.</p>
+
+            <p>Agradezco a Wargaming, quien siempre me ayudó, me permitió usar su arte en mi sitio web, dedicó al personal a crear traducciones a otros idiomas e incluso me regaló tanques.</p>
+
+            <p>Pero, sobre todo, quiero agradecer a todos y cada uno de ustedes por su apoyo y por hacer de este sitio un éxito.Era un proyecto que me apasionaba y es triste tener que terminarlo. Es como un buen libro que termina: estás feliz de haber vivido la historia, pero eventualmente llega a un final.</p>
+
+            <p>Un abrazo fraterno,</p>
+
+            <p><strong>JP Negri</strong></p>
+        }
+        else if (GlobalHelper.Language == "fr")
+        {
+            <h3>Ce site va bientôt cesser de fonctionner</h3>
+
+            <p>Chers utilisateurs et amis de WOTClans.com.br,</p>
+
+            <p>En tant que créateur et propriétaire de ce site, j'ai le regret de vous informer que je cesserai bientôt ses activités, tant le site que le bot. J'explique ci-dessous.</p>
+
+            <p>La raison principale est que ma vie a beaucoup changé depuis la création du site en 2016 - 02.À l'époque, mon travail et ma vie de famille me donnaient beaucoup de temps libre, du temps que je passais à jouer à WoT, puis à investir dans le site Web pour apprendre des techniques de programmation qui étaient nouvelles pour moi (dans mon travail, je suis développeur backend). Mais ma plus jeune fille bien-aimée est née et le travail est devenu beaucoup plus intense depuis 2019.</p>
+
+            <p>Parallèlement, ma vision s'est beaucoup dégradée, et même après 2 interventions chirurgicales, il est inconfortable de jouer à la télévision, assis sur le canapé, à cause des distances auxquelles je peux me concentrer (je ne vois bien que de très près, ou de loin ; entre 0,5m et 5m de vision c'est flou. Oui, je peux porter des lunettes, mais ce n'est pas pareil pour quelqu'un qui avait une vision de 20 / 20). Je n'ai pas beaucoup joué à WoT ni à aucun autre jeu depuis 2019, sauf Minecraft avec mon petit.</p>
+
+            <p>Pendant cette période, le site Internet, le bot et sa base de données sont devenus obsolètes en termes technologiques et fonctionnels. Je ne parviens toujours pas à suivre les batailles de la guerre froide, et les refactoriser pour les inclure, même si ce n'est pas techniquement difficile, prendrait beaucoup de temps.</p>
+
+            <p>À ces questions principales s’ajoute ma crainte concernant les risques juridiques.Oui, des risques juridiques sur un site de statistiques de jeux !Cela est dû à la récente mise en œuvre de la LGPD brésilienne(loi générale sur la protection des données), qui exige le consentement explicite de chaque joueur avant que ses données personnelles puissent être traitées. La loi est draconienne, avec de lourdes amendes et un langage vague sur ce qui peut être défini comme des « informations personnelles ». Certains avocats que j’ai consultés affirment que les Game Tags sont personnels, d’autres non. Et je ne veux pas qu'un juge décide. Même s'il ne s'agit pas de données personnelles, je ne veux pas dépenser d'argent en avocats.</p>
+
+            <p>Par conséquent, le site Web et le bot cesseront de fonctionner avant la prochaine période de renouvellement en 2024-02.Ce n'est pas une question d'argent: heureusement, même si je vis dans un pays très pauvre, je peux me permettre 120 USD / an; et je sais que de généreux donateurs m'aideraient à payer, comme ils l'ont fait au fil des ans.</p>
+
+            <p>Le code du site est Open Source, il est sur GitHub. Si quelqu'un veut porter le drapeau, je vous préviens qu'il est lourd: une technologie obsolète(.Net 4.8, ASP.Net MVC) et une base de données Sql Server massive et pleine de procédures compliquées. Je ne recommande pas.</p>
+
+            <p>Grâce au site, j'ai rencontré beaucoup de gens, du monde entier. Nous avons échangé des histoires et joué à des jeux ensemble. Avec certains j'ai créé des amitiés qui dureront longtemps.</p>
+
+            <p>Je remercie Wargaming, qui m'a toujours aidé, m'a permis d'utiliser son art sur mon site Web, a consacré son personnel à créer des traductions dans d'autres langues et m'a même offert des chars en cadeau.</p>
+
+            <p>Mais surtout, je tiens à remercier chacun d'entre vous pour votre soutien et pour avoir fait de ce site un succès. C'était un de mes projets passionnés, et c'est triste de devoir y mettre fin. C'est comme un bon livre qui se termine : on est heureux d'avoir vécu l'histoire, mais elle finit par se terminer.</p>
+
+            <p>Un câlin fraternel,</p>
+
+            <p><strong>JP Negri</strong></p>
+        }
+        else if (GlobalHelper.Language == "pl")
+        {
+            <h3>Ta strona wkrótce przestanie działać</h3>
+
+            <p>Drodzy użytkownicy WOTClans.com.br, przyjaciele,</p>
+
+            <p>Jako twórca i właściciel tej strony z przykrością zawiadamiam, że w najbliższym czasie zakończę jej działalność, zarówno samą stronę jak i bota. Wyjaśniam poniżej.</p>
+
+            <p>Głównym powodem jest to, że moje życie bardzo się zmieniło, odkąd stworzyłem tę stronę w latach 2016 - 02.W tym czasie moja praca i życie rodzinne dały mi dużo wolnego czasu, który spędziłem grając w WoT, a następnie inwestowałem w stronę internetową, aby poznać nowe dla mnie techniki programowania(w mojej pracy jestem programistą backendowym).Ale urodziła się moja ukochana najmłodsza córka, a od 2019 roku praca stała się znacznie bardziej intensywna.</p>
+
+            <p>Jednocześnie mój wzrok znacznie się pogorszył i nawet po 2 operacjach niewygodnie jest grać przed telewizorem, siedząc na sofie, ze względu na odległości, na jakie mogę się skupić(dobrze widzę tylko z bardzo bliska, lub z daleka, widzenie w odległości od 0, 5 m do 5 m jest niewyraźne.Tak, mogę nosić okulary, ale to nie to samo w przypadku osoby, która ma wzrok 20 / 20). Od 2019 roku nie grałem zbyt wiele w WoT ani w żadną inną grę, z wyjątkiem Minecrafta z moim małym dzieckiem.</p>
+
+            <p>W tym czasie strona internetowa, bot i jego baza danych stały się przestarzałe pod względem technologicznym i funkcjonalnym.Nadal nie mogę śledzić bitew zimnej wojny, a refaktoryzacja w celu ich uwzględnienia, chociaż nie jest trudna technicznie, zajęłaby dużo czasu.</p>
+
+            <p>Oprócz tych podstawowych kwestii obawiam się zagrożeń prawnych. Tak, ryzyko prawne na stronie ze statystykami gier! Wynika to z niedawnego wdrożenia brazylijskiej ustawy LGPD(ogólnej ustawy o ochronie danych), która wymaga wyraźnej zgody każdego gracza na przetwarzanie jego danych osobowych.Prawo jest drakońskie, przewiduje wysokie kary i niejasne sformułowania dotyczące tego, co można zdefiniować jako „dane osobowe”. Niektórzy prawnicy, z którymi się konsultowałem, twierdzą, że tagi gier są osobiste, inni nie. I nie chcę, żeby sędzia o tym decydował.Nawet jeśli nie są to dane osobowe, nie chcę wydawać pieniędzy na prawników.</p>
+
+            <p>W związku z tym witryna i bot przestaną działać przed kolejnym okresem odnowienia w latach 2024–02.To nie jest kwestia pieniędzy: na szczęście, choć mieszkam w bardzo biednym kraju, stać mnie na 120 dolarów rocznie; i wiem, że hojni darczyńcy pomogliby mi zapłacić, tak jak to robili przez lata.</p>
+
+            <p>Kod strony to Open Source, znajduje się na GitHubie. Jeśli ktoś chce nieść flagę, ostrzegam, że jest ciężka: przestarzała technologia(.Net 4.8, ASP.Net MVC) i baza danych Sql Server, która jest ogromna i pełna skomplikowanych procedur.nie polecam.</p>
+
+            <p>Dzięki stronie poznałem mnóstwo ludzi z całego świata. Wymienialiśmy się historiami i razem graliśmy w gry. Z niektórymi nawiązałam przyjaźnie, które przetrwają długi czas.</p>
+
+            <p>Dziękuję Wargaming, który zawsze mi pomagał, pozwolił mi wykorzystać swoje grafiki na mojej stronie internetowej, oddał swój personel do tworzenia tłumaczeń na inne języki, a nawet dał mi czołgi w prezencie.</p>
+
+            <p>Ale przede wszystkim chcę podziękować każdemu z osobna za wsparcie i sukces tej witryny. To był mój projekt, który był moją pasją i szkoda, że muszę go zakończyć. To jak dobra książka, która się kończy: cieszysz się, że przeżyłeś tę historię, ale ona ostatecznie się kończy.</p>
+
+            <p>Braterski uścisk,</p>
+
+            <p><strong>JP Negri</strong></p>
+        }
+        else if (GlobalHelper.Language == "ru")
+        {
+            <h3>Этот сайт скоро перестанет работать</h3>
+
+            <p>Уважаемые пользователи WOTClans.com.br, друзья!</p>
+
+            <p>Как создатель и владелец этого сайта, с сожалением сообщаю Вам, что скоро прекращу свою деятельность, как сайта, так и бота. Я объясняю ниже.</p>
+
+            <p>Основная причина в том, что моя жизнь сильно изменилась с тех пор, как я создал сайт в 2016 - 02 году.В то время моя работа и семейная жизнь давали мне много свободного времени, время, которое я проводил за игрой в WoT, а затем инвестировал в сайт, чтобы изучить новые для меня методы программирования(по работе я бэкенд - разработчик).Но родилась моя любимая младшая дочка, и с 2019 года работа стала намного интенсивнее.</p>
+
+            <p>Одновременно с этим у меня сильно ухудшилось зрение, и даже после 2 - х операций мне неудобно играть по телевизору, сидя на диване, из-за расстояний, на которых я могу сосредоточиться(хорошо вижу только с очень близкого расстояния, или на расстоянии; между 0,5 и 5 м зрение размыто.Да, я могу носить очки, но это не то же самое для человека, у которого зрение 20 / 20). Я мало играл в WoT или другие игры с 2019 года, кроме Minecraft со своим малышом.</p>
+
+            <p>За это время сайт, бот и его база данных устарели в технологическом и функциональном плане. Я до сих пор не могу отслеживать сражения холодной войны, и рефакторинг для их включения, хотя и не является технически сложным, займет много времени.</p>
+
+            <p>Помимо этих основных вопросов, я опасаюсь юридических рисков.Да, юридические риски на сайте игровой статистики!Это связано с недавним введением в действие бразильского LGPD(Общего закона о защите данных), который требует явного согласия от каждого игрока, прежде чем его личные данные могут быть обработаны. Закон является драконовским, с большими штрафами и расплывчатыми формулировками о том, что можно определить как «личную информацию». Некоторые юристы, с которыми я консультировался, говорят, что игровые теги являются личными, другие – нет.И я не хочу, чтобы судья принимал решение.Даже если это не личные данные, я не хочу тратить деньги на юристов.</p>
+
+            <p>Таким образом, веб-сайт и бот перестанут работать до следующего периода продления в 2024 - 02 году.Это не вопрос денег: к счастью, хотя я и живу в очень бедной стране, я могу позволить себе 120 долларов США в год; и я знаю, что щедрые доноры помогут мне заплатить, как они делали на протяжении многих лет.</p>
+
+            <p>Код сайта Open Source, он находится на GitHub.Если кто-то хочет нести этот флаг, я предупреждаю вас, что это тяжело: устаревшая технология(.Net 4.8, ASP.Net MVC) и база данных Sql Server, которая является массивной и полной сложных процедур.Я не рекомендую.</p>
+
+            <p>Благодаря сайту я познакомился со многими людьми со всего мира. Мы обменивались историями и вместе играли в игры. С некоторыми я установил дружеские отношения, которые продлятся долгое время.</p>
+
+            <p>Я благодарю компанию Wargaming, которая всегда мне помогала, позволяла использовать их искусство на своем сайте, преданных своему делу сотрудников для создания переводов на другие языки и даже дарила мне танки.</p>
+
+            <p>Но больше всего я хочу поблагодарить каждого из вас за поддержку и за успех этого сайта. Это был мой страстный проект, и мне грустно его заканчивать.Это как хорошая книга, которая заканчивается: вы счастливы, что прожили эту историю, но в конце концов она подходит к концу.</p>
+
+            <p>Братское объятие,</p>
+
+
+            <p><strong>JP Negri</strong></p>
+        }
+        else if (GlobalHelper.Language == "it")
+        {
+            <h3>Questo sito presto smetterà di funzionare</h3>
+
+            <p>Cari utenti di WOTClans.com.br, amici,</p>
+            <p>In qualità di creatore e proprietario di questo sito, mi dispiace informarti che presto cesserò le sue attività, sia del sito che del bot. Lo spiego di seguito.</p>
+            <p>Il motivo principale è che la mia vita è cambiata molto da quando ho creato il sito nel 2016 - 02.All'epoca, il lavoro e la vita familiare mi concedevano molto tempo libero, tempo che trascorrevo giocando a WoT, per poi investire nel sito web per apprendere tecniche di programmazione per me nuove (nel mio lavoro sono uno sviluppatore backend). Ma è nata la mia adorata figlia più piccola, e dal 2019 il lavoro è diventato molto più intenso.</p>
+            <p>In concomitanza con questo, la mia vista è peggiorata molto, e anche dopo 2 interventi chirurgici, è scomodo giocare davanti alla televisione, seduto sul divano, a causa delle distanze a cui riesco a mettere a fuoco(vedo bene solo da molto vicino, o da lontano; tra 0,5 e 5 m la vista è sfocata(sì, posso portare gli occhiali, ma non è la stessa cosa per chi aveva una vista 20 / 20).Non gioco molto a WoT o ad altri giochi dal 2019, tranne Minecraft con il mio piccolo.</p>
+            <p>Durante questo periodo il sito web, il bot e il suo database sono diventati obsoleti dal punto di vista tecnologico e funzionale.Non riesco ancora a tenere traccia delle battaglie della Guerra Fredda e il refactoring per includerle, sebbene non tecnicamente difficile, richiederebbe molto tempo.</p>
+            <p>Oltre a queste questioni primarie, c’è il mio timore riguardo ai rischi legali. Sì, rischi legali su un sito di statistiche di gioco! Ciò è dovuto alla recente implementazione della LGPD brasiliana(Legge generale sulla protezione dei dati), che richiede il consenso esplicito di ciascun giocatore prima che i suoi dati personali possano essere trattati.La legge è draconiana, prevede multe pesanti e un linguaggio vago su quelle che possono essere definite "informazioni personali".Alcuni avvocati da me consultati affermano che i Game Tag sono personali, altri no. E non voglio che sia un giudice a decidere.Anche se non si tratta di dati personali, non voglio spendere soldi per gli avvocati.</p>
+            <p>Pertanto, il sito Web e il bot smetteranno di funzionare prima del prossimo periodo di rinnovo nel 2024 - 02.Non è una questione di soldi: fortunatamente, anche se vivo in un Paese molto povero, posso permettermi 120 dollari l'anno; e so che donatori generosi mi aiuterebbero a pagare, come hanno fatto nel corso degli anni.</p>
+            <p>Il codice del sito è Open Source, è su GitHub.Se qualcuno vuole portare la bandiera, vi avverto che è pesante: tecnologia obsoleta(.Net 4.8, ASP.Net MVC) e un database Sql Server enorme e pieno di procedure complicate.Non lo consiglio.</p>
+            <p>Grazie al sito ho conosciuto tantissime persone, provenienti da tutto il mondo.Ci siamo scambiati storie e abbiamo giocato insieme. Con alcuni ho creato amicizie che dureranno a lungo.</p>
+            <p>Ringrazio Wargaming, che mi ha sempre aiutato, mi ha permesso di utilizzare la sua arte sul mio sito web, ha dedicato uno staff a creare traduzioni in altre lingue e mi ha persino regalato dei carri armati.</p>
+            <p>Ma soprattutto, voglio ringraziare ognuno di voi per il vostro supporto e per aver reso questo sito un successo. Era un progetto che mi appassionava ed è triste doverlo terminare.È come un bel libro che finisce: sei felice di aver vissuto la storia, ma alla fine arriva a una fine.</p>
+            <p>Un abbraccio fraterno,</p>
+
+            <p><strong>JP Negri</strong></p>
+        }
+        else
+        {
+            <h3>This site will stop working.</h3>
+
+            <p>Dear WOTClans.com.br users, friends,</p>
+
+            <p>As the creator and owner of this site, I regret to inform you that I will soon be ceasing its activities, both the site and the bot. I explain below.</p>
+
+            <p>
+                The main reason is that my life has changed a lot since I created the site in 2016-02. At the time, my work and family life gave me a lot of free time,
+                time that I spent playing WoT, and then investing in the website to learn programming techniques that were new to me (in my work I am a backend developer).
+                But my beloved youngest daughter was born, and the work has become much more intense since 2019.
+            </p>
+
+            <p>
+                Concurrent with this, my vision has worsened a lot, and even with 2 surgeries, it is uncomfortable to play on television, sitting on the sofa,
+                due to the distances at which I can focus (I can only see well from very close up, or from a distance; between 0.5m and 5m vision it's blurry.
+                Yes, I can wear glasses, but it's not the same for someone who had a 20/20 vision). I haven't played much WoT or any other game since 2019, except Minecraft with my little one.
+            </p>
+
+            <p>
+                During this time the website, the bot and its database became obsolete in technological and functional terms. I still can't track Cold War battles,
+                and refactoring to include them, although not technically difficult, would take a long time.
+            </p>
+
+            <p>
+                In addition to these primary issues, there is my fear regarding legal risks. Yes, legal risks on a game statistics site! This is due to the recent
+                implementation of the Brazilian LGPD (General Data Protection Law), which requires explicit consent from each player before their personal data can be processed.
+                The law is draconian, with heavy fines, and vague language on what can be defined as "personal information." Some lawyers I consulted say that Game Tags are personal, others do not.
+                And I don't want a judge to decide. Even if it's not personal data, I don't want to spend money on lawyers.
+            </p>
+
+            <p>
+                Therefore, the website, and the bot, will stop working before the next renewal period in 2024-02. It's not a question of money: fortunately, even though I live in a very poor country,
+                I can afford USD 120/year; and I know that generous donors would help me pay, as they have done over the years.
+            </p>
+
+            <p>
+                The site's code is Open Source, it is on GitHub. If anyone wants to carry the flag, I warn you that it is heavy: obsolete technology (.Net 4.8, ASP.Net MVC) and a
+                Sql Server database that is massive and full of complicated procedures. I do not recommend.
+            </p>
+
+            <p>Thanks to the website I met a lot of people, from all over the world. We exchanged stories and played games together. With some I created friendships that will last for a long time.</p>
+
+            <p>I thank Wargaming, who always helped me, allowed me to use their art on my website, dedicated staff to create translations into other languages and even gave me tanks as gifts.</p>
+
+            <p>
+                But most of all, I want to thank each and every one of you for your support and for making this site a success.
+                It was a passion project of mine, and it's sad to have to end it. It's like a good book that ends: you're happy to have lived the story, but it comes to an eventual end.
+            </p>
+
+            <p>A fraternal hug,</p>
+
+            <p><strong>JP Negri</strong></p>
+
+        }
+    </div>
+</section>
+
+
+

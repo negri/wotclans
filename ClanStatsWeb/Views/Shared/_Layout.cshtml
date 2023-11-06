@@ -95,8 +95,11 @@
                             </li>
                         }*@
 
+                    @*<li>
+                            @Html.ActionLink(Resources.Donate, "Donate", "Home", new { area = "" }, new { style = "color: gold;", title = Resources.DonateExplain })
+                        </li>*@
                     <li>
-                        @Html.ActionLink(Resources.Donate, "Donate", "Home", new { area = "" }, new { style = "color: gold;", title = Resources.DonateExplain })
+                        @Html.ActionLink(Resources.TheEnd, "TheEnd", "Home", new { area = "" }, new { style = "color: gold;", title = Resources.TheEndExplain })
                     </li>
                     <li>@Html.ActionLink(Resources.AboutTextLink, "About", "Home")</li>
                 </ul>
@@ -119,25 +122,25 @@
         }
 
         @*<section id="donateSection" class="row" style="padding-top: 1em;">
-            <div class="col-md-2"></div>
-            <div class="col-md-8 alert alert-dismissible alert-info">
-                <button class="close" type="button" data-dismiss="alert">x</button>
-                @if (GlobalHelper.Language == "pt")
-                {
-                    <p style="text-align: center;">Me ajude a manter esse site funcionando! <a href="~/Donate">Doe!</a> Aceito PIX!</p>
-                }
-                else
-                {
-                    <p style="text-align: center;">Help me keep this site running! <a href="~/Donate">Donate!</a></p>
-                    <p style="text-align: center;">
-                        <a href='https://ko-fi.com/A0A4ITI9T' target='_blank'>
-                            <img height='36' style='border: 0px; height: 36px;' src='https://storage.ko-fi.com/cdn/kofi2.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' />
-                        </a>
-                    </p>
-                }
-            </div>
-            <div class="col-md-2"></div>
-        </section>*@
+                <div class="col-md-2"></div>
+                <div class="col-md-8 alert alert-dismissible alert-info">
+                    <button class="close" type="button" data-dismiss="alert">x</button>
+                    @if (GlobalHelper.Language == "pt")
+                    {
+                        <p style="text-align: center;">Me ajude a manter esse site funcionando! <a href="~/Donate">Doe!</a> Aceito PIX!</p>
+                    }
+                    else
+                    {
+                        <p style="text-align: center;">Help me keep this site running! <a href="~/Donate">Donate!</a></p>
+                        <p style="text-align: center;">
+                            <a href='https://ko-fi.com/A0A4ITI9T' target='_blank'>
+                                <img height='36' style='border: 0px; height: 36px;' src='https://storage.ko-fi.com/cdn/kofi2.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' />
+                            </a>
+                        </p>
+                    }
+                </div>
+                <div class="col-md-2"></div>
+            </section>*@
 
         @RenderBody()
 
@@ -161,7 +164,8 @@
             <p>
                 <a href="~/About">@Resources.AboutThisSite</a> |
                 <a href="~/About#aboutme">@Resources.AboutMe</a> |
-                <a href="~/Donate" title="@Resources.DonateExplain" style="color: gold;">@Resources.Donate</a> |
+                <a href="~/TheEnd" title="@Resources.TheEndExplain" style="color: gold;">@Resources.TheEnd</a> |
+                @*<a href="~/Donate" title="@Resources.DonateExplain" style="color: gold;">@Resources.Donate</a> |*@
                 <a href="~/About#addClan">@Resources.AddYourClan</a> |
                 <a href="https://discord.gg/MTCMq3Q" hreflang="en" title="@Resources.TalkToMeDiscord"><img alt="Discord" src="~/Images/discord.svg" height="32" /></a> |
                 <a hreflang="en" href="~/DiscordBot">@Resources.DiscordBot</a> |

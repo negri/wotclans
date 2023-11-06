@@ -68,6 +68,8 @@ namespace Negri.Wot.Site
                         return "ru";
                     case "fr":
                         return "fr";
+                    case "it":
+                        return "it";
                     default:
                         return "en";
                 }

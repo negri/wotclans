@@ -195,6 +195,12 @@
   <data name="Tanks" xml:space="preserve">
     <value>Tanques</value>
   </data>
+  <data name="TheEnd" xml:space="preserve">
+    <value>El fin</value>
+  </data>
+  <data name="TheEndExplain" xml:space="preserve">
+    <value>Este sitio pronto dejará de funcionar. ¡Gracias a todos!</value>
+  </data>
   <data name="Tracking" xml:space="preserve">
     <value>Rastreo {0:N0} comandantes en {1:N0} clanes.</value>
   </data>

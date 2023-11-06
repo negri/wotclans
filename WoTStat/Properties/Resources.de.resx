@@ -852,6 +852,12 @@
   <data name="TargetDamage" xml:space="preserve">
     <value>Zu erreichender Schaden</value>
   </data>
+  <data name="TheEnd" xml:space="preserve">
+    <value>Das Ende</value>
+  </data>
+  <data name="TheEndExplain" xml:space="preserve">
+    <value>Diese Seite wird bald nicht mehr funktionieren. Danke euch allen!</value>
+  </data>
   <data name="Tier" xml:space="preserve">
     <value>Stufe</value>
   </data>

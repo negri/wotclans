@@ -852,6 +852,12 @@
   <data name="TargetDamage" xml:space="preserve">
     <value>Целевой урон</value>
   </data>
+  <data name="TheEnd" xml:space="preserve">
+    <value>Конец</value>
+  </data>
+  <data name="TheEndExplain" xml:space="preserve">
+    <value>Этот сайт скоро перестанет работать. Спасибо вам всем!</value>
+  </data>
   <data name="Tier" xml:space="preserve">
     <value>Уровень</value>
   </data>

@@ -53,6 +53,14 @@ namespace Negri.Wot.Controllers
             return View();
         }
 
+        [OutputCache(CacheProfile = "Normal")]
+        public ActionResult TheEnd()
+        {
+            ViewBag.Message = "The End.";
+
+            return View();
+        }
+
         public ActionResult Clan(string clanName, ShowPlayersMode showPlayersMode = ShowPlayersMode.AllActive)
         {
             // Visualizações não mais usadas
