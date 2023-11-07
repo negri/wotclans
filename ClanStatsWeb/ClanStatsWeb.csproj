@@ -486,7 +486,10 @@
     <Content Include="Images\Ranks\0.svg" />
     <Content Include="Images\Ranks\3.svg" />
     <Content Include="Images\Ranks\4.svg" />
+    <Content Include="no.Warning.de.html" />
     <Content Include="no.Warning.es.html" />
+    <Content Include="no.Warning.it.html" />
+    <Content Include="no.Warning.pl.html" />
     <Content Include="no.Warning.ru.html" />
     <Content Include="robots.txt" />
     <Content Include="Scripts\bootstrap.js" />
