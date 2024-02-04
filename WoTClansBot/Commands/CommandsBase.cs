@@ -1,7 +1,10 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Drawing;
+using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using Negri.Wot.WgApi;
 
 namespace Negri.Wot.Bot
 {
@@ -10,10 +13,40 @@ namespace Negri.Wot.Bot
     /// </summary>
     public abstract class CommandsBase
     {
+
+
+
         /// <summary>
         ///     Regex for clan tags
         /// </summary>
         protected static readonly Regex ClanTagRegex = new Regex("^[A-Z0-9\\-_]{2,5}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+
+        protected DiscordEmbedBuilder GetTheEndMessage()
+        {
+            const string msg = "Sorry, The WoTClans Site and Discord bot **are gone.**\r\n\r\n" +
+                "The command may, or may not, work for a few more days.\r\n\r\n" +
+                "Thanks for all this time!\r\n\r\n" +
+                "[]'s *JP Negri Coder*";
+
+            var embed = new DiscordEmbedBuilder
+            {
+                Title = "This bot is going away...",
+                Description = msg,
+                Color = DiscordColor.Yellow,
+                Url = "https://github.com/negri/wotclans/blob/master/the-end.en.md",
+                Author = new DiscordEmbedBuilder.EmbedAuthor
+                {
+                    Name = "JP Negri Coder"
+                },
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = $"Sent at {DateTime.UtcNow:yyyy-MM-dd HH:mm} UTC"
+                }
+            };
+
+            return embed;
+        }
 
         protected async Task<bool> CanExecute(CommandContext ctx, string feature)
         {

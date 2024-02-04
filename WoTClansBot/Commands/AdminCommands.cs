@@ -414,7 +414,7 @@ namespace Negri.Wot.Bot
 
 
         [Command("TestPermissions")]
-        [Description("Test the permission on a feture to a given channel and role.")]
+        [Description("Test the permission on a feature to a given channel and role.")]
         public async Task TestPermissions(CommandContext ctx,
             [Description("The feature")] string feature,
             [Description("The role")] string role,

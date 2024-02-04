@@ -27,6 +27,8 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
+
             Log.Debug($"Requesting {nameof(Random)}({min}, {max})...");
 
             var number = Rand.Next(min, max + 1);
@@ -41,6 +43,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
 
             Log.Debug($"Requesting {nameof(Dice)}({sides})...");
 
@@ -57,6 +61,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
 
             Log.Debug($"Requesting {nameof(Coin)}()...");
 
@@ -185,6 +191,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
 
             Log.Debug($"Requesting {nameof(Timer)}({minutesOrSeconds})...");
 

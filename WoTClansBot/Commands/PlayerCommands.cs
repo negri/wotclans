@@ -250,6 +250,8 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
+
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
                 await ctx.RespondAsync(
@@ -686,6 +688,8 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
+
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
                 await ctx.RespondAsync(
@@ -855,6 +859,8 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
+
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
                 await ctx.RespondAsync(
@@ -994,6 +1000,8 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
+
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
                 await ctx.RespondAsync(
@@ -1126,6 +1134,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
 
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
@@ -1274,6 +1284,8 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
+                await ctx.RespondAsync("", embed: GetTheEndMessage());
+
                 Log.Debug($"Requesting {nameof(WhoIAm)}()...");
 
                 var userId = (long)(ctx.User?.Id ?? 0UL);
@@ -1321,6 +1333,8 @@ namespace Negri.Wot.Bot
                 {
                     return;
                 }
+
+                await ctx.RespondAsync("", embed: GetTheEndMessage());
 
                 Log.Debug($"Requesting {nameof(SetWhoIAm)}({gamerTag})...");
 
@@ -1396,6 +1410,8 @@ namespace Negri.Wot.Bot
                     return;
                 }
 
+                await ctx.RespondAsync("", embed: GetTheEndMessage());
+
                 Log.Debug($"Requesting {nameof(ForgetWhoIAm)}()...");
 
                 var userId = (long)(ctx.User?.Id ?? 0UL);
@@ -1434,6 +1450,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
 
             if (string.IsNullOrWhiteSpace(gamerTag))
             {

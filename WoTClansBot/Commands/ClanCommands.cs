@@ -32,10 +32,13 @@ namespace Negri.Wot.Bot
         {
             try
             {
+                                
                 if (!await CanExecute(ctx, Features.Clans))
                 {
                     return;
                 }
+
+                await ctx.RespondAsync("", embed: GetTheEndMessage());
 
                 await ctx.TriggerTypingAsync();
 
@@ -140,10 +143,13 @@ namespace Negri.Wot.Bot
             [Description("The clan **tag**")] string clanTag,
             [Description("The Tank name, as it appears in battles. If it has spaces, enclose it on quotes.")][RemainingText] string tankName)
         {
+            
             if (!await CanExecute(ctx, Features.Clans))
             {
                 return;
             }
+
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
 
             await ctx.TriggerTypingAsync();
 
@@ -277,10 +283,13 @@ namespace Negri.Wot.Bot
             [Description("Put `true` to dump a bare list, with only the players names")]
             bool bare = false)
         {
+            
             if (!await CanExecute(ctx, Features.Clans))
             {
                 return;
             }
+
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
 
             await ctx.TriggerTypingAsync();
 

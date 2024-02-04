@@ -143,6 +143,8 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
+
             Log.Debug($"Requesting {nameof(GetNations)}()...");
 
             await ctx.RespondAsync($"Valid nations are: {string.Join(", ", NationExtensions.GetGameNations().Select(n => $"`{n}`"))}");
@@ -159,6 +161,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
 
             Log.Debug($"Requesting {nameof(GetTypes)}()...");
 
@@ -177,6 +181,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
 
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
@@ -426,6 +432,8 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
+
             try
             {
                 Log.Info($"Requesting {nameof(Damage)}({tankName})");
@@ -522,6 +530,8 @@ namespace Negri.Wot.Bot
                 return;
             }
 
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
+
             Log.Info($"Requesting {nameof(Moe)}({tankName})");
 
             await ctx.TriggerTypingAsync();
@@ -594,6 +604,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
 
             Log.Info($"Requesting {nameof(Leader)}({tankName}, {gamerTag})...");
 
@@ -739,6 +751,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
 
             Log.Info($"Requesting {nameof(LeaderByFlag)}({flagCode}, {tankName}, {gamerTag})");
 
@@ -900,6 +914,8 @@ namespace Negri.Wot.Bot
             {
                 return;
             }
+
+            await ctx.RespondAsync("", embed: GetTheEndMessage());
 
             if (minTier < 1)
             {

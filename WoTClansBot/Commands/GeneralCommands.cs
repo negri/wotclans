@@ -40,9 +40,9 @@ namespace Negri.Wot.Bot
             var embed = new DiscordEmbedBuilder
             {
                 Title = "WoT Clans",
-                Description = $"The best WoT site in the universe is just a click away from you, {ctx.User.Mention}!",
+                Description = $"The best WoT site in the universe WAS just a click away from you, {ctx.User.Mention}!",
                 Color = DiscordColor.DarkGreen,
-                Url = "https://wotclans.com.br"
+                Url = "https://github.com/negri/wotclans/blob/master/the-end.en.md"
             };
 
             await ctx.RespondAsync("", embed: embed);
